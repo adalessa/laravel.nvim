@@ -41,6 +41,9 @@ function M.setup(config)
 	})
 
 	complete_config.runtime = require("laravel.runtime_config")
+    if not complete_config.runtime.has_composer then
+        return
+    end
 
 	LaravelConfig = complete_config
 	log.debug("setup(): Complete config", LaravelConfig)

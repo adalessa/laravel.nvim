@@ -5,7 +5,7 @@ local config = {
     artisan_cmd = nil
 }
 
-if vim.fn.findfile("composer.json") == nil then
+if vim.fn.findfile("composer.json") == "" then
     return config
 end
 

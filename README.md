@@ -50,6 +50,11 @@ You can run `shell` as tinker will open a new terminal
 
 `up`, `down`, `restart` will notify when starting and result will show as notification
 
+
+## Composer
+
+`install`, `update`, `require` and `remove` from the `:Composer` command
+
 ## API
 written in lua it offers a cool api
 
@@ -69,4 +74,13 @@ require("laravel.sail").run(cmd) -- command with args as string
 require("laravel.sail").up() -- start sail with the -d flag
 require("laravel.sail").down()
 require("laravel.sail").restart()
+```
+
+
+### Composer
+```
+require("laravel.composer").install()
+require("laravel.composer").update(package)
+require("laravel.composer").remove(package)
+require("laravel.composer").require(package)
 ```

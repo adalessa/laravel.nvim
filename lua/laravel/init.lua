@@ -110,6 +110,31 @@ function M.setup(config)
 			}
 		end,
 	})
+
+	vim.api.nvim_create_user_command("Composer", function(args)
+		if args.fargs[1] == "update" then
+            table.remove(args.fargs, 1)
+			return require("laravel.composer").update(vim.fn.join(args.fargs, ' '))
+		elseif args.fargs[1] == "install" then
+			return require("laravel.composer").install()
+		elseif args.fargs[1] == "remove" then
+            table.remove(args.fargs, 1)
+			return require("laravel.composer").remove(vim.fn.join(args.fargs, ' '))
+		elseif args.fargs[1] == "require" then
+            table.remove(args.fargs, 1)
+			return require("laravel.composer").require(vim.fn.join(args.fargs, ' '))
+		end
+	end, {
+		nargs = "+",
+		complete = function()
+			return {
+				"update",
+				"install",
+				"remove",
+				"require",
+			}
+		end,
+	})
 end
 
 return M

@@ -1,5 +1,7 @@
 # Laravel.nvim
 
+Currently in Alpha state. Any collaboration, issue reported is appreciated.
+
 Plugin for neovim to enhance the developement experience of laravel projects
 
 Quick executing of artisan commands

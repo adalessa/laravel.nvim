@@ -60,7 +60,11 @@ function M.setup(config)
 	log.debug("setup(): Complete config", LaravelConfig)
 	log.trace("setup(): log_key", Dev.get_log_key())
 
-    local function get_artisan_auto_complete()
+    local function get_artisan_auto_complete(current_match, full_command)
+        -- avoid getting autocomplete for when parameter is expected
+        if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
+            return {}
+        end
         local complete_list = {}
         for _, value in ipairs(LaravelConfig.cmd_list()) do
             table.insert(complete_list, value.command)

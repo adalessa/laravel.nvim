@@ -2,7 +2,8 @@ local config = {
     has_composer = false,
     is_laravel = false,
     is_sail = false,
-    artisan_cmd = nil
+    artisan_cmd = nil,
+    cmd_list = {},
 }
 
 if vim.fn.findfile("composer.json") == "" then

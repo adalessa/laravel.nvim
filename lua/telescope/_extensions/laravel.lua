@@ -17,13 +17,11 @@ local laravel_utils = require("laravel.utils")
 local laravel = function (opts)
     opts = opts or {}
 
-    local results = artisan.list()
-
     pickers
         .new({}, {
             prompt_title = "Artisan commands",
             finder = finders.new_table({
-                results = results,
+                results = LaravelConfig.cmd_list(),
                 entry_maker = function(cmd)
                     return {
                         value = cmd.command,
@@ -60,6 +58,8 @@ local laravel = function (opts)
                             args = nil
                         end
                         artisan.make(vim.split(entry.value, ":")[2], name, args)
+                    elseif entry.value == "tinker" then
+                        artisan.tinker()
                     else
                         local args = vim.fn.input("Args: ")
                         local cmd = ""

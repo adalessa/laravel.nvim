@@ -33,6 +33,10 @@ function artisan.make(resource, name, args)
     table.insert(args, 1, "make:"..resource )
     table.insert(args, 2, name)
 
+    if resource == 'command' then
+        artisan.clean_cmd_list_cache()
+    end
+
     local job_cmd = utils.get_artisan_cmd(args)
 	log.debug("artisan.make(): running", job_cmd)
     local stdout, ret, stderr = utils.get_os_command_output(job_cmd)
@@ -84,6 +88,11 @@ function artisan.help(cmd)
     end
 
     return stdout
+end
+
+function artisan.clean_cmd_list_cache()
+    log.trace("artisan.clean_cmd_list_cache(): cleaning cache")
+    LaravelConfig.runtime.cmd_list = {}
 end
 
 return artisan

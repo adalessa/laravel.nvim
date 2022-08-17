@@ -1,6 +1,5 @@
 local Dev = require("laravel.dev")
 local log = Dev.log
-local notify = require("notify")
 
 local M = {}
 
@@ -39,6 +38,7 @@ function M.setup(config)
 	local complete_config = merge_tables({
 		split_cmd = "vertical",
 		split_width = 120,
+        bind_telescope = true,
 	})
 
 	complete_config.runtime = require("laravel.runtime_config")
@@ -46,24 +46,24 @@ function M.setup(config)
         return
     end
 
-	LaravelConfig = complete_config
+	LaravelConfig = merge_tables(complete_config, config)
+
+    LaravelConfig.cmd_list = function ()
+        if #LaravelConfig.runtime.cmd_list == 0 then
+            LaravelConfig.runtime.cmd_list = require("laravel.artisan").list()
+        end
+
+        return LaravelConfig.runtime.cmd_list
+    end
+
 	log.debug("setup(): Complete config", LaravelConfig)
 	log.trace("setup(): log_key", Dev.get_log_key())
 
-	local complete_list = {}
-
     local function get_artisan_auto_complete()
-        if #complete_list == 0 then
-            local commands = require("laravel.artisan").list()
-            if type(commands) ~= "table" then
-                notify.notify("Looks like sail is not running", "WARN", {title = "Laravel.nvim"})
-                return {}
-            end
-            for _, value in ipairs(commands) do
-                table.insert(complete_list, value.command)
-            end
+        local complete_list = {}
+        for _, value in ipairs(LaravelConfig.cmd_list()) do
+            table.insert(complete_list, value.command)
         end
-
 
         return complete_list
     end
@@ -71,8 +71,11 @@ function M.setup(config)
 	-- Create auto commands
 	vim.api.nvim_create_user_command("Artisan", function(args)
 		if args.args == "" then
-			return require("telescope").extensions.laravel.laravel()
+            if LaravelConfig.bind_telescope then
+                return require("telescope").extensions.laravel.laravel()
+            end
 		end
+
 		if args.args == "tinker" then
 			return require("laravel.artisan").tinker()
 		end

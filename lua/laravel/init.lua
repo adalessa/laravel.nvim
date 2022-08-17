@@ -39,6 +39,7 @@ function M.setup(config)
 		split_cmd = "vertical",
 		split_width = 120,
         bind_telescope = true,
+        ask_for_args = true,
 	})
 
 	complete_config.runtime = require("laravel.runtime_config")

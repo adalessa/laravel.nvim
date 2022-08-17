@@ -18,7 +18,7 @@ local laravel = function (opts)
     opts = opts or {}
 
     pickers
-        .new({}, {
+        .new(opts, {
             prompt_title = "Artisan commands",
             finder = finders.new_table({
                 results = LaravelConfig.cmd_list(),
@@ -51,22 +51,23 @@ local laravel = function (opts)
                     actions.close(prompt_bufnr)
                     if laravel_utils.is_make_command(entry.value) then
                         local name = vim.fn.input("Name: ")
-                        local args = vim.fn.input("Args: ")
-                        if args ~= "" then
-                            args = vim.split(args, " ")
-                        else
-                            args = nil
+                        local args = nil
+                        if LaravelConfig.ask_for_args then
+                            local args_input = vim.fn.input("Args: ")
+                            if args_input ~= "" then
+                                args = vim.split(args_input, " ")
+                            end
                         end
                         artisan.make(vim.split(entry.value, ":")[2], name, args)
                     elseif entry.value == "tinker" then
                         artisan.tinker()
                     else
-                        local args = vim.fn.input("Args: ")
-                        local cmd = ""
-                        if args ~= "" then
-                            cmd = entry.value .. " " .. args
-                        else
-                            cmd = entry.value
+                        local cmd = entry.value
+                        if LaravelConfig.ask_for_args then
+                            local args = vim.fn.input("Args: ")
+                            if args ~= "" then
+                                cmd = cmd .. " " .. args
+                            end
                         end
 
                         artisan.run(cmd)

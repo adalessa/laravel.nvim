@@ -1,5 +1,6 @@
 local Dev = require("laravel.dev")
 local log = Dev.log
+local notify = require("notify")
 
 local M = {}
 
@@ -50,9 +51,22 @@ function M.setup(config)
 	log.trace("setup(): log_key", Dev.get_log_key())
 
 	local complete_list = {}
-	for _, value in ipairs(require("laravel.artisan").list()) do
-		table.insert(complete_list, value.command)
-	end
+
+    local function get_artisan_auto_complete()
+        if #complete_list == 0 then
+            local commands = require("laravel.artisan").list()
+            if type(commands) ~= "table" then
+                notify.notify("Looks like sail is not running", "WARN", {title = "Laravel.nvim"})
+                return {}
+            end
+            for _, value in ipairs(commands) do
+                table.insert(complete_list, value.command)
+            end
+        end
+
+
+        return complete_list
+    end
 
 	-- Create auto commands
 	vim.api.nvim_create_user_command("Artisan", function(args)
@@ -66,9 +80,7 @@ function M.setup(config)
 		return require("laravel.artisan").run(args.args)
 	end, {
 		nargs = "*",
-		complete = function()
-			return complete_list
-		end,
+		complete = get_artisan_auto_complete,
 	})
 
 	vim.api.nvim_create_user_command("Sail", function(args)
@@ -81,7 +93,7 @@ function M.setup(config)
 		elseif args.fargs[1] == "restart" then
 			return require("laravel.sail").restart()
         else
-			return require("laravel.sail").run(args)
+			return require("laravel.sail").run(args.args)
 		end
 	end, {
 		nargs = "+",

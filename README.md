@@ -8,14 +8,14 @@ Quick executing of artisan commands
 
 # Installation
 Packer
-```
-    use({"adalessa/laravel.nvim",
-        requires = {
-            { "nvim-lua/plenary.nvim" },
-            { rcarriga/nvim-notify },
-            { "nvim-telescope/telescope.nvim" }, -- Recommended
-        },
-    })
+```lua
+use({"adalessa/laravel.nvim",
+    requires = {
+        { "nvim-lua/plenary.nvim" },
+        { "rcarriga/nvim-notify" },
+        { "nvim-telescope/telescope.nvim" },
+    },
+})
 ```
 
 Set up

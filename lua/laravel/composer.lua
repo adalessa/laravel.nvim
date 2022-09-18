@@ -1,5 +1,4 @@
-local utils = require("laravel.utils")
-
+local runner = require("laravel.runner")
 local M = {}
 
 local function run(cmd)
@@ -7,8 +6,7 @@ local function run(cmd)
         cmd = LaravelConfig.runtime.artisan_cmd .. ' ' .. cmd
     end
 
-    vim.cmd(string.format("%s new term://%s", LaravelConfig.split_cmd, cmd))
-    vim.cmd("startinsert")
+    runner.terminal(vim.split(cmd, ' '))
 end
 
 function M.update(library)

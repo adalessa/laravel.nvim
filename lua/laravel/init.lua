@@ -38,47 +38,50 @@ function M.setup(config)
 	local complete_config = merge_tables({
 		split_cmd = "vertical",
 		split_width = 120,
-        bind_telescope = true,
-        ask_for_args = true,
+		bind_telescope = true,
+		ask_for_args = true,
+        runner_per_command = {
+            ["dump-server"] = "terminal"
+        },
 	})
 
 	complete_config.runtime = require("laravel.runtime_config")
-    if not complete_config.runtime.has_composer then
-        return
-    end
+	if not complete_config.runtime.has_composer then
+		return
+	end
 
 	LaravelConfig = merge_tables(complete_config, config)
 
-    LaravelConfig.cmd_list = function ()
-        if #LaravelConfig.runtime.cmd_list == 0 then
-            LaravelConfig.runtime.cmd_list = require("laravel.artisan").list()
-        end
+	LaravelConfig.cmd_list = function()
+		if #LaravelConfig.runtime.cmd_list == 0 then
+			LaravelConfig.runtime.cmd_list = require("laravel.artisan").list()
+		end
 
-        return LaravelConfig.runtime.cmd_list
-    end
+		return LaravelConfig.runtime.cmd_list
+	end
 
 	log.debug("setup(): Complete config", LaravelConfig)
 	log.trace("setup(): log_key", Dev.get_log_key())
 
-    local function get_artisan_auto_complete(current_match, full_command)
-        -- avoid getting autocomplete for when parameter is expected
-        if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
-            return {}
-        end
-        local complete_list = {}
-        for _, value in ipairs(LaravelConfig.cmd_list()) do
-            table.insert(complete_list, value.command)
-        end
+	local function get_artisan_auto_complete(current_match, full_command)
+		-- avoid getting autocomplete for when parameter is expected
+		if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
+			return {}
+		end
+		local complete_list = {}
+		for _, value in ipairs(LaravelConfig.cmd_list()) do
+			table.insert(complete_list, value.command)
+		end
 
-        return complete_list
-    end
+		return complete_list
+	end
 
 	-- Create auto commands
 	vim.api.nvim_create_user_command("Artisan", function(args)
 		if args.args == "" then
-            if LaravelConfig.bind_telescope then
-                return require("telescope").extensions.laravel.laravel()
-            end
+			if LaravelConfig.bind_telescope then
+				return require("telescope").extensions.laravel.laravel()
+			end
 		end
 
 		if args.args == "tinker" then
@@ -91,6 +94,11 @@ function M.setup(config)
 		complete = get_artisan_auto_complete,
 	})
 
+	vim.api.nvim_create_user_command("LaravelCleanArtisanCache", function()
+		require("laravel.artisan").clean_cmd_list_cache()
+		print("Artisan cache has been clean")
+	end, {})
+
 	vim.api.nvim_create_user_command("Sail", function(args)
 		if args.fargs[1] == "shell" then
 			return require("laravel.sail").shell()
@@ -100,7 +108,7 @@ function M.setup(config)
 			return require("laravel.sail").down()
 		elseif args.fargs[1] == "restart" then
 			return require("laravel.sail").restart()
-        else
+		else
 			return require("laravel.sail").run(args.args)
 		end
 	end, {
@@ -117,16 +125,16 @@ function M.setup(config)
 
 	vim.api.nvim_create_user_command("Composer", function(args)
 		if args.fargs[1] == "update" then
-            table.remove(args.fargs, 1)
-			return require("laravel.composer").update(vim.fn.join(args.fargs, ' '))
+			table.remove(args.fargs, 1)
+			return require("laravel.composer").update(vim.fn.join(args.fargs, " "))
 		elseif args.fargs[1] == "install" then
 			return require("laravel.composer").install()
 		elseif args.fargs[1] == "remove" then
-            table.remove(args.fargs, 1)
-			return require("laravel.composer").remove(vim.fn.join(args.fargs, ' '))
+			table.remove(args.fargs, 1)
+			return require("laravel.composer").remove(vim.fn.join(args.fargs, " "))
 		elseif args.fargs[1] == "require" then
-            table.remove(args.fargs, 1)
-			return require("laravel.composer").require(vim.fn.join(args.fargs, ' '))
+			table.remove(args.fargs, 1)
+			return require("laravel.composer").require(vim.fn.join(args.fargs, " "))
 		end
 	end, {
 		nargs = "+",

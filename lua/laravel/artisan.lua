@@ -1,5 +1,6 @@
 local log = require("laravel.dev").log
 local utils = require("laravel.utils")
+local runner = require("laravel.runner")
 local resource_directory_map = require("laravel.resource_directory_map")
 
 local artisan = {}
@@ -9,12 +10,20 @@ local function open_resource(resource, name)
 	if directory == "" then
 		return
 	end
+    -- TODO handle migration since that includes a generated name
+    -- need to find a way to search just by a part of the name
 	local filename = string.format("%s/%s.php", directory, name)
 	if vim.fn.findfile(filename) then
 		local uri = vim.uri_from_fname(string.format("%s/%s", vim.fn.getcwd(), filename))
 		local buffer = vim.uri_to_bufnr(uri)
 		vim.api.nvim_win_set_buf(0, buffer)
+
+        return
 	end
+
+    utils.notify("open_resource", {
+        msg = string.format("Can't find resource %s", filename)
+    })
 end
 
 function artisan.tinker()
@@ -23,9 +32,31 @@ function artisan.tinker()
 end
 
 function artisan.run(cmd)
-    local job_cmd = utils.get_artisan_cmd(vim.split(cmd, " "))
+    local artisan_cmd = vim.split(cmd, " ")
+    local job_cmd = utils.get_artisan_cmd(artisan_cmd)
 	log.debug("artisan.run(): running", job_cmd)
-    utils.term_open_output(job_cmd)
+    local command = artisan_cmd[1]
+
+    if utils.is_make_command(command) then
+        local resource = vim.split(artisan_cmd[1], ":")[2]
+        table.remove(artisan_cmd, 1)
+        local name = artisan_cmd[1]
+        table.remove(artisan_cmd, 1)
+
+        return artisan.make(
+            resource,
+            name,
+            artisan_cmd
+        )
+    end
+
+    local cmd_runner = LaravelConfig.runner_per_command[command]
+    if cmd_runner ~= nil then
+        return runner[cmd_runner](job_cmd)
+    end
+
+    -- base on the command can have different runner
+    runner.buffer(job_cmd)
 end
 
 function artisan.make(resource, name, args)

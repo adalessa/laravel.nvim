@@ -31,6 +31,14 @@ function artisan.tinker()
     vim.cmd("startinsert")
 end
 
+
+function artisan.exec(cmd)
+    local artisan_cmd = vim.split(cmd, " ")
+    local job_cmd = utils.get_artisan_cmd(artisan_cmd)
+
+    return runner.sync(job_cmd)
+end
+
 function artisan.run(cmd)
     local artisan_cmd = vim.split(cmd, " ")
     local job_cmd = utils.get_artisan_cmd(artisan_cmd)

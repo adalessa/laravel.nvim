@@ -1,4 +1,5 @@
 local Dev = require("laravel.dev")
+local route_info = require("laravel.route_info")
 local log = Dev.log
 
 local M = {}
@@ -147,6 +148,8 @@ function M.setup(config)
 			}
 		end,
 	})
+
+    route_info.register()
 end
 
 return M

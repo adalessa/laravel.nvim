@@ -1,3 +1,6 @@
+local Job = require'plenary.job'
+local utils = require("laravel.utils")
+
 local runner = {}
 
 function runner.terminal(cmd)
@@ -27,6 +30,28 @@ function runner.buffer(cmd)
         pty = true,
         width = LaravelConfig.split_width,
 	})
+end
+
+
+function runner.sync(cmd)
+  if type(cmd) ~= "table" then
+    utils.notify("get_os_command_output", {
+      msg = "cmd has to be a table",
+      level = "ERROR",
+    })
+    return {}
+  end
+  local command = table.remove(cmd, 1)
+  local stderr = {}
+  local stdout, ret = Job:new({
+    command = command,
+    args = cmd,
+    on_stderr = function(_, data)
+      table.insert(stderr, data)
+    end,
+  }):sync()
+
+  return stdout, ret, stderr
 end
 
 return runner

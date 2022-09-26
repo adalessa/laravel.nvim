@@ -1,5 +1,6 @@
 local log = require("laravel.dev").log
 local utils = require("laravel.utils")
+local runner = require("laravel.runner")
 local notify = require("notify")
 
 local sail = {}
@@ -12,7 +13,19 @@ function sail.run(cmd)
 
     local job_cmd = utils.get_sail_cmd(vim.split(cmd, " "))
 	log.debug("sail.run(): running", job_cmd)
-    utils.term_open_output(job_cmd)
+    runner.terminal(job_cmd)
+end
+
+function sail.exec(cmd)
+    if not LaravelConfig.runtime.is_sail then
+        log.error("sail.run(): Project not detected as sail")
+        return
+    end
+
+    local job_cmd = utils.get_sail_cmd(vim.split(cmd, " "))
+	log.debug("sail.run(): running", job_cmd)
+
+    return runner.sync(job_cmd)
 end
 
 function sail.shell()

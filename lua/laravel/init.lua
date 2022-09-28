@@ -152,4 +152,6 @@ function M.setup(config)
     route_info.register()
 end
 
+-- TODO register an autocmd for when dir changed to reload the configuration
+
 return M

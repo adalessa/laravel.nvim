@@ -105,11 +105,13 @@ end
 local group = vim.api.nvim_create_augroup("laravel", {})
 
 route_info.register = function ()
-    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-        pattern = { "*Controller.php" },
-        group = group,
-        callback = set_route_to_methods,
-    })
+    if LaravelConfig.runtime.is_laravel then
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
+            pattern = { "*Controller.php" },
+            group = group,
+            callback = set_route_to_methods,
+        })
+    end
 end
 
 return route_info

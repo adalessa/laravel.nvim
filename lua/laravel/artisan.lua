@@ -32,11 +32,15 @@ function artisan.tinker()
 end
 
 
-function artisan.exec(cmd)
+function artisan.exec(cmd, callback)
     local artisan_cmd = vim.split(cmd, " ")
     local job_cmd = utils.get_artisan_cmd(artisan_cmd)
 
-    return runner.sync(job_cmd)
+    if callback == nil then
+        return runner.sync(job_cmd)
+    end
+
+    return runner.async(job_cmd, callback)
 end
 
 function artisan.run(cmd)

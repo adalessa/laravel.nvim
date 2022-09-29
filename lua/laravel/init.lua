@@ -42,7 +42,9 @@ function M.setup(config)
 		bind_telescope = true,
 		ask_for_args = true,
         runner_per_command = {
-            ["dump-server"] = "terminal"
+            ["dump-server"] = "terminal",
+            ["db"] = "terminal",
+            ["tinker"] = "terminal",
         },
 	})
 

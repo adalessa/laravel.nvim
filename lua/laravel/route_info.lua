@@ -24,9 +24,12 @@ end
 
 local function set_route_to_methods()
     local namespace = vim.api.nvim_create_namespace("laravel.routes")
-    vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
 
     artisan.exec("route:list --json", function(j, return_val)
+        -- clena namespace
+        vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
+        vim.diagnostic.reset(namespace, 0)
+
         if return_val ~= 0 then
             utils.notify("set_route_to_methods", { msg = "cant retrive the routes" })
             return
@@ -103,7 +106,6 @@ local function set_route_to_methods()
             end
         end
 
-        vim.diagnostic.reset(namespace, 0)
         if #errors > 0 then
             vim.diagnostic.set(namespace, 0, errors)
         end

@@ -22,13 +22,14 @@ local function is_same_class(action, class)
     return string.sub(action, 1, string.len(class)) == class
 end
 
-local function set_route_to_methods()
+local function set_route_to_methods(event)
+    local bufnr = event.buf
     local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
     artisan.exec("route:list --json", function(j, return_val)
         -- clena namespace
-        vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
-        vim.diagnostic.reset(namespace, 0)
+        vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+        vim.diagnostic.reset(namespace, bufnr)
 
         if return_val ~= 0 then
             utils.notify("set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
@@ -38,7 +39,7 @@ local function set_route_to_methods()
         local route_list = vim.fn.json_decode(j:result())
 
         local parsers = require("nvim-treesitter.parsers")
-        local parser = parsers.get_parser(0)
+        local parser = parsers.get_parser(bufnr)
         local tree = unpack(parser:parse())
 
         local query = vim.treesitter.get_query("php", "laravel_route_info")
@@ -46,19 +47,19 @@ local function set_route_to_methods()
         local class, class_namespace, methods, visibilities = "", "", {}, {}
         local class_pos = 0
 
-        for id, node in query:iter_captures(tree:root(), 0) do
+        for id, node in query:iter_captures(tree:root(), bufnr) do
             if query.captures[id] == "class" then
-                class = get_node_text(node, 0)
+                class = get_node_text(node, bufnr)
                 class_pos = node:start()
             elseif query.captures[id] == "namespace" then
-                class_namespace = get_node_text(node, 0)
+                class_namespace = get_node_text(node,bufnr)
             elseif query.captures[id] == "method" then
                 table.insert(methods, {
                     pos = node:start(),
-                    name = get_node_text(node, 0),
+                    name = get_node_text(node,bufnr),
                 })
             elseif query.captures[id] == "visibility" then
-                table.insert(visibilities, get_node_text(node, 0))
+                table.insert(visibilities, get_node_text(node, bufnr))
             end
         end
 
@@ -87,7 +88,7 @@ local function set_route_to_methods()
                         vim.fn.join(route.middleware, ",")
                     )
                     vim.api.nvim_buf_set_extmark(
-                        0,
+                        bufnr,
                         namespace,
                         method.pos,
                         0,
@@ -107,7 +108,7 @@ local function set_route_to_methods()
         end
 
         if #errors > 0 then
-            vim.diagnostic.set(namespace, 0, errors)
+            vim.diagnostic.set(namespace, bufnr, errors)
         end
     end)
 end

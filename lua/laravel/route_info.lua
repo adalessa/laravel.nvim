@@ -31,7 +31,7 @@ local function set_route_to_methods()
         vim.diagnostic.reset(namespace, 0)
 
         if return_val ~= 0 then
-            utils.notify("set_route_to_methods", { msg = "cant retrive the routes" })
+            utils.notify("set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
             return
         end
 

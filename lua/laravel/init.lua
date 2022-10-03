@@ -1,10 +1,17 @@
 local Dev = require("laravel.dev")
-local route_info = require("laravel.route_info")
+local config = require("laravel.config")
+local project_properties = require("laravel.project_properties")
+local autocommands = require("laravel.autocommands")
+
 local log = Dev.log
 
 local M = {}
 
-LaravelConfig = LaravelConfig or {}
+---@class Laravel
+---@field config laravel.config
+---@field properties laravel.project_properties
+---@field cache laravel.cache
+Laravel = Laravel or {}
 
 -- tbl_deep_extend does not work the way you would think
 local function merge_table_impl(t1, t2)
@@ -30,130 +37,56 @@ local function merge_tables(...)
 	return out
 end
 
-function M.setup(config)
+---Set up laravel plugin
+---@param opts laravel.config|nil
+function M.setup(opts)
+    -- register command for DirChanged
+    -- this should be able to check and update the config
+
 	log.trace("setup(): Setting up...")
-	if not config then
-		config = {}
+	if not opts then
+		opts = {}
 	end
 
-	local complete_config = merge_tables({
-		split_cmd = "vertical",
-		split_width = 120,
-		bind_telescope = true,
-		ask_for_args = true,
-        runner_per_command = {
-            ["dump-server"] = "terminal",
-            ["db"] = "terminal",
-            ["tinker"] = "terminal",
-        },
-	})
+    autocommands.dir_changed(opts)
 
-	complete_config.runtime = require("laravel.runtime_config")
-	if not complete_config.runtime.has_composer then
-		return
-	end
+    -- if is not artisan do not continue
+    -- but register the dir change to start in case of moving
+    -- into a laravel directory
+    if vim.fn.filereadable("artisan") == 0 then
+        return
+    end
 
-	LaravelConfig = merge_tables(complete_config, config)
 
-	LaravelConfig.cmd_list = function()
-		if #LaravelConfig.runtime.cmd_list == 0 then
-			LaravelConfig.runtime.cmd_list = require("laravel.artisan").list()
-		end
+	Laravel.config = merge_tables(config, opts)
+    Laravel.properties = project_properties
+    Laravel.cache = {}
 
-		return LaravelConfig.runtime.cmd_list
-	end
+	log.debug("setup(): Complete config", Laravel)
 
-	log.debug("setup(): Complete config", LaravelConfig)
+	log.debug("setup(): warm cache", Laravel)
+    Laravel.cache = {
+        commands = require("laravel.artisan").commands(true),
+        routes = {},
+    }
+
 	log.trace("setup(): log_key", Dev.get_log_key())
 
-	local function get_artisan_auto_complete(current_match, full_command)
-		-- avoid getting autocomplete for when parameter is expected
-		if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
-			return {}
-		end
-		local complete_list = {}
-		for _, value in ipairs(LaravelConfig.cmd_list()) do
-			table.insert(complete_list, value.command)
-		end
+    if Laravel.config.register_user_commands then
+        local usercommands = require("laravel.usercommands")
+        usercommands.artisan()
+        usercommands.sail()
+        usercommands.composer()
+        usercommands.laravel()
+    end
 
-		return complete_list
-	end
-
-	-- Create auto commands
-	vim.api.nvim_create_user_command("Artisan", function(args)
-		if args.args == "" then
-			if LaravelConfig.bind_telescope then
-				return require("telescope").extensions.laravel.laravel()
-			end
-		end
-
-		if args.args == "tinker" then
-			return require("laravel.artisan").tinker()
-		end
-
-		return require("laravel.artisan").run(args.args)
-	end, {
-		nargs = "*",
-		complete = get_artisan_auto_complete,
-	})
-
-	vim.api.nvim_create_user_command("LaravelCleanArtisanCache", function()
-		require("laravel.artisan").clean_cmd_list_cache()
-		print("Artisan cache has been clean")
-	end, {})
-
-	vim.api.nvim_create_user_command("Sail", function(args)
-		if args.fargs[1] == "shell" then
-			return require("laravel.sail").shell()
-		elseif args.fargs[1] == "up" then
-			return require("laravel.sail").up()
-		elseif args.fargs[1] == "down" then
-			return require("laravel.sail").down()
-		elseif args.fargs[1] == "restart" then
-			return require("laravel.sail").restart()
-		else
-			return require("laravel.sail").run(args.args)
-		end
-	end, {
-		nargs = "+",
-		complete = function()
-			return {
-				"shell",
-				"up",
-				"down",
-				"restart",
-			}
-		end,
-	})
-
-	vim.api.nvim_create_user_command("Composer", function(args)
-		if args.fargs[1] == "update" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").update(vim.fn.join(args.fargs, " "))
-		elseif args.fargs[1] == "install" then
-			return require("laravel.composer").install()
-		elseif args.fargs[1] == "remove" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").remove(vim.fn.join(args.fargs, " "))
-		elseif args.fargs[1] == "require" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").require(vim.fn.join(args.fargs, " "))
-		end
-	end, {
-		nargs = "+",
-		complete = function()
-			return {
-				"update",
-				"install",
-				"remove",
-				"require",
-			}
-		end,
-	})
-
-    route_info.register()
+    if Laravel.config.route_info then
+        require("laravel.route_info").register()
+    end
 end
 
--- TODO register an autocmd for when dir changed to reload the configuration
+--TODO
+--expose actions for null-ls to create relations
+--register luasnips
 
 return M

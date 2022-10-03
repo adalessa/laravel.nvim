@@ -1,11 +1,10 @@
 local artisan = require("laravel.artisan")
 local utils = require("laravel.utils")
-
-local route_info = {}
+local parsers = require("nvim-treesitter.parsers")
 
 local get_node_text = vim.treesitter.get_node_text
 
-vim.treesitter.set_query(
+vim.treesitter.query.set_query(
     "php",
     "laravel_route_info",
     [[
@@ -26,8 +25,8 @@ local function set_route_to_methods(event)
     local bufnr = event.buf
     local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
-    artisan.exec("route:list --json", function(j, return_val)
-        -- clena namespace
+    artisan.routes(function(route_list, return_val)
+        -- clean namespace
         vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
         vim.diagnostic.reset(namespace, bufnr)
 
@@ -36,9 +35,6 @@ local function set_route_to_methods(event)
             return
         end
 
-        local route_list = vim.fn.json_decode(j:result())
-
-        local parsers = require("nvim-treesitter.parsers")
         local parser = parsers.get_parser(bufnr)
         local tree = unpack(parser:parse())
 
@@ -102,7 +98,12 @@ local function set_route_to_methods(event)
                 table.insert(errors, {
                     lnum = class_pos,
                     col = 0,
-                    message = string.format("missing %s", route.action),
+                    message = string.format(
+                        "missing method %s [Method: %s, URI: %s]",
+                        vim.fn.split(route.action, "@")[2],
+                        route.method,
+                        route.uri
+                    ),
                 })
             end
         end
@@ -115,14 +116,22 @@ end
 
 local group = vim.api.nvim_create_augroup("laravel", {})
 
-route_info.register = function()
-    if LaravelConfig.runtime.is_laravel then
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-            pattern = { "*Controller.php" },
-            group = group,
-            callback = set_route_to_methods,
-        })
-    end
+local register = function()
+    vim.api.nvim_create_autocmd({"BufWritePost"}, {
+        pattern = { "routes/*.php" },
+        group = group,
+        callback = function ()
+            Laravel.cache.routes = {}
+        end
+    })
+
+    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
+        pattern = { "*Controller.php" },
+        group = group,
+        callback = set_route_to_methods,
+    })
 end
 
-return route_info
+return {
+    register = register
+}

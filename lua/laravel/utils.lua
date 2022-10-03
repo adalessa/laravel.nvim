@@ -1,6 +1,14 @@
 local Job = require("plenary.job")
 local utils = {}
 
+local get_cmd = function ()
+    if Laravel.properties.uses_sail then
+        return "vendor/bin/sail"
+    end
+
+    return "php"
+end
+
 function utils.notify(funname, opts)
 	local level = vim.log.levels[opts.level]
 	if not level then
@@ -38,27 +46,13 @@ function utils.get_os_command_output(cmd, cwd)
 	return stdout, ret, stderr
 end
 
-function utils.run_os_command(cmd, cwd, on_exit)
-	if type(cmd) ~= "table" then
-		utils.notify("get_os_command_output", {
-			msg = "cmd has to be a table",
-			level = "ERROR",
-		})
-		return {}
-	end
-	local command = table.remove(cmd, 1)
-	Job:new({
-		command = command,
-		args = cmd,
-		cwd = cwd,
-        on_exit = vim.schedule_wrap(on_exit)
-	}):start()
-end
-
+---Gets the artisan command
+---@param cmd table
+---@return table
 function utils.get_artisan_cmd(cmd)
 
 	if type(cmd) ~= "table" then
-		utils.notify("get_os_command_output", {
+		utils.notify("get_artisan_cmd", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})
@@ -66,22 +60,26 @@ function utils.get_artisan_cmd(cmd)
 	end
     local out_cmd = vim.fn.deepcopy(cmd)
 
-    table.insert(out_cmd, 1, LaravelConfig.runtime.artisan_cmd)
+    table.insert(out_cmd, 1, get_cmd())
     table.insert(out_cmd, 2, "artisan")
 
     return out_cmd
 end
 
+
+---Gets the sail command
+---@param cmd table
+---@return table
 function utils.get_sail_cmd(cmd)
 	if type(cmd) ~= "table" then
-		utils.notify("get_os_command_output", {
+		utils.notify("get_sail_cmd", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})
 		return {}
 	end
 
-    table.insert(cmd, 1, LaravelConfig.runtime.artisan_cmd)
+    table.insert(cmd, 1, "vendor/bin/sail")
 
     return cmd
 end

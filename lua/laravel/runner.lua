@@ -4,14 +4,14 @@ local utils = require("laravel.utils")
 local runner = {}
 
 function runner.terminal(cmd)
-    vim.cmd(string.format("%s new term://%s", LaravelConfig.split_cmd, table.concat(cmd, " ")))
+    vim.cmd(string.format("%s new term://%s", Laravel.config.split.cmd, table.concat(cmd, " ")))
     vim.cmd("startinsert")
 end
 
 function runner.buffer(cmd)
-    vim.cmd(LaravelConfig.split_cmd .. " new")
+    vim.cmd(Laravel.config.split.cmd .. " new")
     local new_window = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_width(new_window, LaravelConfig.split_width + 5)
+    vim.api.nvim_win_set_width(new_window, Laravel.config.split.width + 5)
     local new_buffer = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(new_window, new_buffer)
     local channel_id = vim.api.nvim_open_term(new_buffer, {})
@@ -28,13 +28,13 @@ function runner.buffer(cmd)
             vim.cmd("startinsert")
         end,
         pty = true,
-        width = LaravelConfig.split_width,
+        width = Laravel.config.split.width,
     })
 end
 
 function runner.sync(cmd)
     if type(cmd) ~= "table" then
-        utils.notify("get_os_command_output", {
+        utils.notify("rynner_sync", {
             msg = "cmd has to be a table",
             level = "ERROR",
         })
@@ -55,7 +55,7 @@ end
 
 function runner.async(cmd, callback)
     if type(cmd) ~= "table" then
-        utils.notify("get_os_command_output", {
+        utils.notify("runner_async", {
             msg = "cmd has to be a table",
             level = "ERROR",
         })

@@ -1,9 +1,11 @@
 local runner = require("laravel.runner")
 local M = {}
 
+---run a command in the terminal
+---@param cmd string
 local function run(cmd)
-    if LaravelConfig.runtime.is_sail then
-        cmd = LaravelConfig.runtime.artisan_cmd .. ' ' .. cmd
+    if Laravel.properties.uses_sail then
+        cmd =  'vendor/bin/sail ' .. cmd
     end
 
     runner.terminal(vim.split(cmd, ' '))

@@ -85,8 +85,4 @@ function M.setup(opts)
     end
 end
 
---TODO
---expose actions for null-ls to create relations
---register luasnips
-
 return M

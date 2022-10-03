@@ -54,6 +54,9 @@ function M.setup(opts)
     -- but register the dir change to start in case of moving
     -- into a laravel directory
     if vim.fn.filereadable("artisan") == 0 then
+        Laravel.properties = {
+            uses_sail = false,
+        }
         return
     end
 

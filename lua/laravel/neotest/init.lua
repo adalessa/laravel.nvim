@@ -30,7 +30,7 @@ end
 ---@async
 ---@param file_path string Absolute file path
 ---@return neotest.Tree | nil
-function NeotestAdapter.discover_positions(path)
+function NeotestAdapter.discover_positions(file_path)
     local query = [[
     ((class_declaration
       name: (name) @namespace.name (#match? @namespace.name "Test")
@@ -47,7 +47,7 @@ function NeotestAdapter.discover_positions(path)
     ))
   ]]
 
-    return lib.treesitter.parse_positions(path, query, {
+    return lib.treesitter.parse_positions(file_path, query, {
         position_id = utils.make_test_id,
     })
 end

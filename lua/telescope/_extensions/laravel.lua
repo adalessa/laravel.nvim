@@ -59,8 +59,6 @@ local laravel = function (opts)
                             end
                         end
                         artisan.make(vim.split(entry.value, ":")[2], name, args)
-                    elseif entry.value == "tinker" then
-                        artisan.tinker()
                     else
                         local cmd = entry.value
                         if Laravel.config.ask_for_args then

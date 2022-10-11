@@ -71,6 +71,19 @@ local laravel = function (opts)
                         artisan.run(cmd)
                     end
                 end)
+                map("i", "<c-t>", function(prompt_bufnr)
+                    local entry = action_state.get_selected_entry()
+                    actions.close(prompt_bufnr)
+                    local cmd = entry.value
+                    if Laravel.config.ask_for_args then
+                        local args = vim.fn.input("Args: ")
+                        if args ~= "" then
+                            cmd = cmd .. " " .. args
+                        end
+                    end
+
+                    artisan.run(cmd, "terminal")
+                end)
                 return true
             end,
         })

@@ -51,8 +51,9 @@ end
 
 ---Runs a common on the configure runner
 ---@param cmd string
+---@param cmd_runner string|nil
 ---@return nil
-function artisan.run(cmd)
+function artisan.run(cmd, cmd_runner)
     local artisan_cmd = vim.split(cmd, " ")
     local job_cmd = utils.get_artisan_cmd(artisan_cmd)
 	log.debug("artisan.run(): running", job_cmd)
@@ -71,7 +72,7 @@ function artisan.run(cmd)
         )
     end
 
-    local cmd_runner = Laravel.config.artisan_command_runner[command]
+    cmd_runner = cmd_runner or Laravel.config.artisan_command_runner[command]
     if cmd_runner ~= nil then
         return runner[cmd_runner](job_cmd)
     end
@@ -124,38 +125,47 @@ function artisan.help(cmd)
     return stdout
 end
 
----Gets the commands
----@param clean_cache boolean|nil
----@return table
-function artisan.commands(clean_cache)
-    clean_cache = clean_cache or false
+---@class Command
+---@field command string
+---@field description string
 
-    if not clean_cache and #Laravel.cache.commands ~= 0 then
-        return Laravel.cache.commands
-    end
-
-    Laravel.cache.commmandas = {}
-    local stdout, ret, stderr = artisan.exec({"list", "--raw"})
-
-    if ret == 1 then
-        log.error("artisan.commands(): stdout", stdout)
-        log.error("artisan.commands(): stderr", stderr)
-
-        return {}
-    end
-
-    local result = {}
-    for _, value in ipairs(stdout) do
+---Map from raw command output to command
+---@param raw table|nil
+---@return Command[]
+local function map_commands(raw)
+    local commands = {}
+    for _, value in ipairs(raw) do
         local data = vim.split(value, "  ")
-        table.insert(result, {
+        table.insert(commands, {
             command = data[1],
             description = data[#data]:match('^%s*(.*)'),
         })
     end
 
-    Laravel.cache.commands = result
+    return commands
+end
 
-    return result
+---Gets the commands
+---@param clean_cache boolean|nil
+---@return Command[]
+function artisan.commands(clean_cache)
+    clean_cache = clean_cache or false
+
+    if clean_cache or #Laravel.cache.commands ~= 0 then
+        Laravel.cache.commmandas = {}
+        local stdout, ret, stderr = artisan.exec({"list", "--raw"})
+
+        if ret == 1 then
+            log.error("artisan.commands(): stdout", stdout)
+            log.error("artisan.commands(): stderr", stderr)
+            -- TODO improve error showing
+            return {}
+        end
+
+        Laravel.cache.commands = map_commands(stdout)
+    end
+
+    return Laravel.cache.commands
 end
 
 ---Gets the route list async

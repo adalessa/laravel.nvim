@@ -151,7 +151,7 @@ end
 function artisan.commands(clean_cache)
     clean_cache = clean_cache or false
 
-    if clean_cache or #Laravel.cache.commands ~= 0 then
+    if clean_cache or #Laravel.cache.commands == 0 then
         Laravel.cache.commmandas = {}
         local stdout, ret, stderr = artisan.exec({"list", "--raw"})
 

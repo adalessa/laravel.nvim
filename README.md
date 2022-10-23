@@ -84,3 +84,32 @@ require("laravel.composer").update(package)
 require("laravel.composer").remove(package)
 require("laravel.composer").require(package)
 ```
+
+## Null-ls Integration
+[Null-ls](https://github.com/jose-elias-alvarez/null-ls.nvim) is a cool tool that provides
+a way to seamesly integrat tools with neovim as an lsp.
+I choose to create my own actions so you can easy reach to other functions without needing to add an
+extra command since this is just actions on the code.
+
+```lua
+local laravel_actions = require("laravel.code-actions")
+local sources = {
+    ...
+    laravel_actions.relationships,
+    ...
+}
+
+require("null-ls").setup({
+    sources = sources,
+})
+```
+of course you can add more sources there are amaizing ones.
+then you can call the `vim.lsp.buf.code_action` to have it
+here is my keybinding
+```lua
+vim.keymap.set({ "n", "v" }, "<leader>vca", vim.lsp.buf.code_action, {})
+```
+
+The relationships action only works for classes on the `App\Models` namespace
+In the future will customize it
+

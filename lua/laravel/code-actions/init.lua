@@ -10,6 +10,7 @@ M.relationships = {
     generator = {
         fn = function(context)
             local class = Class:new(context.bufnr)
+            -- Todo allow to customize this maybe an option
             if not class.namespace == "App\\Models" then
                 return
             end

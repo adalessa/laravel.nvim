@@ -94,9 +94,7 @@ function artisan.make(resource, name, args)
         artisan.clean_cmd_list_cache()
     end
 
-    local job_cmd = utils.get_artisan_cmd(args)
-	log.debug("artisan.make(): running", job_cmd)
-    local stdout, ret, stderr = artisan.exec(job_cmd)
+    local stdout, ret, stderr = artisan.exec(args)
     log.trace("artisan.make(): stdout", stdout)
     log.trace("artisan.make(): ret", ret)
     log.trace("artisan.make(): stderr", stderr)

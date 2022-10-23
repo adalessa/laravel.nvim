@@ -145,17 +145,21 @@ end
 
 ---Gets the commands
 ---@param clean_cache boolean|nil
+---@param silent boolean|nil
 ---@return Command[]
-function artisan.commands(clean_cache)
+function artisan.commands(clean_cache, silent)
     clean_cache = clean_cache or false
+    silent = silent or false
 
     if clean_cache or #Laravel.cache.commands == 0 then
         Laravel.cache.commmandas = {}
         local stdout, ret, stderr = artisan.exec({"list", "--raw"})
 
         if ret == 1 then
-            log.error("artisan.commands(): stdout", stdout)
-            log.error("artisan.commands(): stderr", stderr)
+            if not silent then
+                log.error("artisan.commands(): stdout", stdout)
+                log.error("artisan.commands(): stderr", stderr)
+            end
             -- TODO improve error showing
             return {}
         end

@@ -69,7 +69,7 @@ function M.setup(opts)
 
 	log.debug("setup(): warm cache", Laravel)
     Laravel.cache = {
-        commands = require("laravel.artisan").commands(true),
+        commands = require("laravel.artisan").commands(true, true),
         routes = {},
     }
 

@@ -46,6 +46,16 @@ local laravel = function (opts)
             }),
             sorter = conf.file_sorter(),
             attach_mappings = function(_, map)
+                map("i", "<C-n>", function (prompt_bufnr)
+                    local entry = action_state.get_selected_entry()
+                    actions.close(prompt_bufnr)
+                    if laravel_utils.is_make_command(entry.value) then
+                        local name = vim.fn.input("Name: ")
+                        artisan.make(vim.split(entry.value, ":")[2], name, {})
+                    else
+                        artisan.run(entry.value)
+                    end
+                end)
                 map("i", "<cr>", function(prompt_bufnr)
                     local entry = action_state.get_selected_entry()
                     actions.close(prompt_bufnr)

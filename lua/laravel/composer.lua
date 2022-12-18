@@ -1,14 +1,14 @@
-local runner = require("laravel.runner")
+local runners = require("laravel.runners")
 local M = {}
 
 ---run a command in the terminal
 ---@param cmd string
 local function run(cmd)
-    if Laravel.properties.uses_sail then
+    if require("laravel.app").environment.uses_sail then
         cmd =  'vendor/bin/sail ' .. cmd
     end
 
-    runner.terminal(vim.split(cmd, ' '))
+    runners.terminal(vim.split(cmd, ' '))
 end
 
 function M.update(library)

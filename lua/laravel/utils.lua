@@ -2,7 +2,7 @@ local Job = require("plenary.job")
 local utils = {}
 
 local get_cmd = function ()
-    if Laravel.properties.uses_sail then
+    if require("laravel.app").environment.uses_sail then
         return "vendor/bin/sail"
     end
 
@@ -66,22 +66,28 @@ function utils.get_artisan_cmd(cmd)
     return out_cmd
 end
 
+---Opens the resource
+---@param resource string
+---@param name string
+function utils.open_resource(resource, name)
+    local directory = require("laravel.app").options.resource_directory_map[resource]
+    if directory == "" then
+        return
+    end
+    -- TODO: handle migration since that includes a generated name
+    -- need to find a way to search just by a part of the name
+    local filename = string.format("%s/%s.php", directory, name)
+    if vim.fn.findfile(filename) then
+        local uri = vim.uri_from_fname(string.format("%s/%s", vim.fn.getcwd(), filename))
+        local buffer = vim.uri_to_bufnr(uri)
+        vim.api.nvim_win_set_buf(0, buffer)
 
----Gets the sail command
----@param cmd table
----@return table
-function utils.get_sail_cmd(cmd)
-	if type(cmd) ~= "table" then
-		utils.notify("get_sail_cmd", {
-			msg = "cmd has to be a table",
-			level = "ERROR",
-		})
-		return {}
-	end
+        return
+    end
 
-    table.insert(cmd, 1, "vendor/bin/sail")
-
-    return cmd
+    utils.notify("open_resource", {
+        msg = string.format("Can't find resource %s", filename)
+    })
 end
 
 

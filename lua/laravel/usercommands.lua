@@ -1,27 +1,25 @@
-local usercommands = {}
+local M = {}
 
-usercommands.sail = function ()
-	vim.api.nvim_create_user_command("Sail", function(args)
-		if args.fargs[1] == "up" then
-			return require("laravel.sail").up()
-		elseif args.fargs[1] == "down" then
-			return require("laravel.sail").down()
-		elseif args.fargs[1] == "restart" then
-			return require("laravel.sail").restart()
-		else
-			return require("laravel.sail").run(args.args)
-		end
-	end, {
-		nargs = "+",
-		complete = function()
-			return {
-				"shell",
-				"up",
-				"down",
-				"restart",
-			}
-		end,
-	})
+M.sail = function()
+    vim.api.nvim_create_user_command("Sail", function(args)
+        local command = args.fargs[1]
+        if require("laravel.sail")[command] ~= nil then
+            return require("laravel.sail")[command]()
+        end
+
+        return require("laravel.sail").run(vim.fn.split(args.args, " "))
+    end, {
+        nargs = "+",
+        complete = function()
+            return {
+                "shell",
+                "up",
+                "down",
+                "restart",
+                "ps",
+            }
+        end,
+    })
 end
 
 
@@ -31,63 +29,79 @@ local function get_artisan_auto_complete(current_match, full_command)
         return {}
     end
     local complete_list = {}
-    for _, value in ipairs(require("laravel.artisan").commands()) do
-        table.insert(complete_list, value.command)
+    for _, command in ipairs(require("laravel.app").commands()) do
+        table.insert(complete_list, command.name)
     end
 
     return complete_list
 end
 
-usercommands.artisan = function ()
-	vim.api.nvim_create_user_command("Artisan", function(args)
-		if args.args == "" then
-			if Laravel.config.bind_telescope then
-				return require("telescope").extensions.laravel.laravel()
-			end
-		end
+M.artisan = function()
+    vim.api.nvim_create_user_command("Artisan", function(args)
+        if args.args == "" then
+            if require("laravel.app").options.bind_telescope then
+                local ok, telescope = pcall(require, "telescope")
+                if ok then
+                    return telescope.extensions.laravel.commands()
+                end
+            end
+        end
 
-		return require("laravel.artisan").run(args.args)
-	end, {
-		nargs = "*",
-		complete = get_artisan_auto_complete,
-	})
+        return require("laravel.artisan").run(args.fargs)
+    end, {
+        nargs = "*",
+        complete = get_artisan_auto_complete,
+    })
 end
 
-usercommands.composer = function ()
-	vim.api.nvim_create_user_command("Composer", function(args)
-		if args.fargs[1] == "update" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").update(vim.fn.join(args.fargs, " "))
-		elseif args.fargs[1] == "install" then
-			return require("laravel.composer").install()
-		elseif args.fargs[1] == "remove" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").remove(vim.fn.join(args.fargs, " "))
-		elseif args.fargs[1] == "require" then
-			table.remove(args.fargs, 1)
-			return require("laravel.composer").require(vim.fn.join(args.fargs, " "))
-		end
-	end, {
-		nargs = "+",
-		complete = function()
-			return {
-				"update",
-				"install",
-				"remove",
-				"require",
-			}
-		end,
-	})
+M.composer = function()
+    vim.api.nvim_create_user_command("Composer", function(args)
+        if args.fargs[1] == "update" then
+            table.remove(args.fargs, 1)
+            return require("laravel.composer").update(vim.fn.join(args.fargs, " "))
+        elseif args.fargs[1] == "install" then
+            return require("laravel.composer").install()
+        elseif args.fargs[1] == "remove" then
+            table.remove(args.fargs, 1)
+            return require("laravel.composer").remove(vim.fn.join(args.fargs, " "))
+        elseif args.fargs[1] == "require" then
+            table.remove(args.fargs, 1)
+            return require("laravel.composer").require(vim.fn.join(args.fargs, " "))
+        end
+    end, {
+        nargs = "+",
+        complete = function()
+            return {
+                "update",
+                "install",
+                "remove",
+                "require",
+            }
+        end,
+    })
 end
 
-usercommands.laravel = function ()
-	vim.api.nvim_create_user_command("LaravelCleanArtisanCache", function()
-        Laravel.cache = {
-            commands = {},
-            routes = {},
-        }
-        vim.notify("Artisan cache has been clean", vim.log.levels.INFO, {})
-	end, {})
+M.laravel = function()
+    vim.api.nvim_create_user_command("Laravel", function(args)
+        if args.fargs == "cache:clean" then
+            require("laravel.cache_manager").purge()
+            vim.notify("Laravel.nvim cache has been clean", vim.log.levels.INFO, {})
+        end
+    end, {
+        nargs = "+",
+        complete = function()
+            return {
+                "cache:clean"
+            }
+        end,
+    })
 end
 
-return usercommands
+M.register = function()
+    M.artisan()
+    M.sail()
+    M.composer()
+    M.laravel()
+end
+
+return M

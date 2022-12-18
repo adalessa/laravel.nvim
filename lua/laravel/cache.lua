@@ -1,3 +1,0 @@
----@class laravel.cache
----@field routes table
----@field commands table

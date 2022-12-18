@@ -25,103 +25,103 @@ local function set_route_to_methods(event)
     local bufnr = event.buf
     local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
-    artisan.routes(function(route_list, return_val)
-        -- clean namespace
-        vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-        vim.diagnostic.reset(namespace, bufnr)
 
-        if return_val ~= 0 then
-            utils.notify("set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
-            return
+    local routes = artisan.routes()
+    -- clean namespace
+    vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+    vim.diagnostic.reset(namespace, bufnr)
+
+    if #routes == 0 then
+        utils.notify("set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
+        return
+    end
+
+    local parser = parsers.get_parser(bufnr)
+    local tree = unpack(parser:parse())
+
+    local query = vim.treesitter.get_query("php", "laravel_route_info")
+
+    local class, class_namespace, methods, visibilities = "", "", {}, {}
+    local class_pos = 0
+
+    for id, node in query:iter_captures(tree:root(), bufnr) do
+        if query.captures[id] == "class" then
+            class = get_node_text(node, bufnr)
+            class_pos = node:start()
+        elseif query.captures[id] == "namespace" then
+            class_namespace = get_node_text(node, bufnr)
+        elseif query.captures[id] == "method" then
+            table.insert(methods, {
+                pos = node:start(),
+                name = get_node_text(node, bufnr),
+            })
+        elseif query.captures[id] == "visibility" then
+            table.insert(visibilities, get_node_text(node, bufnr))
         end
+    end
 
-        local parser = parsers.get_parser(bufnr)
-        local tree = unpack(parser:parse())
+    local class_methods = {}
 
-        local query = vim.treesitter.get_query("php", "laravel_route_info")
+    local full_class = string.format("%s\\%s", class_namespace, class)
+    for idx, method in ipairs(methods) do
+        if visibilities[idx] == "public" then
+            table.insert(class_methods, {
+                full = string.format("%s\\%s@%s", class_namespace, class, method.name),
+                name = method.name,
+                pos = method.pos,
+            })
+        end
+    end
 
-        local class, class_namespace, methods, visibilities = "", "", {}, {}
-        local class_pos = 0
-
-        for id, node in query:iter_captures(tree:root(), bufnr) do
-            if query.captures[id] == "class" then
-                class = get_node_text(node, bufnr)
-                class_pos = node:start()
-            elseif query.captures[id] == "namespace" then
-                class_namespace = get_node_text(node,bufnr)
-            elseif query.captures[id] == "method" then
-                table.insert(methods, {
-                    pos = node:start(),
-                    name = get_node_text(node,bufnr),
-                })
-            elseif query.captures[id] == "visibility" then
-                table.insert(visibilities, get_node_text(node, bufnr))
+    local errors = {}
+    for _, route in pairs(routes) do
+        local found = false
+        for _, method in pairs(class_methods) do
+            if route.action == method.full then
+                local nice_route = string.format(
+                    "[Method: %s, URI: %s, Middleware: %s]",
+                    route.method,
+                    route.uri,
+                    vim.fn.join(route.middleware, ",")
+                )
+                vim.api.nvim_buf_set_extmark(
+                    bufnr,
+                    namespace,
+                    method.pos,
+                    0,
+                    { virt_text = { { nice_route, "comment" } } }
+                )
+                found = true
             end
         end
 
-        local class_methods = {}
-
-        local full_class = string.format("%s\\%s", class_namespace, class)
-        for idx, method in ipairs(methods) do
-            if visibilities[idx] == "public" then
-                table.insert(class_methods, {
-                    full = string.format("%s\\%s@%s", class_namespace, class, method.name),
-                    name = method.name,
-                    pos = method.pos,
-                })
-            end
+        if is_same_class(route.action, full_class) and not found then
+            table.insert(errors, {
+                lnum = class_pos,
+                col = 0,
+                message = string.format(
+                    "missing method %s [Method: %s, URI: %s]",
+                    vim.fn.split(route.action, "@")[2],
+                    route.method,
+                    route.uri
+                ),
+            })
         end
+    end
 
-        local errors = {}
-        for _, route in pairs(route_list) do
-            local found = false
-            for _, method in pairs(class_methods) do
-                if route.action == method.full then
-                    local nice_route = string.format(
-                        "[Method: %s, URI: %s, Middleware: %s]",
-                        route.method,
-                        route.uri,
-                        vim.fn.join(route.middleware, ",")
-                    )
-                    vim.api.nvim_buf_set_extmark(
-                        bufnr,
-                        namespace,
-                        method.pos,
-                        0,
-                        { virt_text = { { nice_route, "comment" } } }
-                    )
-                    found = true
-                end
-            end
-
-            if is_same_class(route.action, full_class) and not found then
-                table.insert(errors, {
-                    lnum = class_pos,
-                    col = 0,
-                    message = string.format(
-                        "missing method %s [Method: %s, URI: %s]",
-                        vim.fn.split(route.action, "@")[2],
-                        route.method,
-                        route.uri
-                    ),
-                })
-            end
-        end
-
-        if #errors > 0 then
-            vim.diagnostic.set(namespace, bufnr, errors)
-        end
-    end)
+    if #errors > 0 then
+        vim.diagnostic.set(namespace, bufnr, errors)
+    end
 end
 
 local group = vim.api.nvim_create_augroup("laravel", {})
 
 local register = function()
-    vim.api.nvim_create_autocmd({"BufWritePost"}, {
+    vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         pattern = { "routes/*.php" },
         group = group,
-        callback = function ()
-            Laravel.cache.routes = {}
+        callback = function()
+            require("laravel.app").load_routes()
         end
     })
 

@@ -1,17 +1,32 @@
+--- Want to have different types or runners that take care in different ways
+
+-- terminal
+-- buffer
+-- sync
+-- async
+-- alls should take the same input will change the output
+-- everyting expecs a table or everthing expecs a string cant have a mix
+-- async is the exception since needs the callback
+
 local Job = require("plenary.job")
 local utils = require("laravel.utils")
 
-local runner = {}
+local runners = {}
 
-function runner.terminal(cmd)
-    vim.cmd(string.format("%s new term://%s", Laravel.config.split.cmd, table.concat(cmd, " ")))
+--- Runs in a new terminal and waits for the imput
+---@param cmd table
+runners.terminal = function(cmd)
+    vim.cmd(string.format("%s new term://%s", require("laravel.app").options.split.cmd, table.concat(cmd, " ")))
     vim.cmd("startinsert")
 end
 
-function runner.buffer(cmd)
-    vim.cmd(Laravel.config.split.cmd .. " new")
+--- Runs in a buffers as a job
+---@param cmd table
+runners.buffer = function(cmd)
+    local options = require("laravel.app").options
+    vim.cmd(options.split.cmd .. " new")
     local new_window = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_width(new_window, Laravel.config.split.width + 5)
+    vim.api.nvim_win_set_width(new_window, options.split.width + 5)
     local new_buffer = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_win_set_buf(new_window, new_buffer)
     local channel_id = vim.api.nvim_open_term(new_buffer, {})
@@ -28,17 +43,20 @@ function runner.buffer(cmd)
             vim.cmd("startinsert")
         end,
         pty = true,
-        width = Laravel.config.split.width,
+        width = options.split.width,
     })
 end
 
-function runner.sync(cmd)
+--- Runs and returns the command inmediately
+---@param cmd table
+---@return table, number, table
+runners.sync = function(cmd)
     if type(cmd) ~= "table" then
-        utils.notify("rynner_sync", {
+        utils.notify("runner_sync", {
             msg = "cmd has to be a table",
             level = "ERROR",
         })
-        return {}
+        return {}, 1, {}
     end
     local command = table.remove(cmd, 1)
     local stderr = {}
@@ -53,7 +71,9 @@ function runner.sync(cmd)
     return stdout, ret, stderr
 end
 
-function runner.async(cmd, callback)
+--- Runs and returns the command inmediately
+---@param cmd table
+runners.async = function(cmd, callback)
     if type(cmd) ~= "table" then
         utils.notify("runner_async", {
             msg = "cmd has to be a table",
@@ -73,4 +93,4 @@ function runner.async(cmd, callback)
     }):start()
 end
 
-return runner
+return runners

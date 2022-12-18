@@ -123,24 +123,24 @@ function artisan.help(cmd)
     return stdout
 end
 
+---@class Argument
+---@field name string
+
+---@class Definition
+---@field arguments Argument[]
+
 ---@class Command
----@field command string
+---@field name string
 ---@field description string
+---@field usage string
+---@field help string
+---@field definition Definition
 
 ---Map from raw command output to command
 ---@param raw table|nil
 ---@return Command[]
 local function map_commands(raw)
-    local commands = {}
-    for _, value in ipairs(raw) do
-        local data = vim.split(value, "  ")
-        table.insert(commands, {
-            command = data[1],
-            description = data[#data]:match('^%s*(.*)'),
-        })
-    end
-
-    return commands
+    return vim.fn.json_decode(raw).commands
 end
 
 ---Gets the commands
@@ -153,7 +153,7 @@ function artisan.commands(clean_cache, silent)
 
     if clean_cache or #Laravel.cache.commands == 0 then
         Laravel.cache.commmandas = {}
-        local stdout, ret, stderr = artisan.exec({"list", "--raw"})
+        local stdout, ret, stderr = artisan.exec({"list", "--format=json"})
 
         if ret == 1 then
             if not silent then
@@ -171,16 +171,36 @@ function artisan.commands(clean_cache, silent)
 end
 
 ---Gets the route list async
----@param callback function
 ---@param clean_cache boolean|nil
-function artisan.routes(callback, clean_cache)
+---@param callback function|nil
+function artisan.routes(clean_cache, callback)
     clean_cache = clean_cache or false
 
     if not clean_cache and #Laravel.cache.routes ~= 0 then
+        if callback == nil then
+            return Laravel.cache.routes
+        end
+
         return callback(Laravel.cache.routes, 0)
     end
 
-    artisan.exec("route:list --json", function (j, return_val)
+    if callback == nil then
+        if clean_cache or #Laravel.cache.routes == 0 then
+            Laravel.cache.routes = {}
+            local stdout, ret, _ = artisan.exec({"route:list", "--json"})
+
+            if ret == 1 then
+                -- TODO improve error showing
+                return {}
+            end
+
+            Laravel.cache.rotues = vim.fn.json_decode(stdout)
+        end
+
+        return Laravel.cache.rotues
+    end
+
+    artisan.exec({"route:list", "--json"}, function (j, return_val)
         if return_val ~= 0 then
             return callback({}, return_val)
         end
@@ -190,7 +210,6 @@ function artisan.routes(callback, clean_cache)
 
         return callback(route_list, 0)
     end)
-
 end
 
 return artisan

@@ -31,8 +31,8 @@ local function get_artisan_auto_complete(current_match, full_command)
         return {}
     end
     local complete_list = {}
-    for _, value in ipairs(require("laravel.artisan").commands()) do
-        table.insert(complete_list, value.command)
+    for _, command in ipairs(require("laravel.artisan").commands()) do
+        table.insert(complete_list, command.name)
     end
 
     return complete_list

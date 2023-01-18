@@ -86,7 +86,7 @@ usercommands.laravel = function ()
             commands = {},
             routes = {},
         }
-		print("Artisan cache has been clean")
+        vim.notify("Artisan cache has been clean", vim.log.levels.INFO, {})
 	end, {})
 end
 

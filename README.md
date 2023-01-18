@@ -6,33 +6,71 @@ Plugin for neovim to enhance the developement experience of laravel projects
 
 Quick executing of artisan commands
 
+The plugin relys in treesitter for php run so dont forget `TSInstall php`
+
 # Installation
-Packer
+Lazy
 ```lua
-use({"adalessa/laravel.nvim",
-    requires = {
-        { "nvim-lua/plenary.nvim" },
-        { "rcarriga/nvim-notify" },
-        { "nvim-telescope/telescope.nvim" },
+{
+    "adalessa/laravel.nvim",
+    dependencies = {
+        "rcarriga/nvim-notify",
+        "nvim-telescope/telescope.nvim",
     },
-})
+    cmd = {"Sail", "Artisan", "Composer"},
+    keys = {
+        {"<leader>pa", ":Artisan<cr>"},
+    },
+    config = function()
+        require("laravel").setup()
+        require("telescope").load_extension("laravel")
+    end
+}
 ```
 
-Set up
+Default config
 ```lua
-require("laravel").setup({
-    split_cmd = "vertical",
-    split_width = 120,
-    bind_telescope = true,
-    ask_for_args = true,
-})
-
-require("telescope").load_extension "laravel"
+{
+	split = split,
+	bind_telescope = true,
+	ask_for_args = true,
+    register_user_commands = true,
+    route_info = true,
+	default_runner = "buffer",
+	artisan_command_runner = {
+		["dump-server"] = "terminal",
+		["db"] = "terminal",
+		["tinker"] = "terminal",
+	},
+	resource_directory_map = {
+		cast = "app/Casts",
+		channel = "app/Broadcasting",
+		command = "app/Console/Commands",
+		component = "app/View/Components",
+		controller = "app/Http/Controllers",
+		event = "app/Events",
+		exception = "app/Exceptions",
+		factory = "database/factories",
+		job = "app/Jobs",
+		listener = "app/Listeners",
+		mail = "app/Mail",
+		middleware = "app/Http/Middleware",
+		migration = "database/migrations",
+		model = "app/Models",
+		notification = "app/Notifications",
+		observer = "app/Observers",
+		policy = "app/Policies",
+		provider = "app/Providers",
+		request = "app/Http/Requests",
+		resource = "app/Http/Resources",
+		rule = "app/Rules",
+		scope = "app/Models/Scopes",
+		seeder = "database/seeders",
+		test = "tests/Feature",
+	},
+}
 ```
 
-
-
-Default options for opening the split for terminal commands
 
 ## Artisan
 To run Artisan commands you can use `:Artisan` which will autocomplete with the available
@@ -45,15 +83,15 @@ Not sending any arguments will run the Telescope prompt
 Any other command will just run and output the result on a new split
 
 ## Sail
-
 You can run `shell` as tinker will open a new terminal
-
 `up`, `down`, `restart` will notify when starting and result will show as notification
 
 
 ## Composer
-
 `install`, `update`, `require` and `remove` from the `:Composer` command
+
+## Plugin especific
+`LaravelCleanArtisanCache` clears the cache for commands
 
 ## API
 written in lua it offers a cool api

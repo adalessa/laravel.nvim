@@ -97,7 +97,7 @@ You can run `shell` as tinker will open a new terminal
 written in lua it offers a cool api
 
 ### Artisan
-```
+```lua
 require("laravel.artisan").tinker() -- drops you in a terminal of tinker
 require("laravel.artisan").run(cmd) -- command with args as string
 require("laravel.artisan").make(resource, name, args) -- this will create and open the new resource
@@ -106,7 +106,7 @@ require("laravel.artisan").help(cmd) -- return the help for a command
 ```
 
 ### Sail
-```
+```lua
 require("laravel.sail").shell() -- drops you in a terminal of the container
 require("laravel.sail").run(cmd) -- command with args as string
 require("laravel.sail").up() -- start sail with the -d flag
@@ -116,7 +116,7 @@ require("laravel.sail").restart()
 
 
 ### Composer
-```
+```lua
 require("laravel.composer").install()
 require("laravel.composer").update(package)
 require("laravel.composer").remove(package)

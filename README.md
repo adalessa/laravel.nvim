@@ -14,7 +14,6 @@ Lazy
 {
     "adalessa/laravel.nvim",
     dependencies = {
-        "rcarriga/nvim-notify",
         "nvim-telescope/telescope.nvim",
     },
     cmd = {"Sail", "Artisan", "Composer"},
@@ -24,6 +23,21 @@ Lazy
     config = function()
         require("laravel").setup()
         require("telescope").load_extension("laravel")
+    end
+}
+```
+
+For nicer notifications use `rcarriga/nvim-notify`
+My lazy config for notify is
+```lua
+return {
+    "rcarriga/nvim-notify",
+    config = function()
+        local notify = require("notify")
+        -- this for transparency
+        notify.setup({ background_colour = "#000000" })
+        -- this overwrites the vim notify function
+        vim.notify = notify.notify
     end
 }
 ```

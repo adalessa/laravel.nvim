@@ -13,30 +13,6 @@ local M = {}
 ---@field cache laravel.cache
 Laravel = Laravel or {}
 
--- tbl_deep_extend does not work the way you would think
-local function merge_table_impl(t1, t2)
-	for k, v in pairs(t2) do
-		if type(v) == "table" then
-			if type(t1[k]) == "table" then
-				merge_table_impl(t1[k], v)
-			else
-				t1[k] = v
-			end
-		else
-			t1[k] = v
-		end
-	end
-end
-
-local function merge_tables(...)
-	log.trace("_merge_tables()")
-	local out = {}
-	for i = 1, select("#", ...) do
-		merge_table_impl(out, select(i, ...))
-	end
-	return out
-end
-
 ---Set up laravel plugin
 ---@param opts laravel.config|nil
 function M.setup(opts)
@@ -49,20 +25,19 @@ function M.setup(opts)
 	end
 
     autocommands.dir_changed(opts)
+    local properties = project_properties.get()
 
     -- if is not artisan do not continue
     -- but register the dir change to start in case of moving
     -- into a laravel directory
-    if vim.fn.filereadable("artisan") == 0 then
-        Laravel.properties = {
-            uses_sail = false,
-        }
+    if not properties.has_artisan then
+        log.debug("Not initialize due missing artisan file")
+        Laravel = {}
         return
     end
 
-
-	Laravel.config = merge_tables(config, opts)
-    Laravel.properties = project_properties
+	Laravel.config = vim.tbl_deep_extend("force", config, opts or {})
+    Laravel.properties = properties
     Laravel.cache = {}
 
 	log.debug("setup(): Complete config", Laravel)

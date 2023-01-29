@@ -11,9 +11,9 @@ local split = {
 ---@field bind_telescope boolean
 ---@field ask_for_args boolean
 ---@field default_runner string
----@field resource_directory_map table
+---@field resources table
 ---@field register_user_commands boolean
----@field artisan_command_runner table
+---@field commands_runner table
 ---@field route_info boolean
 local config = {
 	split = split,
@@ -22,12 +22,12 @@ local config = {
     register_user_commands = true,
     route_info = true,
 	default_runner = "buffer",
-	artisan_command_runner = {
+	commands_runner = {
 		["dump-server"] = "terminal",
 		["db"] = "terminal",
 		["tinker"] = "terminal",
 	},
-	resource_directory_map = {
+	resources = {
 		cast = "app/Casts",
 		channel = "app/Broadcasting",
 		command = "app/Console/Commands",

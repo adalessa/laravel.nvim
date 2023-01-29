@@ -24,13 +24,17 @@ end
 
 
 local function get_artisan_auto_complete(current_match, full_command)
+    print(vim.inspect(current_match))
+    print(vim.inspect(full_command))
     -- avoid getting autocomplete for when parameter is expected
     if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
         return {}
     end
     local complete_list = {}
     for _, command in ipairs(require("laravel.app").commands()) do
-        table.insert(complete_list, command.name)
+        if current_match == "" or string.match(command.name, current_match) then
+            table.insert(complete_list, command.name)
+        end
     end
 
     return complete_list
@@ -45,6 +49,10 @@ M.artisan = function()
                     return telescope.extensions.laravel.commands()
                 end
             end
+        end
+        local resources = require("laravel.resources")
+        if resources.is_resource(args.fargs[1]) then
+            return resources.create(args.fargs)
         end
 
         return require("laravel.artisan").run(args.fargs)

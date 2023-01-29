@@ -11,7 +11,7 @@ artisan.run = function(cmd, runner, callback)
     local job_cmd = utils.get_artisan_cmd(cmd)
     runner = runner
         or
-        require("laravel.app").options.artisan_command_runner[cmd[1]]
+        require("laravel.app").options.commands_runner[cmd[1]]
         or
         require("laravel.app").options.default_runner
 

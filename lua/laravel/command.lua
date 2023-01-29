@@ -23,6 +23,7 @@
 ---@field description string
 ---@field usage string
 ---@field help string
+---@field hidden boolean
 ---@field definition CommandDefinition
 ---@field runner string
 
@@ -34,7 +35,7 @@ local M = {}
 M.from_json = function(json)
     local cmds = {}
     for _, cmd in ipairs(vim.fn.json_decode(json).commands) do
-        if not (cmd.name == "_complete") then
+        if not cmd.hidden then
             table.insert(cmds, cmd)
         end
     end
@@ -44,7 +45,7 @@ end
 --- Gets the runner for a given command
 ---@param command LaravelCommand
 M.get_runner = function(command)
-    local runner = require("laravel.app").options.artisan_command_runner[command.name]
+    local runner = require("laravel.app").options.commands_runner[command.name]
     if runner ~= nil then
         return runner
     end

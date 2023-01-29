@@ -1,13 +1,3 @@
---- Want to have different types or runners that take care in different ways
-
--- terminal
--- buffer
--- sync
--- async
--- alls should take the same input will change the output
--- everyting expecs a table or everthing expecs a string cant have a mix
--- async is the exception since needs the callback
-
 local Job = require("plenary.job")
 local utils = require("laravel.utils")
 

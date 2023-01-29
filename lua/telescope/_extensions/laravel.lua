@@ -40,6 +40,10 @@ local function run_command(command, ask_options, runner)
         end
     end
 
+    local resources = require("laravel.resources")
+    if resources.is_resource(cmd[1]) then
+        return resources.create(cmd)
+    end
     artisan.run(cmd, runner)
 end
 
@@ -79,7 +83,8 @@ local commands = function(opts)
                         command.description,
                     })
                     local hl = vim.api.nvim_create_namespace("laravel")
-                    vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, "ErrorMsg", 0, 0, string.len(command.description))
+                    vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, "ErrorMsg", 0, 0,
+                        string.len(command.description))
                 end,
             }),
             sorter = conf.file_sorter(),

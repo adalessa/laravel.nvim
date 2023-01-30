@@ -1,6 +1,4 @@
-local artisan = require("laravel.artisan")
 local utils = require("laravel.utils")
-local parsers = require("nvim-treesitter.parsers")
 
 local get_node_text = vim.treesitter.get_node_text
 

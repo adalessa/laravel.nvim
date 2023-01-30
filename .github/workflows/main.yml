@@ -1,0 +1,4 @@
+- name: Luacheck
+  # You may pin to the exact commit or the version.
+  # uses: lunarmodules/luacheck@fcbdeacad00e643e0d78c56b9ba6d8b3c7fa584f
+  uses: lunarmodules/luacheck@v1.1.0

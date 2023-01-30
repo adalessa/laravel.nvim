@@ -2,11 +2,11 @@
 
 Currently in Alpha state. Any collaboration, issue reported is appreciated.
 
-Plugin for neovim to enhance the developement experience of laravel projects
+Plugin for Neovim to enhance the development experience of Laravel projects
 
 Quick executing of artisan commands
 
-The plugin relys in treesitter for php run so dont forget `TSInstall php`
+The plugin relies in Treesitter for php run so don't forget `TSInstall php`
 
 # Installation
 Lazy
@@ -28,7 +28,7 @@ Lazy
 ```
 
 For nicer notifications use `rcarriga/nvim-notify`
-My lazy config for notify is
+My lazy configuration for notify is
 ```lua
 return {
     "rcarriga/nvim-notify",
@@ -42,21 +42,24 @@ return {
 }
 ```
 
-Default config
+Default configuration
 ```lua
 {
-    split = split,
+    split = {
+        cmd = "vertical",
+        width = 120,
+    },
     bind_telescope = true,
     ask_for_args = true,
     register_user_commands = true,
     route_info = true,
     default_runner = "buffer",
-    artisan_command_runner = {
+    commands_runner = {
         ["dump-server"] = "terminal",
         ["db"] = "terminal",
         ["tinker"] = "terminal",
     },
-    resource_directory_map = {
+    resources = {
         cast = "app/Casts",
         channel = "app/Broadcasting",
         command = "app/Console/Commands",
@@ -64,12 +67,21 @@ Default config
         controller = "app/Http/Controllers",
         event = "app/Events",
         exception = "app/Exceptions",
-        factory = "database/factories",
+        factory = function(name)
+            return string.format("database/factories/%sFactory.php", name), nil
+        end,
         job = "app/Jobs",
         listener = "app/Listeners",
         mail = "app/Mail",
         middleware = "app/Http/Middleware",
-        migration = "database/migrations",
+        migration = function(name)
+            local resp, ret, stderr = require("laravel.runners").sync({ "fd", name .. ".php" })
+            if ret == 1 then
+                return "", stderr
+            end
+
+            return resp[1], nil
+        end,
         model = "app/Models",
         notification = "app/Notifications",
         observer = "app/Observers",
@@ -92,7 +104,7 @@ artisan command as the terminal
 
 Not sending any arguments will run the Telescope prompt
 
-`:Artisan tinker` will open the terminal inside of neovim, with tinker
+`:Artisan tinker` will open the terminal inside of Neovim, with tinker
 
 Any other command will just run and output the result on a new split
 
@@ -104,20 +116,27 @@ You can run `shell` as tinker will open a new terminal
 ## Composer
 `install`, `update`, `require` and `remove` from the `:Composer` command
 
-## Plugin especific
-`LaravelCleanArtisanCache` clears the cache for commands
+## Plugin specific
+`Laravel cache:clear` purge the cache clears the cache for commands
 
 ## API
-written in lua it offers a cool api
+written in lua it offers a cool API
 
 ### Artisan
 ```lua
-require("laravel.artisan").tinker() -- drops you in a terminal of tinker
-require("laravel.artisan").run(cmd) -- command with args as string
-require("laravel.artisan").make(resource, name, args) -- this will create and open the new resource
-require("laravel.artisan").list() -- list the commands, is more internal but you can use it
-require("laravel.artisan").help(cmd) -- return the help for a command
+--- Runs a command in the given runner on the default one
+---@param cmd table
+---@param runner string|nil
+---@param callback function|nil
+require("laravel.artisan").run(cmd, runner, callback)
 ```
+I use this API to execute any artisan command in the plugin.
+
+This uses a set of runners in the application
+- *terminal* function Opens a terminal and execute the given command
+- *buffer* function Executes the command in a new buffer and shows the result on it
+- *sync* function Executes and returns the result of the execution
+- *async* function Executes and returns immediately and will call the callback when done
 
 ### Sail
 ```lua
@@ -128,7 +147,6 @@ require("laravel.sail").down()
 require("laravel.sail").restart()
 ```
 
-
 ### Composer
 ```lua
 require("laravel.composer").install()
@@ -136,32 +154,3 @@ require("laravel.composer").update(package)
 require("laravel.composer").remove(package)
 require("laravel.composer").require(package)
 ```
-
-## Null-ls Integration
-[Null-ls](https://github.com/jose-elias-alvarez/null-ls.nvim) is a cool tool that provides
-a way to seamesly integrat tools with neovim as an lsp.
-I choose to create my own actions so you can easy reach to other functions without needing to add an
-extra command since this is just actions on the code.
-
-```lua
-local laravel_actions = require("laravel.code-actions")
-local sources = {
-    ...
-    laravel_actions.relationships,
-    ...
-}
-
-require("null-ls").setup({
-    sources = sources,
-})
-```
-of course you can add more sources there are amaizing ones.
-then you can call the `vim.lsp.buf.code_action` to have it
-here is my keybinding
-```lua
-vim.keymap.set({ "n", "v" }, "<leader>vca", vim.lsp.buf.code_action, {})
-```
-
-The relationships action only works for classes on the `App\Models` namespace
-In the future will customize it
-

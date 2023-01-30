@@ -1,42 +1,19 @@
 local runners = require("laravel.runners")
-local M = {}
 
----run a command in the terminal
----@param cmd string
-local function run(cmd)
+local composer = {}
+
+--- Runs a command in the given runner on the default one
+---@param cmd table
+---@param runner string|nil
+---@param callback function|nil
+composer.run = function(cmd, runner, callback)
+    table.insert(cmd, 1, 'composer')
     if require("laravel.app").environment.uses_sail then
-        cmd =  'vendor/bin/sail ' .. cmd
+        table.insert(cmd, 1, 'vendor/bin/sail')
     end
+    runner = runner or require("laravel.app").options.default_runner
 
-    runners.terminal(vim.split(cmd, ' '))
+    return runners[runner](cmd, callback)
 end
 
-function M.update(library)
-    local cmd = "composer update"
-    if library ~= nil then
-        cmd = cmd .. ' ' .. library
-    end
-    run(cmd)
-end
-
-function M.install()
-    run("composer install")
-end
-
-function M.require(library)
-    local cmd = "composer require"
-    if library ~= nil then
-        cmd = cmd .. ' ' .. library
-    end
-    run(cmd)
-end
-
-function M.remove(library)
-    local cmd = "composer remove"
-    if library ~= nil then
-        cmd = cmd .. ' ' .. library
-    end
-    run(cmd)
-end
-
-return M
+return composer

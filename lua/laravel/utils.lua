@@ -13,8 +13,12 @@ function utils.notify(funname, opts)
 	if not level then
 		error("Invalid error level", 2)
 	end
-	vim.notify(string.format("[laravel.%s]: %s", funname, opts.msg), level, {
-        title = "laravel.nvim"
+    local body = string.format("[laravel.%s]: %s", funname, opts.msg)
+    if opts.raw ~= nil then
+        body = opts.raw
+    end
+	vim.notify(body, level, {
+        title = "Laravel.nvim"
     })
 end
 

@@ -1,6 +1,12 @@
 local Job = require("plenary.job")
 local utils = require("laravel.utils")
 
+
+---@class LaravelRunner
+---@field terminal function Opens a terminal and execute the given command
+---@field buffer function Executes the command in a new buffer and shows the result on it
+---@field sync function Executes and returns the result of the execution
+---@field async function Executes and returns immediately and will call the callback when done
 local runners = {}
 
 --- Runs in a new terminal and waits for the imput
@@ -37,7 +43,7 @@ runners.buffer = function(cmd)
     })
 end
 
---- Runs and returns the command inmediately
+--- Runs and returns the command immediately
 ---@param cmd table
 ---@return table, number, table
 runners.sync = function(cmd)

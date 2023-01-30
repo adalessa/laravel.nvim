@@ -35,7 +35,7 @@ function M.setup(opts)
     M.app.load_routes()
 
     if M.app.options.register_user_commands then
-        require("laravel.usercommands").register()
+        require("laravel.user-commands").setup()
     end
 
     if M.app.options.route_info then

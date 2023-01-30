@@ -9,12 +9,18 @@ local M = {}
 M.open = function(resource, name)
 
     local directory = require("laravel.app").options.resources[resource]
-    if directory == "" then
-        return
+    local filename = ""
+    if type(directory) == "function" then
+        local err = nil
+        filename, err = directory(name)
+        if err ~= nil then
+            log.error("resource.open(): Error getting the name", err)
+            return
+        end
+    elseif type(directory) == "string" then
+        filename = string.format("%s/%s.php", directory, name)
     end
-    -- TODO: handle migration since that includes a generated name
-    -- need to find a way to search just by a part of the name
-    local filename = string.format("%s/%s.php", directory, name)
+
     if vim.fn.findfile(filename) then
         local uri = vim.uri_from_fname(string.format("%s/%s", vim.fn.getcwd(), filename))
         local buffer = vim.uri_to_bufnr(uri)

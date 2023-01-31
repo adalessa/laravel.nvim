@@ -3,6 +3,8 @@ local runners = require("laravel.runners")
 
 local artisan = {}
 
+-- FIX: change callback to be a property in opts and take opts and pass to the runner
+
 --- Runs a command in the given runner on the default one
 ---@param cmd table
 ---@param runner string|nil

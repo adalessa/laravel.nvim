@@ -1,7 +1,7 @@
 local utils = require("laravel.utils")
 local commands = {
 	dev = function()
-		require("laravel.sail").run({ "npm", "run", "dev" })
+		require("laravel.sail").run({ "npm", "run", "dev" }, "buffer", { open = false })
 	end,
 	install = function()
 		require("laravel.sail").run({ "npm", "install" })

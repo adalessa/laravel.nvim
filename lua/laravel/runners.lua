@@ -8,6 +8,8 @@ local utils = require("laravel.utils")
 ---@field async function Executes and returns immediately and will call the callback when done
 local runners = {}
 
+-- FIX: normalize runners to all take cmd, options, and return a table
+
 --- Runs in a new terminal and waits for the imput
 ---@param cmd table
 runners.terminal = function(cmd)
@@ -17,25 +19,39 @@ end
 
 --- Runs in a buffers as a job
 ---@param cmd table
----@return integer
-runners.buffer = function(cmd)
+---@param opts table
+---@return integer, integer
+runners.buffer = function(cmd, opts)
 	local options = require("laravel.app").options
-	vim.cmd(options.split.cmd .. " new")
-	local new_window = vim.api.nvim_get_current_win()
-	vim.api.nvim_win_set_width(new_window, options.split.width + 5)
-	local new_buffer = vim.api.nvim_create_buf(false, true)
-	vim.api.nvim_win_set_buf(new_window, new_buffer)
-	local channel_id = vim.api.nvim_open_term(new_buffer, {})
+	local default = {
+		open = true,
+		split = {
+			cmd = options.split.cmd,
+			width = options.split.width,
+		},
+	}
+
+	opts = vim.tbl_deep_extend("force", default, opts or {})
+
+	local bufnr = vim.api.nvim_create_buf(false, true)
+	local channel_id = vim.api.nvim_open_term(bufnr, {})
+
+	if opts.open then
+		vim.cmd(opts.split.cmd .. " new")
+		local new_window = vim.api.nvim_get_current_win()
+		vim.api.nvim_win_set_width(new_window, opts.split.width + 5)
+		vim.api.nvim_win_set_buf(new_window, bufnr)
+	end
 
 	local function handle_output(_, data)
 		vim.fn.chansend(channel_id, data)
 	end
 
-	local job =  vim.fn.jobstart(cmd, {
+	local job_id = vim.fn.jobstart(cmd, {
 		stdeout_buffered = true,
 		on_stdout = handle_output,
 		on_exit = function(job_id)
-      require("laravel._jobs").unregister(job_id)
+			require("laravel._jobs").unregister(job_id)
 			vim.fn.chanclose(channel_id)
 			vim.cmd("startinsert")
 		end,
@@ -43,9 +59,9 @@ runners.buffer = function(cmd)
 		width = options.split.width,
 	})
 
-  require("laravel._jobs").register(job)
+	require("laravel._jobs").register(job_id)
 
-  return job
+	return job_id, bufnr
 end
 
 --- Runs and returns the command immediately

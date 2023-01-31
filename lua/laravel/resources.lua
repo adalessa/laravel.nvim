@@ -11,7 +11,7 @@ M.open = function(resource, name)
     local directory = require("laravel.app").options.resources[resource]
     local filename = ""
     if type(directory) == "function" then
-        local err = nil
+        local err
         filename, err = directory(name)
         if err ~= nil then
             log.error("resource.open(): Error getting the name", err)

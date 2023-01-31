@@ -2,7 +2,7 @@ local utils = require("laravel.utils")
 local commands = {
 	["cache:clean"] = function()
 		require("laravel.cache_manager").purge()
-		utils.notify("Laravel cache:clean", { msg = "Cache cleaned", level = "INFO" })
+		utils.notify("laravel.cache:clean", { msg = "Cache cleaned", level = "INFO" })
 	end,
 }
 return {
@@ -14,7 +14,7 @@ return {
 				return commands[command](unpack(args.fargs))
 			end
 
-			utils.notify("Laravel", { msg = "Unkown command", level = "ERROR" })
+			utils.notify("laravel", { msg = "Unkown command", level = "ERROR" })
 		end, {
 			nargs = "+",
 			complete = function()

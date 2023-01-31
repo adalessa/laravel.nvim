@@ -29,14 +29,14 @@ local function set_route_to_methods(event)
 	vim.diagnostic.reset(namespace, bufnr)
 
 	if #routes == 0 then
-		utils.notify("set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
+		utils.notify("route_info.set_route_to_methods", { msg = "cant retrive the routes, maybe check Sail", level = "WARN" })
 		return
 	end
 
 	local php_parser = vim.treesitter.get_parser(bufnr, "php")
 	local tree = php_parser:parse()[1]
 	if tree == nil then
-		utils.notify("set_route_to_methods", { msg = "Could not retrive syntax tree", level = "WARN" })
+		utils.notify("route_info.set_route_to_methods", { msg = "Could not retrive syntax tree", level = "WARN" })
 		return
 	end
 

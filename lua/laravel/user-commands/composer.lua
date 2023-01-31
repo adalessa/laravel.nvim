@@ -23,7 +23,7 @@ local commands = {
 
 	remove = function(library)
 		if library == nil then
-			utils.notify("composer remove", { msg = "Need arguement for composer remove", level = "ERROR" })
+			utils.notify("composer.remove", { msg = "Need arguement for composer remove", level = "ERROR" })
 			return
 		end
 		require("laravel.composer").run({ "remove", library })
@@ -31,7 +31,7 @@ local commands = {
 
 	["dump-autoload"] = function()
 		require("laravel.composer").run({ "dump-autoload" }, "async", function()
-			utils.notify("Composer dump-autoload", { msg = "Completed", level = "INFO" })
+			utils.notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
 		end)
 	end,
 }

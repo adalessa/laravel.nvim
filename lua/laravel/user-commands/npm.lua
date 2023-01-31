@@ -16,7 +16,7 @@ return {
 				return commands[command](unpack(args.fargs))
 			end
 
-			utils.notify("Npm", { msg = "Unkown command", level = "ERROR" })
+			utils.notify("npm", { msg = "Unkown command", level = "ERROR" })
 		end, {
 			nargs = "+",
 			complete = function()

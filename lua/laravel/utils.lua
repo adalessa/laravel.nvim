@@ -27,7 +27,7 @@ end
 ---@return table
 function utils.get_artisan_cmd(cmd)
 	if type(cmd) ~= "table" then
-		utils.notify("get_artisan_cmd", {
+		utils.notify("utils.get_artisan_cmd", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})

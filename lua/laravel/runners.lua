@@ -47,7 +47,7 @@ end
 ---@return table, number, table
 runners.sync = function(cmd)
 	if type(cmd) ~= "table" then
-		utils.notify("runner_sync", {
+		utils.notify("runners.sync", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})
@@ -70,7 +70,7 @@ end
 ---@param cmd table
 runners.async = function(cmd, callback)
 	if type(cmd) ~= "table" then
-		utils.notify("runner_async", {
+		utils.notify("runner.async", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})

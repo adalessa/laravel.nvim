@@ -28,7 +28,7 @@ M.open = function(resource, name)
 		return
 	end
 
-	utils.notify("open_resource", {
+	utils.notify("resources.open", {
 		msg = string.format("Can't find resource %s", filename),
 		level = "INFO",
 	})

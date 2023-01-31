@@ -5,17 +5,13 @@ on: [push, pull_request]
 jobs:
   luacheck:
     name: Luacheck
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Prepare
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y luarocks
-          sudo luarocks install luacheck
-      - name: Lint
-        run: sudo make lint
+      - name: Luacheck linkter
+        uses: lunarmodules/luacheck@v0
 
   stylua:
     name: stylua

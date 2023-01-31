@@ -17,6 +17,7 @@ end
 
 --- Runs in a buffers as a job
 ---@param cmd table
+---@return integer
 runners.buffer = function(cmd)
 	local options = require("laravel.app").options
 	vim.cmd(options.split.cmd .. " new")
@@ -30,16 +31,21 @@ runners.buffer = function(cmd)
 		vim.fn.chansend(channel_id, data)
 	end
 
-	vim.fn.jobstart(cmd, {
+	local job =  vim.fn.jobstart(cmd, {
 		stdeout_buffered = true,
 		on_stdout = handle_output,
-		on_exit = function()
+		on_exit = function(job_id)
+      require("laravel._jobs").unregister(job_id)
 			vim.fn.chanclose(channel_id)
 			vim.cmd("startinsert")
 		end,
 		pty = true,
 		width = options.split.width,
 	})
+
+  require("laravel._jobs").register(job)
+
+  return job
 end
 
 --- Runs and returns the command immediately

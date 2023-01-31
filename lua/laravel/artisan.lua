@@ -8,14 +8,12 @@ local artisan = {}
 ---@param runner string|nil
 ---@param callback function|nil
 artisan.run = function(cmd, runner, callback)
-    local job_cmd = utils.get_artisan_cmd(cmd)
-    runner = runner
-        or
-        require("laravel.app").options.commands_runner[cmd[1]]
-        or
-        require("laravel.app").options.default_runner
+	local job_cmd = utils.get_artisan_cmd(cmd)
+	runner = runner
+		or require("laravel.app").options.commands_runner[cmd[1]]
+		or require("laravel.app").options.default_runner
 
-    return runners[runner](job_cmd, callback)
+	return runners[runner](job_cmd, callback)
 end
 
 return artisan

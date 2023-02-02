@@ -21,7 +21,7 @@
 ---@class LaravelCommand
 ---@field name string
 ---@field description string
----@field usage string
+---@field usage string[]
 ---@field help string
 ---@field hidden boolean
 ---@field definition CommandDefinition
@@ -45,7 +45,7 @@ end
 --- Gets the runner for a given command
 ---@param command LaravelCommand
 M.get_runner = function(command)
-	local runner = require("laravel.app").options.commands_runner[command.name]
+	local runner = require("laravel").app.options.commands_runner[command.name]
 	if runner ~= nil then
 		return runner
 	end
@@ -56,7 +56,7 @@ M.get_runner = function(command)
 		end
 	end
 
-	return require("laravel.app").options.default_runner
+	return require("laravel").app.options.default_runner
 end
 
 return M

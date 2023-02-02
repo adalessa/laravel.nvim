@@ -19,6 +19,7 @@ local function set_log_level()
 end
 
 local log_level = set_log_level()
+
 M.log = require("plenary.log").new({
 	plugin = "laravel",
 	level = log_level,

@@ -4,7 +4,7 @@ local function get_artisan_auto_complete(current_match, full_command)
 		return {}
 	end
 	local complete_list = {}
-	for _, command in ipairs(require("laravel.app").commands()) do
+	for _, command in ipairs(require("laravel").app.commands()) do
 		if current_match == "" or string.match(command.name, current_match) then
 			table.insert(complete_list, command.name)
 		end
@@ -17,7 +17,7 @@ return {
 	setup = function()
 		vim.api.nvim_create_user_command("Artisan", function(args)
 			if args.args == "" then
-				if require("laravel.app").options.bind_telescope then
+				if require("laravel").app.options.bind_telescope then
 					local ok, telescope = pcall(require, "telescope")
 					if ok then
 						return telescope.extensions.laravel.commands()

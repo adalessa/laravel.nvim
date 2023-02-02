@@ -30,9 +30,11 @@ local commands = {
 	end,
 
 	["dump-autoload"] = function()
-		require("laravel.composer").run({ "dump-autoload" }, "async", function()
-			utils.notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
-		end)
+		require("laravel.composer").run({ "dump-autoload" }, "async", {
+			callback = function()
+				utils.notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
+			end,
+		})
 	end,
 }
 

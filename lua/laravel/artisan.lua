@@ -3,19 +3,17 @@ local runners = require("laravel.runners")
 
 local artisan = {}
 
--- FIX: change callback to be a property in opts and take opts and pass to the runner
-
 --- Runs a command in the given runner on the default one
 ---@param cmd table
 ---@param runner string|nil
----@param callback function|nil
-artisan.run = function(cmd, runner, callback)
+---@param opts table | nil
+artisan.run = function(cmd, runner, opts)
 	local job_cmd = utils.get_artisan_cmd(cmd)
 	runner = runner
-		or require("laravel.app").options.commands_runner[cmd[1]]
-		or require("laravel.app").options.default_runner
+		or require("laravel").app.options.commands_runner[cmd[1]]
+		or require("laravel").app.options.default_runner
 
-	return runners[runner](job_cmd, callback)
+	return runners[runner](job_cmd, opts or {})
 end
 
 return artisan

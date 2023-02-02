@@ -43,12 +43,12 @@ local config = {
 		mail = "app/Mail",
 		middleware = "app/Http/Middleware",
 		migration = function(name)
-			local resp, ret, stderr = require("laravel.runners").sync({ "fd", name .. ".php" })
-			if ret == 1 then
-				return "", stderr
+			local result = require("laravel.runners").sync({ "fd", name .. ".php" })
+			if result.exit_code == 1 then
+				return "", result.error
 			end
 
-			return resp[1], nil
+			return result.out, nil
 		end,
 		model = "app/Models",
 		notification = "app/Notifications",

@@ -8,21 +8,28 @@ local utils = require("laravel.utils")
 ---@field async function Executes and returns immediately and will call the callback when done
 local runners = {}
 
--- FIX: normalize runners to all take cmd, options, and return a table
-
---- Runs in a new terminal and waits for the imput
+--- Runs in a new terminal and can operate in the terminal
 ---@param cmd table
-runners.terminal = function(cmd)
-	vim.cmd(string.format("%s new term://%s", require("laravel.app").options.split.cmd, table.concat(cmd, " ")))
+---@param opts table
+runners.terminal = function(cmd, opts)
+	local options = require("laravel").app.options
+	local default = {
+		split = {
+			cmd = options.split.cmd,
+		},
+	}
+
+	opts = vim.tbl_deep_extend("force", default, opts or {})
+	vim.cmd(string.format("%s new term://%s", opts.split.cmd, table.concat(cmd, " ")))
 	vim.cmd("startinsert")
 end
 
 --- Runs in a buffers as a job
 ---@param cmd table
 ---@param opts table
----@return integer, integer
+---@return table
 runners.buffer = function(cmd, opts)
-	local options = require("laravel.app").options
+	local options = require("laravel").app.options
 	local default = {
 		open = true,
 		split = {
@@ -53,28 +60,44 @@ runners.buffer = function(cmd, opts)
 		on_exit = function(job_id)
 			require("laravel._jobs").unregister(job_id)
 			vim.fn.chanclose(channel_id)
-			vim.cmd("startinsert")
+      if opts.on_exit ~= nil then
+        opts.on_exit()
+      end
 		end,
 		pty = true,
 		width = options.split.width,
 	})
 
 	require("laravel._jobs").register(job_id)
+  vim.api.nvim_create_autocmd({"BufUnload"}, {
+    buffer = bufnr,
+    callback = function ()
+			require("laravel._jobs").terminate(job_id)
+    end,
+  })
 
-	return job_id, bufnr
+	return {
+		job = job_id,
+		buff = bufnr,
+	}
 end
 
 --- Runs and returns the command immediately
 ---@param cmd table
----@return table, number, table
+---@return table
 runners.sync = function(cmd)
 	if type(cmd) ~= "table" then
 		utils.notify("runners.sync", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})
-		return {}, 1, {}
+		return {
+			out = {},
+			exit_code = 1,
+			err = { "cmd is not a table" },
+		}
 	end
+
 	local command = table.remove(cmd, 1)
 	local stderr = {}
 	local stdout, ret = Job:new({
@@ -85,29 +108,47 @@ runners.sync = function(cmd)
 		end,
 	}):sync()
 
-	return stdout, ret, stderr
+	return {
+		out = stdout,
+		exit_code = ret,
+		err = stderr,
+	}
 end
 
 --- Runs and returns the command inmediately
 ---@param cmd table
-runners.async = function(cmd, callback)
+---@param opts table
+---@return table
+runners.async = function(cmd, opts)
+	opts = opts or {}
 	if type(cmd) ~= "table" then
 		utils.notify("runner.async", {
 			msg = "cmd has to be a table",
 			level = "ERROR",
 		})
-		return {}
+		return { err = { "cmd is not a table" } }
 	end
+
+	if type(opts.callback) ~= "function" then
+		utils.notify("runner.async", {
+			msg = "callback not pass",
+			level = "ERROR",
+		})
+		return { err = { "callback is not a function" } }
+	end
+
 	local command = table.remove(cmd, 1)
 	local stderr = {}
 	Job:new({
 		command = command,
 		args = cmd,
-		on_exit = vim.schedule_wrap(callback),
+		on_exit = vim.schedule_wrap(opts.callback),
 		on_stderr = function(_, data)
 			table.insert(stderr, data)
 		end,
 	}):start()
+
+	return {}
 end
 
 return runners

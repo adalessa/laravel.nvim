@@ -1,7 +1,7 @@
 local utils = {}
 
 local get_cmd = function()
-	if require("laravel.app").environment.uses_sail then
+	if require("laravel").app.environment.uses_sail then
 		return "vendor/bin/sail"
 	end
 

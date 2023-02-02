@@ -23,7 +23,7 @@ local function set_route_to_methods(event)
 	local bufnr = event.buf
 	local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
-	local routes = require("laravel.app").routes()
+	local routes = require("laravel").app.routes()
 	-- clean namespace
 	vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
 	vim.diagnostic.reset(namespace, bufnr)
@@ -125,7 +125,7 @@ local register = function()
 		pattern = { "routes/*.php" },
 		group = group,
 		callback = function()
-			require("laravel.app").load_routes()
+			require("laravel").app.load_routes()
 		end,
 	})
 

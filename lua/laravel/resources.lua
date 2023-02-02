@@ -7,7 +7,7 @@ local M = {}
 ---@param resource string
 ---@param name string
 M.open = function(resource, name)
-	local directory = require("laravel.app").options.resources[resource]
+	local directory = require("laravel").app.options.resources[resource]
 	local filename = ""
 	if type(directory) == "function" then
 		local err
@@ -16,6 +16,7 @@ M.open = function(resource, name)
 			log.error("resource.open(): Error getting the name", err)
 			return
 		end
+    filename = filename[1]
 	elseif type(directory) == "string" then
 		filename = string.format("%s/%s.php", directory, name)
 	end
@@ -38,7 +39,7 @@ end
 ---@param name string
 ---@return boolean
 M.is_resource = function(name)
-	return require("laravel.app").options.resources[string.gsub(name, "make:", "")] ~= nil
+	return require("laravel").app.options.resources[string.gsub(name, "make:", "")] ~= nil
 end
 
 --- Creates the resource and opens the file
@@ -49,9 +50,11 @@ M.create = function(cmd)
 		return
 	end
 
-	require("laravel.artisan").run(cmd, "async", function()
-		M.open(string.gsub(cmd[1], "make:", ""), cmd[2])
-	end)
+	require("laravel.artisan").run(cmd, "async", {
+		callback = function()
+			M.open(string.gsub(cmd[1], "make:", ""), cmd[2])
+		end,
+	})
 end
 
 return M

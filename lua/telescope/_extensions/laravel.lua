@@ -54,7 +54,7 @@ local commands = function(opts)
 		.new(opts, {
 			prompt_title = "Artisan commands",
 			finder = finders.new_table({
-				results = require("laravel.app").commands(),
+				results = require("laravel").app.commands(),
 				entry_maker = function(command)
 					return {
 						value = command,
@@ -81,6 +81,12 @@ local commands = function(opts)
 					--                        {col_end})
 					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, {
 						command.description,
+            "",
+            "usage: " .. (command.usage[1] or ""),
+            "",
+            "arguments: " .. vim.fn.join(vim.tbl_keys(command.definition.arguments), ", "),
+            "",
+            "options: " .. vim.fn.join(vim.tbl_keys(command.definition.options), ", "),
 					})
 					local hl = vim.api.nvim_create_namespace("laravel")
 					vim.api.nvim_buf_add_highlight(
@@ -132,7 +138,7 @@ local routes = function(opts)
 		.new(opts, {
 			prompt_title = "Artisan Routes",
 			finder = finders.new_table({
-				results = require("laravel.app").routes(),
+				results = require("laravel").app.routes(),
 				entry_maker = function(route)
 					return {
 						value = route,

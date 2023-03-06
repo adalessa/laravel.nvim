@@ -54,7 +54,7 @@ runners.buffer = function(cmd, opts)
 		vim.fn.chansend(channel_id, data)
 	end
 
-	local job_id = vim.fn.jobstart(cmd, {
+	local job_id = vim.fn.jobstart(vim.fn.join(cmd, ' '), {
 		stdeout_buffered = true,
 		on_stdout = handle_output,
 		on_exit = function(job_id)

@@ -18,7 +18,7 @@ local commands = {
 		if library ~= nil then
 			table.insert(cmd, library)
 		end
-		require("laravel.composer").run({ "require" }, "terminal")
+		require("laravel.composer").run(cmd, "terminal")
 	end,
 
 	remove = function(library)

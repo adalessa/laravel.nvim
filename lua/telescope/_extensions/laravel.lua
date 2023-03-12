@@ -6,6 +6,7 @@ local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local artisan = require("laravel.artisan")
+local preview = require("laravel.telescope.preview")
 
 --- runs a command from telescope
 ---@param command LaravelCommand
@@ -70,33 +71,21 @@ local commands = function(opts)
 				end,
 
 				define_preview = function(self, entry)
-					---@type LaravelCommand command
-					local command = entry.value
-					--TODO: extend to use more internal variables from the command
-					--to generate the buffer so we don't need to run the help
-					--we already have the information
-					--define template to use it
-					--use to add hightlight group
-					-- nvim_buf_add_highlight({buffer}, {ns_id}, {hl_group}, {line}, {col_start},
-					--                        {col_end})
-					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, {
-						command.description,
-            "",
-            "usage: " .. (command.usage[1] or ""),
-            "",
-            "arguments: " .. vim.fn.join(vim.tbl_keys(command.definition.arguments), ", "),
-            "",
-            "options: " .. vim.fn.join(vim.tbl_keys(command.definition.options), ", "),
-					})
+					local command_preview = preview.generate(entry.value)
+
+					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, command_preview.lines)
+
 					local hl = vim.api.nvim_create_namespace("laravel")
-					vim.api.nvim_buf_add_highlight(
-						self.state.bufnr,
-						hl,
-						"ErrorMsg",
-						0,
-						0,
-						string.len(command.description)
-					)
+					for _, value in pairs(command_preview.highlights) do
+						vim.api.nvim_buf_add_highlight(
+							self.state.bufnr,
+							hl,
+              value[1],
+							value[2],
+							value[3],
+              value[4]
+						)
+					end
 				end,
 			}),
 			sorter = conf.file_sorter(),

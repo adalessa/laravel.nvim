@@ -9,7 +9,6 @@ return function(options)
 
   local env = require("laravel.environment").load()
   if not env.is_laravel_project then
-		log.debug("Not initialize due missing artisan file")
     return nil
   end
 

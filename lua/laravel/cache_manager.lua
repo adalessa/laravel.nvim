@@ -9,7 +9,11 @@ local cache_manager = {
 cache_manager.get = function(key, default)
 	if cache_manager.items[key] == nil then
 		if type(default) == "function" then
-			cache_manager.items[key] = default()
+      local val = default()
+      if val == nil then
+        return nil
+      end
+			cache_manager.items[key] = val
 		else
 			cache_manager.items[key] = default
 		end

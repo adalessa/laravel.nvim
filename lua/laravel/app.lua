@@ -1,16 +1,16 @@
 local cache = require("laravel.cache_manager")
 local artisan = require("laravel.artisan")
 local laravel_command = require("laravel.command")
+local laravel_route = require("laravel.route")
 local log = require("laravel.dev").log
 
 ---@param options laravel.config
 ---@return laravel.app | nil
 return function(options)
-
-  local env = require("laravel.environment").load()
-  if not env.is_laravel_project then
-    return nil
-  end
+	local env = require("laravel.environment").load()
+	if not env.is_laravel_project then
+		return nil
+	end
 
 	---@class laravel.app
 	---@field options laravel.config
@@ -20,6 +20,8 @@ return function(options)
 		environment = env,
 	}
 
+	--- Gets the application command
+	---@return nil|LaravelCommand[]
 	app.commands = function()
 		return cache.get("commands", function()
 			local result = artisan.run({ "list", "--format=json" }, "sync")
@@ -27,13 +29,15 @@ return function(options)
 			if result.exit_code == 1 then
 				log.error("app.commands(): stdout", result.out)
 				log.error("app.commands(): stderr", result.err)
-				return {}
+				return nil
 			end
 
 			return laravel_command.from_json(result.out)
 		end)
 	end
 
+	--- Gets the application routes
+	---@return nil|LaravelRoute[]
 	app.routes = function()
 		return cache.get("routes", function()
 			local result = artisan.run({ "route:list", "--json" }, "sync")
@@ -41,10 +45,10 @@ return function(options)
 			if result.exit_code == 1 then
 				log.error("app.routes(): stdout", result.out)
 				log.error("app.routes(): stderr", result.err)
-				return {}
+				return nil
 			end
 
-			return vim.fn.json_decode(result.out)
+			return laravel_route.from_json(result.out)
 		end)
 	end
 
@@ -67,7 +71,7 @@ return function(options)
 				if exit_code == 1 then
 					return
 				end
-				cache.put("routes", vim.fn.json_decode(j:result()))
+				cache.put("routes", laravel_route.from_json(j:result()))
 			end,
 		})
 	end

@@ -1,4 +1,4 @@
----@class CommandPreview
+---@class Preview
 ---@field lines table
 ---@field highlights table
 
@@ -27,10 +27,9 @@ end
 
 --- Generates the preview and highlight for a command
 ---@param command LaravelCommand
----@return CommandPreview
-local generate = function(command)
+---@return Preview
+local command = function(command)
 	local lines = {}
-
 	local highlights = {}
 
 	-- description
@@ -57,9 +56,9 @@ local generate = function(command)
 
 	table.insert(lines, "\t" .. vim.fn.join(command.usage, " "))
 
-	table.insert(lines, "")
 	-- arguments
 	if tablelength(command.definition.arguments) > 0 then
+		table.insert(lines, "")
 		table.insert(lines, "Arguments:")
 		table.insert(highlights, {
 			"WarningMsg",
@@ -93,7 +92,7 @@ local generate = function(command)
 				argument[2],
 				argument[3]
 			)
-      table.insert(lines, argument_line)
+			table.insert(lines, argument_line)
 
 			table.insert(highlights, {
 				"String",
@@ -108,14 +107,12 @@ local generate = function(command)
 				max_argument + 1,
 				max_argument + 1 + max_required + 1,
 			})
-
 		end
 	end
 
 	-- options
-	table.insert(lines, "")
-
 	if tablelength(command.definition.options) > 0 then
+		table.insert(lines, "")
 		table.insert(lines, "Options:")
 		table.insert(highlights, {
 			"WarningMsg",
@@ -165,6 +162,23 @@ local generate = function(command)
 	}
 end
 
+--- Generates the preview for a laravel route
+---@param route LaravelRoute
+---@return Preview
+local route = function (route)
+	local lines = {}
+	local highlights = {}
+
+  table.insert(lines, "Route:")
+  table.insert(lines, route.action)
+
+	return {
+		lines = lines,
+		highlights = highlights,
+	}
+end
+
 return {
-	generate = generate,
+	command = command,
+  route = route,
 }

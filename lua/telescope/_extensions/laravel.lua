@@ -7,6 +7,7 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local artisan = require("laravel.artisan")
 local preview = require("laravel.telescope.preview")
+local utils = require("laravel.utils")
 
 --- runs a command from telescope
 ---@param command LaravelCommand
@@ -51,11 +52,22 @@ end
 local commands = function(opts)
 	opts = opts or {}
 
+	local commands = require("laravel").app.commands()
+
+	if commands == nil then
+		utils.notify("Telescope", {
+			msg = "Can't get commands check if sail is running",
+			level = "WARN",
+		})
+
+		return
+	end
+
 	pickers
 		.new(opts, {
 			prompt_title = "Artisan commands",
 			finder = finders.new_table({
-				results = require("laravel").app.commands(),
+				results = commands,
 				entry_maker = function(command)
 					return {
 						value = command,
@@ -71,20 +83,13 @@ local commands = function(opts)
 				end,
 
 				define_preview = function(self, entry)
-					local command_preview = preview.generate(entry.value)
+					local command_preview = preview.command(entry.value)
 
 					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, command_preview.lines)
 
 					local hl = vim.api.nvim_create_namespace("laravel")
 					for _, value in pairs(command_preview.highlights) do
-						vim.api.nvim_buf_add_highlight(
-							self.state.bufnr,
-							hl,
-              value[1],
-							value[2],
-							value[3],
-              value[4]
-						)
+						vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, value[1], value[2], value[3], value[4])
 					end
 				end,
 			}),
@@ -123,20 +128,34 @@ end
 local routes = function(opts)
 	opts = opts or {}
 
+	local routes = require("laravel").app.routes()
+	if routes == nil then
+		utils.notify("Telescope", {
+			msg = "Can't get routes check if sail is running",
+			level = "WARN",
+		})
+
+		return
+	end
+
 	pickers
 		.new(opts, {
 			prompt_title = "Artisan Routes",
 			finder = finders.new_table({
-				results = require("laravel").app.routes(),
+				results = routes,
 				entry_maker = function(route)
 					return {
 						value = route,
-						display = string.format("%s %s", route.uri, vim.F.if_nil(route.name, "")),
-						--display = function (entry)
-						---- TODO: check how to use better columns with telescope to diplsya like that
-						---- Uri <name>       METHOD
-						----
-						--end,
+						display = function(entry)
+              ---@type LaravelRoute r
+              local r = entry.value
+              local display_name = ""
+              if r.name ~= nil then
+                display_name = string.format("<%s>", r.name)
+              end
+
+              return string.format("[%s] %s %s", vim.fn.join(r.methods, '|') , r.uri, display_name)
+						end,
 						ordinal = route.uri,
 					}
 				end,
@@ -148,13 +167,14 @@ local routes = function(opts)
 				end,
 
 				define_preview = function(self, entry)
-					vim.api.nvim_buf_set_lines(
-						self.state.bufnr,
-						0,
-						-1,
-						false,
-						vim.split(vim.inspect(entry.value), "\n")
-					)
+					local route_preview = preview.route(entry.value)
+
+					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, route_preview.lines)
+
+					local hl = vim.api.nvim_create_namespace("laravel")
+					for _, value in pairs(route_preview.highlights) do
+						vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, value[1], value[2], value[3], value[4])
+					end
 				end,
 			}),
 			sorter = conf.file_sorter(),

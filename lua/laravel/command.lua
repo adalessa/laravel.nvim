@@ -30,7 +30,7 @@
 local M = {}
 
 ---Gets list of commands from the raw json
----@param json table|nil
+---@param json string
 ---@return LaravelCommand[]
 M.from_json = function(json)
 	local cmds = {}

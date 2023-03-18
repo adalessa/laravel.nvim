@@ -7,10 +7,10 @@ local sail = {}
 ---@param runner string|nil
 ---@param opts table|nil
 sail.run = function(cmd, runner, opts)
-	table.insert(cmd, 1, "vendor/bin/sail")
-	runner = runner or require("laravel").app.options.default_runner
+  table.insert(cmd, 1, "vendor/bin/sail")
+  runner = runner or require("laravel").app.options.default_runner
 
-	return runners[runner](cmd, opts or {})
+  return runners[runner](cmd, opts or {})
 end
 
 return sail

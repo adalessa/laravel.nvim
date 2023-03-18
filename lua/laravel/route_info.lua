@@ -23,6 +23,7 @@ local function set_route_to_methods(event)
   local bufnr = event.buf
   local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
+  --- @type LaravelRoute[]
   local routes = require("laravel").app.routes()
   -- clean namespace
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
@@ -86,24 +87,18 @@ local function set_route_to_methods(event)
         action_full = action_full .. "@__invoke"
       end
       if action_full == method.full then
-        vim.api.nvim_buf_set_extmark(
-          bufnr,
-          namespace,
-          method.pos,
-          0,
-          {
-            virt_text = {
-              { "[", "comment" },
-              { "Method: ", "comment"},
-              { vim.fn.join(route.methods, '|'), "@enum"},
-              { " Uri: ", "comment"},
-              { route.uri, "@enum"},
-              { " Middleware: ", "comment"},
-              { vim.fn.join(route.middleware or { "None" }, ","), "@enum"},
-              { "]", "comment" },
-            }
-          }
-        )
+        vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, {
+          virt_text = {
+            { "[", "comment" },
+            { "Method: ", "comment" },
+            { vim.fn.join(route.methods, "|"), "@enum" },
+            { " Uri: ", "comment" },
+            { route.uri, "@enum" },
+            { " Middleware: ", "comment" },
+            { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
+            { "]", "comment" },
+          },
+        })
         found = true
       end
     end
@@ -114,8 +109,8 @@ local function set_route_to_methods(event)
         col = 0,
         message = string.format(
           "missing method %s [Method: %s, URI: %s]",
-          vim.fn.split(route.action, "@")[2] or '__invoke',
-          vim.fn.join(route.methods, '|'),
+          vim.fn.split(route.action, "@")[2] or "__invoke",
+          vim.fn.join(route.methods, "|"),
           route.uri
         ),
       })

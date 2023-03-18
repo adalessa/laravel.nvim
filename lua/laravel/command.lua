@@ -33,30 +33,30 @@ local M = {}
 ---@param json string
 ---@return LaravelCommand[]
 M.from_json = function(json)
-	local cmds = {}
-	for _, cmd in ipairs(vim.fn.json_decode(json).commands) do
-		if not cmd.hidden then
-			table.insert(cmds, cmd)
-		end
-	end
-	return cmds
+  local cmds = {}
+  for _, cmd in ipairs(vim.fn.json_decode(json).commands) do
+    if not cmd.hidden then
+      table.insert(cmds, cmd)
+    end
+  end
+  return cmds
 end
 
 --- Gets the runner for a given command
 ---@param command LaravelCommand
 M.get_runner = function(command)
-	local runner = require("laravel").app.options.commands_runner[command.name]
-	if runner ~= nil then
-		return runner
-	end
+  local runner = require("laravel").app.options.commands_runner[command.name]
+  if runner ~= nil then
+    return runner
+  end
 
-	for _, argument in ipairs(command.definition.arguments) do
-		if argument.is_required then
-			return "terminal"
-		end
-	end
+  for _, argument in ipairs(command.definition.arguments) do
+    if argument.is_required then
+      return "terminal"
+    end
+  end
 
-	return require("laravel").app.options.default_runner
+  return require("laravel").app.options.default_runner
 end
 
 return M

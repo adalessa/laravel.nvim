@@ -169,7 +169,7 @@ local route = function(route)
   local lines = {}
   local highlights = {}
 
-  table.insert(lines, "Route: " .. (route.name or ''))
+  table.insert(lines, "Route: " .. (route.name or ""))
   table.insert(highlights, {
     "WarningMsg",
     #lines - 1,
@@ -192,21 +192,21 @@ local route = function(route)
   })
 
   if route.domain then
-  table.insert(lines, "")
-  table.insert(lines, "Domain: " .. route.domain)
-  table.insert(highlights, {
-    "WarningMsg",
-    #lines - 1,
-    0,
-    8,
-  })
+    table.insert(lines, "")
+    table.insert(lines, "Domain: " .. route.domain)
+    table.insert(highlights, {
+      "WarningMsg",
+      #lines - 1,
+      0,
+      8,
+    })
 
-  table.insert(highlights, {
-    "String",
-    #lines - 1,
-    8,
-    -1,
-  })
+    table.insert(highlights, {
+      "String",
+      #lines - 1,
+      8,
+      -1,
+    })
   end
 
   table.insert(lines, "")

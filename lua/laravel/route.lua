@@ -133,7 +133,7 @@ M.open = function(route)
     if vim.tbl_isempty(method_locations) then
       utils.notify(
         "Route open",
-        { msg = string.format("empty response looking for method: %s", action[2] or '__invoke'), level = "WARN" }
+        { msg = string.format("empty response looking for method: %s", action[2] or "__invoke"), level = "WARN" }
       )
       if should_stop_server then
         vim.lsp.stop_client(client.id)
@@ -143,7 +143,7 @@ M.open = function(route)
 
     local method_location = nil
     for _, value in ipairs(method_locations) do
-      if value.text == string.format("[Method] %s", action[2] or '__invoke') then
+      if value.text == string.format("[Method] %s", action[2] or "__invoke") then
         method_location = value
         break
       end

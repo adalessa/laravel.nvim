@@ -81,7 +81,11 @@ local function set_route_to_methods(event)
   for _, route in pairs(routes) do
     local found = false
     for _, method in pairs(class_methods) do
-      if route.action == method.full then
+      local action_full = route.action
+      if vim.fn.split(route.action, "@")[2] == nil then
+        action_full = action_full .. "@__invoke"
+      end
+      if action_full == method.full then
         vim.api.nvim_buf_set_extmark(
           bufnr,
           namespace,
@@ -110,8 +114,8 @@ local function set_route_to_methods(event)
         col = 0,
         message = string.format(
           "missing method %s [Method: %s, URI: %s]",
-          vim.fn.split(route.action, "@")[2],
-          route.method,
+          vim.fn.split(route.action, "@")[2] or '__invoke',
+          vim.fn.join(route.methods, '|'),
           route.uri
         ),
       })

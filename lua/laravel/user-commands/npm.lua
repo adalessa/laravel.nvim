@@ -1,4 +1,4 @@
-local utils = require("laravel.utils")
+local utils = require "laravel.utils"
 
 local commands = {
   dev = function()
@@ -15,7 +15,7 @@ local commands = {
     -- prevent to start it again
   end,
   install = function()
-    require("laravel.sail").run({ "npm", "install" })
+    require("laravel.sail").run { "npm", "install" }
   end,
 }
 return {

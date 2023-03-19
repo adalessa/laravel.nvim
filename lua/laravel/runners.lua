@@ -1,5 +1,5 @@
-local Job = require("plenary.job")
-local utils = require("laravel.utils")
+local Job = require "plenary.job"
+local utils = require "laravel.utils"
 
 ---@class LaravelRunner
 ---@field terminal function Opens a terminal and execute the given command
@@ -21,7 +21,7 @@ runners.terminal = function(cmd, opts)
 
   opts = vim.tbl_deep_extend("force", default, opts or {})
   vim.cmd(string.format("%s new term://%s", opts.split.cmd, table.concat(cmd, " ")))
-  vim.cmd("startinsert")
+  vim.cmd "startinsert"
 end
 
 --- Runs in a buffers as a job

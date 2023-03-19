@@ -24,7 +24,7 @@ return {
           end
         end
       end
-      local resources = require("laravel.resources")
+      local resources = require "laravel.resources"
       if resources.is_resource(args.fargs[1]) then
         return resources.create(args.fargs)
       end

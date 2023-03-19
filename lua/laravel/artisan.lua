@@ -1,5 +1,5 @@
-local utils = require("laravel.utils")
-local runners = require("laravel.runners")
+local utils = require "laravel.utils"
+local runners = require "laravel.runners"
 
 local artisan = {}
 

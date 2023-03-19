@@ -1,7 +1,7 @@
-local cache = require("laravel.cache_manager")
-local artisan = require("laravel.artisan")
-local laravel_command = require("laravel.command")
-local laravel_route = require("laravel.route")
+local cache = require "laravel.cache_manager"
+local artisan = require "laravel.artisan"
+local laravel_command = require "laravel.command"
+local laravel_route = require "laravel.route"
 local log = require("laravel.dev").log
 
 ---@param options laravel.config
@@ -53,7 +53,7 @@ return function(options)
   end
 
   app.load_commands = function()
-    cache.forget("commands")
+    cache.forget "commands"
     artisan.run({ "list", "--format=json" }, "async", {
       callback = function(j, exit_code)
         if exit_code == 1 then
@@ -65,7 +65,7 @@ return function(options)
   end
 
   app.load_routes = function()
-    cache.forget("routes")
+    cache.forget "routes"
     artisan.run({ "route:list", "--json" }, "async", {
       callback = function(j, exit_code)
         if exit_code == 1 then

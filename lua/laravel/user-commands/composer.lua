@@ -1,4 +1,4 @@
-local utils = require("laravel.utils")
+local utils = require "laravel.utils"
 
 local commands = {
   update = function(library)
@@ -10,7 +10,7 @@ local commands = {
   end,
 
   install = function()
-    require("laravel.composer").run({ "install" })
+    require("laravel.composer").run { "install" }
   end,
 
   require = function(library)
@@ -26,7 +26,7 @@ local commands = {
       utils.notify("composer.remove", { msg = "Need arguement for composer remove", level = "ERROR" })
       return
     end
-    require("laravel.composer").run({ "remove", library })
+    require("laravel.composer").run { "remove", library }
   end,
 
   ["dump-autoload"] = function()

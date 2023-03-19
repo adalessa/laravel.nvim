@@ -1,4 +1,4 @@
-local utils = require("laravel.utils")
+local utils = require "laravel.utils"
 
 local get_node_text = vim.treesitter.get_node_text
 
@@ -21,7 +21,7 @@ end
 
 local function set_route_to_methods(event)
   local bufnr = event.buf
-  local namespace = vim.api.nvim_create_namespace("laravel.routes")
+  local namespace = vim.api.nvim_create_namespace "laravel.routes"
 
   --- @type LaravelRoute[]
   local routes = require("laravel").app.routes()

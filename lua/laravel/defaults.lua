@@ -43,7 +43,7 @@ local config = {
     mail = "app/Mail",
     middleware = "app/Http/Middleware",
     migration = function(name)
-      local result = require("laravel.runners").sync({ "fd", name .. ".php" })
+      local result = require("laravel.runners").sync { "fd", name .. ".php" }
       if result.exit_code == 1 then
         return "", result.error
       end

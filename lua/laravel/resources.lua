@@ -1,5 +1,5 @@
 local log = require("laravel.dev").log
-local utils = require("laravel.utils")
+local utils = require "laravel.utils"
 
 local M = {}
 

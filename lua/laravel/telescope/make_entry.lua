@@ -1,4 +1,4 @@
-local entry_display = require("telescope.pickers.entry_display")
+local entry_display = require "telescope.pickers.entry_display"
 
 local make_entry = {}
 
@@ -37,7 +37,7 @@ end
 function make_entry.gen_from_laravel_routes(opts)
   opts = opts or {}
 
-  local displayer = entry_display.create({
+  local displayer = entry_display.create {
     separator = " ",
     hl_chars = { ["["] = "TelescopeBorder", ["]"] = "TelescopeBorder" },
     items = {
@@ -45,14 +45,14 @@ function make_entry.gen_from_laravel_routes(opts)
       { width = 40 },
       { remaining = true },
     },
-  })
+  }
 
   local make_display = function(entry)
-    return displayer({
+    return displayer {
       { vim.fn.join(entry.value.methods, "|"), "TelescopeResultsConstant" },
       { entry.value.uri, "TelescopeResultsIdentifier" },
       { entry.value.name or "", "TelescopeResultsFunction" },
-    })
+    }
   end
 
   return function(route)

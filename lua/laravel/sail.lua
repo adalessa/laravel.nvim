@@ -1,4 +1,4 @@
-local runners = require("laravel.runners")
+local runners = require "laravel.runners"
 
 local sail = {}
 

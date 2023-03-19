@@ -1,5 +1,5 @@
-local Path = require("plenary.path")
-local utils = require("laravel.utils")
+local Path = require "plenary.path"
+local utils = require "laravel.utils"
 ---@class LaravelRoute
 ---@field uri string
 ---@field action string
@@ -43,12 +43,12 @@ M.open = function(route)
   --        -- and look for the string of the route like full string, if does not find it look second row
   if route.action == "Closure" then
     if vim.tbl_contains(route.middlewares, "api") then
-      vim.cmd("edit routes/api.php")
+      vim.cmd "edit routes/api.php"
       vim.fn.search(route.uri:gsub("api", "") .. "")
     elseif vim.tbl_contains(route.middlewares, "web") then
-      vim.cmd("edit routes/web.php")
+      vim.cmd "edit routes/web.php"
       if route.uri == "/" then
-        vim.fn.search("['\"]/['\"]")
+        vim.fn.search "['\"]/['\"]"
       else
         vim.fn.search("/" .. route.uri)
       end
@@ -56,11 +56,11 @@ M.open = function(route)
       utils.notify("Route", { msg = "Could not open the route location", level = "WARN" })
     end
 
-    vim.cmd("normal zt")
+    vim.cmd "normal zt"
     return
   end
 
-  local clients = vim.lsp.get_active_clients({ name = "phpactor" })
+  local clients = vim.lsp.get_active_clients { name = "phpactor" }
   local client = clients[1] or nil
   local should_stop_server = false
   -- if not active I have to activate it
@@ -164,7 +164,7 @@ M.open = function(route)
       if not ok then
         utils.notify("Route Open", { msg = "Erro setting row and col " .. err_msg, level = "WARN" })
       end
-      vim.cmd("normal zt")
+      vim.cmd "normal zt"
     end
     if should_stop_server then
       vim.lsp.stop_client(client.id)

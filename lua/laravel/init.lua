@@ -1,4 +1,4 @@
-local Dev = require("laravel.dev")
+local Dev = require "laravel.dev"
 
 local log = Dev.log
 
@@ -11,12 +11,12 @@ local M = {
 function M.setup(opts)
   -- register command for DirChanged
   -- this should be able to check and update the config
-  log.trace("setup(): Setting up...")
+  log.trace "setup(): Setting up..."
   require("laravel.autocommands").dir_changed(opts or {})
-  local defaults = require("laravel.defaults")
+  local defaults = require "laravel.defaults"
   local options = vim.tbl_deep_extend("force", defaults, opts or {})
 
-  local app = require("laravel.app")(options)
+  local app = require "laravel.app"(options)
 
   if app == nil then
     return

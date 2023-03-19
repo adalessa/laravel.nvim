@@ -1,4 +1,4 @@
-local utils = require("laravel.utils")
+local utils = require "laravel.utils"
 local commands = {
   ["cache:clean"] = function()
     require("laravel.cache_manager").purge()

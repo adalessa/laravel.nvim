@@ -1,7 +1,7 @@
 local M = {}
 
 function M.reload()
-  require("plenary.reload").reload_module("laravel")
+  require("plenary.reload").reload_module "laravel"
 end
 
 local log_levels = { "trace", "debug", "info", "warn", "error", "fatal" }
@@ -20,10 +20,10 @@ end
 
 local log_level = set_log_level()
 
-M.log = require("plenary.log").new({
+M.log = require("plenary.log").new {
   plugin = "laravel",
   level = log_level,
-})
+}
 
 local log_key = os.time()
 

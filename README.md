@@ -11,19 +11,22 @@ The plugin relies in Treesitter for php run so don't forget `TSInstall php`
 # Installation
 Lazy
 ```lua
-{
-    "adalessa/laravel.nvim",
-    dependencies = {
-        "nvim-telescope/telescope.nvim",
-    },
-    cmd = {"Sail", "Artisan", "Composer"},
-    keys = {
-        {"<leader>pa", ":Artisan<cr>"},
-    },
-    config = function()
-        require("laravel").setup()
-        require("telescope").load_extension("laravel")
-    end
+return {
+  "adalessa/laravel.nvim",
+  dependencies = {
+    "rcarriga/nvim-notify",
+    "nvim-telescope/telescope.nvim",
+  },
+  cmd = { "Sail", "Artisan", "Composer", "Npm", "Laravel" },
+  keys = {
+    { "<leader>la", ":Laravel artisan<cr>" },
+    { "<leader>lr", ":Laravel routes<cr>" },
+  },
+  event = { "VeryLazy" },
+  config = function()
+    require("laravel").setup()
+    require("telescope").load_extension "laravel"
+  end,
 }
 ```
 
@@ -112,45 +115,10 @@ Any other command will just run and output the result on a new split
 You can run `shell` as tinker will open a new terminal
 `up`, `down`, `restart` will notify when starting and result will show as notification
 
-
 ## Composer
 `install`, `update`, `require` and `remove` from the `:Composer` command
 
 ## Plugin specific
-`Laravel cache:clear` purge the cache clears the cache for commands
-
-## API
-written in lua it offers a cool API
-
-### Artisan
-```lua
---- Runs a command in the given runner on the default one
----@param cmd table
----@param runner string|nil
----@param callback function|nil
-require("laravel.artisan").run(cmd, runner, callback)
-```
-I use this API to execute any artisan command in the plugin.
-
-This uses a set of runners in the application
-- *terminal* function Opens a terminal and execute the given command
-- *buffer* function Executes the command in a new buffer and shows the result on it
-- *sync* function Executes and returns the result of the execution
-- *async* function Executes and returns immediately and will call the callback when done
-
-### Sail
-```lua
-require("laravel.sail").shell() -- drops you in a terminal of the container
-require("laravel.sail").run(cmd) -- command with args as string
-require("laravel.sail").up() -- start sail with the -d flag
-require("laravel.sail").down()
-require("laravel.sail").restart()
-```
-
-### Composer
-```lua
-require("laravel.composer").install()
-require("laravel.composer").update(package)
-require("laravel.composer").remove(package)
-require("laravel.composer").require(package)
-```
+`Laravel cache:clear` purge the cache clears the cache for commands.
+`Laravel commands` shows the list of artisan commands and executes it.
+`Laravel routes` show the list of routes and goes to the implementation.

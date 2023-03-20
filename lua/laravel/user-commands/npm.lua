@@ -1,21 +1,9 @@
-local utils = require "laravel.utils"
-
 local commands = {
   dev = function()
-    -- FIX: need to check if should use sail or not
-    -- TODO: want to store the buffer, and if it is ask again display the windows
-    -- use nvim_open_win with the buffer
-    -- and map q to quit
-    local result = require("laravel.sail").run({ "npm", "run", "dev" }, "buffer", { open = false })
-
-    print(vim.inspect(result))
-    print(vim.inspect(vim.fn.jobwait({ result.job }, 1000)))
-    print(vim.inspect(vim.api.nvim_get_chan_info(result.job)))
-    -- TODO: have another command to stop it.
-    -- prevent to start it again
+    require("laravel.npm").run({ "run", "dev" }, "buffer", { listed = true, buf_name = "Npm Dev" })
   end,
-  install = function()
-    require("laravel.sail").run { "npm", "install" }
+  build = function()
+    require("laravel.npm").run { "run", "build" }
   end,
 }
 return {
@@ -27,7 +15,7 @@ return {
         return commands[command](unpack(args.fargs))
       end
 
-      utils.notify("npm", { msg = "Unkown command", level = "ERROR" })
+      return require("laravel.npm").run(args.fargs)
     end, {
       nargs = "+",
       complete = function()

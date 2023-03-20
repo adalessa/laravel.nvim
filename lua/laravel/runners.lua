@@ -29,6 +29,7 @@ end
 ---@param opts table
 ---@return table
 runners.buffer = function(cmd, opts)
+  opts = opts or {}
   local options = require("laravel").app.options
   local default = {
     open = true,
@@ -40,7 +41,10 @@ runners.buffer = function(cmd, opts)
 
   opts = vim.tbl_deep_extend("force", default, opts or {})
 
-  local bufnr = vim.api.nvim_create_buf(false, true)
+  local bufnr = vim.api.nvim_create_buf(opts.listed or false, true)
+  if opts.buf_name then
+    vim.api.nvim_buf_set_name(bufnr, opts.buf_name);
+  end
   local channel_id = vim.api.nvim_open_term(bufnr, {})
 
   if opts.open then

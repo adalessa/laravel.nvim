@@ -43,7 +43,7 @@ runners.buffer = function(cmd, opts)
 
   local bufnr = vim.api.nvim_create_buf(opts.listed or false, true)
   if opts.buf_name then
-    vim.api.nvim_buf_set_name(bufnr, opts.buf_name);
+    vim.api.nvim_buf_set_name(bufnr, opts.buf_name)
   end
   local channel_id = vim.api.nvim_open_term(bufnr, {})
 

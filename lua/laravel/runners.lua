@@ -155,4 +155,19 @@ runners.async = function(cmd, opts)
   return {}
 end
 
+runners.persist = function (cmd, opts)
+  opts = opts or {}
+  opts.listed = true
+  opts.buf_name = vim.fn.join(cmd, " ")
+  return runners.buffer(cmd, opts)
+end
+
+runners.watch = function (cmd, opts)
+  opts = opts or {}
+  opts.listed = true
+  opts.buf_name = "[Watched] " .. vim.fn.join(cmd, " ")
+
+  runners.buffer({"ag", "-l", "|", "entr", "-c", unpack(cmd) }, opts)
+end
+
 return runners

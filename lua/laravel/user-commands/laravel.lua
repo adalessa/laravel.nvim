@@ -10,6 +10,12 @@ local commands = {
   ["artisan"] = function()
     return require("telescope").extensions.laravel.commands()
   end,
+  ["test"] = function()
+    return require("laravel.artisan").run({"test"})
+  end,
+  ["test:watch"] = function()
+    return require("laravel.artisan").run({"test"}, "watch")
+  end,
 }
 return {
   setup = function()

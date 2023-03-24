@@ -1,6 +1,6 @@
 local commands = {
   dev = function()
-    require("laravel.npm").run({ "run", "dev" }, "buffer", { listed = true, buf_name = "Npm Dev" })
+    require("laravel.npm").run({ "run", "dev" }, "persist")
   end,
   build = function()
     require("laravel.npm").run { "run", "build" }

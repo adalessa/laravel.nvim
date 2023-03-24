@@ -39,7 +39,7 @@ end
 ---@param name string
 ---@return boolean
 M.is_resource = function(name)
-  return require("laravel").app.options.resources[string.gsub(name, "make:", "")] ~= nil
+  return require("laravel").app.options.resources[name] ~= nil
 end
 
 --- Creates the resource and opens the file

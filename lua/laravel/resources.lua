@@ -7,7 +7,7 @@ local M = {}
 ---@param resource string
 ---@param name string
 M.open = function(resource, name)
-  local directory = require("laravel").app.options.resources[resource]
+  local directory = require("laravel").app.options.resources['make:' .. resource]
   local filename = ""
   if type(directory) == "function" then
     local err

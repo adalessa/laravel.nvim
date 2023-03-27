@@ -16,6 +16,13 @@ local laravel_route = require "laravel.route"
 ---@param ask_options boolean | nil
 ---@param runner string | nil
 local function run_command(command, ask_options, runner)
+
+  -- use ui.input
+  -- problem it uses callbacks and how to control the flow for multiple
+  -- problem everything needs to be done in the callback because it does not block the execution
+  -- it will feel like javascript callback hell
+  -- since will have to for reach argument do an internal loop and from that pass a callback and so far
+
   local arguments = {}
   for _, argument in pairs(command.definition.arguments) do
     if argument.is_required then

@@ -1,11 +1,8 @@
 local utils = require "laravel.utils"
 
 local commands = {
-  update = function(library)
-    local cmd = { "update" }
-    if library ~= nil then
-      table.insert(cmd, library)
-    end
+  update = function(cmd)
+    table.insert(cmd, 1 , "update")
     require("laravel.composer").run(cmd)
   end,
 
@@ -13,20 +10,19 @@ local commands = {
     require("laravel.composer").run { "install" }
   end,
 
-  require = function(library)
-    local cmd = { "require" }
-    if library ~= nil then
-      table.insert(cmd, library)
-    end
+  ---@param cmd table
+  require = function(cmd)
+    table.insert(cmd, 1, "require")
     require("laravel.composer").run(cmd, "terminal")
   end,
 
-  remove = function(library)
-    if library == nil then
+  remove = function(cmd)
+    if #cmd == 0 then
       utils.notify("composer.remove", { msg = "Need arguement for composer remove", level = "ERROR" })
       return
     end
-    require("laravel.composer").run { "remove", library }
+    table.insert(cmd, 1, "remove")
+    require("laravel.composer").run(cmd)
   end,
 
   ["dump-autoload"] = function()
@@ -44,7 +40,7 @@ return {
       local command = args.fargs[1]
       if commands[command] ~= nil then
         table.remove(args.fargs, 1)
-        return commands[command](unpack(args.fargs))
+        return commands[command](args.fargs)
       end
 
       return require("laravel.composer").run(args.fargs)

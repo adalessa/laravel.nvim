@@ -122,3 +122,5 @@ You can run `shell` as tinker will open a new terminal
 `Laravel cache:clear` purge the cache clears the cache for commands.
 `Laravel commands` shows the list of artisan commands and executes it.
 `Laravel routes` show the list of routes and goes to the implementation.
+
+TODO: add requirement of ag and entr to work with the watch runner. Add check for the watch runner to see if these are executable and only run if they are

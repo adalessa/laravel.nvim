@@ -9,8 +9,8 @@ local split = {
 ---@class laravel.config
 ---@field split split
 ---@field bind_telescope boolean
----@field ask_for_args boolean
 ---@field default_runner string
+---@field lsp_server string
 ---@field resources table
 ---@field register_user_commands boolean
 ---@field commands_runner table
@@ -18,8 +18,8 @@ local split = {
 local config = {
   split = split,
   bind_telescope = true,
-  ask_for_args = true,
   register_user_commands = true,
+  lsp_server = "phpactor",
   route_info = true,
   default_runner = "buffer",
   commands_runner = {

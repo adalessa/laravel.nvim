@@ -38,6 +38,7 @@ end
 
 ---@param route LaravelRoute
 M.open = function(route)
+  local lsp_server_name = require("laravel").app.options.lsp_server
   -- case 1 if action is clousure check middleware if web open routes/web.php,
   --            if middleware api open routes/api.php
   --        -- and look for the string of the route like full string, if does not find it look second row
@@ -60,12 +61,12 @@ M.open = function(route)
     return
   end
 
-  local clients = vim.lsp.get_active_clients { name = "phpactor" }
+  local clients = vim.lsp.get_active_clients { name = lsp_server_name }
   local client = clients[1] or nil
   local should_stop_server = false
   -- if not active I have to activate it
   if not client then
-    local server = require("lspconfig")["phpactor"]
+    local server = require("lspconfig")[lsp_server_name]
     local config = server.make_config(vim.fn.getcwd())
     local client_id = vim.lsp.start(config)
     client = vim.lsp.get_client_by_id(client_id)

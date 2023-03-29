@@ -2,7 +2,7 @@ local utils = require "laravel.utils"
 
 local commands = {
   update = function(cmd)
-    table.insert(cmd, 1 , "update")
+    table.insert(cmd, 1, "update")
     require("laravel.composer").run(cmd)
   end,
 

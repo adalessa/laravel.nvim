@@ -24,7 +24,10 @@ return function(options)
   ---@return nil|LaravelCommand[]
   app.commands = function()
     return cache.get("commands", function()
-      local result = artisan.run({ "list", "--format=json" }, "sync")
+      local result, ok = artisan.run({ "list", "--format=json" }, "sync")
+      if not ok then
+        return nil
+      end
 
       if result.exit_code == 1 then
         log.error("app.commands(): stdout", result.out)
@@ -40,7 +43,11 @@ return function(options)
   ---@return nil|LaravelRoute[]
   app.routes = function()
     return cache.get("routes", function()
-      local result = artisan.run({ "route:list", "--json" }, "sync")
+      local result, ok = artisan.run({ "route:list", "--json" }, "sync")
+
+      if not ok then
+        return nil
+      end
 
       if result.exit_code == 1 then
         log.error("app.routes(): stdout", result.out)
@@ -61,6 +68,7 @@ return function(options)
         end
         cache.put("commands", laravel_command.from_json(j:result()))
       end,
+      silent = true,
     })
   end
 
@@ -73,7 +81,34 @@ return function(options)
         end
         cache.put("routes", laravel_route.from_json(j:result()))
       end,
+      silent = true,
     })
+  end
+
+  --- Checks if should use sail, and if it is running
+  ---@param uses function|nil
+  ---@param not_uses function|nil
+  ---@param silent boolean
+  ---@return boolean
+  app.if_uses_sail = function(uses, not_uses, silent)
+    if not app.environment.uses_sail then
+      if not_uses ~= nil then
+        not_uses()
+      end
+      return true
+    end
+
+    if require("laravel.sail").is_running() then
+      if uses ~= nil then
+        uses()
+      end
+      return true
+    end
+
+    if not silent then
+      require("laravel.utils").notify("artisan.run", { msg = "Sail is not running", level = "ERROR" })
+    end
+    return false
   end
 
   return app

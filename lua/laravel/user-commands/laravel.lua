@@ -1,4 +1,5 @@
 local utils = require "laravel.utils"
+
 local commands = {
   ["cache:clean"] = function()
     require("laravel.cache_manager").purge()
@@ -11,10 +12,10 @@ local commands = {
     return require("telescope").extensions.laravel.commands()
   end,
   ["test"] = function()
-    return require("laravel.artisan").run({"test"})
+    return require("laravel.artisan").run { "test" }
   end,
   ["test:watch"] = function()
-    return require("laravel.artisan").run({"test"}, "watch")
+    return require("laravel.artisan").run({ "test" }, "watch")
   end,
 }
 return {

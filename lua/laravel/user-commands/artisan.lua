@@ -4,7 +4,7 @@ local function get_artisan_auto_complete(current_match, full_command)
     return {}
   end
   local complete_list = {}
-  for _, command in ipairs(require("laravel").app.commands()) do
+  for _, command in ipairs(require("laravel").app.commands() or {}) do
     if current_match == "" or string.match(command.name, current_match) then
       table.insert(complete_list, command.name)
     end

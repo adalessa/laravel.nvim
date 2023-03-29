@@ -7,7 +7,6 @@ local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
 local artisan = require "laravel.artisan"
 local preview = require "laravel.telescope.preview"
-local utils = require "laravel.utils"
 local make_entry = require "laravel.telescope.make_entry"
 local laravel_route = require "laravel.route"
 
@@ -16,7 +15,6 @@ local laravel_route = require "laravel.route"
 ---@param ask_options boolean | nil
 ---@param runner string | nil
 local function run_command(command, ask_options, runner)
-
   -- use ui.input
   -- problem it uses callbacks and how to control the flow for multiple
   -- problem everything needs to be done in the callback because it does not block the execution
@@ -64,11 +62,6 @@ local commands = function(opts)
   local commands = require("laravel").app.commands()
 
   if commands == nil then
-    utils.notify("Telescope", {
-      msg = "Can't get commands check if sail is running",
-      level = "WARN",
-    })
-
     return
   end
 
@@ -138,11 +131,6 @@ local routes = function(opts)
 
   local routes = require("laravel").app.routes()
   if routes == nil then
-    utils.notify("Telescope", {
-      msg = "Can't get routes check if sail is running",
-      level = "WARN",
-    })
-
     return
   end
 

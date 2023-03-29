@@ -8,6 +8,8 @@ Quick executing of artisan commands
 
 The plugin relies in Treesitter for php run so don't forget `TSInstall php`
 
+In order to be able to jump from the route to the class it depends on the LSP.
+
 # Installation
 Lazy
 ```lua
@@ -17,7 +19,7 @@ return {
     "rcarriga/nvim-notify",
     "nvim-telescope/telescope.nvim",
   },
-  cmd = { "Sail", "Artisan", "Composer", "Npm", "Laravel" },
+  cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
   keys = {
     { "<leader>la", ":Laravel artisan<cr>" },
     { "<leader>lr", ":Laravel routes<cr>" },
@@ -53,14 +55,18 @@ Default configuration
         width = 120,
     },
     bind_telescope = true,
-    ask_for_args = true,
+    lsp_server = "phpactor",
     register_user_commands = true,
     route_info = true,
     default_runner = "buffer",
     commands_runner = {
-        ["dump-server"] = "terminal",
+        ["dump-server"] = "persist",
         ["db"] = "terminal",
         ["tinker"] = "terminal",
+        ["queue:listen"] = "persist",
+        ["serve"] = "persist",
+        ["websockets"] = "persist",
+        ["queue:restart"] = "watch",
     },
     resources = {
         ["make:cast"] = "app/Casts",
@@ -122,5 +128,5 @@ You can run `shell` as tinker will open a new terminal
 `Laravel cache:clear` purge the cache clears the cache for commands.
 `Laravel commands` shows the list of artisan commands and executes it.
 `Laravel routes` show the list of routes and goes to the implementation.
-
-TODO: add requirement of ag and entr to work with the watch runner. Add check for the watch runner to see if these are executable and only run if they are
+`Laravel test` runs the application tests
+`Laravel test:watch` runs the application tests and keep monitoring the changes

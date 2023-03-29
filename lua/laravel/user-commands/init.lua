@@ -6,6 +6,7 @@ local modules = {
   "composer",
   "laravel",
   "npm",
+  "yarn",
 }
 
 M.setup = function()

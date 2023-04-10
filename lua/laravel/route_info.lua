@@ -2,11 +2,6 @@ local utils = require "laravel.utils"
 
 local get_node_text = vim.treesitter.get_node_text
 
-if vim.fn.has "nvim-0.9.0" ~= 1 then
-  vim.treesitter.query.get = vim.treesitter.get_query
-  vim.treesitter.query.set = vim.treesitter.set_query
-end
-
 vim.treesitter.query.set(
   "php",
   "laravel_route_info",

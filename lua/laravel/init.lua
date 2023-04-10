@@ -22,6 +22,12 @@ function M.setup(opts)
     return
   end
 
+  -- TODO: remove once 0.9 was general available
+  if vim.fn.has "nvim-0.9.0" ~= 1 then
+    vim.treesitter.query.get = vim.treesitter.get_query
+    vim.treesitter.query.set = vim.treesitter.set_query
+  end
+
   ---@var laravel.app
   M.app = app
 

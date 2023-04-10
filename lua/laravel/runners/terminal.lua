@@ -16,5 +16,6 @@ return function(cmd, opts)
 
   return {
     buff = vim.api.nvim_win_get_buf(0),
+    term_id = vim.b.terminal_job_id,
   }
 end

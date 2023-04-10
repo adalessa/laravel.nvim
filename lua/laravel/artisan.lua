@@ -25,6 +25,9 @@ artisan.run = function(cmd, runner, opts)
     return {}, false
   end
 
+  -- TODO: when run artisan I want to store the term_id so Ican send
+  -- commands or lines directly to tinker and get that executed
+
   return runners[runner](cmd, opts), true
 end
 

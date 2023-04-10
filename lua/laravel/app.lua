@@ -3,6 +3,7 @@ local artisan = require "laravel.artisan"
 local laravel_command = require "laravel.command"
 local laravel_route = require "laravel.route"
 local log = require("laravel.dev").log
+local utils = require "laravel.utils"
 
 ---@param options laravel.config
 ---@return laravel.app | nil
@@ -11,6 +12,8 @@ return function(options)
   if not env.is_laravel_project then
     return nil
   end
+
+  local storage = {}
 
   ---@class laravel.app
   ---@field options laravel.config
@@ -109,6 +112,32 @@ return function(options)
       require("laravel.utils").notify("artisan.run", { msg = "Sail is not running", level = "ERROR" })
     end
     return false
+  end
+
+  --- stores a value related to the app execution
+  ---@param key string
+  app.get = function(key)
+    return storage[key]
+  end
+
+  app.set = function(key, value)
+    storage[key] = value
+    return value
+  end
+
+  app.sendToTinker = function()
+    local lines = utils.get_visual_selection()
+    if nil == app.get "tinker" then
+      require("laravel.artisan").run({ "tinker" }, "terminal", { focus = false })
+      if nil == app.get "tinker" then
+        utils.notify("Send To Tinker", { msg = "Tinker terminal id not found and could create it", level = "ERROR" })
+        return
+      end
+    end
+
+    for _, line in ipairs(lines) do
+      vim.api.nvim_chan_send(app.get "tinker", line .. "\n")
+    end
   end
 
   return app

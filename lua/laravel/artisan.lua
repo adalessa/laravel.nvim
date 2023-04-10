@@ -2,12 +2,25 @@ local runners = require "laravel.runners"
 
 local artisan = {}
 
+local function tinker(result)
+  -- TODO: save term_id in storage
+  require("laravel").app.set("tinker", result.term_id)
+  vim.api.nvim_create_autocmd({ "BufDelete" }, {
+    buffer = result.buff,
+    callback = function ()
+      require("laravel").app.set("tinker", nil)
+    end
+  })
+  -- add autoocmd to delete from storage when buffer is delted
+end
+
 --- Runs a command in the given runner on the default one
 ---@param cmd table
 ---@param runner string|nil
 ---@param opts table | nil
 ---@return table, boolean
 artisan.run = function(cmd, runner, opts)
+  local command = cmd[1]
   opts = opts or {}
   runner = runner
     or require("laravel").app.options.commands_runner[cmd[1]]
@@ -25,10 +38,12 @@ artisan.run = function(cmd, runner, opts)
     return {}, false
   end
 
-  -- TODO: when run artisan I want to store the term_id so Ican send
-  -- commands or lines directly to tinker and get that executed
+  local result = runners[runner](cmd, opts)
+  if command == "tinker" then
+    tinker(result)
+  end
 
-  return runners[runner](cmd, opts), true
+  return result, true
 end
 
 return artisan

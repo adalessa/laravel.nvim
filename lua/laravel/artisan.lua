@@ -7,9 +7,9 @@ local function tinker(result)
   require("laravel").app.set("tinker", result.term_id)
   vim.api.nvim_create_autocmd({ "BufDelete" }, {
     buffer = result.buff,
-    callback = function ()
+    callback = function()
       require("laravel").app.set("tinker", nil)
-    end
+    end,
   })
   -- add autoocmd to delete from storage when buffer is delted
 end

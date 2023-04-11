@@ -1,18 +1,16 @@
 # Laravel.nvim
-
-Currently in Alpha state. Any collaboration, issue reported is appreciated.
-
 Plugin for Neovim to enhance the development experience of Laravel projects
 
-Quick executing of artisan commands
-
-# Requirements
-Treesitter, LSP Server (I recommend phpactor)
+Quick executing of artisan commands, list and navigate to routes. Information about the routes.
+Robust API to allow you to run any command in the way that you need.
 
 # Preview
 ![](./images/telescope_commands.png)
 ![](./images/telescope_routes.png)
 ![](./images/route_info.png)
+
+# Requirements
+Treesitter, LSP Server (I recommend phpactor)
 
 # Installation
 Lazy

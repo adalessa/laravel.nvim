@@ -3,7 +3,6 @@ local runners = require "laravel.runners"
 local artisan = {}
 
 local function tinker(result)
-  -- TODO: save term_id in storage
   require("laravel").app.set("tinker", result.term_id)
   vim.api.nvim_create_autocmd({ "BufDelete" }, {
     buffer = result.buff,

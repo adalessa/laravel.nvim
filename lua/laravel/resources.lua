@@ -7,7 +7,7 @@ local M = {}
 ---@param resource string
 ---@param name string
 M.open = function(resource, name)
-  local directory = require("laravel").app.options.resources["make:" .. resource]
+  local directory = require("laravel").app.options.resources[resource]
   local filename = ""
   if type(directory) == "function" then
     local err
@@ -50,9 +50,12 @@ M.create = function(cmd)
     return
   end
 
+  local resource = cmd[1]
+  local name = cmd[2]
+
   require("laravel.artisan").run(cmd, "async", {
     callback = function()
-      M.open(string.gsub(cmd[1], "make:", ""), cmd[2])
+      M.open(resource, name)
     end,
   })
 end

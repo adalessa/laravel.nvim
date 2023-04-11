@@ -9,6 +9,11 @@ Quick executing of artisan commands
 # Requirements
 Treesitter, LSP Server (I recommend phpactor)
 
+# Preview
+![](./images/telescope_commands.png)
+![](./images/telescope_routes.png)
+![](./images/route_info.png)
+
 # Installation
 Lazy
 ```lua

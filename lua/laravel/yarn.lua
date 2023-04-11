@@ -1,15 +1,14 @@
 local runners = require "laravel.runners"
 
-local composer = {}
+local yarn = {}
 
 --- Runs a command in the given runner on the default one
 ---@param cmd table
 ---@param runner string|nil
 ---@param opts table|nil
----@return table, boolean
-composer.run = function(cmd, runner, opts)
+yarn.run = function(cmd, runner, opts)
   opts = opts or {}
-  table.insert(cmd, 1, "composer")
+  table.insert(cmd, 1, "yarn")
 
   local ok = require("laravel").app.if_uses_sail(function()
     table.insert(cmd, 1, "vendor/bin/sail")
@@ -21,7 +20,7 @@ composer.run = function(cmd, runner, opts)
 
   runner = runner or require("laravel").app.options.default_runner
 
-  return runners[runner](cmd, opts), true
+  return runners[runner](cmd, opts or {})
 end
 
-return composer
+return yarn

@@ -128,7 +128,7 @@ local function set_route_to_methods(event)
   end
 end
 
-local group = vim.api.nvim_create_augroup("laravel", {})
+local group = vim.api.nvim_create_augroup("laravel.route_info", {})
 
 local register = function()
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {

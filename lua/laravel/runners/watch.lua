@@ -54,7 +54,7 @@ return function(cmd, opts)
 
   run()
 
-  local group = vim.api.nvim_create_augroup("laravel", {})
+  local group = vim.api.nvim_create_augroup("laravel.watch", {})
 
   local au_cmd_id = vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     pattern = pattern,

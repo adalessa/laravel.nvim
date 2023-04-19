@@ -10,15 +10,16 @@ yarn.run = function(cmd, runner, opts)
   opts = opts or {}
   table.insert(cmd, 1, "yarn")
 
-  local ok = require("laravel").app.if_uses_sail(function()
-    table.insert(cmd, 1, "vendor/bin/sail")
+  local laravel = require("laravel").app
+  local ok = laravel.if_uses_sail(function()
+    table.insert(cmd, 1, laravel.options.exec)
   end, nil, opts.silent or false)
 
   if not ok then
     return {}, false
   end
 
-  runner = runner or require("laravel").app.options.default_runner
+  runner = runner or laravel.options.default_runner
 
   return runners[runner](cmd, opts or {})
 end

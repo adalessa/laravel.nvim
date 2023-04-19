@@ -9,6 +9,7 @@ local split = {
 ---@class laravel.config
 ---@field split split
 ---@field bind_telescope boolean
+---@field exec string
 ---@field default_runner string
 ---@field lsp_server string
 ---@field resources table
@@ -22,6 +23,7 @@ local config = {
   lsp_server = "phpactor",
   route_info = true,
   default_runner = "buffer",
+  exec = "vendor/bin/sail",
   commands_runner = {
     ["dump-server"] = "persist",
     ["db"] = "terminal",

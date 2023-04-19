@@ -9,8 +9,9 @@ local sail = {}
 ---@return table, boolean
 sail.run = function(cmd, runner, opts)
   opts = opts or {}
-  table.insert(cmd, 1, "vendor/bin/sail")
-  runner = runner or require("laravel").app.options.default_runner
+  local laravel = require("laravel").app
+  table.insert(cmd, 1, laravel.options.exec)
+  runner = runner or laravel.options.default_runner
 
   return runners[runner](cmd, opts), true
 end

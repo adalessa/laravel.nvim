@@ -19,16 +19,18 @@ end
 ---@param opts table | nil
 ---@return table, boolean
 artisan.run = function(cmd, runner, opts)
+  local laravel = require("laravel").app
+
   local command = cmd[1]
   opts = opts or {}
   runner = runner
-    or require("laravel").app.options.commands_runner[cmd[1]]
-    or require("laravel").app.options.default_runner
+    or laravel.options.commands_runner[cmd[1]]
+    or laravel.options.default_runner
 
   table.insert(cmd, 1, "artisan")
 
-  local ok = require("laravel").app.if_uses_sail(function()
-    table.insert(cmd, 1, "vendor/bin/sail")
+  local ok = laravel.if_uses_sail(function()
+    table.insert(cmd, 1, laravel.options.exec)
   end, function()
     table.insert(cmd, 1, "php")
   end, opts.silent or false)

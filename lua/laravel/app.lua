@@ -94,7 +94,8 @@ return function(options)
   ---@param silent boolean
   ---@return boolean
   app.if_uses_sail = function(uses, not_uses, silent)
-    if not app.environment.uses_sail then
+    local has_custom_exec = require("laravel").app.options.exec ~= require("laravel.defaults").exec
+    if not app.environment.uses_sail and not has_custom_exec then
       if not_uses ~= nil then
         not_uses()
       end

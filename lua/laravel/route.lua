@@ -94,9 +94,10 @@ M.open = function(route)
   end
 
   local class_location = nil
-  for idx, location in pairs(locations) do
-    if location.text == string.format("[Class] %s", action[1]) then
-      class_location = locations[idx]
+  for idx, location in pairs(resp.result) do
+    utils.notify("Debug", { msg = vim.inspect(location), level = "INFO" })
+    if location.containerName .. "\\" .. location.name == action[1] then
+      class_location = location
       break
     end
   end
@@ -110,7 +111,7 @@ M.open = function(route)
   end
 
   local command = "edit"
-  local filename = class_location.filename
+  local filename = vim.uri_to_fname(class_location.location.uri)
 
   if vim.api.nvim_buf_get_name(0) ~= filename or command ~= "edit" then
     filename = Path:new(vim.fn.fnameescape(filename)):normalize(vim.loop.cwd())

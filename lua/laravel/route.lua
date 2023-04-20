@@ -94,7 +94,7 @@ M.open = function(route)
   end
 
   local class_location = nil
-  for idx, location in pairs(resp.result) do
+  for _, location in pairs(resp.result) do
     if location.location and
 	location.containerName .. "\\" .. location.name == action[1] and
 	vim.lsp.util._get_symbol_kind_name(location.kind) == "Class" then

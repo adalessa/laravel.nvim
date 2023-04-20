@@ -10,7 +10,7 @@ local sail = {}
 sail.run = function(cmd, runner, opts)
   opts = opts or {}
   local laravel = require("laravel").app
-  table.insert(cmd, 1, laravel.options.exec)
+  cmd = laravel.buildCmd(laravel.options.exec.sail, cmd)
   runner = runner or laravel.options.default_runner
 
   return runners[runner](cmd, opts), true

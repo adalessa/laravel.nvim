@@ -94,7 +94,7 @@ return function(options)
   ---@param silent boolean
   ---@return boolean
   app.if_uses_sail = function(uses, not_uses, silent)
-    local has_custom_exec = require("laravel").app.options.exec ~= require("laravel.defaults").exec
+    local has_custom_exec = table.concat(require("laravel").app.options.exec) ~= table.concat(require("laravel.defaults").exec)
     if not app.environment.uses_sail and not has_custom_exec then
       if not_uses ~= nil then
         not_uses()
@@ -141,5 +141,8 @@ return function(options)
     end
   end
 
+  app.buildCmd = function (exec, cmd)
+    return vim.list_extend(vim.split(exec, " "), cmd)
+  end
   return app
 end

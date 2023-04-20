@@ -13,7 +13,7 @@ npm.run = function(cmd, runner, opts)
 
   local laravel = require("laravel").app
   local ok = laravel.if_uses_sail(function()
-    table.insert(cmd, 1, laravel.options.exec)
+    cmd = laravel.buildCmd(laravel.options.exec.npm, cmd)
   end, nil, opts.silent or false)
 
   if not ok then

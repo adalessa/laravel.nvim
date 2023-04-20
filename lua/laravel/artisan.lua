@@ -30,7 +30,7 @@ artisan.run = function(cmd, runner, opts)
   table.insert(cmd, 1, "artisan")
 
   local ok = laravel.if_uses_sail(function()
-    table.insert(cmd, 1, laravel.options.exec)
+    cmd = laravel.buildCmd(laravel.options.exec.artisan, cmd)
   end, function()
     table.insert(cmd, 1, "php")
   end, opts.silent or false)

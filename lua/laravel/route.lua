@@ -95,8 +95,9 @@ M.open = function(route)
 
   local class_location = nil
   for idx, location in pairs(resp.result) do
-    utils.notify("Debug", { msg = vim.inspect(location), level = "INFO" })
-    if location.containerName .. "\\" .. location.name == action[1] then
+    if location.location and
+	location.containerName .. "\\" .. location.name == action[1] and
+	vim.lsp.util._get_symbol_kind_name(location.kind) == "Class" then
       class_location = location
       break
     end

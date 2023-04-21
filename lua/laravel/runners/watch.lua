@@ -3,7 +3,7 @@
 ---@return table
 return function(cmd, opts)
   opts = opts or {}
-  local options = require("laravel").app.options
+  local options = require("laravel.application").get_options()
   local default = {
     open = true,
     split = {

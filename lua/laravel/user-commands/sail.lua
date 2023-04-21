@@ -1,9 +1,11 @@
 local log = require("laravel.dev").log
 local utils = require "laravel.utils"
+local application = require "laravel.application"
 
 local commands = {
   up = function()
-    require("laravel.sail").run({ "up", "-d" }, "async", {
+    application.run("sail", { "up", "-d" }, {
+      runner = "async",
       callback = function(j, exit_code)
         if exit_code ~= 0 then
           log.error("sail.up(): stdout", j:result())
@@ -17,11 +19,12 @@ local commands = {
     })
   end,
   shell = function()
-    require("laravel.sail").run({ "shell" }, "terminal")
+    application.run("sail", { "shell" }, { runner = "terminal" })
   end,
 
   ps = function()
-    require("laravel.sail").run({ "ps" }, "async", {
+    application.run("sail", { "ps" }, {
+      runner = "async",
       callback = function(j, exit_code)
         if exit_code ~= 0 then
           log.error("sail.ps(): stdout", j:result())
@@ -36,7 +39,8 @@ local commands = {
   end,
 
   restart = function()
-    require("laravel.sail").run({ "restart" }, "async", {
+    application.run("sail", { "restart" }, {
+      runner = "async",
       callback = function(j, exit_code)
         if exit_code ~= 0 then
           log.error("sail.restart(): stdout", j:result())
@@ -50,8 +54,10 @@ local commands = {
     })
     utils.notify("sail.restart", { msg = "Sail restart starting", level = "INFO" })
   end,
+
   down = function()
-    require("laravel.sail").run({ "down" }, "async", {
+    application.run("sail", { "down" }, {
+      runner = "async",
       callback = function(j, exit_code)
         if exit_code ~= 0 then
           log.error("sail.down(): stdout", j:result())
@@ -68,6 +74,10 @@ local commands = {
 
 return {
   setup = function()
+    if not application.has_command "sail" then
+      return
+    end
+
     vim.api.nvim_create_user_command("Sail", function(args)
       local command = args.fargs[1]
       if commands[command] ~= nil then
@@ -75,7 +85,7 @@ return {
         return commands[command](unpack(args.fargs))
       end
 
-      return require("laravel.sail").run(args.fargs)
+      return application.run("sail", args.fargs, {})
     end, {
       nargs = "+",
       complete = function()

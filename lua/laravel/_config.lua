@@ -31,6 +31,14 @@ local config = {
     ["websockets"] = "persist",
     ["queue:restart"] = "watch",
   },
+  environment = {
+    resolver = require "laravel.environment.resolver"(true, true, nil),
+    environments = {
+      ["local"] = require("laravel.environment.native").setup(),
+      ["sail"] = require("laravel.environment.sail").setup(),
+      ["docker-compose"] = require("laravel.environment.docker_compose").setup(),
+    },
+  },
   resources = {
     ["make:cast"] = "app/Casts",
     ["make:channel"] = "app/Broadcasting",

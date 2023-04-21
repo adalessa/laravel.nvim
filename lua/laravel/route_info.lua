@@ -1,4 +1,5 @@
 local utils = require "laravel.utils"
+local laravel_routes = require "laravel.routes"
 
 local get_node_text = vim.treesitter.get_node_text
 
@@ -29,17 +30,12 @@ local function set_route_to_methods(event)
   local bufnr = event.buf
   local namespace = vim.api.nvim_create_namespace "laravel.routes"
 
-  --- @type LaravelRoute[]
-  local routes = require("laravel").app.routes()
   -- clean namespace
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
   vim.diagnostic.reset(namespace, bufnr)
 
-  if #routes == 0 then
-    utils.notify(
-      "route_info.set_route_to_methods",
-      { msg = "cant retrive the routes, maybe check Sail", level = "WARN" }
-    )
+  local routes = laravel_routes.list()
+  if routes == nil then
     return
   end
 
@@ -135,7 +131,7 @@ local register = function()
     pattern = { "routes/*.php" },
     group = group,
     callback = function()
-      require("laravel").app.load_routes()
+      laravel_routes.load()
     end,
   })
 

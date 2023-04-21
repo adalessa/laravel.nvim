@@ -5,10 +5,12 @@ local conf = require("telescope.config").values
 local finders = require "telescope.finders"
 local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
-local artisan = require "laravel.artisan"
 local preview = require "laravel.telescope.preview"
 local make_entry = require "laravel.telescope.make_entry"
 local laravel_route = require "laravel.route"
+local laravel_commands = require "laravel.commands"
+local laravel_routes = require "laravel.routes"
+local application = require "laravel.application"
 
 --- runs a command from telescope
 ---@param command LaravelCommand
@@ -53,13 +55,13 @@ local function run_command(command, ask_options, runner)
   if resources.is_resource(cmd[1]) then
     return resources.create(cmd)
   end
-  artisan.run(cmd, runner)
+  application.run("artisan", cmd, { runner = runner })
 end
 
 local commands = function(opts)
   opts = opts or {}
 
-  local commands = require("laravel").app.commands()
+  local commands = laravel_commands.list()
 
   if commands == nil then
     return
@@ -129,7 +131,7 @@ end
 local routes = function(opts)
   opts = opts or {}
 
-  local routes = require("laravel").app.routes()
+  local routes = laravel_routes.list()
   if routes == nil then
     return
   end

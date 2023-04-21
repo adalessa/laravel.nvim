@@ -1,6 +1,7 @@
 local phpactor = require "laravel._lsp.phpactor"
 local intelephense = require "laravel._lsp.intelephense"
 local utils = require "laravel.utils"
+local application = require "laravel.application"
 
 local servers = {
   phpactor = phpactor,
@@ -28,8 +29,7 @@ end
 ---@param full_class string
 ---@param method string
 local go_to = function(full_class, method)
-  local app = require("laravel").app
-  local server_name = app.options.lsp_server
+  local server_name = application.get_options().lsp_server
 
   local server = servers[server_name]
   if server == nil then

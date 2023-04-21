@@ -1,19 +1,20 @@
 local utils = require "laravel.utils"
+local application = require "laravel.application"
 
 local commands = {
   update = function(cmd)
     table.insert(cmd, 1, "update")
-    require("laravel.composer").run(cmd)
+    application.run("composer", cmd, {})
   end,
 
   install = function()
-    require("laravel.composer").run { "install" }
+    application.run("composer", { "install" }, {})
   end,
 
   ---@param cmd table
   require = function(cmd)
     table.insert(cmd, 1, "require")
-    require("laravel.composer").run(cmd, "terminal")
+    application.run("composer", cmd, { runner = "terminal" })
   end,
 
   remove = function(cmd)
@@ -22,11 +23,12 @@ local commands = {
       return
     end
     table.insert(cmd, 1, "remove")
-    require("laravel.composer").run(cmd)
+    application.run("composer", cmd, {})
   end,
 
   ["dump-autoload"] = function()
-    require("laravel.composer").run({ "dump-autoload" }, "async", {
+    application.run("composer", { "dump-autoload" }, {
+      runner = "async",
       callback = function()
         utils.notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
       end,
@@ -43,7 +45,7 @@ return {
         return commands[command](args.fargs)
       end
 
-      return require("laravel.composer").run(args.fargs)
+      return application.run("composer", args.fargs, {})
     end, {
       nargs = "+",
       complete = function()

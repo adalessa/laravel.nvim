@@ -1,3 +1,5 @@
+local application = require "laravel.application"
+
 ---@class CommandArgument
 ---@field name string
 ---@field is_required boolean
@@ -34,6 +36,9 @@ local M = {}
 ---@return LaravelCommand[]
 M.from_json = function(json)
   local cmds = {}
+  if json == "" then
+    return cmds
+  end
   for _, cmd in ipairs(vim.fn.json_decode(json).commands) do
     if not cmd.hidden then
       table.insert(cmds, cmd)
@@ -45,7 +50,7 @@ end
 --- Gets the runner for a given command
 ---@param command LaravelCommand
 M.get_runner = function(command)
-  local runner = require("laravel").app.options.commands_runner[command.name]
+  local runner = application.get_options().commands_runner[command.name]
   if runner ~= nil then
     return runner
   end
@@ -56,7 +61,7 @@ M.get_runner = function(command)
     end
   end
 
-  return require("laravel").app.options.default_runner
+  return application.get_options().default_runner
 end
 
 return M

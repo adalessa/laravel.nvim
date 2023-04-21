@@ -1,3 +1,5 @@
+local application = require "laravel.application"
+
 local commands = {
   dev = function()
     require("laravel.yarn").run({ "run", "dev" }, "persist")
@@ -16,7 +18,7 @@ return {
         return commands[command](unpack(args.fargs))
       end
 
-      return require("laravel.yarn").run(args.fargs)
+      return application.run("yarn", args.fargs, {})
     end, {
       nargs = "+",
       complete = function()

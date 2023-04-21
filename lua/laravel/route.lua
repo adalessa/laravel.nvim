@@ -1,5 +1,5 @@
 local utils = require "laravel.utils"
-local lsp = require("laravel._lsp")
+local lsp = require "laravel._lsp"
 
 ---@class LaravelRoute
 ---@field uri string

@@ -12,17 +12,13 @@ composer.run = function(cmd, runner, opts)
   table.insert(cmd, 1, "composer")
 
   local laravel = require("laravel").app
-  local ok = laravel.if_uses_sail(function()
-    cmd = laravel.buildCmd(laravel.options.exec.composer, cmd)
-  end, nil, opts.silent or false)
+  local data, ok = laravel.run("composer", cmd, runner, opts)
 
   if not ok then
     return {}, false
   end
 
-  runner = runner or laravel.options.default_runner
-
-  return runners[runner](cmd, opts), true
+  return data, true
 end
 
 return composer

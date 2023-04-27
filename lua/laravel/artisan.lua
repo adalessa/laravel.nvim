@@ -29,22 +29,16 @@ artisan.run = function(cmd, runner, opts)
 
   table.insert(cmd, 1, "artisan")
 
-  local ok = laravel.if_uses_sail(function()
-    cmd = laravel.buildCmd(laravel.options.exec.artisan, cmd)
-  end, function()
-    table.insert(cmd, 1, "php")
-  end, opts.silent or false)
-
+  local data, ok = laravel.run("artisan", cmd, runner, opts)
   if not ok then
     return {}, false
   end
 
-  local result = runners[runner](cmd, opts)
   if command == "tinker" then
-    tinker(result)
+    tinker(data)
   end
 
-  return result, true
+  return data, true
 end
 
 return artisan

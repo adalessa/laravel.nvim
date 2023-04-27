@@ -1,18 +1,26 @@
+local user_defined = require "laravel.environments.user_defined"
 local M = {}
 
-M.load = function()
+M.load = function(options)
   ---@class laravel.environment
-  ---@field uses_sail boolean
+  ---@field environment table|nil
   ---@field has_phpstan boolean
   ---@field is_laravel_project boolean
   local project_properties = {}
 
-  local has_sail_cmd = vim.fn.filereadable "vendor/bin/sail" == 1
-  local has_docker_compose_config = vim.fn.filereadable "docker-compose.yml" == 1
+  local order = { "sail", "docker_compose", "local" }
+
+  if options.environment == "custom" and user_defined.is_valid(options.environment_settings) then
+    project_properties.environment = user_defined:new(options.environment_settings)
+  elseif options.environment == "auto" then
+    project_properties.environment = require("laravel.environments.detector").get_environment(order, options.environment_settings)
+  elseif vim.tbl_contains(options.environment, order) then
+    project_properties.environment =
+      require("laravel.environments." .. options.environment):new(options.environment_settings)
+  end
 
   project_properties.is_laravel_project = vim.fn.filereadable "artisan" == 1
   project_properties.has_phpstan = vim.fn.filereadable "vendor/bin/phpstan" == 1
-  project_properties.uses_sail = has_sail_cmd and has_docker_compose_config
 
   return project_properties
 end

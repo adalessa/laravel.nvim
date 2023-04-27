@@ -1,7 +1,7 @@
 local M = {}
 
 local modules = {
-  "sail",
+  "container",
   "artisan",
   "composer",
   "laravel",

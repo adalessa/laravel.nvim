@@ -17,6 +17,39 @@ local commands = {
   ["test:watch"] = function()
     return require("laravel.artisan").run({ "test" }, "watch")
   end,
+  ["test_file:watch"] = function()
+    local currentFile = string.gsub(vim.api.nvim_buf_get_name(0), vim.loop.cwd() .. "/", "")
+    return require("laravel.artisan").run({ "test", currentFile }, "watch")
+  end,
+  ["test_method:watch"] = function()
+    local currentFile = string.gsub(vim.api.nvim_buf_get_name(0), vim.loop.cwd() .. "/", "")
+    local node = vim.treesitter.get_node()
+    local testMethod = function(node)
+      if node:type() == "method_declaration" then
+        return true
+      end
+      return false
+    end
+
+    if not testMethod(node) then
+      while node do
+        if not testMethod(node) then
+          node = node:parent()
+        else
+          break
+        end
+      end
+    end
+
+    if node then
+      local method_name = vim.inspect(vim.treesitter.get_node_text(node:field("name")[1], 0))
+      if string.sub(method_name, 2, 5) == "test" then
+        return require("laravel.artisan").run({ "test", currentFile, "--filter", method_name }, "watch")
+      end
+    end
+
+    utils.notify("artisan.run", { msg = "cursor is not on the testable method", level = "ERROR" })
+  end,
 }
 return {
   setup = function()

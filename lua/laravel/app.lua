@@ -4,12 +4,13 @@ local laravel_command = require "laravel.command"
 local laravel_route = require "laravel.route"
 local log = require("laravel.dev").log
 local utils = require "laravel.utils"
+local runners = require "laravel.runners"
 
 ---@param options laravel.config
 ---@return laravel.app | nil
 return function(options)
-  local env = require("laravel.environment").load()
-  if not env.is_laravel_project then
+  local env = require("laravel.environment").load(options)
+  if not env.is_laravel_project or not env.environment then
     return nil
   end
 
@@ -88,32 +89,36 @@ return function(options)
     })
   end
 
-  --- Checks if should use sail, and if it is running
-  ---@param uses function|nil
-  ---@param not_uses function|nil
-  ---@param silent boolean
-  ---@return boolean
-  app.if_uses_sail = function(uses, not_uses, silent)
-    local has_custom_exec = table.concat(vim.tbl_values(require("laravel").app.options.exec)) ~= table.concat(vim.tbl_values(require("laravel.defaults").exec))
-
-    if not app.environment.uses_sail and not has_custom_exec then
-      if not_uses ~= nil then
-        not_uses()
-      end
-      return true
+  local function exec(cmd_type, cmd, runner, opts)
+    opts = opts or {}
+    if type(cmd) == "table" then
+      cmd = table.concat(cmd, " ")
     end
-
-    if require("laravel.sail").is_running() then
-      if uses ~= nil then
-        uses()
-      end
-      return true
+    if cmd_type then
+      cmd = env.environment:build_cmd(cmd_type, cmd)
     end
+    if cmd then
+      cmd = vim.split(cmd, " ")
 
-    if not silent then
-      require("laravel.utils").notify("artisan.run", { msg = "Sail is not running", level = "ERROR" })
+      runner = runner or app.options.default_runner
+
+      return runners[runner](cmd, opts), true
     end
-    return false
+    return {}, false
+  end
+
+  app.run = function(cmd_type, cmd, runner, opts)
+    if not env.environment then
+      require("laravel.utils").notify("artisan.run", { msg = "Environment is not found", level = "ERROR" })
+    end
+    local is_running = exec(nil, env.environment:is_running(), "sync")
+    if is_running then
+      return exec(cmd_type, cmd, runner, opts)
+    end
+    if not opts.silent then
+      require("laravel.utils").notify("artisan.run", { msg = "Environment is not running", level = "ERROR" })
+    end
+    return {}, false
   end
 
   --- stores a value related to the app execution
@@ -142,8 +147,5 @@ return function(options)
     end
   end
 
-  app.buildCmd = function (exec, cmd)
-    return vim.list_extend(vim.split(exec, " "), cmd)
-  end
   return app
 end

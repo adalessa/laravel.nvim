@@ -9,9 +9,10 @@ sail.is_applicable = function()
 end
 
 function sail:new(settings)
+  local env = { settings = settings }
+  setmetatable(env, self)
   self.__index = self
-  setmetatable(settings, self)
-  return self
+  return env
 end
 
 function sail:build_cmd(_, command)

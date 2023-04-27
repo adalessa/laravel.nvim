@@ -6,9 +6,10 @@ M.is_applicable = function()
 end
 
 function M:new(settings)
+  local env = { settings = settings }
+  setmetatable(env, self)
   self.__index = self
-  setmetatable(settings, self)
-  return self
+  return env
 end
 
 function M:build_cmd(command_type, command)

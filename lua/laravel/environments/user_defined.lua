@@ -21,9 +21,10 @@ end
 
 function env:new(settings)
   if env.is_valid(settings) then
+    local e = { settings = settings }
+    setmetatable(e, self)
     self.__index = self
-    setmetatable(settings, self)
-    return self
+    return e
   end
   return nil
 end

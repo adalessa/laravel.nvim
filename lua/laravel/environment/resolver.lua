@@ -49,7 +49,7 @@ return function(env_check, auto_discory, default)
     end
 
     if default then
-      local env = environments[default]
+      local environment = environments[default]
       if env == nil then
         utils.notify(
           "Environment resolver",
@@ -57,7 +57,7 @@ return function(env_check, auto_discory, default)
         )
         return nil
       else
-        return env
+        return environment
       end
     end
 

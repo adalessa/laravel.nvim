@@ -9,9 +9,9 @@ local function env(var)
 end
 
 ---@param env_check boolean
----@param auto_discory boolean
+---@param auto_discovery boolean
 ---@param default string|nil
-return function(env_check, auto_discory, default)
+return function(env_check, auto_discovery, default)
   return function(environments)
     -- TODO: base on the arguments resolve which environment should be use or nil
     -- if no one matches the configuration
@@ -29,7 +29,7 @@ return function(env_check, auto_discory, default)
       end
     end
 
-    if auto_discory then
+    if auto_discovery then
       -- check for sail
       if
         environments.sail ~= nil

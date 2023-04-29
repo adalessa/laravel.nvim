@@ -11,15 +11,16 @@ M.setup = function(opts)
     return unpack(cmd)
   end
 
+  local executables = {
+    artisan = opts.artisan or { get_cmd(), "artisan" },
+    composer = opts.composer or { get_cmd(), "composer" },
+    npm = opts.npm or { get_cmd(), "npm" },
+    yarn = opts.yarn or { get_cmd(), "yarn" },
+    sail = opts.sail or cmd,
+  }
+
   return {
-    -- list of executables to be use
-    executables = {
-      artisan = opts.artisan or { get_cmd(), "artisan" },
-      composer = opts.composer or { get_cmd(), "composer" },
-      npm = opts.npm or { get_cmd(), "npm" },
-      yarn = opts.yarn or { get_cmd(), "yarn" },
-      sail = opts.sail or cmd,
-    },
+    executables = vim.tbl_deep_extend("force", executables, opts.executables or {}),
   }
 end
 

@@ -33,13 +33,13 @@ return function(env_check, auto_discovery, default)
       -- check for sail
       if
         environments.sail ~= nil
-        and vim.fn.filereadable "vendor/bin/sail"
-        and vim.fn.filereadable "docker-compose.yml"
+        and vim.fn.filereadable "vendor/bin/sail" == 1
+        and vim.fn.filereadable "docker-compose.yml" == 1
       then
         return environments.sail
       end
       -- check for docker-compose
-      if environments["docker-compose"] ~= nil and vim.fn.filereadable "docker-compose.yml" then
+      if environments["docker-compose"] ~= nil and vim.fn.filereadable "docker-compose.yml" == 1 then
         return environments["docker-compose"]
       end
       -- check for native

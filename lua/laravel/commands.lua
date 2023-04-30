@@ -36,7 +36,7 @@ return {
       runner = "async",
       callback = function(j, exit_code)
         if exit_code == 1 then
-          return
+          application.container.unset(container_key)
         end
         application.container.set(container_key, laravel_command.from_json(j:result()))
       end,

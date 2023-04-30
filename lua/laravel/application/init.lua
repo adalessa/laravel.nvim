@@ -12,6 +12,10 @@ local initialize = function(options)
     return
   end
 
+  if vim.fn.filereadable "artisan" == 0 then
+    return
+  end
+
   local env = environment.initialize(options.environment.environments, options.environment.resolver)
   -- fill with the environment
   if not env then

@@ -38,6 +38,7 @@ return {
       runner = "async",
       callback = function(j, exit_code)
         if exit_code == 1 then
+          application.container.unset(container_key)
           return
         end
         application.container.set(container_key, laravel_route.from_json(j:result()))
@@ -59,8 +60,8 @@ return {
     end
 
     if result.exit_code == 1 then
-      log.error("app.commands(): stdout", result.out)
-      log.error("app.commands(): stderr", result.err)
+      log.error("app.routes(): stdout", result.out)
+      log.error("app.routes(): stderr", result.err)
       return nil
     end
 

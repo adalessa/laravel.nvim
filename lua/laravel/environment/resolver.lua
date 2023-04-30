@@ -16,7 +16,7 @@ return function(env_check, auto_discovery, default)
     -- TODO: base on the arguments resolve which environment should be use or nil
     -- if no one matches the configuration
     local env_name = env "NVIM_LARAVEL_ENV"
-    if env_check and env_name then
+    if env_check and env_name ~= "" then
       local environment = environments[env_name]
       if environment == nil then
         utils.notify(

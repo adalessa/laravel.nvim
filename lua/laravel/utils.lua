@@ -1,5 +1,7 @@
 local utils = {}
 
+---@param funname string
+---@param opts table
 function utils.notify(funname, opts)
   local level = vim.log.levels[opts.level]
   if not level then

@@ -1,8 +1,9 @@
 local utils = require "laravel.utils"
+local application = require "laravel.application"
 
 local commands = {
   ["cache:clean"] = function()
-    require("laravel.cache_manager").purge()
+    application.container.purge()
     utils.notify("laravel.cache:clean", { msg = "Cache cleaned", level = "INFO" })
   end,
   ["routes"] = function()
@@ -11,13 +12,11 @@ local commands = {
   ["artisan"] = function()
     return require("telescope").extensions.laravel.commands()
   end,
-  ["test"] = function()
-    return require("laravel.artisan").run { "test" }
-  end,
   ["test:watch"] = function()
-    return require("laravel.artisan").run({ "test" }, "watch")
+    return application.run("artisan", { "test" }, { runner = "watch" })
   end,
 }
+
 return {
   setup = function()
     vim.api.nvim_create_user_command("Laravel", function(args)

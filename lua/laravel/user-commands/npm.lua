@@ -1,9 +1,11 @@
+local application = require "laravel.application"
+
 local commands = {
   dev = function()
-    require("laravel.npm").run({ "run", "dev" }, "persist")
+    return application.run("npm", { "run", "dev" }, { runner = "persist" })
   end,
   build = function()
-    require("laravel.npm").run { "run", "build" }
+    return application.run("npm", { "run", "build" }, {})
   end,
 }
 
@@ -16,7 +18,7 @@ return {
         return commands[command](unpack(args.fargs))
       end
 
-      return require("laravel.npm").run(args.fargs)
+      return application.run("npm", args.fargs, {})
     end, {
       nargs = "+",
       complete = function()

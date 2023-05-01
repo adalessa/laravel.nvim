@@ -27,7 +27,7 @@ return {
     {
       "<leader>lt",
       function()
-        require("laravel").app.sendToTinker()
+        require("laravel.tinker").send_to_tinker()
       end,
       mode = "v",
       desc = "Laravel Application Routes",
@@ -77,6 +77,14 @@ Default configuration
         ["websockets"] = "persist",
         ["queue:restart"] = "watch",
     },
+    environment = {
+      resolver = require "laravel.environment.resolver"(true, true, nil),
+      environments = {
+        ["local"] = require("laravel.environment.native").setup(),
+        ["sail"] = require("laravel.environment.sail").setup(),
+        ["docker-compose"] = require("laravel.environment.docker_compose").setup(),
+      },
+    },
     resources = {
         ["make:cast"] = "app/Casts",
         ["make:channel"] = "app/Broadcasting",
@@ -115,6 +123,39 @@ Default configuration
 }
 ```
 
+## Environments
+There are many ways to run your laravel application, could be natively in you computer, using docker-compose, using sail, or others.
+Even using docker-compose you could have differences from project to project.
+In order to support this I have set a new configuration `environment`. Here you can set 2 properties.
+`resolver` this takes cares on determine which environment to use.
+This resolver will return the environment to use. This resolver first will look for an environment variable `NVIM_LARAVEL_ENV` with this will look with a configured environment with the same name.
+If is not set will be ignore, if it is set but could not find will throw an error.
+Next is the auto auto-discovery this will look for docker-compose is present and sail file in the vendor directory. If they are will use sail.
+If only docker-compose.yml file is present will use docker-compose environment
+If they are not will check if the php is executable will use local environment.
+The third part is try to use the provided default.
+You can configure the resolver my passing parameters
+```lua
+---@param env_check boolean
+---@param auto_discovery boolean
+---@param default string|nil
+return function(env_check, auto_discovery, default)
+```
+so to the resolver you can set to ignore the environment variable, ignore the auto_direcovery and just use the default
+```lua
+    resolver = require "laravel.environment.resolver"(false, false, "sail"),
+```
+
+The environment needs to return a list of executables in format of a table. This will be use when running the `run` method on the application `require('laravel.application').run('<command>', {"args"}, {options})`
+Let say you want to modify the sail command to be use you can do it by calling the setup method on the environment sail with options cmd
+```lua
+      ["sail"] = require("laravel.environment.sail").setup({cmd = {"my-sail-binary"}}),
+```
+You can set different commands for normal executables, or completely replace all the executables.
+If you add your executable you can call it using
+`require('laravel.application).run('executable', args, options)`
+
+
 ## Artisan
 To run Artisan commands you can use `:Artisan` which will autocomplete with the available
 artisan command as the terminal
@@ -152,7 +193,7 @@ As developer I want to enable other to extend this plugin to cover all your need
 
 To run artisan commands you can execute
 ```lua
-require('laravel.artisan').run({'your-command'})
+require('laravel.application').run('artisan', {'your-command'}, {})
 ```
 That is great but what about how to get the results not all commands behave in the same way.
 Currently there are several runners:
@@ -169,7 +210,7 @@ Currently there are several runners:
 
 So you can run commands like
 ```lua
-require('laravel.artisan').run({'your-command'}, 'persist')
+require('laravel.application').run('artisan', {'your-command'}, {runner = 'persist'})
 ```
 Each runner returns different values since it have different behave.
 
@@ -209,7 +250,7 @@ The commands have a default runner configure that you can customize
 
 ## Send to Tinker
 Working with laravel tinker is a great tool so after thinking how can improve my flow with it I decide that selecting lines and have them send to tinker it was a good idea
-So that is exactly what I did with the function `require("laravel").app.sendToTinker()` which will grab the selected lines and send them to the open tinker or open a new one if is not already.
+So that is exactly what I did with the function `require("laravel.tinker").send_to_tinker()` which will grab the selected lines and send them to the open tinker or open a new one if is not already.
 If you copy my keybindings from lazy or you can assign to your like is great.
 
 
@@ -227,8 +268,8 @@ local function start()
   vim.cmd "split new"
   local bot = vim.api.nvim_get_current_win()
 
-  local test_run = require("laravel.artisan").run({ "test" }, "watch", { open = false })
-  local dump_run = require("laravel.artisan").run({ "dump-server" }, "persist", { open = false })
+  local test_run = require("laravel.application").run('artisan', { "test" }, "watch", { open = false })
+  local dump_run = require("laravel.application").run('artisan', { "dump-server" }, "persist", { open = false })
 
   vim.api.nvim_win_set_buf(top, test_run.buff)
   vim.api.nvim_win_set_buf(bot, dump_run.buff)
@@ -241,10 +282,10 @@ After that we only need to set the buffer from the commands into the windows and
 Other example to just run everything
 ```lua
 vim.api.nvim_create_user_command("StartMyApp", function ()
-  require('laravel.artisan').run({"serve"})
-  require('laravel.artisan').run({"queue:restart"})
-  require('laravel.artisan').run({"queue:listen"})
-  require('laravel.yarn').run({"dev"}, "persist")
+  require('laravel.application').run('artisan', {"serve"})
+  require('laravel.application').run('artisan', {"queue:restart"})
+  require('laravel.application').run('artisan', {"queue:listen"})
+  require('laravel.application').run('yarn', {"dev"}, "persist")
 end, {})
 ```
 This will create your own command and when run will just call everyone of the commands, and split the windows as it needs and you resize when you want. Remember the `open = false` is an option to not have it display and run in the background.

@@ -3,7 +3,7 @@
 ---@param opts table
 ---@return table
 return function(cmd, opts)
-  local options = require("laravel").app.options
+  local options = require("laravel.application").get_options()
   local default = {
     focus = true,
     split = {

@@ -1,5 +1,6 @@
 local log = require("laravel.dev").log
 local utils = require "laravel.utils"
+local application = require "laravel.application"
 
 local M = {}
 
@@ -7,7 +8,7 @@ local M = {}
 ---@param resource string
 ---@param name string
 M.open = function(resource, name)
-  local directory = require("laravel").app.options.resources[resource]
+  local directory = application.get_options().resources[resource]
   local filename = ""
   if type(directory) == "function" then
     local err
@@ -39,7 +40,7 @@ end
 ---@param name string
 ---@return boolean
 M.is_resource = function(name)
-  return require("laravel").app.options.resources[name] ~= nil
+  return application.get_options().resources[name] ~= nil
 end
 
 --- Creates the resource and opens the file
@@ -53,7 +54,8 @@ M.create = function(cmd)
   local resource = cmd[1]
   local name = cmd[2]
 
-  require("laravel.artisan").run(cmd, "async", {
+  application.run("artisan", cmd, {
+    runner = "async",
     callback = function()
       M.open(resource, name)
     end,

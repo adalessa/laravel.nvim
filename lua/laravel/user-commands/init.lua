@@ -7,6 +7,7 @@ local modules = {
   "laravel",
   "npm",
   "yarn",
+  "docker_compose",
 }
 
 M.setup = function()

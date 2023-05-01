@@ -10,6 +10,7 @@ M.setup = function(opts)
     composer = opts.composer or { "composer" },
     npm = opts.npm or { "npm" },
     yarn = opts.yarn or { "yarn" },
+    php = opts.php or { "php" },
   }
 
   return {

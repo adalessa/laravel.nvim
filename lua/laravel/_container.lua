@@ -19,4 +19,7 @@ return {
     storage[key] = nil
     return nil
   end,
+  purge = function()
+    storage = {}
+  end
 }

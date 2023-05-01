@@ -3,7 +3,7 @@ local application = require "laravel.application"
 
 local commands = {
   ["cache:clean"] = function()
-    require("laravel.cache_manager").purge()
+    application.container.purge()
     utils.notify("laravel.cache:clean", { msg = "Cache cleaned", level = "INFO" })
   end,
   ["routes"] = function()

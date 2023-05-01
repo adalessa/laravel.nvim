@@ -17,6 +17,7 @@ M.setup = function(opts)
     npm = opts.npm or { get_cmd(), "npm" },
     yarn = opts.yarn or { get_cmd(), "yarn" },
     sail = opts.sail or cmd,
+    php = opts.php or { get_cmd(), "php" },
   }
 
   return {

@@ -18,6 +18,7 @@ M.setup = function(opts)
     composer = opts.composer or { get_cmd(), "composer" },
     npm = opts.npm or { get_cmd(), "npm" },
     yarn = opts.yarn or { get_cmd(), "yarn" },
+    php = opts.php or { get_cmd(), "php" },
     compose = opts.compose or { "docker", "compose" },
   }
 

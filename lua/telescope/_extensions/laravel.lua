@@ -7,7 +7,6 @@ local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
 local preview = require "laravel.telescope.preview"
 local make_entry = require "laravel.telescope.make_entry"
-local laravel_route = require "laravel.route"
 local laravel_commands = require "laravel.commands"
 local laravel_routes = require "laravel.routes"
 local application = require "laravel.application"
@@ -167,7 +166,7 @@ local routes = function(opts)
         map("i", "<cr>", function(prompt_bufnr)
           actions.close(prompt_bufnr)
           local entry = action_state.get_selected_entry()
-          laravel_route.open(entry.value)
+          laravel_routes.go_to(entry.value)
         end)
 
         return true

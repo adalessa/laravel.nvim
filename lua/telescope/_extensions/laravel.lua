@@ -167,7 +167,7 @@ local routes = function(opts)
         map("i", "<cr>", function(prompt_bufnr)
           actions.close(prompt_bufnr)
           local entry = action_state.get_selected_entry()
-          laravel_route.open(entry.value)
+          laravel_routes.go_to(entry.value)
         end)
 
         return true

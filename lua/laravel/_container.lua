@@ -21,5 +21,5 @@ return {
   end,
   purge = function()
     storage = {}
-  end
+  end,
 }

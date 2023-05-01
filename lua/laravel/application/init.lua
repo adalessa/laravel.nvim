@@ -78,10 +78,24 @@ end
 ---@return table, boolean
 local run = function(command, args, opts)
   opts = opts or {}
-  local cmd = build_command(command, args)
-  local runner = opts.runner or app.options.commands_runner[cmd[1]] or app.options.default_runner
+  local is_tinker = command == "artisan" and args[1] == "tinker"
 
-  return runners[runner](cmd, opts), true
+  local cmd = build_command(command, args)
+  local runner = opts.runner or app.options.commands_runner[args[1]] or app.options.default_runner
+
+  local result, ok = runners[runner](cmd, opts), true
+
+  if ok and is_tinker and runner == "terminal" then
+    container.set("tinker", result.term_id)
+    vim.api.nvim_create_autocmd({ "BufDelete" }, {
+      buffer = result.buff,
+      callback = function()
+        container.unset "tinker"
+      end,
+    })
+  end
+
+  return result, ok
 end
 
 return {

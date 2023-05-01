@@ -27,7 +27,7 @@ return {
     {
       "<leader>lt",
       function()
-        require("laravel").app.sendToTinker()
+        require("laravel.tinker").send_to_tinker()
       end,
       mode = "v",
       desc = "Laravel Application Routes",
@@ -250,7 +250,7 @@ The commands have a default runner configure that you can customize
 
 ## Send to Tinker
 Working with laravel tinker is a great tool so after thinking how can improve my flow with it I decide that selecting lines and have them send to tinker it was a good idea
-So that is exactly what I did with the function `require("laravel").app.sendToTinker()` which will grab the selected lines and send them to the open tinker or open a new one if is not already.
+So that is exactly what I did with the function `require("laravel.tinker").send_to_tinker()` which will grab the selected lines and send them to the open tinker or open a new one if is not already.
 If you copy my keybindings from lazy or you can assign to your like is great.
 
 

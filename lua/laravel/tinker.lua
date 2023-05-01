@@ -2,7 +2,7 @@ local utils = require "laravel.utils"
 local application = require "laravel.application"
 
 local function trim(s)
-  return s:match("^%s*(.-)%s*$")
+  return s:match "^%s*(.-)%s*$"
 end
 
 local send_to_tinker = function()

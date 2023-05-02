@@ -7,7 +7,7 @@ local M = {}
 M.setup = function(opts)
   opts = opts or {}
 
-  local container = opts.container_name or utils.get_env "APP_SERVICE" or "app"
+  local container = utils.get_env "APP_SERVICE" or opts.container_name or "app"
 
   local cmd = opts.cmd or { "docker", "compose", "exec", "-it", container }
 

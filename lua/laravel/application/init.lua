@@ -24,7 +24,7 @@ local initialize = function(options)
   end
 
   app = {
-    environment = env,
+    environment = env(),
     options = options,
   }
 end

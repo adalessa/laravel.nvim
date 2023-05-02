@@ -37,4 +37,12 @@ utils.get_vsel = function()
   }
 end
 
+utils.get_env = function(var)
+  if vim.fn.exists "*DotenvGet" == 1 then
+    return vim.fn.DotenvGet(var)
+  else
+    return vim.fn.eval("$" .. var)
+  end
+end
+
 return utils

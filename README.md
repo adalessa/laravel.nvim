@@ -19,6 +19,7 @@ return {
   "adalessa/laravel.nvim",
   dependencies = {
     "nvim-telescope/telescope.nvim",
+    "tpope/vim-dotenv",
   },
   cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
   keys = {
@@ -40,6 +41,8 @@ return {
   end,
 }
 ```
+
+Dotenv is use to read environment variables from the `.env` file
 
 For nicer notifications use `rcarriga/nvim-notify`
 My lazy configuration for notify is
@@ -154,6 +157,17 @@ Let say you want to modify the sail command to be use you can do it by calling t
 You can set different commands for normal executables, or completely replace all the executables.
 If you add your executable you can call it using
 `require('laravel.application).run('executable', args, options)`
+
+Changing the container name for docker compose
+```lua
+    require("laravel").setup({
+      environment = {
+        environments = {
+          ["docker-compose"] = require("laravel.environment.docker_compose").setup({container_name = "testing"}),
+        }
+      }
+    })
+```
 
 
 ## Artisan

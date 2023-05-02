@@ -41,7 +41,10 @@ return {
           application.container.unset(container_key)
           return
         end
-        application.container.set(container_key, laravel_route.from_json(j:result()))
+        local routes = laravel_route.from_json(j:result())
+        if #routes > 0 then
+          application.container.set(container_key, routes)
+        end
       end,
     })
   end,
@@ -67,7 +70,9 @@ return {
 
     routes = laravel_route.from_json(result.out)
 
-    application.container.set(container_key, routes)
+    if #routes > 0 then
+      application.container.set(container_key, routes)
+    end
 
     return routes
   end,

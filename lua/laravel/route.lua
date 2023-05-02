@@ -20,7 +20,7 @@ end
 ---@return LaravelRoute[]
 M.from_json = function(json)
   local routes = {}
-  if json == "" then
+  if json == "" or json == nil or #json == 0 then
     return routes
   end
   for _, route in ipairs(vim.fn.json_decode(json)) do

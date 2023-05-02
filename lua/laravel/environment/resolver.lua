@@ -1,21 +1,11 @@
 local utils = require "laravel.utils"
 
-local function env(var)
-  if vim.fn.exists "*DotenvGet" == 1 then
-    return vim.fn.DotenvGet(var)
-  else
-    return vim.fn.eval("$" .. var)
-  end
-end
-
 ---@param env_check boolean
 ---@param auto_discovery boolean
 ---@param default string|nil
 return function(env_check, auto_discovery, default)
   return function(environments)
-    -- TODO: base on the arguments resolve which environment should be use or nil
-    -- if no one matches the configuration
-    local env_name = env "NVIM_LARAVEL_ENV"
+    local env_name = utils.get_env "NVIM_LARAVEL_ENV"
     if env_check and env_name ~= "" then
       local environment = environments[env_name]
       if environment == nil then
@@ -50,7 +40,7 @@ return function(env_check, auto_discovery, default)
 
     if default then
       local environment = environments[default]
-      if env == nil then
+      if environment == nil then
         utils.notify(
           "Environment resolver",
           { msg = "Default define as " .. default .. " but there is no environment define", level = "ERROR" }

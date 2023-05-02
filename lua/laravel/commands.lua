@@ -27,7 +27,9 @@ return {
 
     commands = laravel_command.from_json(result.out)
 
-    application.container.set(container_key, commands)
+    if #commands > 0 then
+      application.container.set(container_key, commands)
+    end
 
     return commands
   end,
@@ -38,7 +40,10 @@ return {
         if exit_code == 1 then
           application.container.unset(container_key)
         end
-        application.container.set(container_key, laravel_command.from_json(j:result()))
+        local commands = laravel_command.from_json(j:result())
+        if #commands > 0 then
+          application.container.set(container_key, commands)
+        end
       end,
     })
   end,

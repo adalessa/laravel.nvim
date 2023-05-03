@@ -16,15 +16,16 @@ local initialize = function(options)
     return
   end
 
-  local env = environment.initialize(options.environment.environments, options.environment.resolver)
+  local resolvedEnv = environment.initialize(options.environment.environments, options.environment.resolver)
   -- fill with the environment
-  if not env then
+  if not resolvedEnv then
     utils.notify("App", { msg = "Could not initialize environment", level = "ERROR" })
     return
   end
 
   app = {
-    environment = env,
+    envSetup = resolvedEnv,
+    environment = resolvedEnv(),
     options = options,
   }
 end
@@ -63,6 +64,7 @@ local build_command = function(command, args)
 end
 
 local warmup = function()
+  app.environment = app.envSetup()
   require("laravel.commands").load()
   require("laravel.routes").load()
 end

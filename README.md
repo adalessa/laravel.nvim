@@ -129,28 +129,28 @@ Default configuration
 ## Environments
 There are many ways to run your laravel application, could be natively in you computer, using docker-compose, using sail, or others.
 Even using docker-compose you could have differences from project to project.
-In order to support this I have set a new configuration `environment`. Here you can set 2 properties.
-`resolver` this takes cares on determine which environment to use.
-This resolver will return the environment to use. This resolver first will look for an environment variable `NVIM_LARAVEL_ENV` with this will look with a configured environment with the same name.
-If is not set will be ignore, if it is set but could not find will throw an error.
-Next is the auto auto-discovery this will look for docker-compose is present and sail file in the vendor directory. If they are will use sail.
-If only docker-compose.yml file is present will use docker-compose environment
-If they are not will check if the php is executable will use local environment.
+In order to support this there is an `environment` configuration. Here you can set 2 properties.
+`resolver` takes care of determining which environment to use.
+The resolver will return the environment to use. The resolver will first look for an environment variable `NVIM_LARAVEL_ENV` which should correspond to configured environment name.
+If is not set it will be ignored, if it is set but could not be found an error will be thrown.
+Next is the auto auto-discovery this will look for docker-compose file and Sail file in the vendor directory. If they are present Sail will be used.
+If only docker-compose.yml file is present docker-compose environment will be used.
+If both checks fail will check if the php is executable and then local environment will be used.
 The third part is try to use the provided default.
-You can configure the resolver my passing parameters
+You can configure the resolver by passing parameters
 ```lua
 ---@param env_check boolean
 ---@param auto_discovery boolean
 ---@param default string|nil
 return function(env_check, auto_discovery, default)
 ```
-so to the resolver you can set to ignore the environment variable, ignore the auto_direcovery and just use the default
+Resolver can be configured to ignore environment variable, ignore auto-discovery and just use the default
 ```lua
     resolver = require "laravel.environment.resolver"(false, false, "sail"),
 ```
 
-The environment needs to return a list of executables in format of a table. This will be use when running the `run` method on the application `require('laravel.application').run('<command>', {"args"}, {options})`
-Let say you want to modify the sail command to be use you can do it by calling the setup method on the environment sail with options cmd
+The environment needs to return a function that returns a list of executables in format of a table. This will be used when running the `run` method on the application `require('laravel.application').run('<command>', {"args"}, {options})`
+Let say you want to modify the Sail command, you can do it by calling the setup method on the environment Sail with options cmd
 ```lua
       ["sail"] = require("laravel.environment.sail").setup({cmd = {"my-sail-binary"}}),
 ```

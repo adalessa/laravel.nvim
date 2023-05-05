@@ -10,7 +10,7 @@ Robust API to allow you to run any command in the way that you need.
 ![](./images/route_info.png)
 
 # Requirements
-Treesitter, LSP Server (I recommend phpactor)
+Treesitter, LSP Server (I use and recommend [phpactor](https://github.com/phpactor/phpactor))
 
 # Installation
 Lazy
@@ -70,11 +70,9 @@ Default configuration
     lsp_server = "phpactor",
     register_user_commands = true,
     route_info = true,
-    default_runner = "buffer",
+    default_runner = "terminal",
     commands_runner = {
         ["dump-server"] = "persist",
-        ["db"] = "terminal",
-        ["tinker"] = "terminal",
         ["queue:listen"] = "persist",
         ["serve"] = "persist",
         ["websockets"] = "persist",

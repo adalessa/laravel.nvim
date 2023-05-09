@@ -33,7 +33,7 @@ local commands = {
 
           return
         end
-        utils.notify("sail.ps", { raw = j:result(), level = "INFO" })
+        utils.notify("sail.ps", { raw = vim.fn.join(j:result(), "\n"), level = "INFO" })
       end,
     })
   end,

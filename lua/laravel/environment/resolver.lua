@@ -11,7 +11,10 @@ return function(env_check, auto_discovery, default)
       if environment == nil then
         utils.notify(
           "Environment resolver",
-          { msg = "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined", level = "ERROR" }
+          {
+            msg = "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined",
+            level = "ERROR",
+          }
         )
         return nil
       else

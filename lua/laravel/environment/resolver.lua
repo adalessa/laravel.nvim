@@ -6,13 +6,13 @@ local utils = require "laravel.utils"
 return function(env_check, auto_discovery, default)
   return function(environments)
     local env_name = utils.get_env "NVIM_LARAVEL_ENV"
-    if env_check and env_name ~= "" then
+    if env_check and env_name ~= nil then
       local environment = environments[env_name]
       if environment == nil then
-        utils.notify(
-          "Environment resolver",
-          { msg = "NVIM_LARAVEL_ENV define as " .. env_name .. " but there is no environment define", level = "ERROR" }
-        )
+        utils.notify("Environment resolver", {
+          msg = "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined",
+          level = "ERROR",
+        })
         return nil
       else
         return environment

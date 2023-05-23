@@ -1,13 +1,14 @@
 local M = {}
 
 local modules = {
-  "sail",
   "artisan",
   "composer",
-  "laravel",
-  "npm",
-  "yarn",
   "docker_compose",
+  "laravel",
+  "laravel_info",
+  "npm",
+  "sail",
+  "yarn",
 }
 
 M.setup = function()

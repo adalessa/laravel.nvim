@@ -127,4 +127,19 @@ return {
   get_options = check_ready(function()
     return app.options
   end),
+
+  get_info = function()
+    local info = {
+      ready = ready(),
+    }
+
+    if not ready() then
+      return info
+    end
+
+    info.options = app.options
+    info.environment = app.environment
+
+    return info
+  end,
 }

@@ -23,6 +23,7 @@ local config = {
   route_info = true,
   default_runner = "terminal",
   commands_runner = {
+    ["model:show"] = "buffer",
     ["dump-server"] = "persist",
     ["queue:listen"] = "persist",
     ["serve"] = "persist",

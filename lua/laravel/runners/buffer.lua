@@ -33,6 +33,11 @@ return function(cmd, opts)
     vim.fn.chansend(channel_id, data)
   end
 
+  -- this is to escape namespaces
+  for index, value in ipairs(cmd) do
+    cmd[index] = value:gsub("\\", "\\\\")
+  end
+
   local job_id = vim.fn.jobstart(vim.fn.join(cmd, " "), {
     stdeout_buffered = true,
     on_stdout = handle_output,

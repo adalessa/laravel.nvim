@@ -1,6 +1,7 @@
 local log = require("laravel.dev").log
 local application = require "laravel.application"
 local laravel_command = require "laravel.command"
+local utils = require "laravel.utils"
 
 local container_key = "artisan_commands"
 
@@ -8,7 +9,16 @@ return {
   clean = function()
     application.container.unset(container_key)
   end,
+
   list = function()
+    if not application.ready() then
+      utils.notify(
+        "Commands List",
+        { level = "ERROR", msg = "The application is not ready for current working directory" }
+      )
+      return nil
+    end
+
     local commands = application.container.get(container_key)
     if commands then
       return commands
@@ -33,6 +43,7 @@ return {
 
     return commands
   end,
+
   load = function()
     application.run("artisan", { "list", "--format=json" }, {
       runner = "async",

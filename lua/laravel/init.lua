@@ -17,15 +17,13 @@ function M.setup(opts)
 
   local options = vim.tbl_deep_extend("force", defaults, opts or {})
 
-  if not application.ready() then
-    application.initialize(options)
-  else
-    application.warmup()
-  end
+  application.initialize(options)
 
   if not application.ready() then
     return
   end
+
+  application.warmup()
 
   -- TODO: remove once 0.9 was general available
   if vim.fn.has "nvim-0.9.0" ~= 1 then

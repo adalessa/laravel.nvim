@@ -1,9 +1,13 @@
 ---@class split
----@field cmd string
----@field width integer
+---@field relative string
+---@field position string
+---@field size string
+---@field enter boolean
 local split = {
-  cmd = "vertical",
-  width = 120,
+  relative = "editor",
+  position = "right",
+  size = "30%",
+  enter = true,
 }
 
 ---@class laravel.config

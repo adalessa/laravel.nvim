@@ -64,8 +64,10 @@ Default configuration
 ```lua
 {
     split = {
-        cmd = "vertical",
-        width = 120,
+      relative = "editor",
+      position = "right",
+      size = "30%",
+      enter = true,
     },
     bind_telescope = true,
     lsp_server = "phpactor",

@@ -1,3 +1,4 @@
+local Split = require "nui.split"
 local utils = require "laravel.utils"
 
 ---@param cmd table
@@ -22,8 +23,10 @@ return function(cmd, opts)
     focus = true,
     buf_name = nil,
     split = {
-      cmd = options.split.cmd,
-      width = options.split.width,
+      relative = options.split.relative,
+      position = options.split.position,
+      size = options.split.size,
+      enter = options.split.enter,
     },
   }
 
@@ -55,20 +58,20 @@ return function(cmd, opts)
   end
 
   if opts.open then
-    local cur_window = vim.api.nvim_get_current_win()
-    vim.cmd(opts.split.cmd .. " new")
-    local new_window = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_width(new_window, opts.split.width + 5)
-    vim.api.nvim_win_set_buf(new_window, bufnr)
-
-    vim.cmd "stopinsert"
     if opts.focus then
-      vim.api.nvim_win_call(new_window, function ()
-        vim.cmd "startinsert"
-      end)
-    else
-      vim.api.nvim_set_current_win(cur_window)
+      opts.split.enter = true
     end
+
+    local split = Split(opts.split)
+
+    -- mount/open the component
+    split:mount()
+
+    vim.api.nvim_win_set_buf(split.winid, bufnr)
+
+    vim.api.nvim_win_call(split.winid, function()
+      vim.cmd "stopinsert"
+    end)
   end
 
   job_id = vim.fn.jobstart(sanetize_cmd(cmd), {

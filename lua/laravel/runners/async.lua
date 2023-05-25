@@ -4,7 +4,7 @@ local utils = require "laravel.utils"
 --- Runs and returns the command inmediately
 ---@param cmd table
 ---@param opts table
----@return table
+---@return table, boolean
 return function(cmd, opts)
   opts = opts or {}
   if type(cmd) ~= "table" then
@@ -12,7 +12,7 @@ return function(cmd, opts)
       msg = "cmd has to be a table",
       level = "ERROR",
     })
-    return { err = { "cmd is not a table" } }
+    return { err = { "cmd is not a table" } }, false
   end
 
   if type(opts.callback) ~= "function" then
@@ -20,7 +20,7 @@ return function(cmd, opts)
       msg = "callback not pass",
       level = "ERROR",
     })
-    return { err = { "callback is not a function" } }
+    return { err = { "callback is not a function" } }, false
   end
 
   local command = table.remove(cmd, 1)
@@ -34,5 +34,5 @@ return function(cmd, opts)
     end,
   }):start()
 
-  return {}
+  return {}, true
 end

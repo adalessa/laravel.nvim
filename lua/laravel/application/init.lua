@@ -82,10 +82,10 @@ local run = function(command, args, opts)
   local cmd = build_command(command, args)
   local runner = opts.runner or app.options.commands_runner[args[1]] or app.options.default_runner
 
-  local result, ok = runners[runner](cmd, opts), true
+  local result, ok = runners[runner](cmd, opts)
 
-  if ok and is_tinker and runner == "terminal" then
-    container.set("tinker", result.term_id)
+  if ok and is_tinker and runner == "buffer" then
+    container.set("tinker", result.job)
     vim.api.nvim_create_autocmd({ "BufDelete" }, {
       buffer = result.buff,
       callback = function()

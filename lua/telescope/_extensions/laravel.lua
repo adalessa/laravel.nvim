@@ -54,6 +54,7 @@ local function run_command(command, ask_options, runner)
   if resources.is_resource(cmd[1]) then
     return resources.create(cmd)
   end
+
   application.run("artisan", cmd, { runner = runner })
 end
 
@@ -82,7 +83,7 @@ local commands = function(opts)
       previewer = previewers.new_buffer_previewer {
         title = "Help",
         get_buffer_by_name = function(_, entry)
-          return entry.value
+          return entry.value.name
         end,
         define_preview = function(self, entry)
           local command_preview = preview.command(entry.value)
@@ -119,7 +120,7 @@ local commands = function(opts)
           ---@type LaravelCommand command
           local command = entry.value
 
-          run_command(command, false, "terminal")
+          run_command(command, false)
         end)
         return true
       end,
@@ -145,7 +146,7 @@ local routes = function(opts)
       previewer = previewers.new_buffer_previewer {
         title = "Help",
         get_buffer_by_name = function(_, entry)
-          return entry.value
+          return entry.value.name
         end,
         define_preview = function(self, entry)
           local route_preview = preview.route(entry.value)

@@ -8,7 +8,7 @@ end
 local send_to_tinker = function()
   local lines = utils.get_visual_selection()
   if nil == application.container.get "tinker" then
-    application.run("artisan", { "tinker" }, { runner = "terminal", focus = false })
+    application.run("artisan", { "tinker" }, { focus = false })
     if nil == application.container.get "tinker" then
       utils.notify("Send To Tinker", { msg = "Tinker terminal id not found and could create it", level = "ERROR" })
       return

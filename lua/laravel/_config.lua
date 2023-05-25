@@ -1,9 +1,13 @@
 ---@class split
----@field cmd string
----@field width integer
+---@field relative string
+---@field position string
+---@field size string
+---@field enter boolean
 local split = {
-  cmd = "vertical",
-  width = 120,
+  relative = "editor",
+  position = "right",
+  size = "30%",
+  enter = true,
 }
 
 ---@class laravel.config
@@ -21,9 +25,8 @@ local config = {
   register_user_commands = true,
   lsp_server = "phpactor",
   route_info = true,
-  default_runner = "terminal",
+  default_runner = "buffer",
   commands_runner = {
-    ["model:show"] = "buffer",
     ["dump-server"] = "persist",
     ["queue:listen"] = "persist",
     ["serve"] = "persist",

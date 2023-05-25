@@ -9,7 +9,9 @@ local function terminate(job_id)
   vim.fn.jobstop(job_id)
 end
 
-M.register = function(job_id)
+---@param job_id number
+---@param bufnr number
+M.register = function(job_id, bufnr)
   if not cleanup_autocmd then
     cleanup_autocmd = vim.api.nvim_create_autocmd("VimLeavePre", {
       desc = "Clean up running overseer tasks on exit",
@@ -22,6 +24,13 @@ M.register = function(job_id)
     })
   end
   all_channels[job_id] = true
+
+  vim.api.nvim_create_autocmd({ "BufUnload" }, {
+    buffer = bufnr,
+    callback = function()
+      M.terminate(job_id)
+    end,
+  })
 end
 
 M.unregister = function(job_id)

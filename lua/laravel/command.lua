@@ -57,12 +57,6 @@ M.get_runner = function(command)
     return runner
   end
 
-  for _, argument in ipairs(command.definition.arguments) do
-    if argument.is_required then
-      return "terminal"
-    end
-  end
-
   return application.get_options().default_runner
 end
 

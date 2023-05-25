@@ -3,7 +3,7 @@ local utils = require "laravel.utils"
 
 --- Runs and returns the command immediately
 ---@param cmd table
----@return table
+---@return table, boolean
 return function(cmd)
   if type(cmd) ~= "table" then
     utils.notify("runners.sync", {
@@ -14,7 +14,7 @@ return function(cmd)
       out = {},
       exit_code = 1,
       err = { "cmd is not a table" },
-    }
+    }, false
   end
 
   local command = table.remove(cmd, 1)
@@ -31,5 +31,5 @@ return function(cmd)
     out = stdout,
     exit_code = ret,
     err = stderr,
-  }
+  }, true
 end

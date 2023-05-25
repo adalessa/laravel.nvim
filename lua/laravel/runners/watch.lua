@@ -1,6 +1,6 @@
 ---@param cmd table
 ---@param opts table
----@return table
+---@return table, boolean
 return function(cmd, opts)
   opts = opts or {}
   local options = require("laravel.application").get_options()
@@ -74,5 +74,5 @@ return function(cmd, opts)
 
   return {
     buff = bufnr,
-  }
+  }, true
 end

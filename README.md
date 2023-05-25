@@ -64,14 +64,16 @@ Default configuration
 ```lua
 {
     split = {
-        cmd = "vertical",
-        width = 120,
+      relative = "editor",
+      position = "right",
+      size = "30%",
+      enter = true,
     },
     bind_telescope = true,
     lsp_server = "phpactor",
     register_user_commands = true,
     route_info = true,
-    default_runner = "terminal",
+    default_runner = "buffer",
     commands_runner = {
         ["dump-server"] = "persist",
         ["queue:listen"] = "persist",
@@ -213,7 +215,6 @@ Currently there are several runners:
 
 | Runner   | Description                                                                                                                                              |
 | -------- | ----------------------------------------------------------------                                                                                         |
-| terminal | Opens a new terminal in neovim with the command, this is usefull for commands that require interaction like tinker                                       |
 | buffer   | This opens an split and shows the results in a new buffer. This uses the `vim.fn.jobstart` to run the command                                            |
 | sync     | This is more for api since the result of the command will be directly return to work with                                                                |
 | async    | Similar to `sync` but it takes a callback and will call it once the data is loaded, usefull for long process and to not block the editor                 |
@@ -229,7 +230,6 @@ Each runner returns different values since it have different behave.
 
 | Runner   | Output                 |
 | --       | --                     |
-| terminal | {buff, term_id}        |
 | buffer   | {buff, job}            |
 | sync     | {out, exit_code, err } |
 | async    | {}                     |
@@ -251,8 +251,6 @@ The commands have a default runner configure that you can customize
     default_runner = "buffer",
     commands_runner = {
         ["dump-server"] = "persist",
-        ["db"] = "terminal",
-        ["tinker"] = "terminal",
         ["queue:listen"] = "persist",
         ["serve"] = "persist",
         ["websockets"] = "persist",

@@ -70,7 +70,8 @@ return function(cmd, opts)
     vim.api.nvim_win_set_buf(split.winid, bufnr)
 
     vim.api.nvim_win_call(split.winid, function()
-      vim.cmd "stopinsert"
+      -- vim.cmd "stopinsert"
+      vim.cmd "startinsert"
     end)
   end
 

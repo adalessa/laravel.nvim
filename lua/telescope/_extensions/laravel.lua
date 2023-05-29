@@ -22,39 +22,69 @@ local function run_command(command, ask_options, runner)
   -- it will feel like javascript callback hell
   -- since will have to for reach argument do an internal loop and from that pass a callback and so far
 
-  local arguments = {}
-  for _, argument in pairs(command.definition.arguments) do
+  ---@param argument CommandArgument
+  ---@return string
+  local function build_prompt(argument)
+    local prompt = argument.name
     if argument.is_required then
-      local arg = vim.fn.input(argument.name .. ": ")
-      if arg == "" then
+      prompt = prompt .. " <require>"
+    end
+
+    return prompt
+  end
+
+  local function get_arguments(args, callback, values)
+    if #args == 0 then
+      callback(values)
+      return
+    end
+
+    vim.ui.input({ prompt = build_prompt(args[1]) }, function(value)
+      if value == "" then
         return
       end
-      table.insert(arguments, arg)
+      table.insert(values, value)
+      table.remove(args, 1)
+      get_arguments(args, callback, values)
+    end)
+  end
+
+  local function run(args, options)
+    local cmd = { command.name }
+    for _, arg in pairs(args) do
+      table.insert(cmd, arg)
     end
-  end
 
-  local options = ""
-  if ask_options then
-    options = vim.fn.input "Options: "
-  end
-
-  local cmd = { command.name }
-
-  for _, value in pairs(arguments) do
-    table.insert(cmd, value)
-  end
-
-  if options ~= "" then
-    for _, value in pairs(vim.fn.split(options, " ")) do
-      table.insert(cmd, value)
+    if options ~= nil and options ~= "" then
+      for _, value in pairs(vim.fn.split(options, " ")) do
+        table.insert(cmd, value)
+      end
     end
+
+    local resources = require "laravel.resources"
+    if resources.is_resource(cmd[1]) then
+      return resources.create(cmd)
+    end
+
+    application.run("artisan", cmd, { runner = runner })
   end
 
-  local resources = require "laravel.resources"
-  if resources.is_resource(cmd[1]) then
-    return resources.create(cmd)
+  local args = {}
+  for _, argument in pairs(command.definition.arguments) do
+    table.insert(args, argument)
   end
-  application.run("artisan", cmd, { runner = runner })
+
+  get_arguments(args, function(values)
+    if ask_options then
+      vim.ui.input({ prompt = "Options" }, function(options)
+        run(values, options)
+      end)
+      return
+    end
+    run(values, nil)
+  end, {})
+
+  return true
 end
 
 local commands = function(opts)
@@ -82,7 +112,7 @@ local commands = function(opts)
       previewer = previewers.new_buffer_previewer {
         title = "Help",
         get_buffer_by_name = function(_, entry)
-          return entry.value
+          return entry.value.name
         end,
         define_preview = function(self, entry)
           local command_preview = preview.command(entry.value)
@@ -103,7 +133,9 @@ local commands = function(opts)
           ---@type LaravelCommand command
           local command = entry.value
 
-          run_command(command)
+          vim.schedule(function()
+            run_command(command)
+          end)
         end)
         map("i", "<C-y>", function(prompt_bufnr)
           actions.close(prompt_bufnr)
@@ -111,7 +143,9 @@ local commands = function(opts)
           ---@type LaravelCommand command
           local command = entry.value
 
-          run_command(command, true)
+          vim.schedule(function()
+            run_command(command, true)
+          end)
         end)
         map("i", "<c-t>", function(prompt_bufnr)
           actions.close(prompt_bufnr)
@@ -119,7 +153,9 @@ local commands = function(opts)
           ---@type LaravelCommand command
           local command = entry.value
 
-          run_command(command, false, "terminal")
+          vim.schedule(function()
+            run_command(command)
+          end)
         end)
         return true
       end,
@@ -145,7 +181,7 @@ local routes = function(opts)
       previewer = previewers.new_buffer_previewer {
         title = "Help",
         get_buffer_by_name = function(_, entry)
-          return entry.value
+          return entry.value.name
         end,
         define_preview = function(self, entry)
           local route_preview = preview.route(entry.value)
@@ -166,7 +202,9 @@ local routes = function(opts)
         map("i", "<cr>", function(prompt_bufnr)
           actions.close(prompt_bufnr)
           local entry = action_state.get_selected_entry()
-          laravel_routes.go_to(entry.value)
+          vim.schedule(function()
+            laravel_routes.go_to(entry.value)
+          end)
         end)
 
         return true

@@ -52,6 +52,14 @@ return {
     application.container.unset(container_key)
   end,
   list = function()
+    if not application.ready() then
+      utils.notify(
+        "Route List",
+        { level = "ERROR", msg = "The application is not ready for current working directory" }
+      )
+      return nil
+    end
+
     local routes = application.container.get(container_key)
     if routes then
       return routes

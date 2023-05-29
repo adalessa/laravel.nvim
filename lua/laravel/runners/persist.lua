@@ -2,8 +2,8 @@ local buffer = require "laravel.runners.buffer"
 
 --- Runs in a buffers as a job
 ---@param cmd table
----@param opts table
----@return table
+---@param opts table|nil
+---@return table, boolean
 return function(cmd, opts)
   opts = opts or {}
   opts.listed = true

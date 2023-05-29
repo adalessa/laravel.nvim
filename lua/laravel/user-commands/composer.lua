@@ -14,7 +14,7 @@ local commands = {
   ---@param cmd table
   require = function(cmd)
     table.insert(cmd, 1, "require")
-    application.run("composer", cmd, { runner = "terminal" })
+    application.run("composer", cmd, {})
   end,
 
   remove = function(cmd)

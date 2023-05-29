@@ -7,10 +7,7 @@ local app = nil
 
 ---@param options laravel.config
 local initialize = function(options)
-  if app ~= nil then
-    utils.notify("Application Initialize", { msg = "App already initialize", level = "ERROR" })
-    return
-  end
+  app = nil
 
   if vim.fn.filereadable "artisan" == 0 then
     return
@@ -85,10 +82,10 @@ local run = function(command, args, opts)
   local cmd = build_command(command, args)
   local runner = opts.runner or app.options.commands_runner[args[1]] or app.options.default_runner
 
-  local result, ok = runners[runner](cmd, opts), true
+  local result, ok = runners[runner](cmd, opts)
 
-  if ok and is_tinker and runner == "terminal" then
-    container.set("tinker", result.term_id)
+  if ok and is_tinker and runner == "buffer" then
+    container.set("tinker", result.job)
     vim.api.nvim_create_autocmd({ "BufDelete" }, {
       buffer = result.buff,
       callback = function()
@@ -100,20 +97,49 @@ local run = function(command, args, opts)
   return result, ok
 end
 
+---@param decorated function
+local check_ready = function(decorated)
+  return function(...)
+    if not ready() then
+      utils.notify(
+        "application",
+        { level = "ERROR", msg = "The application is not ready for current working directory" }
+      )
+    end
+
+    return decorated(...)
+  end
+end
+
 return {
   initialize = initialize,
 
-  run = run,
+  run = check_ready(run),
 
-  has_command = has_command,
+  has_command = check_ready(has_command),
 
-  warmup = warmup,
+  warmup = check_ready(warmup),
 
   ready = ready,
 
   container = container,
 
-  get_options = function()
+  get_options = check_ready(function()
     return app.options
+  end),
+
+  get_info = function()
+    local info = {
+      ready = ready(),
+    }
+
+    if not ready() then
+      return info
+    end
+
+    info.options = app.options
+    info.environment = app.environment
+
+    return info
   end,
 }

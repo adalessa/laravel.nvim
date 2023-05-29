@@ -19,7 +19,7 @@ local commands = {
     })
   end,
   shell = function()
-    application.run("sail", { "shell" }, { runner = "terminal" })
+    application.run("sail", { "shell" }, {})
   end,
 
   ps = function()

@@ -1,7 +1,10 @@
 local utils = require "laravel.utils"
 local laravel_routes = require "laravel.routes"
+local application = require "laravel.application"
 
 local get_node_text = vim.treesitter.get_node_text
+
+local options = application.get_options().route_info
 
 -- TODO: remove once 0.9 was general available
 if vim.fn.has "nvim-0.9.0" ~= 1 then
@@ -24,6 +27,41 @@ vim.treesitter.query.set(
 
 local function is_same_class(action, class)
   return string.sub(action, 1, string.len(class)) == class
+end
+
+local function generate_virtual_text_options(route)
+  if options.position == "right" then
+    return {
+      virt_text = {
+        { "[", "comment" },
+        { "Method: ", "comment" },
+        { vim.fn.join(route.methods, "|"), "@enum" },
+        { " Uri: ", "comment" },
+        { route.uri, "@enum" },
+        { " Middleware: ", "comment" },
+        { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
+        { "]", "comment" },
+      },
+    }
+  end
+  if options.position == "top" then
+    return {
+      virt_lines = {
+        {
+          { "    ", "" },
+          { "[", "comment" },
+          { "Method: ", "comment" },
+          { vim.fn.join(route.methods, "|"), "@enum" },
+          { " Uri: ", "comment" },
+          { route.uri, "@enum" },
+          { " Middleware: ", "comment" },
+          { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
+          { "]", "comment" },
+        },
+      },
+      virt_lines_above = true,
+    }
+  end
 end
 
 local function set_route_to_methods(event)
@@ -89,18 +127,7 @@ local function set_route_to_methods(event)
         action_full = action_full .. "@__invoke"
       end
       if action_full == method.full then
-        vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, {
-          virt_text = {
-            { "[", "comment" },
-            { "Method: ", "comment" },
-            { vim.fn.join(route.methods, "|"), "@enum" },
-            { " Uri: ", "comment" },
-            { route.uri, "@enum" },
-            { " Middleware: ", "comment" },
-            { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
-            { "]", "comment" },
-          },
-        })
+        vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, generate_virtual_text_options(route))
         found = true
       end
     end

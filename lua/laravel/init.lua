@@ -37,7 +37,7 @@ function M.setup(opts)
     require("laravel.user-commands").setup()
   end
 
-  if options.route_info then
+  if options.route_info.enable then
     require("laravel.route_info").register()
   end
 end

@@ -10,6 +10,10 @@ local split = {
   enter = true,
 }
 
+---@class route_info
+---@field enable boolean
+---@field position string
+
 ---@class laravel.config
 ---@field split split
 ---@field bind_telescope boolean
@@ -18,13 +22,16 @@ local split = {
 ---@field resources table
 ---@field register_user_commands boolean
 ---@field commands_runner table
----@field route_info boolean
+---@field route_info route_info
 local config = {
   split = split,
   bind_telescope = true,
   register_user_commands = true,
   lsp_server = "phpactor",
-  route_info = true,
+  route_info = {
+    enable = true,
+    position = "right",
+  },
   default_runner = "buffer",
   commands_runner = {
     ["dump-server"] = "persist",

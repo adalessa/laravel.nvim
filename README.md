@@ -72,7 +72,10 @@ Default configuration
     bind_telescope = true,
     lsp_server = "phpactor",
     register_user_commands = true,
-    route_info = true,
+    route_info = {
+      enable = true,
+      position = "right",
+    },
     default_runner = "buffer",
     commands_runner = {
         ["dump-server"] = "persist",

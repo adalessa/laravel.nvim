@@ -25,12 +25,14 @@ local function run_command(command, ask_options, runner)
   ---@param argument CommandArgument
   ---@return string
   local function build_prompt(argument)
-    local prompt = argument.name
+    local prompt = "Argument " .. argument.name .. " "
     if argument.is_required then
-      prompt = prompt .. " <require>"
+      prompt = prompt .. "<require>"
+    else
+      prompt = prompt .. "<optional>"
     end
 
-    return prompt
+    return prompt .. ":"
   end
 
   local function get_arguments(args, callback, values)
@@ -40,7 +42,7 @@ local function run_command(command, ask_options, runner)
     end
 
     vim.ui.input({ prompt = build_prompt(args[1]) }, function(value)
-      if value == "" then
+      if value == "" and args[1].is_required then
         return
       end
       table.insert(values, value)

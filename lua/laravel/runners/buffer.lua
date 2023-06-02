@@ -12,6 +12,38 @@ local function sanetize_cmd(cmd)
   return vim.fn.join(cmd, " ")
 end
 
+local function splitStrings(strings)
+  local result = {}
+
+  for _, str in ipairs(strings) do
+    local parts = {}
+    local stop
+    local start = 1
+    if str == "" then
+      table.insert(result, "")
+    else
+      while start <= #str do
+        local index = string.find(str, "\r", start + 1)
+
+        if index then
+          stop = index
+          table.insert(parts, string.sub(str, start, stop))
+          start = stop + 1
+        else
+          table.insert(parts, string.sub(str, start))
+          break
+        end
+      end
+
+      for _, part in ipairs(parts) do
+        table.insert(result, part)
+      end
+    end
+  end
+
+  return result
+end
+
 --- Runs in a buffers as a job
 ---@param cmd table
 ---@param opts table
@@ -54,7 +86,8 @@ return function(cmd, opts)
   })
 
   local function handle_output(_, data)
-    vim.fn.chansend(channel_id, data)
+    local lines = splitStrings(data)
+    vim.fn.chansend(channel_id, lines)
   end
 
   if opts.open then

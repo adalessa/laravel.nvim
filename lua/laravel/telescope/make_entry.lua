@@ -65,4 +65,36 @@ function make_entry.gen_from_laravel_routes(opts)
   end
 end
 
+function make_entry.gen_from_model_relations(opts)
+  opts = opts or {}
+
+  local displayer = entry_display.create {
+    separator = " ",
+    hl_chars = { ["["] = "TelescopeBorder", ["]"] = "TelescopeBorder" },
+    items = {
+      { width = 40 },
+      { width = 20 },
+      { remaining = true },
+    },
+  }
+
+  local make_display = function(entry)
+    return displayer {
+      { entry.value.class_name, "TelescopeResultsConstant" },
+      { entry.value.type, "TelescopeResultsIdentifier" },
+      { entry.value.extra_information or "", "TelescopeResultsFunction" },
+    }
+  end
+
+  return function(relation)
+    local class_parts = vim.split(relation.class, "\\")
+    relation.class_name = class_parts[#class_parts]
+    return make_entry.set_default_entry_mt({
+      value = relation,
+      ordinal = relation.class_name,
+      display = make_display,
+    }, opts)
+  end
+end
+
 return make_entry

@@ -86,7 +86,7 @@ local run = function(command, args, opts)
 
   local function getChannel()
     if runner == "buffer" then
-      return  result.job
+      return result.job
     elseif runner == "terminal" then
       return result.term_id
     end

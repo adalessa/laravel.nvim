@@ -39,6 +39,8 @@ local config = {
     ["serve"] = "persist",
     ["websockets"] = "persist",
     ["queue:restart"] = "watch",
+    ["tinker"] = "terminal",
+    ["db"] = "terminal",
   },
   environment = {
     resolver = require "laravel.environment.resolver"(true, true, nil),

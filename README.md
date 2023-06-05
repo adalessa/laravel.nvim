@@ -83,6 +83,8 @@ Default configuration
         ["serve"] = "persist",
         ["websockets"] = "persist",
         ["queue:restart"] = "watch",
+        ["tinker"] = "terminal",
+        ["db"] = "terminal",
     },
     environment = {
       resolver = require "laravel.environment.resolver"(true, true, nil),
@@ -223,6 +225,7 @@ Currently there are several runners:
 | async    | Similar to `sync` but it takes a callback and will call it once the data is loaded, usefull for long process and to not block the editor                 |
 | persist  | One thing with buffers is that are temprary once you close the buffer the job is terminated, for some process you don't want that like, npm dev or other |
 | watch    | This is usefull for commands that needs to be retrigger one files are modifed, like queues restart, or tests                                             |
+| terminal | This runner uses the invocation of the `:term <cmd>` this provide a fully experience in a terminal, but it can't escape arguments in the command to execute |
 
 
 So you can run commands like
@@ -238,6 +241,7 @@ Each runner returns different values since it have different behave.
 | async    | {}                     |
 | persist  | {buff, job}            |
 | watch    | {buff, job}            |
+| terminal | {buff, term_id}        |
 
 
 These runners are available for the following commands

@@ -84,8 +84,16 @@ local run = function(command, args, opts)
 
   local result, ok = runners[runner](cmd, opts)
 
-  if ok and is_tinker and runner == "buffer" then
-    container.set("tinker", result.job)
+  local function getChannel()
+    if runner == "buffer" then
+      return result.job
+    elseif runner == "terminal" then
+      return result.term_id
+    end
+  end
+
+  if ok and is_tinker then
+    container.set("tinker", getChannel())
     vim.api.nvim_create_autocmd({ "BufDelete" }, {
       buffer = result.buff,
       callback = function()

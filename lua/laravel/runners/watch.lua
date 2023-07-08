@@ -21,7 +21,7 @@ return function(cmd, opts)
   vim.api.nvim_buf_set_name(bufnr, buf_name)
 
   if opts.open then
-    vim.cmd( "vertical new")
+    vim.cmd "vertical new"
     local new_window = vim.api.nvim_get_current_win()
     vim.api.nvim_win_set_width(new_window, 85)
     vim.api.nvim_win_set_buf(new_window, bufnr)

@@ -13,7 +13,7 @@ local make_related = function(pickers, application, lsp, make_entry, finders, co
       local query = vim.treesitter.query.parse(
         lang,
         [[ (namespace_definition name: (namespace_name) @namespace)
-  	(class_declaration name: (name) @class) ]]
+        (class_declaration name: (name) @class) ]]
       )
       local tree = vim.treesitter.get_parser():parse()[1]:root()
       local bufNr = vim.fn.bufnr()

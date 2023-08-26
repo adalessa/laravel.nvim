@@ -32,18 +32,27 @@ local make_related = function(pickers, application, lsp, make_entry, finders, co
     if class ~= "" then
       local result, ok = application.run("artisan", { "model:show", class, "--json" }, { runner = "sync" })
       if not ok then
-	utils.notify("Artisan", { msg = "'php artisan model:show " .. class .. " --json' command failed", level = "ERROR" })
+        utils.notify(
+          "Artisan",
+          { msg = "'php artisan model:show " .. class .. " --json' command failed", level = "ERROR" }
+        )
         return nil
       end
 
       if result.exit_code ~= 0 or string.sub(result.out[1], 1, 1) ~= "{" or string.sub(result.out[1], -1) ~= "}" then
-	utils.notify("Artisan", { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" })
+        utils.notify(
+          "Artisan",
+          { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" }
+        )
         return nil
       end
 
       local model_info = vim.fn.json_decode(result.out[1])
       if model_info == nil then
-	utils.notify("Artisan", { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" })
+        utils.notify(
+          "Artisan",
+          { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" }
+        )
         return nil
       end
 
@@ -122,4 +131,4 @@ local make_related = function(pickers, application, lsp, make_entry, finders, co
   end
 end
 
-return make_related;
+return make_related

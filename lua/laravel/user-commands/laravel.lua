@@ -15,6 +15,9 @@ local commands = {
   ["test:watch"] = function()
     return application.run("artisan", { "test" }, { runner = "watch" })
   end,
+  ["related"] = function()
+    return require("telescope").extensions.laravel.related()
+  end,
 }
 
 return {

@@ -26,6 +26,7 @@ return {
   keys = {
     { "<leader>la", ":Laravel artisan<cr>" },
     { "<leader>lr", ":Laravel routes<cr>" },
+    { "<leader>lm", ":Laravel related<cr>" },
     {
       "<leader>lt",
       function()
@@ -197,6 +198,7 @@ You can run `shell` as tinker will open a new terminal
 `Laravel cache:clear` purge the cache clears the cache for commands.
 `Laravel commands` shows the list of artisan commands and executes it.
 `Laravel routes` show the list of routes and goes to the implementation.
+`Laravel related` show the list of model related classes, includes observers, policy and relations and goes to the implementation.
 `Laravel test` runs the application tests
 `Laravel test:watch` runs the application tests and keep monitoring the changes
 

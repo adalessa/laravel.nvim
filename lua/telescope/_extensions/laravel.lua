@@ -1,3 +1,4 @@
+local make_related = require "telescope.pickers.related"
 local telescope = require "telescope"
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
@@ -10,6 +11,12 @@ local make_entry = require "laravel.telescope.make_entry"
 local laravel_commands = require "laravel.commands"
 local laravel_routes = require "laravel.routes"
 local application = require "laravel.application"
+local lsp = require "laravel._lsp"
+
+---@class ModelRelation
+---@field class string
+---@field type string
+---@field extra_information string
 
 --- runs a command from telescope
 ---@param command LaravelCommand
@@ -219,5 +226,6 @@ return telescope.register_extension {
   exports = {
     commands = commands,
     routes = routes,
+    related = make_related(pickers, application, lsp, make_entry, finders, conf, actions, action_state),
   },
 }

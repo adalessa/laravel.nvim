@@ -1,5 +1,6 @@
 local Split = require "nui.split"
-local utils = require "laravel.utils"
+local notify = require("laravel.notify")
+local config = require("laravel.config")
 
 ---@param cmd table
 ---@return string
@@ -49,17 +50,11 @@ end
 ---@param opts table
 ---@return table, boolean
 return function(cmd, opts)
-  local options = require("laravel.application").get_options()
   local default = {
     open = true,
     focus = true,
     buf_name = nil,
-    split = {
-      relative = options.split.relative,
-      position = options.split.position,
-      size = options.split.size,
-      enter = options.split.enter,
-    },
+    split = config.options.split,
   }
 
   opts = vim.tbl_deep_extend("force", default, opts or {})
@@ -70,7 +65,7 @@ return function(cmd, opts)
 
   if opts.buf_name then
     if vim.fn.bufexists(opts.buf_name) == 1 then
-      utils.notify("Buffer Run", {
+      notify("Buffer Run", {
         msg = string.format("Buffer with the name `%s` already exists", opts.buf_name),
         level = "ERROR",
       })
@@ -119,7 +114,7 @@ return function(cmd, opts)
       end
     end,
     pty = true,
-    width = options.split.width,
+    width = config.options.split.width,
   })
 
   require("laravel._jobs").register(job_id, bufnr)

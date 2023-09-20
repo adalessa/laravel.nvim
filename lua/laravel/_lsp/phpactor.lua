@@ -1,5 +1,5 @@
 local lsp_utils = require "laravel._lsp.utils"
-local laravel_utils = require "laravel.utils"
+local notify = require("laravel.notify")
 
 ---@param client table
 ---@param is_new_instance boolean
@@ -14,7 +14,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   local locations = vim.lsp.util.symbols_to_items(resp.result or {}, nil) or {}
   if vim.tbl_isempty(locations) then
-    laravel_utils.notify("Route Open", { msg = "Empty response looking for class: " .. full_class, level = "WARN" })
+    notify("Route Open", { msg = "Empty response looking for class: " .. full_class, level = "WARN" })
     if is_new_instance then
       vim.lsp.stop_client(client.id)
     end
@@ -30,7 +30,7 @@ local function go_to(client, is_new_instance, full_class, method)
   end
 
   if class_location == nil then
-    laravel_utils.notify("Route Open", { msg = "Could not find class for : " .. full_class, level = "WARN" })
+    notify("Route Open", { msg = "Could not find class for : " .. full_class, level = "WARN" })
     if is_new_instance then
       vim.lsp.stop_client(client.id)
     end
@@ -46,7 +46,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   vim.lsp.buf_request(0, "textDocument/documentSymbol", params, function(method_err, method_server_result, _, _)
     if method_err then
-      laravel_utils.notify(
+      notify(
         "Route Open",
         { msg = "Error when finding workspace symbols: " .. method_err.message, level = "WARN" }
       )

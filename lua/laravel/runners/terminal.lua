@@ -1,13 +1,13 @@
+local config = require "laravel.config"
 --- Runs in a new terminal and can operate in the terminal
 ---@param cmd table
 ---@param opts table
 ---@return table, boolean
 return function(cmd, opts)
-  local options = require("laravel.application").get_options()
   local default = {
     focus = true,
     split = {
-      cmd = options.split.cmd,
+      cmd = config.options.split.cmd,
     },
   }
 

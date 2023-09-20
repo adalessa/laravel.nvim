@@ -1,15 +1,16 @@
-local utils = require "laravel.utils"
+local notify = require("laravel.notify")
+local get_env = require("laravel.environment.get_env")
 
 ---@param env_check boolean
 ---@param auto_discovery boolean
 ---@param default string|nil
 return function(env_check, auto_discovery, default)
   return function(environments)
-    local env_name = utils.get_env "NVIM_LARAVEL_ENV"
+    local env_name = get_env "NVIM_LARAVEL_ENV"
     if env_check and env_name ~= nil then
       local environment = environments[env_name]
       if environment == nil then
-        utils.notify("Environment resolver", {
+        notify("Environment resolver", {
           msg = "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined",
           level = "ERROR",
         })
@@ -41,7 +42,7 @@ return function(env_check, auto_discovery, default)
     if default then
       local environment = environments[default]
       if environment == nil then
-        utils.notify(
+        notify(
           "Environment resolver",
           { msg = "Default define as " .. default .. " but there is no environment define", level = "ERROR" }
         )
@@ -51,7 +52,7 @@ return function(env_check, auto_discovery, default)
       end
     end
 
-    utils.notify(
+    notify(
       "Environment resolver",
       { msg = "Could not resolve any environment please check your configuration", level = "ERROR" }
     )

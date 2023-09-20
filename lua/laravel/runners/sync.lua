@@ -1,12 +1,12 @@
 local Job = require "plenary.job"
-local utils = require "laravel.utils"
+local notify = require("laravel.notify")
 
 --- Runs and returns the command immediately
 ---@param cmd table
 ---@return table, boolean
 return function(cmd)
   if type(cmd) ~= "table" then
-    utils.notify("runners.sync", {
+    notify("runners.sync", {
       msg = "cmd has to be a table",
       level = "ERROR",
     })

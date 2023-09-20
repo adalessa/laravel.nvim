@@ -1,5 +1,5 @@
 local Job = require "plenary.job"
-local utils = require "laravel.utils"
+local notify = require("laravel.notify")
 
 --- Runs and returns the command inmediately
 ---@param cmd table
@@ -8,7 +8,7 @@ local utils = require "laravel.utils"
 return function(cmd, opts)
   opts = opts or {}
   if type(cmd) ~= "table" then
-    utils.notify("runner.async", {
+    notify("runner.async", {
       msg = "cmd has to be a table",
       level = "ERROR",
     })
@@ -16,7 +16,7 @@ return function(cmd, opts)
   end
 
   if type(opts.callback) ~= "function" then
-    utils.notify("runner.async", {
+    notify("runner.async", {
       msg = "callback not pass",
       level = "ERROR",
     })

@@ -1,4 +1,4 @@
-local utils = require "laravel.utils"
+local get_env = require("laravel.environment.get_env")
 
 local M = {}
 
@@ -8,7 +8,7 @@ M.setup = function(opts)
   return function()
     opts = opts or {}
 
-    local container = utils.get_env "APP_SERVICE" or opts.container_name or "app"
+    local container = get_env "APP_SERVICE" or opts.container_name or "app"
 
     local cmd = opts.cmd or { "docker", "compose", "exec", "-it", container }
 

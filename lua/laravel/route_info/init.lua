@@ -1,23 +1,9 @@
-local notify = require("laravel.notify")
+local notify = require "laravel.notify"
 local routes = require "laravel.routes"
 local config = require "laravel.config"
 
 local get_node_text = vim.treesitter.get_node_text
-
 local options = config.options.route_info
-
-vim.treesitter.query.set(
-  "php",
-  "laravel_route_info",
-  [[
-        (namespace_definition (namespace_name) @namespace)
-        (class_declaration (name) @class)
-        (method_declaration
-            (visibility_modifier) @visibility
-            (name) @method
-        )
-    ]]
-)
 
 local function is_same_class(action, class)
   return string.sub(action, 1, string.len(class)) == class
@@ -80,6 +66,22 @@ local function set_route_to_methods(event)
   end
 
   local query = vim.treesitter.query.get("php", "laravel_route_info")
+  if query == nil then
+    vim.treesitter.query.set(
+      "php",
+      "laravel_route_info",
+      [[
+        (namespace_definition (namespace_name) @namespace)
+        (class_declaration (name) @class)
+        (method_declaration
+            (visibility_modifier) @visibility
+            (name) @method
+        )
+    ]]
+    )
+
+    query = vim.treesitter.query.get("php", "laravel_route_info")
+  end
 
   local class, class_namespace, methods, visibilities = "", "", {}, {}
   local class_pos = 0

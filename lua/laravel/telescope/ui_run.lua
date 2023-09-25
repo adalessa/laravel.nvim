@@ -1,6 +1,6 @@
 local application_run = require "laravel.run"
 local is_resource = require "laravel.resources.is_resource"
-local create = require("laravel.resources.create")
+local create = require "laravel.resources.create"
 
 return function(command, ask_options, runner)
   local function build_prompt(argument)

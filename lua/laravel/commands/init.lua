@@ -9,13 +9,10 @@ M.list = {}
 function M.load()
   local result, ok = run("artisan", { "list", "--format=json" }, { runner = "sync" })
   if not ok or result.exit_code == 1 then
-    notify(
-      "Commands.Load",
-      {
-        msg = string.format("Failed to get commands %s %s", vim.inspect(result.out), vim.inspect(result.err)),
-        level = "ERROR",
-      }
-    )
+    notify("Commands.Load", {
+      msg = string.format("Failed to get commands %s %s", vim.inspect(result.out), vim.inspect(result.err)),
+      level = "ERROR",
+    })
     M.list = {}
 
     return false

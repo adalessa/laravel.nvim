@@ -1,4 +1,4 @@
-return function (funname, opts)
+return function(funname, opts)
   local level = vim.log.levels[opts.level]
   if not level then
     error("Invalid error level", 2)

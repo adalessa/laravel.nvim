@@ -1,6 +1,6 @@
 local phpactor = require "laravel._lsp.phpactor"
 local intelephense = require "laravel._lsp.intelephense"
-local notify = require("laravel.notify")
+local notify = require "laravel.notify"
 local config = require "laravel.config"
 
 local servers = {

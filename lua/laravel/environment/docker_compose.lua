@@ -1,4 +1,4 @@
-local get_env = require("laravel.environment.get_env")
+local get_env = require "laravel.environment.get_env"
 
 local M = {}
 

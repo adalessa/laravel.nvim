@@ -1,6 +1,6 @@
 local Split = require "nui.split"
-local notify = require("laravel.notify")
-local config = require("laravel.config")
+local notify = require "laravel.notify"
+local config = require "laravel.config"
 
 ---@param cmd table
 ---@return string

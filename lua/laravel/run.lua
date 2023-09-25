@@ -5,7 +5,7 @@ local runners = require "laravel.runners"
 ---@param name string
 ---@param args string[]
 ---@param opts table|nil
-return function (name, args, opts)
+return function(name, args, opts)
   opts = opts or {}
   local executable = environment.get_executable(name)
   local cmd = vim.fn.extend(executable, args)

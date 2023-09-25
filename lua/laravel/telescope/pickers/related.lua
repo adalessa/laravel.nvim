@@ -6,7 +6,7 @@ local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
-local notify = require("laravel.notify")
+local notify = require "laravel.notify"
 
 return function(opts)
   opts = opts or {}
@@ -40,10 +40,7 @@ return function(opts)
   if class ~= "" then
     local result, ok = run("artisan", { "model:show", class, "--json" }, { runner = "sync" })
     if not ok then
-      notify(
-        "Artisan",
-        { msg = "'php artisan model:show " .. class .. " --json' command failed", level = "ERROR" }
-      )
+      notify("Artisan", { msg = "'php artisan model:show " .. class .. " --json' command failed", level = "ERROR" })
       return nil
     end
 

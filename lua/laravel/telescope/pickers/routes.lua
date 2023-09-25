@@ -7,7 +7,7 @@ local previewers = require "telescope.previewers"
 local preview = require "laravel.telescope.preview"
 local make_entry = require "laravel.telescope.make_entry"
 local routes = require "laravel.routes"
-local go = require("laravel.routes.go")
+local go = require "laravel.routes.go"
 
 return function(opts)
   opts = opts or {}

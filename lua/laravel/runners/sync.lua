@@ -1,5 +1,5 @@
 local Job = require "plenary.job"
-local notify = require("laravel.notify")
+local notify = require "laravel.notify"
 
 --- Runs and returns the command immediately
 ---@param cmd table

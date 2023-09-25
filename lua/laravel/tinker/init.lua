@@ -1,6 +1,6 @@
-local notify = require("laravel.notify")
-local run = require("laravel.run")
-local get_selection = require("laravel.tinker.get_selection")
+local notify = require "laravel.notify"
+local run = require "laravel.run"
+local get_selection = require "laravel.tinker.get_selection"
 
 local function trim(s)
   return s:match "^%s*(.-)%s*$"
@@ -10,7 +10,7 @@ local M = {}
 
 M.current_terminal = nil
 
-function M.send_to_tinker ()
+function M.send_to_tinker()
   local lines = get_selection()
   if nil == M.current_terminal then
     run("artisan", { "tinker" }, { focus = false })

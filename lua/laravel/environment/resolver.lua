@@ -1,5 +1,5 @@
-local notify = require("laravel.notify")
-local get_env = require("laravel.environment.get_env")
+local notify = require "laravel.notify"
+local get_env = require "laravel.environment.get_env"
 
 ---@param env_check boolean
 ---@param auto_discovery boolean

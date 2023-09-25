@@ -1,5 +1,5 @@
 local lsp_utils = require "laravel._lsp.utils"
-local notify = require("laravel.notify")
+local notify = require "laravel.notify"
 
 ---@param client table
 ---@param is_new_instance boolean
@@ -46,10 +46,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   vim.lsp.buf_request(0, "textDocument/documentSymbol", params, function(method_err, method_server_result, _, _)
     if method_err then
-      notify(
-        "Route Open",
-        { msg = "Error when finding workspace symbols: " .. method_err.message, level = "WARN" }
-      )
+      notify("Route Open", { msg = "Error when finding workspace symbols: " .. method_err.message, level = "WARN" })
       if is_new_instance then
         vim.lsp.stop_client(client.id)
       end

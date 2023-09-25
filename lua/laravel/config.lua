@@ -26,7 +26,7 @@ M.defaults = {
     ["db"] = "terminal",
   },
   environment = {
-    resolver = require ("laravel.environment.resolver")(true, true, nil),
+    resolver = require "laravel.environment.resolver"(true, true, nil),
     environments = {
       ["local"] = require("laravel.environment.native").setup(),
       ["sail"] = require("laravel.environment.sail").setup(),

@@ -7,7 +7,7 @@ return function(name, executable, commands, opts)
       local command = args.fargs[1]
       if commands[command] ~= nil then
         table.remove(args.fargs, 1)
-        return commands[command](unpack(args.fargs))
+        return commands[command](args.fargs)
       end
 
       return run(executable, args.fargs, {})

@@ -11,8 +11,9 @@ function M.setup()
       run("composer", cmd, {})
     end,
 
-    install = function()
-      run("composer", { "install" }, {})
+    install = function(cmd)
+      table.insert(cmd, 1, "install")
+      run("composer", cmd, {})
     end,
 
     ---@param cmd table

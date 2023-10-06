@@ -79,13 +79,13 @@ Default configuration
     },
     default_runner = "buffer",
     commands_runner = {
-        ["dump-server"] = "persist",
-        ["queue:listen"] = "persist",
-        ["serve"] = "persist",
-        ["websockets"] = "persist",
-        ["queue:restart"] = "watch",
-        ["tinker"] = "terminal",
-        ["db"] = "terminal",
+      ["dump-server"] = { runner = "persist" },
+      ["queue:listen"] = { runner = "persist" },
+      ["serve"] = { runner = "persist" },
+      ["websockets"] = { runner = "persist" },
+      ["queue:restart"] = { runner = "watch" },
+      ["tinker"] = { runner = "terminal", skip_args = true },
+      ["db"] = { runner = "terminal" },
     },
     environment = {
       resolver = require "laravel.environment.resolver"(true, true, nil),
@@ -258,12 +258,14 @@ This is to provide the option to you to build what ever you need for you develop
 The commands have a default runner configure that you can customize
 ```lua
     default_runner = "buffer",
-    commands_runner = {
-        ["dump-server"] = "persist",
-        ["queue:listen"] = "persist",
-        ["serve"] = "persist",
-        ["websockets"] = "persist",
-        ["queue:restart"] = "watch",
+    commands_options = {
+      ["dump-server"] = { runner = "persist" },
+      ["queue:listen"] = { runner = "persist" },
+      ["serve"] = { runner = "persist" },
+      ["websockets"] = { runner = "persist" },
+      ["queue:restart"] = { runner = "watch" },
+      ["tinker"] = { runner = "terminal", skip_args = true },
+      ["db"] = { runner = "terminal" },
     },
 ```
 

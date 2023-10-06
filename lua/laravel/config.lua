@@ -16,17 +16,17 @@ M.defaults = {
     enable = true,
     position = "right",
   },
-  commands_runner = {
-    ["dump-server"] = "persist",
-    ["queue:listen"] = "persist",
-    ["serve"] = "persist",
-    ["websockets"] = "persist",
-    ["queue:restart"] = "watch",
-    ["tinker"] = "terminal",
-    ["db"] = "terminal",
+  commands_options = {
+    ["dump-server"] = { runner = "persist" },
+    ["queue:listen"] = { runner = "persist" },
+    ["serve"] = { runner = "persist" },
+    ["websockets"] = { runner = "persist" },
+    ["queue:restart"] = { runner = "watch" },
+    ["tinker"] = { runner = "terminal", skip_args = true },
+    ["db"] = { runner = "terminal" },
   },
   environment = {
-    resolver = require "laravel.environment.resolver"(true, true, nil),
+    resolver = require "laravel.environment.resolver" (true, true, nil),
     environments = {
       ["local"] = require("laravel.environment.native").setup(),
       ["sail"] = require("laravel.environment.sail").setup(),

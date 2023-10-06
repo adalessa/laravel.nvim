@@ -1,8 +1,10 @@
 local application_run = require "laravel.run"
 local is_resource = require "laravel.resources.is_resource"
 local create = require "laravel.resources.create"
+local config = require "laravel.config"
 
 return function(command, ask_options, runner)
+  local command_options = config.options.commands_options[command.name] or {}
   local function build_prompt(argument)
     local prompt = "Argument " .. argument.name .. " "
     if argument.is_required then
@@ -52,6 +54,17 @@ return function(command, ask_options, runner)
   local args = {}
   for _, argument in pairs(command.definition.arguments) do
     table.insert(args, argument)
+  end
+
+  if command_options.skip_args then
+    if ask_options then
+      vim.ui.input({ prompt = "Options" }, function(options)
+        run({}, options)
+      end)
+      return
+    end
+    run({}, nil)
+    return
   end
 
   get_arguments(args, function(values)

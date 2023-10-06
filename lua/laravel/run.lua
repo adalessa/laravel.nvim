@@ -10,7 +10,9 @@ return function(name, args, opts)
   local executable = environment.get_executable(name)
   local cmd = vim.fn.extend(executable, args)
 
-  local runner = opts.runner or config.options.commands_runner[args[1]] or config.options.default_runner
+  local command_option = config.options.commands_options[args[1]] or {}
+
+  local runner = opts.runner or command_option.runner or config.options.default_runner
 
   return runners[runner](cmd, opts)
 end

@@ -6,6 +6,10 @@ local M = {}
 M.environment = {}
 
 function M.setup()
+  if vim.fn.filereadable "artisan" == 0 then
+    return
+  end
+
   M.environment = config.options.environment.resolver(config.options.environment.environments)
   if type(M.environment) == "function" then
     M.environment = M.environment()

@@ -8,10 +8,7 @@ function M.setup(opts)
 
   config.setup(opts)
   autocmds.setup()
-
-  if vim.fn.filereadable "artisan" ~= 0 then
-    environment.setup()
-  end
+  environment.setup()
 end
 
 return M

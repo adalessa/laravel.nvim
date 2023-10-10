@@ -1,17 +1,11 @@
-local buffer = require "laravel.runners.buffer"
-local sync = require "laravel.runners.sync"
-local async = require "laravel.runners.async"
-local persist = require "laravel.runners.persist"
-local watch = require "laravel.runners.watch"
-local terminal = require "laravel.runners.terminal"
-
 local runners = {
-  buffer = buffer,
-  sync = sync,
-  async = async,
-  persist = persist,
-  watch = watch,
-  terminal = terminal,
+  async = require "laravel.runners.async",
+  buffer = require "laravel.runners.buffer",
+  popup = require "laravel.runners.popup",
+  split = require "laravel.runners.split",
+  sync = require "laravel.runners.sync",
+  terminal = require "laravel.runners.terminal",
+  watch = require "laravel.runners.watch",
 }
 
 return runners

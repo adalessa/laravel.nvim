@@ -290,8 +290,8 @@ local function start()
   vim.cmd "split new"
   local bot = vim.api.nvim_get_current_win()
 
-  local test_run = require("laravel.application").run('artisan', { "test" }, "watch", { open = false })
-  local dump_run = require("laravel.application").run('artisan', { "dump-server" }, "persist", { open = false })
+  local test_run = require("laravel.run")('artisan', { "test" },  {runner = "watch", open = false })
+  local dump_run = require("laravel.run")('artisan', { "dump-server" }, { runner = "persist", open = false })
 
   vim.api.nvim_win_set_buf(top, test_run.buff)
   vim.api.nvim_win_set_buf(bot, dump_run.buff)
@@ -304,10 +304,10 @@ After that we only need to set the buffer from the commands into the windows and
 Other example to just run everything
 ```lua
 vim.api.nvim_create_user_command("StartMyApp", function ()
-  require('laravel.application').run('artisan', {"serve"})
-  require('laravel.application').run('artisan', {"queue:restart"})
-  require('laravel.application').run('artisan', {"queue:listen"})
-  require('laravel.application').run('yarn', {"dev"}, "persist")
+  require('laravel.run')('artisan', {"serve"})
+  require('laravel.run')('artisan', {"queue:restart"})
+  require('laravel.run')('artisan', {"queue:listen"})
+  require('laravel.run')('yarn', {"dev"}, {runenr = "persist"})
 end, {})
 ```
 This will create your own command and when run will just call everyone of the commands, and split the windows as it needs and you resize when you want. Remember the `open = false` is an option to not have it display and run in the background.

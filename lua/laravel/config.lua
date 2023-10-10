@@ -11,7 +11,7 @@ M.defaults = {
   lsp_server = "phpactor",
   register_user_commands = true,
   bind_telescope = true,
-  default_runner = "buffer",
+  default_runner = "split",
   route_info = {
     enable = true,
     position = "right",
@@ -24,9 +24,10 @@ M.defaults = {
     ["queue:restart"] = { runner = "watch" },
     ["tinker"] = { runner = "terminal", skip_args = true },
     ["db"] = { runner = "terminal" },
+    ["docs"] = { runner = "popup", skip_args = true },
   },
   environment = {
-    resolver = require "laravel.environment.resolver" (true, true, nil),
+    resolver = require "laravel.environment.resolver"(true, true, nil),
     environments = {
       ["local"] = require("laravel.environment.native").setup(),
       ["sail"] = require("laravel.environment.sail").setup(),

@@ -1,5 +1,16 @@
 # Ideas
 
-Con telescope mostrar la lista de rutas y al seleccionar, llegar al controllador y al metodo
+Tengo los runners.
 
-- source: artisan list
+como se van a ver
+Split
+Popup
+
+
+watch
+buffer
+term
+
+como van a devolver resultado
+sync
+async

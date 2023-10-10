@@ -1,4 +1,3 @@
-local Split = require "nui.split"
 local notify = require "laravel.notify"
 local config = require "laravel.config"
 
@@ -59,11 +58,21 @@ return function(cmd, opts)
 
   opts = vim.tbl_deep_extend("force", default, opts or {})
 
-  local job_id = 0
+  if opts.persist then
+    opts.listed = true
+    opts.buf_name = vim.fn.join(cmd, " ")
+  end
 
-  local bufnr = vim.api.nvim_create_buf(opts.listed or false, true)
+  local job_id = 0
+  local bufnr
+  if opts.bufnr == nil then
+    bufnr = vim.api.nvim_create_buf(opts.listed or false, true)
+  else
+    bufnr = opts.bufnr
+  end
 
   if opts.buf_name then
+    ---@diagnostic disable-next-line: param-type-mismatch
     if vim.fn.bufexists(opts.buf_name) == 1 then
       notify("Buffer Run", {
         msg = string.format("Buffer with the name `%s` already exists", opts.buf_name),
@@ -85,24 +94,6 @@ return function(cmd, opts)
     vim.fn.chansend(channel_id, lines)
   end
 
-  if opts.open then
-    if opts.focus then
-      opts.split.enter = true
-    end
-
-    local split = Split(opts.split)
-
-    -- mount/open the component
-    split:mount()
-
-    vim.api.nvim_win_set_buf(split.winid, bufnr)
-
-    vim.api.nvim_win_call(split.winid, function()
-      -- vim.cmd "stopinsert"
-      vim.cmd "startinsert"
-    end)
-  end
-
   job_id = vim.fn.jobstart(sanetize_cmd(cmd), {
     stdeout_buffered = true,
     on_stdout = handle_output,
@@ -114,7 +105,7 @@ return function(cmd, opts)
       end
     end,
     pty = true,
-    width = config.options.split.width,
+    -- width = config.options.split.width,
   })
 
   require("laravel._jobs").register(job_id, bufnr)

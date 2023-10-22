@@ -37,10 +37,7 @@ return {
     },
   },
   event = { "VeryLazy" },
-  config = function()
-    require("laravel").setup()
-    require("telescope").load_extension "laravel"
-  end,
+  config = true,
 }
 ```
 

@@ -10,7 +10,7 @@ return function(cmd, opts)
   local split = Split(vim.tbl_extend("force", {
     relative = "editor",
     position = "right",
-    size = "20%",
+    size = "33%",
   }, opts.split or {}))
 
   split:mount()

@@ -6,6 +6,7 @@ local M = {}
 M.environment = {}
 
 function M.setup()
+  M.environment = {}
   if vim.fn.filereadable "artisan" == 0 then
     return
   end
@@ -24,6 +25,9 @@ end
 ---@param name string
 ---@return string[]|nil
 function M.get_executable(name)
+  if vim.tbl_isempty(M.environment) then
+    return nil
+  end
   local executable = M.environment.executables[name]
   if executable == nil then
     return nil

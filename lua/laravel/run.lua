@@ -8,6 +8,10 @@ local runners = require "laravel.runners"
 return function(name, args, opts)
   opts = opts or {}
   local executable = environment.get_executable(name)
+  if not executable then
+    error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
+    return
+  end
   local cmd = vim.fn.extend(executable, args)
 
   local command_option = config.options.commands_options[args[1]] or {}

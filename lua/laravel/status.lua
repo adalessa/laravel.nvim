@@ -27,7 +27,9 @@ local properties = {
         return nil
       end
       local res, _ = run("php", { "-v" }, { runner = "sync" })
-      return res.out[1]:match "PHP ([%d%.]+)"
+      values.php = res.out[1]:match "PHP ([%d%.]+)"
+
+      return values.php
     end,
   },
   laravel = {
@@ -46,7 +48,8 @@ local properties = {
 
       local res, _ = run("artisan", { "--version" }, { runner = "sync" })
 
-      return res.out[1]:match "Laravel Framework ([%d%.]+)"
+      values.laravel = res.out[1]:match "Laravel Framework ([%d%.]+)"
+      return values.laravel
     end,
   },
 }

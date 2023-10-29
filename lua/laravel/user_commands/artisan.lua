@@ -1,5 +1,7 @@
 local laravel_commands = require "laravel.commands"
 local config = require "laravel.config"
+local is_resource = require "laravel.resources.is_resource"
+local resources_create = require "laravel.resources.create"
 local run = require "laravel.run"
 
 local function get_artisan_auto_complete(current_match, full_command)
@@ -35,9 +37,8 @@ return {
         return
       end
 
-      local resources = require "laravel.resources"
-      if resources.is_resource(args.fargs[1]) then
-        return resources.create(args.fargs)
+      if is_resource(args.fargs[1]) then
+        return resources_create(args.fargs)
       end
 
       return run("artisan", args.fargs, {})

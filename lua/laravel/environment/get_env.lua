@@ -1,9 +1,9 @@
 return function(var)
   local envVal
-  if vim.fn.exists "*DotenvGet" == 1 then
-    envVal = vim.fn.DotenvGet(var)
+  if vim.api.nvim_call_function("exists", { "*DotenvGet" }) == 1 then
+    envVal = vim.api.nvim_call_function("DotenvGet", { var })
   else
-    envVal = vim.fn.eval("$" .. var)
+    envVal = vim.api.nvim_call_function("eval", { "$" .. var })
   end
 
   if envVal == "" then

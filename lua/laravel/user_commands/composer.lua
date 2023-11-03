@@ -1,6 +1,7 @@
 local notify = require "laravel.notify"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local run = require "laravel.run"
+local api = require "laravel.api"
 
 local M = {}
 
@@ -32,12 +33,9 @@ function M.setup()
     end,
 
     ["dump-autoload"] = function()
-      run("composer", { "dump-autoload" }, {
-        runner = "async",
-        callback = function()
-          notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
-        end,
-      })
+      api.async("composer", { "dump-autoload" }, function()
+        notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
+      end)
     end,
   })
 end

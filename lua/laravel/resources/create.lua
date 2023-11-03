@@ -1,7 +1,7 @@
-local run = require "laravel.run"
 local is_resource = require "laravel.resources.is_resource"
 local open = require "laravel.resources.open"
 local notify = require "laravel.notify"
+local api = require "laravel.api"
 
 return function(command)
   local resource = command[1]
@@ -16,12 +16,9 @@ return function(command)
     return false
   end
 
-  run("artisan", command, {
-    runner = "async",
-    callback = function()
-      open(resource, name)
-    end,
-  })
+  api.async("artisan", command, function()
+    open(resource, name)
+  end)
 
   return true
 end

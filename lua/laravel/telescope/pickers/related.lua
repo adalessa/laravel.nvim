@@ -1,12 +1,11 @@
 local pickers = require "telescope.pickers"
-local run = require "laravel.run"
 local lsp = require "laravel._lsp"
 local make_entry = require "laravel.telescope.make_entry"
 local finders = require "telescope.finders"
 local conf = require("telescope.config").values
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
-local notify = require "laravel.notify"
+local api = require "laravel.api"
 
 return function(opts)
   opts = opts or {}
@@ -38,30 +37,22 @@ return function(opts)
 
   local class = get_model_class_name()
   if class ~= "" then
-    local result, ok = run("artisan", { "model:show", class, "--json" }, { runner = "sync" })
-    if not ok then
-      notify("Artisan", { msg = "'php artisan model:show " .. class .. " --json' command failed", level = "ERROR" })
-      return nil
-    end
-
-    if result.exit_code ~= 0 or string.sub(result.out[1], 1, 1) ~= "{" or string.sub(result.out[1], -1) ~= "}" then
-      notify(
-        "Artisan",
-        { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" }
+    local result = api.sync("artisan", { "model:show", class, "--json" })
+    if result.exit_code == 1 then
+      error(
+        string.format("'php artisan model:show %s --json' failed %s", class, vim.inspect(result.stderr)),
+        vim.log.levels.ERROR
       )
-      return nil
     end
 
-    local model_info = vim.fn.json_decode(result.out[1])
+    local model_info = vim.fn.json_decode(result.stdout[1])
     if model_info == nil then
-      notify(
-        "Artisan",
-        { msg = "'php artisan model:show" .. class .. "  --json' response could not be decoded", level = "ERROR" }
+      error(
+        string.format("'php artisan model:show %s --json' response could not be decoded", class),
+        vim.log.levels.ERROR
       )
-      return nil
     end
 
-    ---@return ModelRelation|nil
     local build_relation = function(info, relation_type)
       if next(info) == nil then
         return nil

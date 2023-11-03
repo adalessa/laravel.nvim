@@ -1,24 +1,21 @@
-local run = require "laravel.run"
-local notify = require "laravel.notify"
 local utils = require "laravel.routes.utils"
+local api = require "laravel.api"
 
 local M = {}
 
 M.list = {}
 
 function M.load()
-  local result, ok = run("artisan", { "route:list", "--json" }, { runner = "sync" })
-  if not ok or result.exit_code == 1 then
-    notify(
-      "Routes.Load",
-      { msg = string.format("Failed to get routes %s %s", result.out, result.err), level = "ERROR" }
+  M.list = {}
+  local result = api.sync("artisan", { "route:list", "--json" })
+  if result.exit_code == 1 then
+    error(
+      string.format("Failed to get routes %s %s", vim.inspect(result.stdout), vim.inspect(result.stderr)),
+      vim.log.levels.ERROR
     )
-    M.list = {}
-
-    return false
   end
 
-  M.list = utils.from_json(result.out)
+  M.list = utils.from_json(result.stdout)
 
   return true
 end

@@ -1,5 +1,6 @@
 local environment = require "laravel.environment"
-local run = require "laravel.run"
+local api = require "laravel.api"
+
 local M = {}
 
 local counters = {
@@ -26,8 +27,8 @@ local properties = {
       if not environment.get_executable "php" then
         return nil
       end
-      local res, _ = run("php", { "-v" }, { runner = "sync" })
-      values.php = res.out[1]:match "PHP ([%d%.]+)"
+      local res = api.sync("php", { "-v" })
+      values.php = res.stdout[1]:match "PHP ([%d%.]+)"
 
       return values.php
     end,
@@ -46,9 +47,9 @@ local properties = {
         return nil
       end
 
-      local res, _ = run("artisan", { "--version" }, { runner = "sync" })
+      local res = api.sync("artisan", { "--version" })
 
-      values.laravel = res.out[1]:match "Laravel Framework ([%d%.]+)"
+      values.laravel = res.stdout[1]:match "Laravel Framework ([%d%.]+)"
       return values.laravel
     end,
   },

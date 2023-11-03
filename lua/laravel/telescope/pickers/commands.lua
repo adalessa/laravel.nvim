@@ -12,9 +12,7 @@ return function(opts)
   opts = opts or {}
 
   if #commands.list == 0 then
-    if not commands.load() then
-      return
-    end
+    commands.load()
   end
 
   pickers

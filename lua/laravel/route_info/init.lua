@@ -53,9 +53,7 @@ local function set_route_to_methods(event)
   vim.diagnostic.reset(namespace, bufnr)
 
   if #routes.list == 0 then
-    if not routes.load() then
-      return
-    end
+    routes.load()
   end
 
   local php_parser = vim.treesitter.get_parser(bufnr, "php")

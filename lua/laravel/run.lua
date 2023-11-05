@@ -1,6 +1,12 @@
 local config = require "laravel.config"
 local environment = require "laravel.environment"
-local runners = require "laravel.runners"
+local Split = require "nui.split"
+local Popup = require "nui.popup"
+
+local ui_builders = {
+  split = Split,
+  popup = Popup,
+}
 
 ---@param name string
 ---@param args string[]
@@ -16,7 +22,16 @@ return function(name, args, opts)
 
   local command_option = config.options.commands_options[args[1]] or {}
 
-  local runner = opts.runner or command_option.runner or config.options.default_runner
+  opts = vim.tbl_extend("force", command_option, opts)
 
-  return runners[runner](cmd, opts)
+  local selected_ui = opts.ui or config.options.ui.default
+
+  local instance = ui_builders[selected_ui](opts.nui_opts or {})
+
+  instance:mount()
+
+  -- This returns thhe job id
+  local _ = vim.fn.termopen(table.concat(cmd, " "))
+
+  vim.cmd "startinsert"
 end

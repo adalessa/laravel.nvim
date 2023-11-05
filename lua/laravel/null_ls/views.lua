@@ -44,7 +44,7 @@ function M.setup()
           local name = value:match(rule):gsub("/", ".")
           table.insert(candidates, {
             label = name,
-            insertText = string.format('"%s"', name),
+            insertText = string.format("'%s'", name),
             kind = vim.lsp.protocol.CompletionItemKind["Value"],
             documentation = value,
           })

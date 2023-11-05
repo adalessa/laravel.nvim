@@ -5,9 +5,14 @@ M.defaults = {
   ui = require "laravel.config.ui",
   lsp_server = "phpactor",
   register_user_commands = true,
-  route_info = {
-    enable = true,
-    position = "right",
+  features = {
+    null_ls = {
+      views = { enable = true },
+    },
+    route_info = {
+      enable = true,
+      position = "right",
+    },
   },
   commands_options = {
     ["queue:restart"] = { watch = true },

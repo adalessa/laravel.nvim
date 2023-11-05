@@ -17,8 +17,12 @@ function M.setup()
   end
 
   user_commands.setup()
-  if config.options.route_info.enable then
+  if config.options.features.route_info.enable then
     require("laravel.route_info").setup()
+  end
+
+  if config.options.features.null_ls.views.enable then
+    require("laravel.null_ls.views").setup()
   end
 end
 

@@ -64,15 +64,7 @@ return function(opts)
             ui_run(command, true)
           end)
         end)
-        map("i", "<c-t>", function(prompt_bufnr)
-          actions.close(prompt_bufnr)
-          local entry = action_state.get_selected_entry()
-          local command = entry.value
 
-          vim.schedule(function()
-            ui_run(command)
-          end)
-        end)
         return true
       end,
     })

@@ -3,7 +3,7 @@ local is_resource = require "laravel.resources.is_resource"
 local create = require "laravel.resources.create"
 local config = require "laravel.config"
 
-return function(command, ask_options, runner)
+return function(command, ask_options)
   local command_options = config.options.commands_options[command.name] or {}
   local function build_prompt(argument)
     local prompt = "Argument " .. argument.name .. " "
@@ -48,7 +48,7 @@ return function(command, ask_options, runner)
       return create(cmd)
     end
 
-    application_run("artisan", cmd, { runner = runner })
+    application_run("artisan", cmd, {})
   end
 
   local args = {}

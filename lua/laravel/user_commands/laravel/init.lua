@@ -19,6 +19,9 @@ local commands = {
   ["related"] = function()
     return require("telescope").extensions.laravel.related()
   end,
+  ["history"] = function()
+    return require("telescope").extensions.laravel.history()
+  end,
   ["info"] = require "laravel.user_commands.laravel.info",
 }
 

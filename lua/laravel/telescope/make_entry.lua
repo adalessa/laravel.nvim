@@ -1,6 +1,6 @@
 local entry_display = require "telescope.pickers.entry_display"
 
-local make_entry = {}
+local M = {}
 
 local handle_entry_index = function(opts, t, k)
   local override = ((opts or {}).entry_index or {})[k]
@@ -15,7 +15,7 @@ local handle_entry_index = function(opts, t, k)
   return val
 end
 
-make_entry.set_default_entry_mt = function(tbl, opts)
+M.set_default_entry_mt = function(tbl, opts)
   return setmetatable({}, {
     __index = function(t, k)
       local override = handle_entry_index(opts, t, k)
@@ -34,7 +34,7 @@ make_entry.set_default_entry_mt = function(tbl, opts)
   })
 end
 
-function make_entry.gen_from_laravel_routes(opts)
+function M.gen_from_laravel_routes(opts)
   opts = opts or {}
 
   local displayer = entry_display.create {
@@ -56,7 +56,7 @@ function make_entry.gen_from_laravel_routes(opts)
   end
 
   return function(route)
-    return make_entry.set_default_entry_mt({
+    return M.set_default_entry_mt({
       value = route,
       ordinal = route.uri,
       display = make_display,
@@ -65,7 +65,7 @@ function make_entry.gen_from_laravel_routes(opts)
   end
 end
 
-function make_entry.gen_from_model_relations(opts)
+function M.gen_from_model_relations(opts)
   opts = opts or {}
 
   local displayer = entry_display.create {
@@ -89,7 +89,7 @@ function make_entry.gen_from_model_relations(opts)
   return function(relation)
     local class_parts = vim.split(relation.class, "\\")
     relation.class_name = class_parts[#class_parts]
-    return make_entry.set_default_entry_mt({
+    return M.set_default_entry_mt({
       value = relation,
       ordinal = relation.class_name,
       display = make_display,
@@ -97,4 +97,4 @@ function make_entry.gen_from_model_relations(opts)
   end
 end
 
-return make_entry
+return M

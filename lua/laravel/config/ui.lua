@@ -6,6 +6,7 @@ return {
       relative = "editor",
       position = "right",
       size = "33%",
+      buf_options = {},
       win_options = {
         number = false,
         relativenumber = false,
@@ -25,6 +26,7 @@ return {
         width = "28%",
         height = "35%",
       },
+      buf_options = {},
       win_options = {
         number = false,
         relativenumber = false,

@@ -1,7 +1,8 @@
 local config = require "laravel.config"
 local environment = require "laravel.environment"
-local Split = require "nui.split"
+local history = require "laravel.history"
 local Popup = require "nui.popup"
+local Split = require "nui.split"
 
 local ui_builders = {
   split = Split,
@@ -26,12 +27,14 @@ return function(name, args, opts)
 
   local selected_ui = opts.ui or config.options.ui.default
 
-  local instance = ui_builders[selected_ui](opts.nui_opts or {})
+  local instance = ui_builders[selected_ui](opts.nui_opts or config.options.ui.nui_opts[selected_ui])
 
   instance:mount()
 
   -- This returns thhe job id
-  local _ = vim.fn.termopen(table.concat(cmd, " "))
+  local jobId = vim.fn.termopen(table.concat(cmd, " "))
+
+  history.add(jobId, name, args, opts)
 
   vim.cmd "startinsert"
 end

@@ -67,7 +67,6 @@ Default configuration
       size = "30%",
       enter = true,
     },
-    bind_telescope = true,
     lsp_server = "phpactor",
     register_user_commands = true,
     route_info = {

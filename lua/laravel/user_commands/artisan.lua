@@ -1,6 +1,5 @@
-local laravel_commands = require "laravel.commands"
-local config = require "laravel.config"
 local is_resource = require "laravel.resources.is_resource"
+local laravel_commands = require "laravel.commands"
 local resources_create = require "laravel.resources.create"
 local run = require "laravel.run"
 
@@ -28,13 +27,10 @@ return {
   setup = function()
     vim.api.nvim_create_user_command("Artisan", function(args)
       if args.args == "" then
-        if config.options.bind_telescope then
-          local ok, telescope = pcall(require, "telescope")
-          if ok then
-            return telescope.extensions.laravel.commands()
-          end
+        local ok, telescope = pcall(require, "telescope")
+        if ok then
+          return telescope.extensions.laravel.commands()
         end
-        return
       end
 
       if is_resource(args.fargs[1]) then

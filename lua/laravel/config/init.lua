@@ -5,7 +5,6 @@ M.defaults = {
   ui = require "laravel.config.ui",
   lsp_server = "phpactor",
   register_user_commands = true,
-  bind_telescope = true,
   route_info = {
     enable = true,
     position = "right",

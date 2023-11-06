@@ -3,7 +3,7 @@ local routes = require "laravel.routes"
 local config = require "laravel.config"
 
 local get_node_text = vim.treesitter.get_node_text
-local options = config.options.route_info
+local options = config.options.features.route_info
 
 local function is_same_class(action, class)
   return string.sub(action, 1, string.len(class)) == class

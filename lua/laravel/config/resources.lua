@@ -14,12 +14,9 @@ return {
   ["make:mail"] = "app/Mail",
   ["make:middleware"] = "app/Http/Middleware",
   ["make:migration"] = function(name)
-    local result = require("laravel.runners").sync { "fd", name .. ".php" }
-    if result.exit_code == 1 then
-      return "", result.error
-    end
+    local files = vim.fn.systemlist(string.format("fd %s.php", name))
 
-    return result.out, nil
+    return files[1], nil
   end,
   ["make:model"] = "app/Models",
   ["make:notification"] = "app/Notifications",

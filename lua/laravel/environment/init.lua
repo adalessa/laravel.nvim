@@ -21,8 +21,8 @@ function M.setup()
     require("laravel.route_info").setup()
   end
 
-  if config.options.features.null_ls.views.enable then
-    require("laravel.null_ls.views").setup()
+  if config.options.features.null_ls.enable then
+    require("laravel.null_ls").setup()
   end
 end
 

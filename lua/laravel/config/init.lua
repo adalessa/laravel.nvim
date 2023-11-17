@@ -7,7 +7,7 @@ M.defaults = {
   register_user_commands = true,
   features = {
     null_ls = {
-      views = { enable = true },
+      enable = true,
     },
     route_info = {
       enable = true,

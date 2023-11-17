@@ -2,6 +2,7 @@ local application_run = require "laravel.run"
 local is_resource = require "laravel.resources.is_resource"
 local create = require "laravel.resources.create"
 local config = require "laravel.config"
+local laravel_run = require "laravel.run"
 
 return function(command, ask_options)
   local command_options = config.options.commands_options[command.name] or {}
@@ -23,9 +24,17 @@ return function(command, ask_options)
     end
 
     vim.ui.input({ prompt = build_prompt(args[1]) }, function(value)
-      if value == "" and args[1].is_required then
+      -- esc value is nil
+      if value == nil and args[1].is_required then
         return
       end
+      -- enter value is ""
+      if value == "" and args[1].is_required then
+        print(vim.inspect(command))
+        laravel_run("artisan", { command.name }, { ui = "popup" })
+        return
+      end
+
       table.insert(values, value)
       table.remove(args, 1)
       get_arguments(args, callback, values)

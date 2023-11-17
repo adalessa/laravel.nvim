@@ -18,6 +18,7 @@ M.defaults = {
     ["queue:restart"] = { watch = true },
     ["tinker"] = { skip_args = true },
     ["docs"] = { ui = "popup", skip_args = true },
+    ["make:model"] = { options = { "-mf" } },
   },
   environment = {
     resolver = require "laravel.environment.resolver"(true, true, nil),

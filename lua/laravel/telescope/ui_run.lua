@@ -39,8 +39,12 @@ return function(command, ask_options)
     end
 
     if options ~= nil and options ~= "" then
-      for _, value in pairs(vim.fn.split(options, " ")) do
-        table.insert(cmd, value)
+      if type(options) == "string" then
+        for _, value in pairs(vim.fn.split(options, " ")) do
+          table.insert(cmd, value)
+        end
+      elseif type(options) == "table" then
+        cmd = vim.fn.extend(cmd, options)
       end
     end
 
@@ -74,7 +78,7 @@ return function(command, ask_options)
       end)
       return
     end
-    run(values, nil)
+    run(values, command_options.options)
   end, {})
 
   return true

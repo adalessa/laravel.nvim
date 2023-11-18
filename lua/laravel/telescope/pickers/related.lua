@@ -16,6 +16,11 @@ return function(opts)
     return false
   end
 
+  local res = api.sync("composer", { "info", "doctrine/dbal" })
+  if res.exit_code ~= 0 then
+    error "doctrine dbal not install this picker depends on it"
+  end
+
   local get_model_class_name = function()
     local query = vim.treesitter.query.parse(
       lang,
@@ -38,7 +43,7 @@ return function(opts)
   local class = get_model_class_name()
   if class ~= "" then
     local result = api.sync("artisan", { "model:show", class, "--json" })
-    if result.exit_code == 1 then
+    if result.exit_code ~= 0 then
       error(
         string.format("'php artisan model:show %s --json' failed %s", class, vim.inspect(result.stderr)),
         vim.log.levels.ERROR

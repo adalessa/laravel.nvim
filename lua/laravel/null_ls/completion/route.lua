@@ -4,7 +4,8 @@ return function(done)
   local candidates = {}
 
   if vim.tbl_isempty(routes.list) then
-    if not routes.load() then
+    local ok, res = pcall(routes.load)
+    if not ok or not res then
       return
     end
   end

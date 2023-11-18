@@ -3,6 +3,12 @@ return function(done)
 
   local candidates = {}
 
+  if vim.tbl_isempty(routes.list) then
+    if not routes.load() then
+      return
+    end
+  end
+
   for _, route in pairs(routes.list) do
     if route.name then
       table.insert(candidates, {

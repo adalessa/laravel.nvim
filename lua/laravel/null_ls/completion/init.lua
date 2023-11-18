@@ -5,6 +5,15 @@ local completions = {
   route = require "laravel.null_ls.completion.route",
 }
 
+local function get_function_node(param_node)
+  local node = param_node
+  while node ~= nil and node.type(node) ~= "function_call_expression" do
+    node = node:parent()
+  end
+
+  return node
+end
+
 function M.setup()
   local ok, null_ls = pcall(require, "null-ls")
   if not ok then
@@ -21,21 +30,29 @@ function M.setup()
       fn = function(params, done)
         local ts_utils = require "nvim-treesitter.ts_utils"
         local node = ts_utils.get_node_at_cursor()
-        node = node:parent()
-        while node ~= nil and node.type(node) ~= "function_call_expression" do
-          node = node:parent()
-        end
-        if node == nil then
+        if node.type(node) == "member_call_expression" then
+          -- print("memeber property")
+          -- to add support for model fields
           return
-        end
-        if node:child_count() > 0 then
-          local node_text = vim.treesitter.get_node_text(node:child(0), params.bufnr, {})
-
-          local completion = completions[node_text]
-          if not completion then
+        else
+          local func_node = get_function_node(node)
+          if not func_node then
             return
           end
-          completion(done)
+
+          if func_node:child_count() > 0 then
+            local node_text = vim.treesitter.get_node_text(func_node:child(0), params.bufnr, {})
+
+            -- encapsed_string initial node it means is in double quotes
+            -- string initial node it means single quotes
+            -- arguments does not have quotes
+            local have_quotes = node.type(node) == "encapsed_string" or node.type(node) == "string"
+            local completion = completions[node_text]
+            if not completion then
+              return
+            end
+            completion(done, not have_quotes)
+          end
         end
       end,
       async = true,

@@ -1,6 +1,6 @@
 local failed_last_time = false
 
-return function(done)
+return function(done, should_quote)
   local routes = require "laravel.routes"
 
   local candidates = {}
@@ -20,9 +20,13 @@ return function(done)
 
   for _, route in pairs(routes.list) do
     if route.name then
+      local insert = route.name
+      if should_quote then
+        insert = string.format("'%s'", route.name)
+      end
       table.insert(candidates, {
         label = string.format("%s (route)", route.name),
-        insertText = string.format("'%s'", route.name),
+        insertText = insert,
         kind = vim.lsp.protocol.CompletionItemKind["Value"],
         documentation = string.format("[%s] %s", route.name, route.uri),
       })

@@ -1,4 +1,4 @@
-return function(done)
+return function(done, should_quote)
   local scan = require "plenary.scandir"
   local api = require "laravel.api"
 
@@ -10,9 +10,14 @@ return function(done)
   local finds = scan.scan_dir(view_path, { hidden = false, depth = 4 })
   for _, value in pairs(finds) do
     local name = value:match(rule):gsub("/", ".")
+
+    local insert = name
+    if should_quote then
+      insert = string.format("'%s'", name)
+    end
     table.insert(candidates, {
       label = string.format("%s (view)", name),
-      insertText = string.format("'%s'", name),
+      insertText = insert,
       kind = vim.lsp.protocol.CompletionItemKind["Value"],
       documentation = value,
     })

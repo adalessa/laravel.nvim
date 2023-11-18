@@ -12,7 +12,7 @@ local go = require "laravel.routes.go"
 return function(opts)
   opts = opts or {}
 
-  if #routes.list == 0 then
+  if vim.tbl_isempty(routes.list) then
     if not routes.load() then
       return
     end

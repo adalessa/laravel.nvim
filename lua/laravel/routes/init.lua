@@ -8,7 +8,7 @@ M.list = {}
 function M.load()
   M.list = {}
   local result = api.sync("artisan", { "route:list", "--json" })
-  if result.exit_code == 1 then
+  if result.exit_code ~= 0 then
     error(
       string.format(
         "Failed to get routes check your code %s %s",

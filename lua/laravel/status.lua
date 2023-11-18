@@ -1,17 +1,31 @@
 local environment = require "laravel.environment"
 local api = require "laravel.api"
 
+local last_check = nil
+
 local M = {}
 
-local counters = {
-  php = 0,
-  laravel = 0,
-}
+local frequency = 120
 
 local values = {
   php = nil,
   laravel = nil,
 }
+
+local function get_values()
+  if last_check and (last_check + frequency > os.time()) then
+    return
+  end
+  if environment.get_executable "php" then
+    local res = api.sync("php", { "-v" })
+    values.php = res.stdout[1]:match "PHP ([%d%.]+)"
+  end
+  if environment.get_executable "artisan" then
+    local res = api.sync("artisan", { "--version" })
+    values.laravel = res.stdout[1]:match "Laravel Framework ([%d%.]+)"
+  end
+  last_check = os.time()
+end
 
 local properties = {
   php = {
@@ -19,17 +33,6 @@ local properties = {
       return environment.get_executable "php" ~= nil
     end,
     get = function()
-      counters.php = counters.php + 1
-      if values.php and counters.php < 60 then
-        return values.php
-      end
-      counters.php = 0
-      if not environment.get_executable "php" then
-        return nil
-      end
-      local res = api.sync("php", { "-v" })
-      values.php = res.stdout[1]:match "PHP ([%d%.]+)"
-
       return values.php
     end,
   },
@@ -38,24 +41,13 @@ local properties = {
       return environment.get_executable "artisan" ~= nil
     end,
     get = function()
-      counters.laravel = counters.laravel + 1
-      if values.laravel and counters.laravel < 60 then
-        return values.laravel
-      end
-      counters.laravel = 0
-      if not environment.get_executable "artisan" then
-        return nil
-      end
-
-      local res = api.sync("artisan", { "--version" })
-
-      values.laravel = res.stdout[1]:match "Laravel Framework ([%d%.]+)"
       return values.laravel
     end,
   },
 }
 
 function M.get(property)
+  get_values()
   return properties[property].get()
 end
 

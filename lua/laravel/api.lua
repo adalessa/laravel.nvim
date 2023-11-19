@@ -3,7 +3,7 @@ local environment = require "laravel.environment"
 
 local M = {}
 
-local function generate_command(name, args)
+function M.generate_command(name, args)
   local executable = environment.get_executable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
@@ -13,7 +13,7 @@ local function generate_command(name, args)
 end
 
 function M.sync(program, args)
-  local cmd = generate_command(program, args)
+  local cmd = M.generate_command(program, args)
 
   local command = table.remove(cmd, 1)
   local stderr = {}
@@ -33,7 +33,7 @@ function M.sync(program, args)
 end
 
 function M.async(program, args, callback)
-  local cmd = generate_command(program, args)
+  local cmd = M.generate_command(program, args)
 
   local command = table.remove(cmd, 1)
   Job:new({

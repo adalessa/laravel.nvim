@@ -1,12 +1,10 @@
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
 local conf = require("telescope.config").values
 local finders = require "telescope.finders"
 local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
 local preview = require "laravel.telescope.preview"
 local commands = require "laravel.commands"
-local ui_run = require "laravel.telescope.ui_run"
+local actions = require "laravel.telescope.actions"
 
 return function(opts)
   opts = opts or {}
@@ -46,24 +44,8 @@ return function(opts)
       },
       sorter = conf.file_sorter(),
       attach_mappings = function(_, map)
-        map("i", "<cr>", function(prompt_bufnr)
-          actions.close(prompt_bufnr)
-          local entry = action_state.get_selected_entry()
-          local command = entry.value
-
-          vim.schedule(function()
-            ui_run(command)
-          end)
-        end)
-        map("i", "<C-y>", function(prompt_bufnr)
-          actions.close(prompt_bufnr)
-          local entry = action_state.get_selected_entry()
-          local command = entry.value
-
-          vim.schedule(function()
-            ui_run(command, true)
-          end)
-        end)
+        map("i", "<cr>", actions.run)
+        map("i", "<C-y>", actions.run_asking_options)
 
         return true
       end,

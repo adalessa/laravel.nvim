@@ -1,10 +1,8 @@
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
 local conf = require("telescope.config").values
 local finders = require "telescope.finders"
 local history = require "laravel.history"
 local pickers = require "telescope.pickers"
-local run = require "laravel.run"
+local actions = require "laravel.telescope.actions"
 
 return function(opts)
   opts = opts or {}
@@ -27,11 +25,7 @@ return function(opts)
         sorter = conf.generic_sorter(opts or {}),
       },
       attach_mappings = function(_, map)
-        map("i", "<cr>", function(prompt_bufnr)
-          actions.close(prompt_bufnr)
-          local entry = action_state.get_selected_entry()
-          run(entry.value.name, entry.value.args, entry.value.opts)
-        end)
+        map("i", "<cr>", actions.re_run_command)
 
         return true
       end,

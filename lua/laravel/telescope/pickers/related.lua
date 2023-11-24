@@ -1,11 +1,9 @@
 local pickers = require "telescope.pickers"
-local lsp = require "laravel._lsp"
 local make_entry = require "laravel.telescope.make_entry"
 local finders = require "telescope.finders"
 local conf = require("telescope.config").values
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
 local api = require "laravel.api"
+local actions = require "laravel.telescope.actions"
 
 return function(opts)
   opts = opts or {}
@@ -115,14 +113,7 @@ return function(opts)
           sorter = conf.generic_sorter(opts or {}),
         },
         attach_mappings = function(_, map)
-          map("i", "<cr>", function(prompt_bufnr)
-            actions.close(prompt_bufnr)
-            local entry = action_state.get_selected_entry()
-            vim.schedule(function()
-              local action = vim.fn.split(entry.value.class, "@")
-              lsp.go_to(action[1], action[2])
-            end)
-          end)
+          map("i", "<cr>", actions.open_relation)
 
           return true
         end,

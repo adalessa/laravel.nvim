@@ -21,11 +21,14 @@
 - [X] maybe command for make only where only list commands of make principal laravel ones and open in a popup or how to configure from the command pallete
 - [X] completion detect or not quotes
 - [X] completion for model fields
-- [ ] clean completion for models
-- [ ] tinker interface
+- [X] remove completion for models
+- [ ] replace anonymous function from mapping with dedicated functions to have descriptions
+- [ ] recipes for ide-helper models and eloquent
+- [ ] using the get_type in completion is dangerus. better to replace it with ide-helper
 - [ ] implement watch
-- [ ] re-write the readme and translate (not forget fd as dependency) the counter does not work as I expect
+- [ ] tinker interface
 - [ ] virtual text info ???
+- [ ] re-write the readme and translate (not forget fd as dependency) the counter does not work as I expect
 
 
 Somethign like thinkerwell

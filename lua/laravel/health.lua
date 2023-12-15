@@ -45,7 +45,7 @@ M.check = function()
   local composer_dependencies = {
     {
       name = "doctrine/dbal",
-      messages = "This is required for model:show, related model picker and autocomplete",
+      messages = "This is required for model:show, related model picker",
     },
     {
       name = "laravel/tinker",
@@ -56,8 +56,7 @@ M.check = function()
   vim.health.report_start "Composer dependencies"
 
   for _, dependency in pairs(composer_dependencies) do
-    local res = api.sync("composer", { "info", dependency.name })
-    if res.exit_code == 0 then
+    if api.is_composer_package_install(dependency.name) then
       vim.health.report_ok(string.format("Composer dependency `%s` is installed", dependency.name))
     else
       vim.health.report_warn(

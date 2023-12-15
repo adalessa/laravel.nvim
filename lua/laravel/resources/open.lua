@@ -5,13 +5,7 @@ return function(resource, name)
   local directory = config.options.resources[resource]
   local filename = ""
   if type(directory) == "function" then
-    local err
-    filename, err = directory(name)
-    if err ~= nil then
-      notify("Resource.Open", { level = "ERROR", msg = "Error getting the name" })
-      return
-    end
-    filename = filename[1]
+    filename = directory(name)
   elseif type(directory) == "string" then
     filename = string.format("%s/%s.php", directory, name)
   end

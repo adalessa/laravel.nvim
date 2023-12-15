@@ -14,8 +14,7 @@ return function(opts)
     return false
   end
 
-  local res = api.sync("composer", { "info", "doctrine/dbal" })
-  if res.exit_code ~= 0 then
+  if not api.is_composer_package_install "doctrine/dbal" then
     error "doctrine dbal not install this picker depends on it"
   end
 

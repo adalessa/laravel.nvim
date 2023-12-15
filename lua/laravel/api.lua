@@ -14,9 +14,9 @@ end
 
 function M.sync(program, args)
   local cmd = M.generate_command(program, args)
-
   local command = table.remove(cmd, 1)
   local stderr = {}
+
   local stdout, ret = Job:new({
     command = command,
     args = cmd,
@@ -34,13 +34,17 @@ end
 
 function M.async(program, args, callback)
   local cmd = M.generate_command(program, args)
-
   local command = table.remove(cmd, 1)
+
   Job:new({
     command = command,
     args = cmd,
     on_exit = vim.schedule_wrap(callback),
   }):start()
+end
+
+function M.is_composer_package_install(package)
+  return M.sync("composer", { "info", package }).exit_code == 0
 end
 
 return M

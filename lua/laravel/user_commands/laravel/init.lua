@@ -8,9 +8,9 @@ local commands = {
   end,
   ["routes"] = require("telescope").extensions.laravel.routes,
   ["artisan"] = require("telescope").extensions.laravel.commands,
-  -- ["test:watch"] = function()
-  --   return run("artisan", { "test" }, { runner = "watch" })
-  -- end,
+  ["test:watch"] = function()
+    require "laravel.watch"("artisan", { "test" })
+  end,
   ["related"] = require("telescope").extensions.laravel.related,
   ["history"] = require("telescope").extensions.laravel.history,
   ["recipes"] = require("laravel.recipes").run,

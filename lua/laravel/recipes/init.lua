@@ -6,6 +6,10 @@ local M = {}
 
 function M.run()
   vim.ui.select(vim.tbl_keys(recipes), { prompt = "Recipe to run:" }, function(recipeName)
+    if not recipeName then
+      return
+    end
+
     local recipe = recipes[recipeName]
     if recipe == nil then
       error(string.format("Recipe %s not found", recipeName), vim.log.levels.ERROR)

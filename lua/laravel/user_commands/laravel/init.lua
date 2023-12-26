@@ -26,7 +26,10 @@ return {
         return commands[command](unpack(args.fargs))
       end
 
-      vim.ui.select(vim.tbl_keys(commands), { prompt = "Laravel Plugin:" }, function(action)
+      vim.ui.select(vim.fn.sort(vim.tbl_keys(commands)), { prompt = "Laravel Plugin:" }, function(action)
+        if not action then
+          return
+        end
         if commands[action] ~= nil then
           commands[action]()
         end

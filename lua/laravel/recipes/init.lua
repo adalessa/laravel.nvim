@@ -1,5 +1,6 @@
 local recipes = {
   ["ide-helper"] = require "laravel.recipes.ide-helper",
+  ["doctrine-dbal"] = require "laravel.recipes.doctrine-dbal",
 }
 
 local M = {}

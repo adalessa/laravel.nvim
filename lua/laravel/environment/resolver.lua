@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local get_env = require "laravel.environment.get_env"
 
 ---@param env_check boolean
@@ -10,10 +9,10 @@ return function(env_check, auto_discovery, default)
     if env_check and env_name ~= nil then
       local environment = environments[env_name]
       if environment == nil then
-        notify("Environment resolver", {
-          msg = "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined",
-          level = "ERROR",
-        })
+        vim.notify(
+          "NVIM_LARAVEL_ENV defined as " .. env_name .. " but there is no such environment defined",
+          vim.log.levels.ERROR
+        )
         return nil
       else
         return environment
@@ -46,20 +45,14 @@ return function(env_check, auto_discovery, default)
     if default then
       local environment = environments[default]
       if environment == nil then
-        notify(
-          "Environment resolver",
-          { msg = "Default define as " .. default .. " but there is no environment define", level = "ERROR" }
-        )
+        vim.notify("Default define as " .. default .. " but there is no environment define", vim.log.levels.ERROR)
         return nil
       else
         return environment
       end
     end
 
-    notify(
-      "Environment resolver",
-      { msg = "Could not resolve any environment please check your configuration", level = "ERROR" }
-    )
+    vim.notify("Could not resolve any environment please check your configuration", vim.log.levels.ERROR)
     return nil
   end
 end

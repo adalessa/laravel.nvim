@@ -1,6 +1,5 @@
 local phpactor = require "laravel._lsp.phpactor"
 local intelephense = require "laravel._lsp.intelephense"
-local notify = require "laravel.notify"
 local config = require "laravel.config"
 
 local servers = {
@@ -18,6 +17,9 @@ local get_client = function(server_name)
   if not client then
     local server = require("lspconfig")[server_name]
     local client_id = vim.lsp.start(server.make_config(vim.fn.getcwd()))
+    if not client_id then
+      error "Could not start lsp client"
+    end
     client = vim.lsp.get_client_by_id(client_id)
     new_instance = true
   end
@@ -32,14 +34,14 @@ local go_to = function(full_class, method)
 
   local server = servers[server_name]
   if server == nil then
-    notify("Route open", { msg = "No server name " .. server_name, level = "WARN" })
+    vim.notify(string.format("No server with name %s found", server_name), vim.log.levels.WARN)
     return
   end
 
   local client, is_new_instance = get_client(server_name)
 
   if not client then
-    notify("Route open", { msg = "Can't get lsp client", level = "WARN" })
+    vim.notify("Can't get lsp client", vim.log.levels.WARN)
     return
   end
 

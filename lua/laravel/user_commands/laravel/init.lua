@@ -1,10 +1,8 @@
-local notify = require "laravel.notify"
-
 local commands = {
   ["cache:clean"] = function()
     require("laravel.commands").list = {}
     require("laravel.routes").list = {}
-    notify("laravel.cache:clean", { msg = "Cache cleaned", level = "INFO" })
+    vim.notify("Laravel plugin cache cleaned", vim.log.levels.INFO)
   end,
   ["routes"] = require("telescope").extensions.laravel.routes,
   ["artisan"] = require("telescope").extensions.laravel.commands,

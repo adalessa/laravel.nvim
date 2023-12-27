@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local routes = require "laravel.routes"
 local config = require "laravel.config"
 
@@ -59,8 +58,7 @@ local function set_route_to_methods(event)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   local tree = php_parser:parse()[1]
   if tree == nil then
-    notify("route_info.set_route_to_methods", { msg = "Could not retrive syntax tree", level = "WARN" })
-    return
+    error("Could not retrieve syntx tree", vim.log.levels.ERROR)
   end
 
   local query = vim.treesitter.query.get("php", "laravel_route_info")

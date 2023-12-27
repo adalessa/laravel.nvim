@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local environment = require "laravel.environment"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local api = require "laravel.api"
@@ -12,57 +11,61 @@ function M.setup()
 
   create_user_command("DockerCompose", "compose", {
     up = function()
-      api.async("compose", { "up", "-d" }, function(j, exit_code)
-        if exit_code ~= 0 then
-          notify(
-            "compose.up",
-            { msg = string.format("Error on Compose up. %s", vim.inspection(j:result())), level = "ERROR" }
-          )
-
-          return
+      api.async(
+        "compose",
+        { "up", "-d" },
+        ---@param response ApiResponse
+        function(response)
+          if response:failed() then
+            error(response:errors(), vim.log.levels.ERROR)
+          end
+          vim.notify("Compose Up Completed", vim.log.levels.INFO)
         end
-        notify("compose.up", { msg = "Completed", level = "INFO" })
-      end)
+      )
     end,
 
     ps = function()
-      api.async("compose", { "ps" }, function(j, exit_code)
-        if exit_code ~= 0 then
-          notify("compose.ps", { msg = "Failed to run compose up", level = "ERROR" })
-
-          return
+      api.async(
+        "compose",
+        { "ps" },
+        ---@param response ApiResponse
+        function(response)
+          if response:failed() then
+            error(response:errors(), vim.log.levels.ERROR)
+          end
+          vim.notify(response:prettyContent(), vim.log.levels.INFO)
         end
-        notify("compose.ps", { raw = j:result(), level = "INFO" })
-      end)
+      )
     end,
 
     restart = function()
-      api.async("compose", { "restart" }, function(j, exit_code)
-        if exit_code ~= 0 then
-          notify(
-            "compose.restart",
-            { msg = string.format("Failed to restart compose. %s", vim.inspect(j:result())), level = "ERROR" }
-          )
+      api.async(
+        "compose",
+        { "restart" },
+        ---@param response ApiResponse
+        function(response)
+          if response:failed() then
+            error(response:errors(), vim.log.levels.ERROR)
+          end
 
-          return
+          vim.notify("Compose restart complete", vim.log.levels.INFO)
         end
-        notify("compose.restart", { msg = "compose restart complete", level = "INFO" })
-      end)
-      notify("compose.restart", { msg = "compose restart starting", level = "INFO" })
+      )
+      vim.notify("Compose restart starting", vim.log.levels.INFO)
     end,
 
     down = function()
-      api.async("compose", { "down" }, function(j, exit_code)
-        if exit_code ~= 0 then
-          notify(
-            "compose.down",
-            { msg = string.format("Failed to down compose. %s", vim.inspect(j:result())), level = "ERROR" }
-          )
-
-          return
+      api.async(
+        "compose",
+        { "down" },
+        ---@param response ApiResponse
+        function(response)
+          if response:failed() then
+            error(response:errors(), vim.log.levels.ERROR)
+          end
+          vim.notify("Compose Down complete", vim.log.levels.INFO)
         end
-        notify("compose.down", { msg = "compose Down complete", level = "INFO" })
-      end)
+      )
     end,
   })
 end

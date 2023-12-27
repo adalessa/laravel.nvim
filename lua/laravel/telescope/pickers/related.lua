@@ -40,19 +40,13 @@ return function(opts)
   local class = get_model_class_name()
   if class ~= "" then
     local result = api.sync("artisan", { "model:show", class, "--json" })
-    if result.exit_code ~= 0 then
-      error(
-        string.format("'php artisan model:show %s --json' failed %s", class, vim.inspect(result.stderr)),
-        vim.log.levels.ERROR
-      )
+    if result:failed() then
+      error(result:errors(), vim.log.levels.ERROR)
     end
 
     local model_info = vim.fn.json_decode(result.stdout[1])
     if model_info == nil then
-      error(
-        string.format("'php artisan model:show %s --json' response could not be decoded", class),
-        vim.log.levels.ERROR
-      )
+      error(string.format("'artisan model:show %s --json' response could not be decoded", class), vim.log.levels.ERROR)
     end
 
     local build_relation = function(info, relation_type)

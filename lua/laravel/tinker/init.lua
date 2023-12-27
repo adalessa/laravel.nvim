@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local run = require "laravel.run"
 local get_selection = require "laravel.tinker.get_selection"
 
@@ -15,8 +14,7 @@ function M.send_to_tinker()
   if nil == M.current_terminal then
     run("artisan", { "tinker" }, { focus = false })
     if nil == M.current_terminal then
-      notify("Send To Tinker", { msg = "Tinker terminal id not found and could create it", level = "ERROR" })
-      return
+      error("Tinker terminal id not found and could create it", vim.log.levels.ERROR)
     end
   end
 

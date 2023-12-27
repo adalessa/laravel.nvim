@@ -1,6 +1,5 @@
 local views = require "laravel.views"
 local utils = require "laravel.utils"
-local notify = require "laravel.notify"
 
 local M = {}
 
@@ -12,7 +11,7 @@ function M.go_to_usage()
   local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
 
   if #matches == 0 then
-    notify("laravel.views", { msg = "No usage of this view found", level = "WARN" })
+    vim.notify("No usage of this view found", vim.log.levels.WARN)
   elseif #matches == 1 then
     vim.cmd("edit " .. matches[1].file)
   else
@@ -37,13 +36,12 @@ function M.go_to_definition()
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   local tree = php_parser:parse()[1]
   if tree == nil then
-    notify("laravel.views", { msg = "Could not retrive syntax tree", level = "WARN" })
-    return
+    error("Could not retrive syntax tree", vim.log.levels.ERROR)
   end
 
   local query = vim.treesitter.query.get("php", "laravel_views")
 
-  if true or query == nil then
+  if query == nil then
     vim.treesitter.query.set(
       "php",
       "laravel_views",
@@ -58,8 +56,7 @@ function M.go_to_definition()
     query = vim.treesitter.query.get("php", "laravel_views")
   end
   if not query then
-    notify("laravel.views", { msg = "Could not get proper query", level = "WARN" })
-    return
+    error("Could not get treesitter query", vim.log.levels.ERROR)
   end
 
   local founds = {}
@@ -70,7 +67,7 @@ function M.go_to_definition()
   end
 
   if #founds == 0 then
-    notify("laravel.views", { msg = "No views found in file", level = "WARN" })
+    vim.notify("No usage of this view found", vim.log.levels.WARN)
     return
   end
 

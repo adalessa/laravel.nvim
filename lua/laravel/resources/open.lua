@@ -1,5 +1,4 @@
 local config = require "laravel.config"
-local notify = require "laravel.notify"
 
 return function(resource, name)
   local directory = config.options.resources[resource]
@@ -18,8 +17,5 @@ return function(resource, name)
     return
   end
 
-  notify("Resource.Open", {
-    msg = string.format("Can't find resource %s", filename),
-    level = "INFO",
-  })
+  vim.notify(string.format("Can't find resource %s", filename), vim.log.levels.INFO)
 end

@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local run = require "laravel.run"
 local api = require "laravel.api"
@@ -25,8 +24,7 @@ function M.setup()
 
     remove = function(cmd)
       if #cmd == 0 then
-        notify("composer.remove", { msg = "Need arguement for composer remove", level = "ERROR" })
-        return
+        error("Needs argument for composer remove", vim.log.levels.ERROR)
       end
       table.insert(cmd, 1, "remove")
       run("composer", cmd, {})
@@ -34,7 +32,7 @@ function M.setup()
 
     ["dump-autoload"] = function()
       api.async("composer", { "dump-autoload" }, function()
-        notify("composer.dump-autoload", { msg = "Completed", level = "INFO" })
+        vim.notify("Composer Dump autoload Completed", vim.log.levels.INFO)
       end)
     end,
   })

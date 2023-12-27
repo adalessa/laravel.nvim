@@ -22,7 +22,7 @@ local function get_values()
   end
   if environment.get_executable "artisan" then
     local res = api.sync("artisan", { "--version" })
-    values.laravel = res.stdout[1]:match "Laravel Framework ([%d%.]+)"
+    values.laravel = res:first():match "Laravel Framework ([%d%.]+)"
   end
   last_check = os.time()
 end

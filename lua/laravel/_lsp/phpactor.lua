@@ -1,5 +1,4 @@
 local lsp_utils = require "laravel._lsp.utils"
-local notify = require "laravel.notify"
 
 ---@param client table
 ---@param is_new_instance boolean
@@ -14,7 +13,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   local locations = vim.lsp.util.symbols_to_items(resp.result or {}, nil) or {}
   if vim.tbl_isempty(locations) then
-    notify("Route Open", { msg = "Empty response looking for class: " .. full_class, level = "WARN" })
+    vim.notify("Could not find the class " .. full_class, vim.log.levels.WARN)
     if is_new_instance then
       vim.lsp.stop_client(client.id)
     end
@@ -30,7 +29,7 @@ local function go_to(client, is_new_instance, full_class, method)
   end
 
   if class_location == nil then
-    notify("Route Open", { msg = "Could not find class for : " .. full_class, level = "WARN" })
+    vim.notify("Could not find the class " .. full_class, vim.log.levels.WARN)
     if is_new_instance then
       vim.lsp.stop_client(client.id)
     end
@@ -46,7 +45,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   vim.lsp.buf_request(0, "textDocument/documentSymbol", params, function(method_err, method_server_result, _, _)
     if method_err then
-      notify("Route Open", { msg = "Error when finding workspace symbols: " .. method_err.message, level = "WARN" })
+      vim.notify("Error when finding workspace symbols " .. method_err.message, vim.log.levels.WARN)
       if is_new_instance then
         vim.lsp.stop_client(client.id)
       end
@@ -55,10 +54,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
     local method_locations = vim.lsp.util.symbols_to_items(method_server_result or {}, 0) or {}
     if vim.tbl_isempty(method_locations) then
-      lsp_utils.notify(
-        "Route open",
-        { msg = string.format("empty response looking for method: %s", method or "__invoke"), level = "WARN" }
-      )
+      vim.notify(string.format("empty response looking for method: %s", method or "__invoke"), vim.log.levels.WARN)
       if is_new_instance then
         vim.lsp.stop_client(client.id)
       end
@@ -86,7 +82,7 @@ local function go_to(client, is_new_instance, full_class, method)
     if row and col then
       local ok, err_msg = pcall(vim.api.nvim_win_set_cursor, 0, { row, col })
       if not ok then
-        lsp_utils.notify("Route Open", { msg = "Erro setting row and col " .. err_msg, level = "WARN" })
+        vim.notify(string.format("Error setting row and col %s", err_msg), vim.log.levels.WARN)
       end
       vim.cmd "normal zt"
     end

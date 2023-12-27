@@ -10,9 +10,15 @@ return function(command)
     error(string.format("Command %s is not a resource creation suported", resource), vim.log.levels.ERROR)
   end
 
-  api.async("artisan", command, function()
-    open(resource, name)
-  end)
-
-  return true
+  api.async(
+    "artisan",
+    command,
+    ---@param response ApiResponse
+    function(response)
+      if response:failed() then
+        error(response:errors(), vim.log.levels.ERROR)
+      end
+      open(resource, name)
+    end
+  )
 end

@@ -4,10 +4,12 @@ local cache = {}
 
 local M = {}
 
+---@return ApiResponse
 local function exec(cmd)
   if not cache[cmd] then
     cache[cmd] = api.php_execute(cmd)
   end
+
   return cache[cmd]
 end
 
@@ -16,7 +18,7 @@ local function get_cwd()
 end
 
 local function get_base_path()
-  return exec("base_path()").stdout[1]
+  return exec("base_path()"):first()
 end
 
 local function map_path(path)
@@ -24,7 +26,7 @@ local function map_path(path)
 end
 
 function M.resource_path(resource)
-  local path = exec(string.format("resource_path('%s')", resource)).stdout[1]
+  local path = exec(string.format("resource_path('%s')", resource)):first()
 
   return map_path(path)
 end

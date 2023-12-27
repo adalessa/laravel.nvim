@@ -1,4 +1,3 @@
-local notify = require "laravel.notify"
 local lsp = require "laravel._lsp"
 
 return function(route)
@@ -14,7 +13,7 @@ return function(route)
         vim.fn.search("/" .. route.uri)
       end
     else
-      notify("Route", { msg = "Could not open the route location", level = "WARN" })
+      vim.notify("Could not open the route location", vim.log.levels.WARN)
       return
     end
 

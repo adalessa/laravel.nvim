@@ -47,4 +47,8 @@ function M.is_composer_package_install(package)
   return M.sync("composer", { "info", package }).exit_code == 0
 end
 
+function M.php_execute(code)
+  return M.sync("artisan", { "tinker", "--execute", "echo " .. code })
+end
+
 return M

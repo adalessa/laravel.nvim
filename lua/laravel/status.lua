@@ -18,11 +18,19 @@ local function get_values()
   end
   if environment.get_executable "php" then
     local res = api.sync("php", { "-v" })
-    values.php = res.stdout[1]:match "PHP ([%d%.]+)"
+    if res:failed() then
+      values.php = ""
+    else
+      values.php = res:first():match "PHP ([%d%.]+)"
+    end
   end
   if environment.get_executable "artisan" then
     local res = api.sync("artisan", { "--version" })
-    values.laravel = res:first():match "Laravel Framework ([%d%.]+)"
+    if res:failed() then
+      values.laravel = ""
+    else
+      values.laravel = res:first():match "Laravel Framework ([%d%.]+)"
+    end
   end
   last_check = os.time()
 end

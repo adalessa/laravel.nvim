@@ -1,28 +1,7 @@
 local M = {}
 
 ---@class LaravelOptions
-M.defaults = {
-  ui = require "laravel.config.ui",
-  lsp_server = "phpactor",
-  register_user_commands = true,
-  features = {
-    null_ls = {
-      enable = true,
-    },
-    route_info = {
-      enable = true,
-      position = "right",
-    },
-  },
-  commands_options = {
-    ["queue:restart"] = { watch = true },
-    ["tinker"] = { skip_args = true },
-    ["docs"] = { ui = "popup", skip_args = true },
-    ["make:model"] = { options = { "-mf" } },
-  },
-  environments = require "laravel.config.environments",
-  resources = require "laravel.config.resources",
-}
+M.defaults = require "laravel.config.default"
 
 --- @type LaravelOptions
 M.options = {}

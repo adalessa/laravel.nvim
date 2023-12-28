@@ -4,15 +4,17 @@ Plugin for Neovim to enhance the development experience of Laravel projects
 Quick executing of artisan commands, list and navigate to routes. Information about the routes.
 Robust API to allow you to run any command in the way that you need.
 
-# Preview
+## Preview
 ![](./images/telescope_commands.png)
 ![](./images/telescope_routes.png)
 ![](./images/route_info.png)
 
-# Requirements
+## Requirements
 Treesitter, LSP Server (I use and recommend [phpactor](https://github.com/phpactor/phpactor))
+`fd` to look for files as migrations when are created
+`rg` ripgrep to look usage of views
 
-# Installation
+## Installation
 Lazy
 ```lua
 return {
@@ -27,23 +29,15 @@ return {
     { "<leader>la", ":Laravel artisan<cr>" },
     { "<leader>lr", ":Laravel routes<cr>" },
     { "<leader>lm", ":Laravel related<cr>" },
-    {
-      "<leader>lt",
-      function()
-        require("laravel.tinker").send_to_tinker()
-      end,
-      mode = "v",
-      desc = "Laravel Application Routes",
-    },
   },
   event = { "VeryLazy" },
   config = true,
 }
 ```
-
 Dotenv is use to read environment variables from the `.env` file
 
-For nicer notifications use `rcarriga/nvim-notify`
+For nicer notifications I recommend `rcarriga/nvim-notify`
+
 My lazy configuration for notify is
 ```lua
 return {
@@ -58,120 +52,58 @@ return {
 }
 ```
 
-Default configuration
-```lua
-{
-    split = {
-      relative = "editor",
-      position = "right",
-      size = "30%",
-      enter = true,
-    },
-    lsp_server = "phpactor",
-    register_user_commands = true,
-    route_info = {
-      enable = true,
-      position = "right",
-    },
-    default_runner = "buffer",
-    commands_runner = {
-      ["dump-server"] = { runner = "persist" },
-      ["queue:listen"] = { runner = "persist" },
-      ["serve"] = { runner = "persist" },
-      ["websockets"] = { runner = "persist" },
-      ["queue:restart"] = { runner = "watch" },
-      ["tinker"] = { runner = "terminal", skip_args = true },
-      ["db"] = { runner = "terminal" },
-    },
-    environment = {
-      resolver = require "laravel.environment.resolver"(true, true, nil),
-      environments = {
-        ["local"] = require("laravel.environment.native").setup(),
-        ["sail"] = require("laravel.environment.sail").setup(),
-        ["docker-compose"] = require("laravel.environment.docker_compose").setup(),
-      },
-    },
-    resources = {
-        ["make:cast"] = "app/Casts",
-        ["make:channel"] = "app/Broadcasting",
-        ["make:command"] = "app/Console/Commands",
-        ["make:component"] = "app/View/Components",
-        ["make:controller"] = "app/Http/Controllers",
-        ["make:event"] = "app/Events",
-        ["make:exception"] = "app/Exceptions",
-        ["make:factory"] = function(name)
-          return string.format("database/factories/%sFactory.php", name), nil
-        end,
-        ["make:job"] = "app/Jobs",
-        ["make:listener"] = "app/Listeners",
-        ["make:mail"] = "app/Mail",
-        ["make:middleware"] = "app/Http/Middleware",
-        ["make:migration"] = function(name)
-          local result = require("laravel.runners").sync { "fd", name .. ".php" }
-          if result.exit_code == 1 then
-            return "", result.error
-          end
+## Config
 
-          return result.out, nil
-        end,
-        ["make:model"] = "app/Models",
-        ["make:notification"] = "app/Notifications",
-        ["make:observer"] = "app/Observers",
-        ["make:policy"] = "app/Policies",
-        ["make:provider"] = "app/Providers",
-        ["make:request"] = "app/Http/Requests",
-        ["make:resource"] = "app/Http/Resources",
-        ["make:rule"] = "app/Rules",
-        ["make:scope"] = "app/Models/Scopes",
-        ["make:seeder"] = "database/seeders",
-        ["make:test"] = "tests/Feature",
-    }
-}
+Default [config]("./lua/laravel/config/default.lua"), this can be set on the `setup` function
+In this config there are several secitions, like `lsp_server` which is use to interact with neovim lsp client to look for classes by the name.
+Currently support `phpactor` and `intelephense` as far as I know there are no other php lsp sever.
+
+By default the plugin register several commands like `Artisan` `Composer` `Npm` `Sail` `DockerCompose` `Yarn` and `Bun` if you don't want them you can use
+`register_user_commands` and set it as `false`.
+
+
+## Features
+In adition to the selector for the commands, routes and api, you can use some extras features *Route Info* *Views Completion* *Routes Completion*
+Route info can be seen in the above screenshots, this allows to see in the controller the route associated to it, and in case that is missing will
+add a diagnostic error which indicate which method is missing.
+![](./images/route_info.png)
+This also will show error if a route is defined but the method is not defined
+![](./images/missing_method.png)
+
+> Note: using lazy is likely that you will not see at first since the plugin will not load until you call one of the commands, after that it is just picked up
+
+The completions uses `none-ls` which was previusly know as `null-ls`.
+Views and Routes completion works as providing the list of the respective in the php files for the function `view` and `route`.
+
+## UI
+An important part of the plugin is how to show the results of the commands, for this I decide to use `nui` this allow to easily interact with split and popup
+You can customize from the size and options. examples can be seen in the default [here](./lua/laravel/config/ui.lua)
+
+## Command Options
+Of course not all the commands want to be run in the same way. you can specify for example which `ui` to use, if should `skip_args`.
+Can also set `nui_opts` to define how the ui should display.
+Also can define options this is usefull for example for `make:model` you may want to always use the flags `-mf`
+```lua
+  ["make:model"] = { options = { "-mf" } },
 ```
 
-## Environments
-There are many ways to run your laravel application, could be natively in you computer, using docker-compose, using sail, or others.
-Even using docker-compose you could have differences from project to project.
-In order to support this there is an `environment` configuration. Here you can set 2 properties.
-`resolver` takes care of determining which environment to use.
-The resolver will return the environment to use. The resolver will first look for an environment variable `NVIM_LARAVEL_ENV` which should correspond to configured environment name.
-If is not set it will be ignored, if it is set but could not be found an error will be thrown.
-Next is the auto auto-discovery this will look for docker-compose file and Sail file in the vendor directory. If they are present Sail will be used.
-If only docker-compose.yml file is present docker-compose environment will be used.
-If both checks fail will check if the php is executable and then local environment will be used.
-The third part is try to use the provided default.
-You can configure the resolver by passing parameters
-```lua
----@param env_check boolean
----@param auto_discovery boolean
----@param default string|nil
-return function(env_check, auto_discovery, default)
-```
-Resolver can be configured to ignore environment variable, ignore auto-discovery and just use the default
-```lua
-    resolver = require "laravel.environment.resolver"(false, false, "sail"),
-```
+## Resources
+A main part when creating resources like controllers, models, etc you most likely want to open it. Since the laravel commands does not return what was created
+I base on the type and and provided name to look for the file here is the list that can also be customize to add in case you have custom or from a plugin that
+you use [resources](./lua/laravel/config/resources.lua)
 
-The environment needs to return a function that returns a list of executables in format of a table. This will be used when running the `run` method on the application `require('laravel.application').run('<command>', {"args"}, {options})`
-Let say you want to modify the Sail command, you can do it by calling the setup method on the environment Sail with options cmd
-```lua
-      ["sail"] = require("laravel.environment.sail").setup({cmd = {"my-sail-binary"}}),
-```
-You can set different commands for normal executables, or completely replace all the executables.
-If you add your executable you can call it using
-`require('laravel.application).run('executable', args, options)`
 
-Changing the container name for docker compose
-```lua
-    require("laravel").setup({
-      environment = {
-        environments = {
-          ["docker-compose"] = require("laravel.environment.docker_compose").setup({container_name = "testing"}),
-        }
-      }
-    })
-```
 
+# Environments
+Running your laravel app has many forms, you can use something like *Laravel Herd* *Laravel Sail* *Docker Compose* or just the good `php artisan serve` this presents
+a challange, a fundamental aspect you want to run the command where it should with sail, with in your docker or simple the php native executable.
+In order to support this there is this [configuration](./lua/laravel/config/environments.lua)
+
+Since you may not want the same configuration for all you projects you can use the env variable `NVIM_LARAVEL_ENV` define it in your `.env` file in your project.
+If you don't se it by default will use auto_discover this will go over each definition and test base on the conditions, if they are meant will use that.
+In case no configuration matches will try to use the default one.
+
+For the docker compose one also you can use an env variable to define which container will be use to run the commands.
 
 ## Artisan
 To run Artisan commands you can use `:Artisan` which will autocomplete with the available
@@ -195,122 +127,39 @@ You can run `shell` as tinker will open a new terminal
 `Laravel commands` shows the list of artisan commands and executes it.
 `Laravel routes` show the list of routes and goes to the implementation.
 `Laravel related` show the list of model related classes, includes observers, policy and relations and goes to the implementation.
-`Laravel test` runs the application tests
 `Laravel test:watch` runs the application tests and keep monitoring the changes
-
-# Route Info
-I want to have more information in the controller, I want to have the route information directly in the controller so I build route info, this will show the
-![](./images/route_info.png)
-This also will show error if a route is defined but the method is not defined
-![](./images/missing_method.png)
-
-> Note: using lazy is likely that you will not see at first since the plugin will not load until you call one of the commands, after that it is just picked up
+`Laravel history` each command is recorded in case you want to run the same again
+`Laravel view-finder` This will look for the views that are use in the file and if only one will go to it, in case of more will show a select, in the view will look for the class that uses it
+`Laravel recipes` There are some recipes like installing ide helper and running the model and eloquent command. and to install doctrine dbal
+`Laravel health` trigger the neovim command `:checkhealth laravel`
 
 ## Lua API
-As developer I want to enable other to extend this plugin to cover all your needs. For this I tried to have a good API.
+### Telescope
+One of the things you may want to change are actions or styles or something related to telescope
+The picker is `require("telescope").extensions.laravel.routes` so you can call it and pass the arguments as usual for telescope
+the same for `commands`, `related` and `history`
 
-To run artisan commands you can execute
+### Run commands
+You may want to run commands of course you can use `:Artisan my-command args` but you may want to pass nui options and more for that you can use
 ```lua
-require('laravel.application').run('artisan', {'your-command'}, {})
-```
-That is great but what about how to get the results not all commands behave in the same way.
-Currently there are several runners:
-
-| Runner   | Description                                                                                                                                              |
-| -------- | ----------------------------------------------------------------                                                                                         |
-| buffer   | This opens an split and shows the results in a new buffer. This uses the `vim.fn.jobstart` to run the command                                            |
-| sync     | This is more for api since the result of the command will be directly return to work with                                                                |
-| async    | Similar to `sync` but it takes a callback and will call it once the data is loaded, usefull for long process and to not block the editor                 |
-| persist  | One thing with buffers is that are temprary once you close the buffer the job is terminated, for some process you don't want that like, npm dev or other |
-| watch    | This is usefull for commands that needs to be retrigger one files are modifed, like queues restart, or tests                                             |
-| terminal | This runner uses the invocation of the `:term <cmd>` this provide a fully experience in a terminal, but it can't escape arguments in the command to execute |
-
-
-So you can run commands like
-```lua
-require('laravel.application').run('artisan', {'your-command'}, {runner = 'persist'})
-```
-Each runner returns different values since it have different behave.
-
-| Runner   | Output                 |
-| --       | --                     |
-| buffer   | {buff, job}            |
-| sync     | {out, exit_code, err } |
-| async    | {}                     |
-| persist  | {buff, job}            |
-| watch    | {buff, job}            |
-| terminal | {buff, term_id}        |
-
-
-These runners are available for the following commands
-- artisan
-- composer
-- sail
-- npm
-- yarn
-
-This is to provide the option to you to build what ever you need for you development experience.
-
-The commands have a default runner configure that you can customize
-```lua
-    default_runner = "buffer",
-    commands_options = {
-      ["dump-server"] = { runner = "persist" },
-      ["queue:listen"] = { runner = "persist" },
-      ["serve"] = { runner = "persist" },
-      ["websockets"] = { runner = "persist" },
-      ["queue:restart"] = { runner = "watch" },
-      ["tinker"] = { runner = "terminal", skip_args = true },
-      ["db"] = { runner = "terminal" },
-    },
+local run = require "laravel.run"
+run("artisan", {"my-command"}, {})
 ```
 
+This will be run in the nui, but you may want to do more plugins like and do something with the output
+for that you can call the `api`
 
-## Send to Tinker
-Working with laravel tinker is a great tool so after thinking how can improve my flow with it I decide that selecting lines and have them send to tinker it was a good idea
-So that is exactly what I did with the function `require("laravel.tinker").send_to_tinker()` which will grab the selected lines and send them to the open tinker or open a new one if is not already.
-If you copy my keybindings from lazy or you can assign to your like is great.
-
-
-
-### Improve your flow.
-Is normal that working with a project you have several things that you would like to start automatically.
-Lets say for example that you would like to have two windows, one with the test running with every change of file and other with the dump server
-we can write this
 ```lua
-local function start()
-  vim.cmd "vsplit new"
-  local top = vim.api.nvim_get_current_win()
-  local width = vim.api.nvim_win_get_width(0)
-  vim.api.nvim_win_set_width(0, vim.fn.round(width * 2 / 3))
-  vim.cmd "split new"
-  local bot = vim.api.nvim_get_current_win()
-
-  local test_run = require("laravel.run")('artisan', { "test" },  {runner = "watch", open = false })
-  local dump_run = require("laravel.run")('artisan', { "dump-server" }, { runner = "persist", open = false })
-
-  vim.api.nvim_win_set_buf(top, test_run.buff)
-  vim.api.nvim_win_set_buf(bot, dump_run.buff)
-end
+local api = require "laravel.api"
 ```
-The function will create an split, and resize it, split again and with these 2 windows will call the commands that want. Since in this case we want to set the position our self we send the option to not open.
-After that we only need to set the buffer from the commands into the windows and ready.
+Here you can use the methods `sync` and `async` I recommend the use of async that will not block the editor but there are cases that you may want to use sync.
+have in consideration that to avoid hanging the editor there is the default timeout from plenary
+The response and the value for callback is [ApiResponse](./lua/laravel/api/response.lua)
+If you will use them I recommend peek into the code sync I use them a lot as building block for the plugin.
 
-
-Other example to just run everything
-```lua
-vim.api.nvim_create_user_command("StartMyApp", function ()
-  require('laravel.run')('artisan', {"serve"})
-  require('laravel.run')('artisan', {"queue:restart"})
-  require('laravel.run')('artisan', {"queue:listen"})
-  require('laravel.run')('yarn', {"dev"}, {runenr = "persist"})
-end, {})
-```
-This will create your own command and when run will just call everyone of the commands, and split the windows as it needs and you resize when you want. Remember the `open = false` is an option to not have it display and run in the background.
 
 # Self promotion
 I am Ariel I am a developer and also content creator (mostly in Spanish) if you would like to show some love leave a start into the plugin and subscribe to my [Youtube](https://youtube.com/@Alpha_Dev) if you want to show even more love you can support becoming a member on Youtube. But just leaving a like or letting me know that you like and enjoy the plugin is appreciated.
-
 
 # Collaboration
 I am open to review pr if you have ideas or ways to improve the plugin would be great.

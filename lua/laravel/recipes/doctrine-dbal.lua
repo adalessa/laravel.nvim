@@ -10,9 +10,10 @@ function M.run()
       ---@param response ApiResponse
       function(response)
         if response:failed() then
-          error({ "Cant install doctrine/dbal", response:errors() }, vim.log.levels.ERROR)
+          vim.notify("Cant install doctrine/dbal\n\r" .. response:prettyErrors(), vim.log.levels.ERROR)
+        else
+          vim.notify("Installation completed", vim.log.levels.INFO)
         end
-        vim.notify("Installation completed", vim.log.levels.INFO)
       end
     )
   else

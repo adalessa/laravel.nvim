@@ -7,7 +7,9 @@ return function(command)
   local name = command[2]
 
   if not is_resource(resource) then
-    error(string.format("Command %s is not a resource creation suported", resource), vim.log.levels.ERROR)
+    vim.notify(string.format("Command %s is not a resource creation suported", resource), vim.log.levels.ERROR)
+
+    return
   end
 
   api.async(
@@ -16,9 +18,10 @@ return function(command)
     ---@param response ApiResponse
     function(response)
       if response:failed() then
-        error(response:errors(), vim.log.levels.ERROR)
+        vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+      else
+        open(resource, name)
       end
-      open(resource, name)
     end
   )
 end

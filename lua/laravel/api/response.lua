@@ -40,7 +40,7 @@ end
 
 ---@return string
 function ApiResponse:prettyContent()
-  return vim.inspect(self:content())
+  return table.concat(self:content(), "\r\n")
 end
 
 ---@return string|nil
@@ -54,7 +54,7 @@ end
 
 ---@return string[]|nil
 function ApiResponse:errors()
-  if self:failed() then
+  if self:successful() then
     return nil
   end
 
@@ -63,6 +63,15 @@ function ApiResponse:errors()
   end
 
   return self:content()
+end
+
+function ApiResponse:prettyErrors()
+  local errors = self:errors()
+  if not errors then
+    return ""
+  end
+
+  return table.concat(errors, "\r\n")
 end
 
 return ApiResponse

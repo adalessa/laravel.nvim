@@ -9,10 +9,10 @@ local function writeModels()
     ---@param response ApiResponse
     function(response)
       if response:failed() then
-        error(response:errors(), vim.log.levels.ERROR)
+        vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+      else
+        vim.notify("Ide Helper Models Complete", vim.log.levels.INFO)
       end
-
-      vim.notify("Ide Helper Models Complete", vim.log.levels.INFO)
     end
   )
 end
@@ -24,11 +24,11 @@ local function installIdeHelperAndWrite()
     ---@param response ApiResponse
     function(response)
       if response:failed() then
-        error({ "Cant install ide-helper", response:errors() }, vim.log.levels.ERROR)
+        vim.notify("Cant install ide-helper\n\r" .. response:prettyErrors(), vim.log.levels.ERROR)
+      else
+        require("laravel.commands").list = {}
+        writeModels()
       end
-
-      require("laravel.commands").list = {}
-      writeModels()
     end
   )
 end

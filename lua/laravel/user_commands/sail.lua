@@ -18,10 +18,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:content(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Sail up completed", vim.log.levels.INFO)
           end
-
-          vim.notify("Sail up completed", vim.log.levels.INFO)
         end
       )
     end,
@@ -37,9 +37,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify(response:prettyContent(), vim.log.levels.INFO)
           end
-          vim.notify(response:prettyContent(), vim.log.levels.INFO)
         end
       )
     end,
@@ -51,9 +52,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Sail restart complete", vim.log.levels.INFO)
           end
-          vim.notify("Sail restart complete", vim.log.levels.INFO)
         end
       )
       vim.notify("Sail restart starting", vim.log.levels.INFO)
@@ -66,9 +68,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Sail Down complete", vim.log.levels.INFO)
           end
-          vim.notify("Sail Down complete", vim.log.levels.INFO)
         end
       )
     end,

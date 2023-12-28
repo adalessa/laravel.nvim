@@ -17,9 +17,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Compose Up Completed", vim.log.levels.INFO)
           end
-          vim.notify("Compose Up Completed", vim.log.levels.INFO)
         end
       )
     end,
@@ -31,9 +32,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify(response:prettyContent(), vim.log.levels.INFO)
           end
-          vim.notify(response:prettyContent(), vim.log.levels.INFO)
         end
       )
     end,
@@ -45,10 +47,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Compose restart complete", vim.log.levels.INFO)
           end
-
-          vim.notify("Compose restart complete", vim.log.levels.INFO)
         end
       )
       vim.notify("Compose restart starting", vim.log.levels.INFO)
@@ -61,9 +63,10 @@ function M.setup()
         ---@param response ApiResponse
         function(response)
           if response:failed() then
-            error(response:errors(), vim.log.levels.ERROR)
+            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
+          else
+            vim.notify("Compose Down complete", vim.log.levels.INFO)
           end
-          vim.notify("Compose Down complete", vim.log.levels.INFO)
         end
       )
     end,

@@ -14,29 +14,34 @@ M.check = function()
     )
   end
 
-  if vim.tbl_isempty(environment.environment) then
+  if vim.fn.executable "rg" == 1 then
+    vim.health.report_ok "rg installed"
+  else
+    vim.health.report_warn(
+      "ripgrep is missing, is required for finding view usage",
+      { "Installed from your package manager" }
+    )
+  end
+
+  vim.health.report_start "Environment"
+
+  if not environment.environment then
     vim.health.report_error(
       "Environment not configure for this directory, no more checks",
       { "Check project is laravel, current directory `:pwd` is the root of laravel project" }
     )
     return
   end
-  vim.health.report_ok "Environment setup complete"
 
-  vim.health.report_start "Environment"
+  vim.health.report_ok "Environment setup successful"
 
-  if vim.tbl_isempty(environment.environment.executables) then
-    vim.health.report_error "No executables found in the environment, check the environment config"
-    return
-  end
+  vim.health.report_info("Name: " .. environment.environment.name)
+  vim.health.report_info "Condition: "
+  vim.health.report_info(vim.inspect(environment.environment.condition))
+  vim.health.report_info "Commands: "
+  vim.health.report_info(vim.inspect(environment.environment.commands))
 
-  for name, command in pairs(environment.environment.executables) do
-    if vim.fn.executable(command[1]) == 1 then
-      vim.health.report_ok(string.format("%s: executable %s exists", name, command[1]))
-    else
-      vim.health.report_error(string.format("%s: executable %s does not exists", name, command[1]))
-    end
-  end
+  vim.health.report_start "Composer Dependencies"
 
   if not environment.get_executable "composer" then
     vim.health.report_error "Composer executable not found can't check dependencies"
@@ -52,8 +57,6 @@ M.check = function()
       messages = "This is required for tinker repl",
     },
   }
-
-  vim.health.report_start "Composer dependencies"
 
   for _, dependency in pairs(composer_dependencies) do
     if api.is_composer_package_install(dependency.name) then

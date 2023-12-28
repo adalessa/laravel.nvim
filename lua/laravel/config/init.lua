@@ -20,14 +20,7 @@ M.defaults = {
     ["docs"] = { ui = "popup", skip_args = true },
     ["make:model"] = { options = { "-mf" } },
   },
-  environment = {
-    resolver = require "laravel.environment.resolver"(true, true, nil),
-    environments = {
-      ["local"] = require("laravel.environment.native").setup(),
-      ["sail"] = require("laravel.environment.sail").setup(),
-      ["docker-compose"] = require("laravel.environment.docker_compose").setup(),
-    },
-  },
+  environments = require "laravel.config.environments",
   resources = require "laravel.config.resources",
 }
 

@@ -1,7 +1,6 @@
 # Ideas
 
 ## To implement
-```lua
 - [X] implement api
 - [X] implement ui
 - [X] implements a command history
@@ -28,4 +27,32 @@
 - [X] implement watch
 - [X] implement alternate file for livewire components `:A`
 - [X] extend api .sync and .async with better respons object. maybe create a new object with method for example `.successful()` and `.failed()`
+- [ ] rework environment
 - [ ] re-write the readme and translate (not forget fd as dependency) move all info from readme to doc
+
+## Environment
+How I want the environment
+
+I have environments, resolver and executables
+In environment only have `executables`
+I need to get from the configuration per project the executables
+
+I want it to be set on the configuration
+
+So do I need the resolver ?
+Is not clear ?
+I already have the `environment` term so it's hard to tink into ahother
+
+So I have diferent environments
+Executables not found should use try to look for it
+```lua
+local environments = {
+    local = {
+        executables = {
+            artisan = {"php", "artisan"},
+            composer = {"composer"},
+            npm = {"npm"},
+        }
+    }
+}
+```

@@ -13,7 +13,9 @@ local commands = {
   ["history"] = require("telescope").extensions.laravel.history,
   ["recipes"] = require("laravel.recipes").run,
   ["view-finder"] = require("laravel.view_finder").auto,
-  ["info"] = require "laravel.user_commands.laravel.info",
+  ["health"] = function()
+    vim.cmd [[checkhealth laravel]]
+  end,
 }
 
 return {

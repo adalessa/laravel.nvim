@@ -1,48 +1,34 @@
-local utils = {}
+local M = {}
 
----@param funname string
----@param opts table
-function utils.notify(funname, opts)
-  local level = vim.log.levels[opts.level]
-  if not level then
-    error("Invalid error level", 2)
+function M.runRipgrep(pattern)
+  -- Build the ripgrep command
+  local rg_command = string.format('rg --vimgrep "%s"', pattern)
+
+  -- Run the command and capture the output
+  local result = vim.fn.systemlist(rg_command)
+
+  -- Process the result
+  local matches = {}
+  for _, line in ipairs(result) do
+    local parts = vim.fn.split(line, ":", true)
+    local file = parts[1]
+    local line_number = parts[2]
+    local text = parts[3]
+
+    table.insert(matches, { file = file, line_number = line_number, text = text })
   end
-  local body = string.format("[laravel.%s]: %s", funname, opts.msg)
-  if opts.raw ~= nil then
-    body = opts.raw
-  end
-  vim.notify(body, level, {
-    title = "Laravel.nvim",
-  })
+
+  return matches
 end
 
-utils.get_visual_selection = function()
-  local sel = utils.get_vsel()
-  return vim.api.nvim_buf_get_lines(sel.bufnr, sel.pos[1] - 1, sel.pos[3], false)
-end
-
-utils.get_vsel = function()
-  local bufnr = vim.api.nvim_win_get_buf(0)
-  local start = vim.fn.getpos "v" -- [bufnum, lnum, col, off]
-  local _end = vim.fn.getpos "." -- [bufnum, lnum, col, off]
-  if start[2] > _end[2] then
-    local x = _end
-    _end = start
-    start = x
-  end
-  return {
-    bufnr = bufnr,
-    mode = vim.fn.mode(),
-    pos = { start[2], start[3], _end[2], _end[3] },
-  }
-end
-
-utils.get_env = function(var)
+---@param var string
+---@return string|nil
+function M.get_env(var)
   local envVal
-  if vim.fn.exists "*DotenvGet" == 1 then
-    envVal = vim.fn.DotenvGet(var)
+  if vim.api.nvim_call_function("exists", { "*DotenvGet" }) == 1 then
+    envVal = vim.api.nvim_call_function("DotenvGet", { var })
   else
-    envVal = vim.fn.eval("$" .. var)
+    envVal = vim.api.nvim_call_function("eval", { "$" .. var })
   end
 
   if envVal == "" then
@@ -52,4 +38,4 @@ utils.get_env = function(var)
   return envVal
 end
 
-return utils
+return M

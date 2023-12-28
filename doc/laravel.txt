@@ -1,0 +1,9 @@
+*laravel.txt* Plugin to work with Laravel Framework
+
+Author: Ariel D'Alessandro
+Repo: https://github.com/adalessa/laravel.nvim
+License: Same terms as Vim itself (see |license|)
+
+Usage                               *laravel* *:Artisan*
+
+ vim:tw=78:et:ft=help:norl:

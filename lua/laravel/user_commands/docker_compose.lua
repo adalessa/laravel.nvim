@@ -1,4 +1,3 @@
-local environment = require "laravel.environment"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local api = require "laravel.api"
 local status = require "laravel.status"
@@ -6,10 +5,6 @@ local status = require "laravel.status"
 local M = {}
 
 function M.setup()
-  if environment.get_executable "compose" == nil then
-    return
-  end
-
   create_user_command("DockerCompose", "compose", {
     up = function()
       api.async(

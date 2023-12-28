@@ -1,3 +1,6 @@
+local create_user_command = require "laravel.user_commands.create_user_command"
+local environment = require "laravel.environment"
+
 local commands = {
   ["cache:clean"] = function()
     require("laravel.commands").list = {}
@@ -20,26 +23,16 @@ local commands = {
 
 return {
   setup = function()
-    vim.api.nvim_create_user_command("Laravel", function(args)
-      local command = args.fargs[1]
-      if commands[command] ~= nil then
-        table.remove(args.fargs, 1)
-        return commands[command](unpack(args.fargs))
+    if environment.get_executable "sail" then
+      commands["sail"] = function()
+        vim.cmd [[Sail]]
       end
-
-      vim.ui.select(vim.fn.sort(vim.tbl_keys(commands)), { prompt = "Laravel Plugin:" }, function(action)
-        if not action then
-          return
-        end
-        if commands[action] ~= nil then
-          commands[action]()
-        end
-      end)
-    end, {
-      nargs = "*",
-      complete = function()
-        return vim.tbl_keys(commands)
-      end,
-    })
+    end
+    if environment.get_executable "compose" then
+      commands["docker-compose"] = function()
+        vim.cmd [[DockerCompose]]
+      end
+    end
+    create_user_command("Laravel", nil, commands)
   end,
 }

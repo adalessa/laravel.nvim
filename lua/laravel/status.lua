@@ -17,20 +17,28 @@ local function get_values()
     return
   end
   if environment.get_executable "php" then
-    local res = api.sync("php", { "-v" })
-    if res:failed() then
-      values.php = ""
-    else
-      values.php = res:first():match "PHP ([%d%.]+)"
-    end
+    api.async(
+      "php",
+      { "-v" },
+      ---@param response ApiResponse
+      function(response)
+        if response:successful() then
+          values.php = response:first():match "PHP ([%d%.]+)"
+        end
+      end
+    )
   end
   if environment.get_executable "artisan" then
-    local res = api.sync("artisan", { "--version" })
-    if res:failed() then
-      values.laravel = ""
-    else
-      values.laravel = res:first():match "Laravel Framework ([%d%.]+)"
-    end
+    api.async(
+      "artisan",
+      { "--version" },
+      ---@param response ApiResponse
+      function(response)
+        if response:successful() then
+          values.laravel = response:first():match "Laravel Framework ([%d%.]+)"
+        end
+      end
+    )
   end
   last_check = os.time()
 end
@@ -61,6 +69,10 @@ end
 
 function M.has(property)
   return properties[property].has()
+end
+
+function M.refresh()
+  last_check = nil
 end
 
 return M

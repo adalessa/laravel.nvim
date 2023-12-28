@@ -2,6 +2,7 @@ local run = require "laravel.run"
 local environment = require "laravel.environment"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local api = require "laravel.api"
+local status = require "laravel.status"
 
 local M = {}
 
@@ -21,6 +22,7 @@ function M.setup()
             vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
           else
             vim.notify("Sail up completed", vim.log.levels.INFO)
+            status.refresh()
           end
         end
       )

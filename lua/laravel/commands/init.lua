@@ -9,7 +9,8 @@ function M.load()
   M.list = {}
   local result = api.sync("artisan", { "list", "--format=json" })
   if result:failed() then
-    error(result:failed(), vim.log.levels.ERROR)
+    vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
+    return false
   end
 
   M.list = utils.from_json(result.stdout)

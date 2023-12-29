@@ -40,7 +40,7 @@ end
 
 ---@return string
 function ApiResponse:prettyContent()
-  return table.concat(self:content(), "\r\n")
+  return table.concat(self:content(), "\n")
 end
 
 ---@return string|nil
@@ -71,7 +71,7 @@ function ApiResponse:prettyErrors()
     return ""
   end
 
-  return table.concat(errors, "\r\n")
+  return table.concat(errors, "\n")
 end
 
 return ApiResponse

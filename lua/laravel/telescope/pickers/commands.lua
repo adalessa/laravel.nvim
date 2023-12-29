@@ -9,8 +9,10 @@ local actions = require "laravel.telescope.actions"
 return function(opts)
   opts = opts or {}
 
-  if #commands.list == 0 then
-    commands.load()
+  if vim.tbl_isempty(commands.list) then
+    if not commands.load() then
+      return
+    end
   end
 
   pickers

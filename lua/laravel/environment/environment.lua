@@ -10,9 +10,9 @@ local cache = {}
 
 ---@param env table
 ---@return Environment
-function Environment:new(name, env)
+function Environment:new(env)
   local obj = {
-    name = name,
+    name = env.name,
     condition = env.condition or nil,
     commands = env.commands or {},
   }

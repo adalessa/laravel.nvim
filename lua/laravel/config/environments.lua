@@ -3,7 +3,8 @@ return {
   auto_dicover = true,
   default = "local",
   definitions = {
-    ["sail"] = {
+    {
+      name = "sail",
       condition = {
         file_exists = { "vendor/bin/sail", "docker-compose.yml" },
       },
@@ -15,7 +16,8 @@ return {
         },
       },
     },
-    ["docker-compose"] = {
+    {
+      name = "docker-compose",
       condition = {
         file_exists = { "docker-compose.yml" },
         executable = { "docker" },
@@ -34,7 +36,8 @@ return {
         },
       },
     },
-    ["local"] = {
+    {
+      name = "local",
       condition = {
         executable = { "php" },
       },

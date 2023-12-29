@@ -7,20 +7,36 @@ local M = {}
 
 M.environment = nil
 
+---@param name string|nil
+---@param envs table
+---@return table|nil
+local function find_env_by_name(name, envs)
+  if not name then
+    return nil
+  end
+  for _, env in ipairs(envs) do
+    if env.name == name then
+      return env
+    end
+  end
+
+  return nil
+end
+
 ---@return Environment|nil
 local function resolve()
   local opts = config.options.environments
 
   if opts.env_variable then
-    local env_name = get_env(opts.env_variable)
-    if env_name and opts.definitions[env_name] then
-      return Environment:new(env_name, opts.definitions[env_name])
+    local env = find_env_by_name(get_env(opts.env_variable), opts.definitions)
+    if env then
+      return env
     end
   end
 
   if opts.auto_dicover then
-    for name, opt in pairs(opts.definitions) do
-      local env = Environment:new(name, opt)
+    for _, opt in ipairs(opts.definitions) do
+      local env = Environment:new(opt)
       if env:check() then
         return env
       end
@@ -28,8 +44,9 @@ local function resolve()
   end
 
   if opts.default then
-    if opts.definitions[opts.default] then
-      return Environment:new(opts.default, opts.definitions[opts.default])
+    local env = find_env_by_name(opts.default, opts.definitions)
+    if env then
+      return env
     end
   end
 

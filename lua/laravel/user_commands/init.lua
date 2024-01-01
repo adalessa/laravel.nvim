@@ -8,6 +8,7 @@ local modules = {
   "laravel",
   "npm",
   "sail",
+  "user_commands",
   "yarn",
 }
 

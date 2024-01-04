@@ -14,6 +14,8 @@ function M.load()
   end
 
   M.list = utils.from_json(result.stdout)
+
+  return true
 end
 
 return M

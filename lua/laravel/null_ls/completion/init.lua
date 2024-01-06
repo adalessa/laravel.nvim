@@ -17,7 +17,11 @@ end
 function M.setup()
   local ok, null_ls = pcall(require, "null-ls")
   if not ok then
-    error "Completition requires null ls"
+    vim.notify(
+      "Null ls feature is enable but null ls is not installed please install to have this feature enable",
+      vim.log.levels.ERROR
+    )
+    return
   end
 
   null_ls.deregister "Laravel"

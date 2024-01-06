@@ -23,6 +23,7 @@ return {
     "nvim-telescope/telescope.nvim",
     "tpope/vim-dotenv",
     "MunifTanjim/nui.nvim",
+    "nvimtools/none-ls.nvim",
   },
   cmd = { "Sail", "Artisan", "Composer", "Npm", "Yarn", "Laravel" },
   keys = {
@@ -73,6 +74,16 @@ This also will show error if a route is defined but the method is not defined
 > Note: using lazy is likely that you will not see at first since the plugin will not load until you call one of the commands, after that it is just picked up
 
 The completions uses `none-ls` which was previusly know as `null-ls`.
+In case you don't want it in your config disable the feature
+```lua
+{
+    features = {
+        null_ls = {
+            enable = false,
+        }
+    }
+}
+```
 Views and Routes completion works as providing the list of the respective in the php files for the function `view` and `route`.
 
 ## UI

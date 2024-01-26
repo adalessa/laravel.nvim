@@ -55,7 +55,7 @@ return {
 
 ## Config
 
-Default [config]("./lua/laravel/config/default.lua"), this can be set on the `setup` function
+Default [config](./lua/laravel/config/default.lua), this can be set on the `setup` function
 In this config there are several secitions, like `lsp_server` which is use to interact with neovim lsp client to look for classes by the name.
 Currently support `phpactor` and `intelephense` as far as I know there are no other php lsp sever.
 

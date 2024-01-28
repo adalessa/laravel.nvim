@@ -17,16 +17,6 @@ function M.run(prompt_bufnr)
   end)
 end
 
-function M.run_asking_options(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  local command = entry.value
-
-  vim.schedule(function()
-    ui_run(command, true)
-  end)
-end
-
 function M.open_route(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()

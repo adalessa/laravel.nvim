@@ -55,8 +55,8 @@ return function(command)
     },
     -- TODO: set the top line as only 1
     Layout.Box({
-      Layout.Box(entry_popup, { size = "15%" }),
-      Layout.Box(help_popup, { size = "85%" }),
+      Layout.Box(entry_popup, { size = 3 }),
+      Layout.Box(help_popup, { grow = 1 }),
     }, { dir = "col" })
   )
 

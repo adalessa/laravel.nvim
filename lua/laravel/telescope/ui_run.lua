@@ -6,7 +6,6 @@ local Layout = require "nui.layout"
 local Popup = require "nui.popup"
 local preview = require "laravel.telescope.preview"
 
---TODO: can be improved
 --- function to scroll a window
 ---@param popup any id of window
 ---@param direction string j o k for the direction
@@ -49,13 +48,12 @@ return function(command)
     {
       position = "50%",
       size = {
-        width = 80,
-        height = "80%",
+        width = "80%",
+        height = "90%",
       },
     },
-    -- TODO: set the top line as only 1
     Layout.Box({
-      Layout.Box(entry_popup, { size = 3 }),
+      Layout.Box(entry_popup, { size = 3 }), -- 3 because of borders to be 1 row
       Layout.Box(help_popup, { grow = 1 }),
     }, { dir = "col" })
   )
@@ -82,11 +80,7 @@ return function(command)
   layout:mount()
 
   local prompt = "$ artisan " .. command.name .. " "
-
-  vim.api.nvim_buf_add_highlight(entry_popup.bufnr, 0, "String", 0, 0, #prompt)
-
   vim.fn.prompt_setprompt(entry_popup.bufnr, prompt)
-  -- TODO: maybe add highlights
   vim.fn.prompt_setcallback(entry_popup.bufnr, function()
     vim.print "running callback"
     local lines = vim.api.nvim_buf_get_lines(entry_popup.bufnr, 0, 1, false)

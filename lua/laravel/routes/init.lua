@@ -18,4 +18,15 @@ function M.load()
   return true
 end
 
+function M.asyncLoad(callback)
+  api.async("artisan", { "route:list", "--json" }, function(result)
+    if result:successful() then
+      M.list = utils.from_json(result.stdout)
+    end
+    if callback ~= nil then
+      callback(result)
+    end
+  end)
+end
+
 return M

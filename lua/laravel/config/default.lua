@@ -14,4 +14,5 @@ return {
   commands_options = require "laravel.config.command_options",
   environments = require "laravel.config.environments",
   resources = require "laravel.config.resources",
+  user_commands = require "laravel.config.user_commands",
 }

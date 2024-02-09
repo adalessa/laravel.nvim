@@ -135,7 +135,7 @@ You can run `shell` as tinker will open a new terminal
 
 ## Plugin specific
 `Laravel cache:clear` purge the cache clears the cache for commands.
-`Laravel commands` shows the list of artisan commands and executes it.
+`Laravel artisan` shows the list of artisan commands and executes it.
 `Laravel routes` show the list of routes and goes to the implementation.
 `Laravel related` show the list of model related classes, includes observers, policy and relations and goes to the implementation.
 `Laravel test:watch` runs the application tests and keep monitoring the changes
@@ -143,6 +143,13 @@ You can run `shell` as tinker will open a new terminal
 `Laravel view-finder` This will look for the views that are use in the file and if only one will go to it, in case of more will show a select, in the view will look for the class that uses it
 `Laravel recipes` There are some recipes like installing ide helper and running the model and eloquent command. and to install doctrine dbal
 `Laravel health` trigger the neovim command `:checkhealth laravel`
+
+## User commands
+Is normal that you may want to define custom commands for example you don't want
+to always have to add the flag `--seed` to migrate but don't want to overwrite the default artisan command
+for that you can define custom commands for the different executables and have them list for you
+check [config](./lua/laravel/config/user_commands.lua) to see an example you can acces them from the command `:LaravelMyCommands` or from `:Laravel commands`
+
 
 ## Lua API
 ### Telescope

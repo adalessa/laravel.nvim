@@ -45,6 +45,7 @@ return function(opts)
       },
       attach_mappings = function(_, map)
         map("i", "<cr>", actions.open_route)
+        map("i", "<c-o>", actions.open_browser)
 
         return true
       end,

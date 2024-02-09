@@ -47,7 +47,6 @@ return function(opts)
       sorter = conf.file_sorter(),
       attach_mappings = function(_, map)
         map("i", "<cr>", actions.run)
-        map("i", "<C-y>", actions.run_asking_options)
 
         return true
       end,

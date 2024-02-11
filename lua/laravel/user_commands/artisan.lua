@@ -1,6 +1,4 @@
-local is_resource = require "laravel.resources.is_resource"
-local laravel_commands = require "laravel.commands"
-local resources_create = require "laravel.resources.create"
+local commands = require "laravel.commands"
 local run = require "laravel.run"
 
 local function get_artisan_auto_complete(current_match, full_command)
@@ -8,13 +6,15 @@ local function get_artisan_auto_complete(current_match, full_command)
   if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
     return {}
   end
-  local complete_list = {}
-  local commands = laravel_commands.list
-  if not commands then
-    return complete_list
+
+  if vim.tbl_isempty(commands.list) then
+    if not commands.load() then
+      return
+    end
   end
 
-  for _, command in ipairs(commands) do
+  local complete_list = {}
+  for _, command in ipairs(commands.list) do
     if current_match == "" or string.match(command.name, current_match) then
       table.insert(complete_list, command.name)
     end
@@ -33,11 +33,7 @@ return {
         end
       end
 
-      if is_resource(args.fargs[1]) then
-        return resources_create(args.fargs)
-      end
-
-      return run("artisan", args.fargs, {})
+      return run("artisan", args.fargs)
     end, {
       nargs = "*",
       complete = get_artisan_auto_complete,

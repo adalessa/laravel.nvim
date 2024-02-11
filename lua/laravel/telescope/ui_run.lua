@@ -1,10 +1,7 @@
-local config = require "laravel.config"
-local create = require "laravel.resources.create"
-local is_resource = require "laravel.resources.is_resource"
-local run = require "laravel.run"
 local Layout = require "nui.layout"
 local Popup = require "nui.popup"
 local preview = require "laravel.telescope.preview"
+local run = require "laravel.run"
 
 --- function to scroll a window
 ---@param popup any id of window
@@ -19,8 +16,6 @@ local function scroll_fn(popup, direction)
 end
 
 return function(command)
-  local command_options = config.options.commands_options[command.name] or {}
-
   local entry_popup, help_popup =
     Popup {
       enter = true,
@@ -77,27 +72,17 @@ return function(command)
   entry_popup:map("n", "<c-c>", function()
     layout:unmount()
   end)
-  layout:mount()
 
   local prompt = "$ artisan " .. command.name .. " "
   vim.fn.prompt_setprompt(entry_popup.bufnr, prompt)
-  vim.fn.prompt_setcallback(entry_popup.bufnr, function()
-    vim.print "running callback"
-    local lines = vim.api.nvim_buf_get_lines(entry_popup.bufnr, 0, 1, false)
-    local arguments = lines[1]:sub(string.len(prompt) + 1)
+  vim.fn.prompt_setcallback(entry_popup.bufnr, function(input)
     layout:unmount()
-
-    local args = vim.fn.split(arguments, " ", false)
+    local args = vim.fn.split(input, " ", false)
     table.insert(args, 1, command.name)
 
-    if is_resource(command.name) then
-      return create(args)
-    end
-
-    run("artisan", args, command_options)
+    run("artisan", args)
   end)
 
+  layout:mount()
   vim.cmd [[startinsert]]
-
-  return true
 end

@@ -3,7 +3,6 @@ local environment = require "laravel.environment"
 local history = require "laravel.history"
 local Popup = require "nui.popup"
 local Split = require "nui.split"
-local api = require "laravel.api"
 
 local ui_builders = {
   split = Split,
@@ -37,23 +36,6 @@ return function(name, args, opts)
     return
   end
 
-  if name == "artisan" then
-    local prefix = "make:"
-    if args[1]:sub(1, #prefix) == prefix or args[1] == "livewire:make" then
-      local response = api.sync("artisan", args)
-      if response:successful() then
-        local class = find_class(response:prettyContent())
-        if class then
-          vim.cmd("e " .. class)
-          return
-        end
-      else
-        vim.notify(response:prettyErrors(), vim.log.levels.ERROR, {})
-        return
-      end
-    end
-  end
-
   local cmd = vim.fn.extend(executable, args)
 
   local command_option = config.options.commands_options[args[1]] or {}
@@ -68,6 +50,19 @@ return function(name, args, opts)
 
   -- This returns thhe job id
   local jobId = vim.fn.termopen(table.concat(cmd, " "))
+
+  instance:on("TermClose", function()
+    local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
+    local class = find_class(vim.fn.join(lines, "\r"))
+    if class then
+      instance:unmount()
+      -- without this will not be open
+      vim.schedule(function()
+        vim.cmd("e " .. class)
+      end)
+      return
+    end
+  end)
 
   history.add(jobId, name, args, opts)
 

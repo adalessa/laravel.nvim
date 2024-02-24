@@ -51,18 +51,20 @@ return function(name, args, opts)
   -- This returns thhe job id
   local jobId = vim.fn.termopen(table.concat(cmd, " "))
 
-  instance:on("TermClose", function()
-    local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
-    local class = find_class(vim.fn.join(lines, "\r"))
-    if class then
-      instance:unmount()
-      -- without this will not be open
-      vim.schedule(function()
-        vim.cmd("e " .. class)
-      end)
-      return
-    end
-  end)
+  if name == "artisan" then
+    instance:on("TermClose", function()
+      local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
+      local class = find_class(vim.fn.join(lines, "\r"))
+      if class then
+        instance:unmount()
+        -- without this will not be open
+        vim.schedule(function()
+          vim.cmd("e " .. class)
+        end)
+        return
+      end
+    end)
+  end
 
   history.add(jobId, name, args, opts)
 

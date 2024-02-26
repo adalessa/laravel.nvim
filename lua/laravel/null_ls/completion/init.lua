@@ -14,6 +14,15 @@ local function get_function_node(param_node)
   return node
 end
 
+local function get_member_node(param_node)
+  local node = param_node
+  while node ~= nil and node.type(node) ~= "member_call_expression" do
+    node = node:parent()
+  end
+
+  return node
+end
+
 function M.setup()
   local ok, null_ls = pcall(require, "null-ls")
   if not ok then
@@ -34,6 +43,18 @@ function M.setup()
       fn = function(params, done)
         local node = vim.treesitter.get_node()
         if not node then
+          return
+        end
+
+        local member_node = get_member_node(node)
+        if member_node then
+          local node_text = vim.treesitter.get_node_text(member_node:field("name")[1], params.bufnr, {})
+          local have_quotes = node.type(node) == "encapsed_string" or node.type(node) == "string"
+          local completion = completions[node_text]
+          if not completion then
+            return
+          end
+          completion(done, not have_quotes)
           return
         end
 

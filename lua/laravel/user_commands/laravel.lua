@@ -14,6 +14,7 @@ local commands = {
   end,
   ["related"] = require("telescope").extensions.laravel.related,
   ["history"] = require("telescope").extensions.laravel.history,
+  ["make"] = require("telescope").extensions.laravel.make,
   ["recipes"] = require("laravel.recipes").run,
   ["commands"] = function()
     vim.cmd [[LaravelMyCommands]]

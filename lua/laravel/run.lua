@@ -51,11 +51,12 @@ return function(name, args, opts)
   -- This returns thhe job id
   local jobId = vim.fn.termopen(table.concat(cmd, " "))
 
-  if name == "artisan" then
+  local prefix = "make"
+  if name == "artisan" and args[1]:sub(1, #prefix) == prefix or args[1] == "livewire:make" then
     instance:on("TermClose", function()
       local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
       local class = find_class(vim.fn.join(lines, "\r"))
-      if class then
+      if class ~= nil and class ~= "" then
         instance:unmount()
         -- without this will not be open
         vim.schedule(function()

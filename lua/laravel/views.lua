@@ -8,12 +8,12 @@ function M.open(view)
 
   local file_path = string.format("%s/%s.blade.php", views_directory, string.gsub(view, "%.", "/"))
 
-  if vim.fn.findfile(file_path) then
+  if vim.fn.filewritable(file_path) == 1 then
     vim.cmd("edit " .. file_path)
     return
   end
   -- It creates the view if does not exists and user want it
-  if vim.fn.confirm("View does not exists, Should create it?", "&Yes\n&No") == 1 then
+  if vim.fn.confirm("View " .. view .. " does not exists, Should create it?", "&Yes\n&No") == 1 then
     run("artisan", { "make:view", view })
   end
 end

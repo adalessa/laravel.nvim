@@ -50,6 +50,10 @@ function M.go_to_definition()
           (name) @function_name (#eq? @function_name "view")
           (arguments (argument (string (string_value) @view)))
         )
+        (member_call_expression
+          (name) @member_name (#eq? @member_name "view")
+          (arguments (argument (string (string_value) @view)))
+        )
     ]]
     )
 

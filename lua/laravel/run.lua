@@ -14,6 +14,7 @@ local make_rules = { "%[(.-)%]", "CLASS:%s+(.-)\n" }
 ---@param text string
 ---@return string|nil
 local function find_class(text)
+  text = text:gsub("\r", "")
   for _, rule in ipairs(make_rules) do
     local matche
     matche = text:gmatch(rule)()

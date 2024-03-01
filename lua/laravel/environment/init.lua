@@ -28,9 +28,12 @@ local function resolve()
   local opts = config.options.environments
 
   if opts.env_variable then
-    local env = find_env_by_name(get_env(opts.env_variable), opts.definitions)
-    if env then
-      return env
+    local env_opts = find_env_by_name(get_env(opts.env_variable), opts.definitions)
+    if env_opts then
+      local env = Environment:new(env_opts)
+      if env:check() then
+        return env
+      end
     end
   end
 
@@ -44,9 +47,12 @@ local function resolve()
   end
 
   if opts.default then
-    local env = find_env_by_name(opts.default, opts.definitions)
-    if env then
-      return env
+    local env_opts = find_env_by_name(opts.default, opts.definitions)
+    if env_opts then
+      local env = Environment:new(env_opts)
+      if env:check() then
+        return env
+      end
     end
   end
 

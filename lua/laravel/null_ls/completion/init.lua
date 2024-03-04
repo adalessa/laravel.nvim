@@ -3,6 +3,7 @@ local M = {}
 local completions = {
   view = require "laravel.null_ls.completion.view",
   route = require "laravel.null_ls.completion.route",
+  config = require "laravel.null_ls.completion.config",
 }
 
 local function get_function_node(param_node)

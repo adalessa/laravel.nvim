@@ -80,6 +80,8 @@ function M.setup()
   if config.options.features.null_ls.enable then
     require("laravel.null_ls").setup()
   end
+
+  require("laravel.luasnip").setup()
 end
 
 ---@param name string

@@ -1,10 +1,11 @@
 ---@class EnvironmentCondition
----@field file_exists string[]
+---@field file_exists string[]|nil
+---@field executable string[]|nil
 
 ---@class LaravelEnvironmentConfig
 ---@field name string
 ---@field condition EnvironmentCondition
----@field commands table
+---@field commands table|nil
 
 ---@class LaravelOptionsEnvironments
 ---@field env_variable string

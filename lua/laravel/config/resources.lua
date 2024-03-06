@@ -1,0 +1,16 @@
+return {
+  ["Controllers"] = "app/Http/Controllers",
+  ["Livewire"] = "app/Livewire",
+  ["Models"] = "app/Models",
+  ["Views"] = "resources/views",
+  ["Migrations"] = "database/migrations",
+  ["Providers"] = "app/Providers",
+  ["Components"] = "app/View/Components",
+  ["Routes"] = "routes",
+  ["Factories"] = "database/factories",
+  ["Seeders"] = "database/seeders",
+  ["Configs"] = "config",
+  ["FeatureTest"] = "tests/Feature",
+  ["UnitTest"] = "tests/Unit",
+  ["Requests"] = "app/Http/Requests",
+}

@@ -17,6 +17,7 @@
 ---@field commands_options table
 ---@field environments LaravelOptionsEnvironments
 ---@field user_commands table
+---@field resources table
 return {
   lsp_server = "phpactor",
   register_user_commands = true,
@@ -33,4 +34,5 @@ return {
   commands_options = require "laravel.config.command_options",
   environments = require "laravel.config.environments",
   user_commands = require "laravel.config.user_commands",
+  resources = require "laravel.config.resources",
 }

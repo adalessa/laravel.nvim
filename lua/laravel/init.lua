@@ -1,7 +1,5 @@
-local M = {}
-
 ---@param opts? LaravelOptions
-function M.setup(opts)
+local function setup(opts)
   local config = require "laravel.config"
   local environment = require "laravel.environment"
   local autocmds = require "laravel.autocommands"
@@ -11,4 +9,19 @@ function M.setup(opts)
   environment.setup()
 end
 
-return M
+local function cleanCache()
+  require("laravel.commands").list = {}
+  require("laravel.routes").list = {}
+end
+
+return {
+  setup = setup,
+  cleanCache = cleanCache,
+  routes = require("telescope").extensions.laravel.routes,
+  artisan = require("telescope").extensions.laravel.artisan,
+  history = require("telescope").extensions.laravel.history,
+  make = require("telescope").extensions.laravel.make,
+  commands = require("telescope").extensions.laravel.commands,
+  recies = require("laravel.recipes").run,
+  viewFinder = require("laravel.view_finder").auto,
+}

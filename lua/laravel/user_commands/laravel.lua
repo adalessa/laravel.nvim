@@ -8,7 +8,7 @@ local commands = {
     vim.notify("Laravel plugin cache cleaned", vim.log.levels.INFO)
   end,
   ["routes"] = require("telescope").extensions.laravel.routes,
-  ["artisan"] = require("telescope").extensions.laravel.commands,
+  ["artisan"] = require("telescope").extensions.laravel.artisan,
   ["test:watch"] = function()
     require "laravel.watch"("artisan", { "test" })
   end,

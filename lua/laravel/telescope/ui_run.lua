@@ -29,6 +29,9 @@ return function(command)
       buf_options = {
         buftype = "prompt",
       },
+      win_options = {
+        winhighlight = "Normal:LaravelPrompt",
+      },
     }, Popup {
       border = {
         style = "rounded",
@@ -36,6 +39,9 @@ return function(command)
           top = "Help (<c-c> to cancel)",
           top_align = "center",
         },
+      },
+      win_options = {
+        winhighlight = "Normal:LaravelHelp",
       },
     }
 
@@ -50,7 +56,7 @@ return function(command)
     Layout.Box({
       Layout.Box(entry_popup, { size = 3 }), -- 3 because of borders to be 1 row
       Layout.Box(help_popup, { grow = 1 }),
-    }, { dir = "col" })
+    }, { dir = "col", relative = "editor" })
   )
 
   local command_preview = preview.command(command)

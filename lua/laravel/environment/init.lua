@@ -30,10 +30,7 @@ local function resolve()
   if opts.env_variable then
     local env_opts = find_env_by_name(get_env(opts.env_variable), opts.definitions)
     if env_opts then
-      local env = Environment:new(env_opts)
-      if env:check() then
-        return env
-      end
+      return Environment:new(env_opts)
     end
   end
 

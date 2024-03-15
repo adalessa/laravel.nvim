@@ -38,7 +38,7 @@ return function(opts)
     return class
   end
 
-  local class = get_model_class_name()
+  local class = opts.class or get_model_class_name()
   if class ~= "" then
     local result = api.sync("artisan", { "model:show", class, "--json" })
     if result:failed() then

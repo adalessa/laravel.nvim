@@ -48,7 +48,8 @@ function M.go_to_definition()
   local founds = {}
   for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
     if query.captures[id] == "view" then
-      table.insert(founds, vim.treesitter.get_node_text(node, bufnr))
+      local view = vim.treesitter.get_node_text(node, bufnr):gsub("'", "")
+      table.insert(founds, view)
     end
   end
 

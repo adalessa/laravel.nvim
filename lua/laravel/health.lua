@@ -5,21 +5,53 @@ local M = {}
 M.check = function()
   vim.health.report_start "Laravel"
 
-  if vim.fn.executable "fd" == 1 then
-    vim.health.report_ok "fd installed"
-  else
-    vim.health.report_warn(
-      "fd is missing, is required for opening the migration",
-      { "Installed from your package manager or source https://github.com/sharkdp/fd" }
-    )
-  end
-
+  vim.health.report_start "External Dependencies"
   if vim.fn.executable "rg" == 1 then
     vim.health.report_ok "rg installed"
   else
     vim.health.report_warn(
       "ripgrep is missing, is required for finding view usage",
       { "Installed from your package manager" }
+    )
+  end
+
+  vim.health.report_start "Plugin Dependencies"
+  local ok_null_ls, _ = pcall(require, "null-ls")
+  if ok_null_ls then
+    vim.health.report_ok "Null LS is installed"
+  else
+    vim.health.report_warn(
+      "Null LS is not installed, this is use to add completion, diagnostic and Code actions",
+      { "Install it from `https://github.com/nvimtools/none-ls.nvim`" }
+    )
+  end
+  local ok_luannip, _ = pcall(require, "luasnip")
+  if ok_luannip then
+    vim.health.report_ok "luasnip is installed"
+  else
+    vim.health.report_warn(
+      "Luasnip is not installed, this is use to snippets related to larevel",
+      { "Install it from `https://github.com/L3MON4D3/LuaSnip`" }
+    )
+  end
+
+  local ok_nui, _ = pcall(require, "nui.popup")
+  if ok_nui then
+    vim.health.report_ok "Nui is installed"
+  else
+    vim.health.report_warn(
+      "Nui is not installed, this is use to create the UI for the command",
+      { "Install it from `https://github.com/MunifTanjim/nui.nvim`" }
+    )
+  end
+
+  local ok_telescope, _ = pcall(require, "telescope")
+  if ok_telescope then
+    vim.health.report_ok "Telescope is installed"
+  else
+    vim.health.report_warn(
+      "Telescope is not installed, A lot of functions uses telescope for the pickers",
+      { "Install it from `https://github.com/nvim-telescope/telescope.nvim`" }
     )
   end
 
@@ -48,10 +80,6 @@ M.check = function()
   end
 
   local composer_dependencies = {
-    {
-      name = "doctrine/dbal",
-      messages = "This is required for model:show, related model picker",
-    },
     {
       name = "laravel/tinker",
       messages = "This is required for tinker repl",

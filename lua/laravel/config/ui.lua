@@ -1,3 +1,18 @@
+---@class NuiOptions
+---@field enter boolean
+---@field relative string
+---@field position string|table
+---@field size string|table
+---@field buf_options table
+---@field win_options table
+
+---@class LaravelOptionsUINui
+---@field split NuiOptions
+---@field popup NuiOptions
+
+---@class LaravelOptionsUI
+---@field default string
+---@field nui_opts LaravelOptionsUINui
 return {
   default = "split",
   nui_opts = {

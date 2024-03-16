@@ -54,7 +54,7 @@ function M.is_composer_package_install(package)
   return M.sync("composer", { "info", package }):successful()
 end
 
-function M.php_execute(code)
+function M.tinker_execute(code)
   return M.sync("artisan", { "tinker", "--execute", "echo " .. code })
 end
 

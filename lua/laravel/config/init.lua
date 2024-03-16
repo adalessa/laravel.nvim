@@ -1,6 +1,6 @@
 local M = {}
 
----@class LaravelOptions
+---@type LaravelOptions
 M.defaults = require "laravel.config.default"
 
 --- @type LaravelOptions

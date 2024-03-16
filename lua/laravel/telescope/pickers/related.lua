@@ -14,9 +14,10 @@ return function(opts)
     return false
   end
 
-  if not api.is_composer_package_install "doctrine/dbal" then
-    error "doctrine dbal not install this picker depends on it"
-  end
+  -- TODO: should check if version is lower than 11
+  -- if not api.is_composer_package_install "doctrine/dbal" then
+  --   error "doctrine dbal not install this picker depends on it"
+  -- end
 
   local get_model_class_name = function()
     local query = vim.treesitter.query.parse(
@@ -37,7 +38,7 @@ return function(opts)
     return class
   end
 
-  local class = get_model_class_name()
+  local class = opts.class or get_model_class_name()
   if class ~= "" then
     local result = api.sync("artisan", { "model:show", class, "--json" })
     if result:failed() then

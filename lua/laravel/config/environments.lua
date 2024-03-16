@@ -1,3 +1,17 @@
+---@class EnvironmentCondition
+---@field file_exists string[]|nil
+---@field executable string[]|nil
+
+---@class LaravelEnvironmentConfig
+---@field name string
+---@field condition EnvironmentCondition
+---@field commands table|nil
+
+---@class LaravelOptionsEnvironments
+---@field env_variable string
+---@field auto_dicover boolean
+---@field default string
+---@field definitions LaravelEnvironmentConfig[]
 return {
   env_variable = "NVIM_LARAVEL_ENV",
   auto_dicover = true,

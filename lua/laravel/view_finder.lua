@@ -41,20 +41,6 @@ function M.go_to_definition()
 
   local query = vim.treesitter.query.get("php", "laravel_views")
 
-  if query == nil then
-    vim.treesitter.query.set(
-      "php",
-      "laravel_views",
-      [[
-        (function_call_expression
-          (name) @function_name (#eq? @function_name "view")
-          (arguments (argument (string (string_value) @view)))
-        )
-    ]]
-    )
-
-    query = vim.treesitter.query.get("php", "laravel_views")
-  end
   if not query then
     error("Could not get treesitter query", vim.log.levels.ERROR)
   end
@@ -62,9 +48,12 @@ function M.go_to_definition()
   local founds = {}
   for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
     if query.captures[id] == "view" then
-      table.insert(founds, vim.treesitter.get_node_text(node, bufnr))
+      local view = vim.treesitter.get_node_text(node, bufnr):gsub("'", "")
+      founds[view] = true
     end
   end
+
+  founds = vim.tbl_keys(founds)
 
   if #founds == 0 then
     vim.notify("No usage of this view found", vim.log.levels.WARN)

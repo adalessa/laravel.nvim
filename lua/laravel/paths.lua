@@ -7,7 +7,7 @@ local M = {}
 ---@return ApiResponse
 local function exec(cmd)
   if not cache[cmd] then
-    cache[cmd] = api.php_execute(cmd)
+    cache[cmd] = api.tinker_execute(cmd)
   end
 
   return cache[cmd]

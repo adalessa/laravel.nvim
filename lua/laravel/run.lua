@@ -9,6 +9,23 @@ local ui_builders = {
   popup = Popup,
 }
 
+local make_rules = { "%[(.-)%]", "CLASS:%s+(.-)\n" }
+
+---@param text string
+---@return string|nil
+local function find_class(text)
+  text = text:gsub("\r", "")
+  for _, rule in ipairs(make_rules) do
+    local matche
+    matche = text:gmatch(rule)()
+    if matche then
+      return matche
+    end
+  end
+
+  return nil
+end
+
 ---@param name string
 ---@param args string[]
 ---@param opts table|nil
@@ -19,6 +36,7 @@ return function(name, args, opts)
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
     return
   end
+
   local cmd = vim.fn.extend(executable, args)
 
   local command_option = config.options.commands_options[args[1]] or {}
@@ -33,6 +51,22 @@ return function(name, args, opts)
 
   -- This returns thhe job id
   local jobId = vim.fn.termopen(table.concat(cmd, " "))
+
+  local prefix = "make"
+  if name == "artisan" and args[1]:sub(1, #prefix) == prefix or args[1] == "livewire:make" then
+    instance:on("TermClose", function()
+      local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
+      local class = find_class(vim.fn.join(lines, "\r"))
+      if class ~= nil and class ~= "" then
+        instance:unmount()
+        -- without this will not be open
+        vim.schedule(function()
+          vim.cmd("e " .. class)
+        end)
+        return
+      end
+    end)
+  end
 
   history.add(jobId, name, args, opts)
 

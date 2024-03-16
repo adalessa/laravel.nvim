@@ -8,13 +8,17 @@ local commands = {
     vim.notify("Laravel plugin cache cleaned", vim.log.levels.INFO)
   end,
   ["routes"] = require("telescope").extensions.laravel.routes,
-  ["artisan"] = require("telescope").extensions.laravel.commands,
+  ["artisan"] = require("telescope").extensions.laravel.artisan,
   ["test:watch"] = function()
     require "laravel.watch"("artisan", { "test" })
   end,
   ["related"] = require("telescope").extensions.laravel.related,
   ["history"] = require("telescope").extensions.laravel.history,
+  ["make"] = require("telescope").extensions.laravel.make,
   ["recipes"] = require("laravel.recipes").run,
+  ["commands"] = function()
+    vim.cmd [[LaravelMyCommands]]
+  end,
   ["view-finder"] = require("laravel.view_finder").auto,
   ["health"] = function()
     vim.cmd [[checkhealth laravel]]

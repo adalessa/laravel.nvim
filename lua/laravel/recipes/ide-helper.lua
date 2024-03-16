@@ -34,7 +34,7 @@ local function installIdeHelperAndWrite()
 end
 
 function M.run()
-  if not api.is_composer_package_install "barryvdh/laravel-ide-helper" then
+  if api.is_composer_package_install "barryvdh/laravel-ide-helper" then
     writeModels()
     return
   end

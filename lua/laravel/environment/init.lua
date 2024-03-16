@@ -30,10 +30,7 @@ local function resolve()
   if opts.env_variable then
     local env_opts = find_env_by_name(get_env(opts.env_variable), opts.definitions)
     if env_opts then
-      local env = Environment:new(env_opts)
-      if env:check() then
-        return env
-      end
+      return Environment:new(env_opts)
     end
   end
 
@@ -71,6 +68,7 @@ function M.setup()
     return
   end
 
+  require("laravel.treesitter").setup()
   user_commands.setup()
 
   if config.options.features.route_info.enable then
@@ -80,6 +78,8 @@ function M.setup()
   if config.options.features.null_ls.enable then
     require("laravel.null_ls").setup()
   end
+
+  require("laravel.luasnip").setup()
 end
 
 ---@param name string

@@ -58,24 +58,10 @@ local function set_route_to_methods(event)
       error("Could not retrieve syntx tree", vim.log.levels.ERROR)
     end
 
-    local query = vim.treesitter.query.get("php", "laravel_route_info")
-    if query == nil then
-      vim.treesitter.query.set(
-        "php",
-        "laravel_route_info",
-        [[
-        (namespace_definition (namespace_name) @namespace)
-        (class_declaration (name) @class)
-        (method_declaration
-            (visibility_modifier) @visibility
-            (name) @method
-        )
-    ]]
-      )
-
-      query = vim.treesitter.query.get("php", "laravel_route_info")
+    local query = vim.treesitter.query.get("php", "php_class")
+    if not query then
+      error("Could not get treesitter query", vim.log.levels.ERROR)
     end
-
     local class, class_namespace, methods, visibilities = "", "", {}, {}
     local class_pos = 0
 

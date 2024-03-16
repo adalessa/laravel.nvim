@@ -2,7 +2,7 @@ local null_ls = require "null-ls"
 
 local M = {}
 
-M.name = "Laravel.CodeAction"
+M.name = "Laravel_CodeAction"
 
 function M.setup()
   null_ls.deregister(M.name)

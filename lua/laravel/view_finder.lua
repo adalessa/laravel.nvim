@@ -41,24 +41,6 @@ function M.go_to_definition()
 
   local query = vim.treesitter.query.get("php", "laravel_views")
 
-  if query == nil then
-    vim.treesitter.query.set(
-      "php",
-      "laravel_views",
-      [[
-        (function_call_expression
-          (name) @function_name (#eq? @function_name "view")
-          (arguments (argument (string (string_value) @view)))
-        )
-        (member_call_expression
-          (name) @member_name (#eq? @member_name "view")
-          (arguments (argument (string (string_value) @view)))
-        )
-    ]]
-    )
-
-    query = vim.treesitter.query.get("php", "laravel_views")
-  end
   if not query then
     error("Could not get treesitter query", vim.log.levels.ERROR)
   end

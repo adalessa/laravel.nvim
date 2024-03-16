@@ -68,6 +68,7 @@ function M.setup()
     return
   end
 
+  require("laravel.treesitter").setup()
   user_commands.setup()
 
   if config.options.features.route_info.enable then

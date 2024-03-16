@@ -23,6 +23,26 @@ M.check = function()
     )
   end
 
+  vim.health.report_start "Plugin Dependencies"
+  local ok_null_ls, _ = pcall(require, "null-ls")
+  if ok_null_ls then
+    vim.health.report_ok "Null LS is installed"
+  else
+    vim.health.report_warn(
+      "Null LS is not installed, this is use to add completion, diagnostic and Code actions",
+      { "Install it from `https://github.com/nvimtools/none-ls.nvim`" }
+    )
+  end
+  local ok_luannip, _ = pcall(require, "luasnip")
+  if ok_luannip then
+    vim.health.report_ok "luasnip is installed"
+  else
+    vim.health.report_warn(
+      "Luasnip is not installed, this is use to snippets related to larevel",
+      { "Install it from `https://github.com/L3MON4D3/LuaSnip`" }
+    )
+  end
+
   vim.health.report_start "Environment"
 
   if not environment.environment then

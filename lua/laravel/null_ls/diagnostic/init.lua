@@ -1,20 +1,13 @@
 local paths = require "laravel.paths"
+local null_ls = require "null-ls"
 
 local M = {}
 
+M.name = "Laravel.Diagnostics"
+
 function M.setup()
-  local ok, null_ls = pcall(require, "null-ls")
-  if not ok then
-    vim.notify(
-      "Null ls feature is enable but null ls is not installed please install to have this feature enable",
-      vim.log.levels.ERROR
-    )
-    return
-  end
-
-  null_ls.deregister "Laravel diagnostics"
-
-  local laravel_diagnostic = {
+  null_ls.deregister(M.name)
+  null_ls.register {
     name = "Laravel diagnostics",
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = { "php" },
@@ -67,7 +60,10 @@ function M.setup()
                 col = start_col + 1,
                 end_col = end_col + 1,
                 source = "laravel.nvim",
-                message = "view does not exists",
+                message = string.format("view '%s' does not exists", view),
+                user_data = {
+                  view = view,
+                },
                 severity = vim.diagnostic.severity.ERROR,
               })
             end
@@ -78,8 +74,6 @@ function M.setup()
       end,
     },
   }
-
-  null_ls.register(laravel_diagnostic)
 end
 
 return M

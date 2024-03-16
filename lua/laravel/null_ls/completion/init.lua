@@ -1,4 +1,4 @@
-local M = {}
+local null_ls = require "null-ls"
 
 local completions = {
   view = require "laravel.null_ls.completion.view",
@@ -24,20 +24,14 @@ local function get_member_node(param_node)
   return node
 end
 
+local M = {}
+
+M.name = "Laravel.Completion"
+
 function M.setup()
-  local ok, null_ls = pcall(require, "null-ls")
-  if not ok then
-    vim.notify(
-      "Null ls feature is enable but null ls is not installed please install to have this feature enable",
-      vim.log.levels.ERROR
-    )
-    return
-  end
-
-  null_ls.deregister "Laravel"
-
-  local laravel = {
-    name = "Laravel",
+  null_ls.deregister(M.name)
+  null_ls.register {
+    name = M.name,
     method = null_ls.methods.COMPLETION,
     filetypes = { "php" },
     generator = {
@@ -81,8 +75,6 @@ function M.setup()
       async = true,
     },
   }
-
-  null_ls.register(laravel)
 end
 
 return M

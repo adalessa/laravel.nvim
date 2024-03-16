@@ -49,9 +49,11 @@ function M.go_to_definition()
   for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
     if query.captures[id] == "view" then
       local view = vim.treesitter.get_node_text(node, bufnr):gsub("'", "")
-      table.insert(founds, view)
+      founds[view] = true
     end
   end
+
+  founds = vim.tbl_keys(founds)
 
   if #founds == 0 then
     vim.notify("No usage of this view found", vim.log.levels.WARN)

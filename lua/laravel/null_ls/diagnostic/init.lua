@@ -35,6 +35,14 @@ function M.setup()
                   (name) @member_name (#eq? @member_name "view")
                   (arguments (argument (string (string_value) @view)))
                 )
+                (scoped_call_expression
+                  scope: (name) @static (#eq? @static "Route")
+                  name: (name) @method (#eq? @method "view")
+                  arguments: (arguments (
+                    (argument) @route
+                    (argument (string (string_value) @view))
+                    ))
+                )
             ]]
           )
 

@@ -137,7 +137,7 @@ function M.setup()
           end
         end
         --- END Completion routes
-        done({ { items = {}, isIncomplete = false } })
+        done { { items = {}, isIncomplete = false } }
       end,
       async = true,
     },

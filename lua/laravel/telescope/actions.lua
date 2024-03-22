@@ -6,6 +6,7 @@ local run = require "laravel.run"
 local lsp = require "laravel._lsp"
 local app_config = require "laravel.app.config"
 local config = require "laravel.config"
+local utils = require "laravel.utils"
 
 local M = {}
 
@@ -54,9 +55,11 @@ function M.open_browser(prompt_bufnr)
 
   local url = string.format("%s/%s", app_url, uri)
   local command = config.options.browser
-
   if command == nil then
-    if vim.fn.executable "xdg-open" == 1 then
+    local browser = utils.get_env("BROWSER")
+    if browser ~= nil then
+      command = browser
+    elseif vim.fn.executable "xdg-open" == 1 then
       command = "xdg-open"
     elseif vim.fn.executable "open" == 1 then
       command = "open"

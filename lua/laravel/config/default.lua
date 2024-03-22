@@ -11,6 +11,7 @@
 
 ---@class LaravelOptions
 ---@field lsp_server string
+---@field browser string|nil
 ---@field register_user_commands boolean
 ---@field features LaravelFeatures
 ---@field ui LaravelOptionsUI
@@ -30,6 +31,7 @@ return {
       position = "right",
     },
   },
+  browser = nil,
   ui = require "laravel.config.ui",
   commands_options = require "laravel.config.command_options",
   environments = require "laravel.config.environments",

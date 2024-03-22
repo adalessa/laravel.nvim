@@ -4,7 +4,8 @@ local ui_run = require "laravel.telescope.ui_run"
 local go = require "laravel.routes.go"
 local run = require "laravel.run"
 local lsp = require "laravel._lsp"
-local config = require "laravel.app.config"
+local app_config = require "laravel.app.config"
+local config = require "laravel.config"
 
 local M = {}
 
@@ -39,7 +40,7 @@ end
 function M.open_browser(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
-  local app_url = config.get "app.url"
+  local app_url = app_config.get "app.url"
   if not app_url then
     return
   end
@@ -52,15 +53,19 @@ function M.open_browser(prompt_bufnr)
   end
 
   local url = string.format("%s/%s", app_url, uri)
-  local command = nil
+  local command = config.options.browser
 
-  if vim.fn.executable "xdg-open" == 1 then
-    command = "xdg-open"
-  elseif vim.fn.executable "open" == 1 then
-    command = "open"
-  end
-  if not command then
-    return
+  if command == nil then
+    if vim.fn.executable "xdg-open" == 1 then
+      command = "xdg-open"
+    elseif vim.fn.executable "open" == 1 then
+      command = "open"
+    else
+      vim.notify(
+        "There is no command to open the url add the option browser into your configuration",
+        vim.log.levels.WARN
+      )
+    end
   end
 
   vim.schedule(function()

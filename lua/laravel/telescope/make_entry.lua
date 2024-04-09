@@ -49,7 +49,7 @@ function M.gen_from_laravel_routes(opts)
 
   local make_display = function(entry)
     return displayer {
-      { vim.fn.join(entry.value.methods, "|"), "TelescopeResultsConstant" },
+      { entry.value.method, "TelescopeResultsConstant" },
       { entry.value.uri, "TelescopeResultsIdentifier" },
       { entry.value.name or "", "TelescopeResultsFunction" },
     }
@@ -60,7 +60,7 @@ function M.gen_from_laravel_routes(opts)
       value = route,
       ordinal = route.uri,
       display = make_display,
-      route_method = vim.fn.join(route.methods, "|"),
+      route_method = route.method
     }, opts)
   end
 end

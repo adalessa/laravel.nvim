@@ -26,7 +26,7 @@ local function required(is_required)
 end
 
 --- Generates the preview and highlight for a command
----@param command LaravelCommand
+---@param command Command
 ---@return Preview
 local command = function(command)
   local lines = {}
@@ -163,7 +163,7 @@ local command = function(command)
 end
 
 --- Generates the preview for a laravel route
----@param route LaravelRoute
+---@param route Route
 ---@return Preview
 local route = function(route)
   local lines = {}
@@ -210,7 +210,7 @@ local route = function(route)
   end
 
   table.insert(lines, "")
-  table.insert(lines, "Method: " .. vim.fn.join(route.methods, "|"))
+  table.insert(lines, "Method: " .. route.method)
   table.insert(highlights, {
     "WarningMsg",
     #lines - 1,
@@ -234,7 +234,7 @@ local route = function(route)
     -1,
   })
 
-  for _, middleware in pairs(route.middlewares) do
+  for _, middleware in pairs(route.middleware or {}) do
     table.insert(lines, "\t" .. middleware)
     table.insert(highlights, {
       "String",

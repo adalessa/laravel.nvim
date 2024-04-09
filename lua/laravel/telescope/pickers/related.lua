@@ -14,11 +14,6 @@ return function(opts)
     return false
   end
 
-  -- TODO: should check if version is lower than 11
-  -- if not api.is_composer_package_install "doctrine/dbal" then
-  --   error "doctrine dbal not install this picker depends on it"
-  -- end
-
   local get_model_class_name = function()
     local query = vim.treesitter.query.parse(
       lang,

@@ -2,7 +2,11 @@
   "neodev": {
     "library": {
       "plugins": [
-        "plenary.nvim"
+        "plenary.nvim",
+        "nui.nvim",
+        "none-ls.nvim",
+        "telescope.nvim",
+        "sqlite.lua"
       ]
     }
   },

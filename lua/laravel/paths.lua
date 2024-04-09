@@ -25,6 +25,8 @@ local function map_path(path)
   return path:gsub(get_base_path():gsub("-", "%%-"), get_cwd())
 end
 
+---@param resource string
+---@return string
 function M.resource_path(resource)
   local path = exec(string.format("resource_path('%s')", resource)):first()
 

@@ -17,28 +17,18 @@ local function get_values()
     return
   end
   if environment.get_executable "php" then
-    api.async(
-      "php",
-      { "-v" },
-      ---@param response ApiResponse
-      function(response)
-        if response:successful() then
-          values.php = response:first():match "PHP ([%d%.]+)"
-        end
+    api.async("php", { "-v" }, function(response)
+      if response:successful() then
+        values.php = response:first():match "PHP ([%d%.]+)"
       end
-    )
+    end)
   end
   if environment.get_executable "artisan" then
-    api.async(
-      "artisan",
-      { "--version" },
-      ---@param response ApiResponse
-      function(response)
-        if response:successful() then
-          values.laravel = response:first():match "Laravel Framework ([%d%.]+)"
-        end
+    api.async("artisan", { "--version" }, function(response)
+      if response:successful() then
+        values.laravel = response:first():match "Laravel Framework ([%d%.]+)"
       end
-    )
+    end)
   end
   last_check = os.time()
 end

@@ -2,10 +2,10 @@ local lsp = require "laravel._lsp"
 
 return function(route)
   if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
-    if vim.tbl_contains(route.middlewares, "api") then
+    if vim.tbl_contains(route.middleware, "api") then
       vim.cmd "edit routes/api.php"
       vim.fn.search(route.uri:gsub("api", "") .. "")
-    elseif vim.tbl_contains(route.middlewares, "web") then
+    elseif vim.tbl_contains(route.middleware, "web") then
       vim.cmd "edit routes/web.php"
       if route.uri == "/" then
         vim.fn.search "['\"]/['\"]"

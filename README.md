@@ -11,7 +11,6 @@ Robust API to allow you to run any command in the way that you need.
 
 ## Requirements
 Treesitter, LSP Server (I use and recommend [phpactor](https://github.com/phpactor/phpactor))
-`fd` to look for files as migrations when are created
 `rg` ripgrep to look usage of views
 
 ## Installation

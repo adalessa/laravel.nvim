@@ -36,7 +36,7 @@ end
 --- Run the command async
 ---@param program string
 ---@param args string[]
----@param callback function
+---@param callback fun(response: ApiResponse)
 function M.async(program, args, callback)
   local cmd = M.generate_command(program, args)
   local command = table.remove(cmd, 1)

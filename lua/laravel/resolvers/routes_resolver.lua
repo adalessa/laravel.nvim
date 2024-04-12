@@ -17,10 +17,6 @@ function routes_resolver.resolve(
   onFailure
 )
   api.async("artisan", { "route:list", "--json" }, function(response)
-    if response:failed() then
-      if onFailure then onFailure(response:prettyErrors()) end
-    end
-
     ---@type Route[]|nil
     local routes = vim.json.decode(response:prettyContent(), {
       luanil = { object = true, array = true }
@@ -32,6 +28,8 @@ function routes_resolver.resolve(
     end
 
     if onSuccess then onSuccess(routes) end
+  end, function(errResponse)
+    if onFailure then onFailure(errResponse:prettyErrors()) end
   end)
 end
 

@@ -6,19 +6,9 @@ local finders = require "telescope.finders"
 local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
 local run = require "laravel.run"
-local resolvers = require "laravel.resolvers.cache"
 
 return function(opts)
   opts = opts or {}
-
-  resolvers.commands.resolve(
-    function (commands)
-    end,
-    function(err)
-      vim.notify("Could not load the commands", vim.log.levels.ERROR)
-    end
-  )
-
 
   local commands = {}
 

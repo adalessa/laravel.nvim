@@ -8,6 +8,7 @@ local actions = require "laravel.telescope.actions"
 local resolvers = require "laravel.resolvers.cache"
 
 return function(opts)
+  opts = opts or {}
   resolvers.routes.resolve(
     function(routes)
       pickers

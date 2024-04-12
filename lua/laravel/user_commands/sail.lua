@@ -8,12 +8,10 @@ return {
     create_user_command("Sail", "sail", {
       up = function()
         api.async("sail", { "up", "-d" }, function(response)
-          if response:failed() then
-            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
-          else
-            vim.notify("Sail up completed", vim.log.levels.INFO)
-            status.refresh()
-          end
+          vim.notify("Sail up completed", vim.log.levels.INFO)
+          status.refresh()
+        end, function(errResponse)
+          vim.notify(errResponse:prettyErrors(), vim.log.levels.ERROR)
         end)
       end,
 
@@ -23,32 +21,26 @@ return {
 
       ps = function()
         api.async("sail", { "ps" }, function(response)
-          if response:failed() then
-            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
-          else
-            vim.notify(response:prettyContent(), vim.log.levels.INFO)
-          end
+          vim.notify(response:prettyContent(), vim.log.levels.INFO)
+        end, function(errResponse)
+          vim.notify(errResponse:prettyErrors(), vim.log.levels.ERROR)
         end)
       end,
 
       restart = function()
-        api.async("sail", { "restart" }, function(response)
-          if response:failed() then
-            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
-          else
-            vim.notify("Sail restart complete", vim.log.levels.INFO)
-          end
+        api.async("sail", { "restart" }, function()
+          vim.notify("Sail restart complete", vim.log.levels.INFO)
+        end, function(errResponse)
+          vim.notify(errResponse:prettyErrors(), vim.log.levels.ERROR)
         end)
         vim.notify("Sail restart starting", vim.log.levels.INFO)
       end,
 
       down = function()
-        api.async("sail", { "down" }, function(response)
-          if response:failed() then
-            vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
-          else
-            vim.notify("Sail Down complete", vim.log.levels.INFO)
-          end
+        api.async("sail", { "down" }, function()
+          vim.notify("Sail Down complete", vim.log.levels.INFO)
+        end, function(errResponse)
+          vim.notify(errResponse:prettyErrors(), vim.log.levels.ERROR)
         end)
       end,
     })

@@ -1,6 +1,5 @@
 local api = require "laravel.api"
 
-
 ---@class Command
 ---@field name string
 ---@field hidden boolean
@@ -38,21 +37,15 @@ local function parse(json)
   return res.commands
 end
 
-
 ---@param onSuccess fun(commands: table)|nil
 ---@param onFailure fun(errorMessage: string)|nil
 function commands_resolver.resolve(
   onSuccess,
   onFailure
 )
-  api.async("artisan", { "list", "--format=json" }, function(result)
-    if result:failed() then
-      if onFailure then onFailure(result:prettyErrors()) end
-      return
-    end
-
+  api.async("artisan", { "list", "--format=json" }, function(response)
     ---@type Command[]|nil
-    local commands = parse(result:prettyContent())
+    local commands = parse(response:prettyContent())
 
     if not commands then
       if onFailure then onFailure("no artisan commands found") end
@@ -60,6 +53,8 @@ function commands_resolver.resolve(
     end
 
     if onSuccess then onSuccess(commands) end
+  end, function(errResponse)
+    if onFailure then onFailure(errResponse:prettyErrors()) end
   end)
 end
 

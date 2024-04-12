@@ -1,75 +1,59 @@
-local sqlite = require 'sqlite'
+local repository = require "laravel.repositories.cache"
 
-local timeout = 600
+local default_expiriation = 600
 
-local db = sqlite {
-  uri = vim.fn.stdpath("cache") .. '/laravel_db.sqlite',
-  cache = {
-    id = true,
-    path = "text",
-    key = "text",
-    value = "luatable",
-    created = { "timestamp", default = sqlite.lib.strftime("%s", "now") }
+local cache = {}
+
+function cache:put(key, value, expire_on)
+  local record = {
+    path = vim.fn.getcwd(),
+    key = key,
+    value = value,
+    expire_at = vim.fn.strftime("%s") + (expire_on or default_expiriation)
   }
-}
 
-local cache = db.cache
-
-
-function cache:put(key, value)
-  if cache:has(key) then
-    cache:update {
-      where = {
-        path = vim.fn.getcwd(),
-        key = key,
-      },
-      set = { value = value }
-    }
+  local records = repository:findBy({ path = vim.fn.getcwd(), key = key })
+  if #records > 0 then
+    record.id = records[1].id
+    repository:update(record)
   else
-    cache:__insert {
-      path = vim.fn.getcwd(),
-      key = key,
-      value = value
-    }
+    repository:save(record)
   end
 end
 
 function cache:get(key)
-  local hits = cache:__get({
-    where = {
-      key = key,
-      path = vim.fn.getcwd(),
-    },
-    select = {
-      "created",
-      "value"
-    }
+  local records = repository:findBy({
+    key = key,
+    path = vim.fn.getcwd(),
+    expire_at = "> " .. vim.fn.strftime("%s")
   })
 
-  if #hits == 0 then
+  if #records == 0 then
     return nil
   end
 
-  local hit = hits[1]
-
-  if hit.created < (vim.fn.strftime("%s") - timeout) then
-    cache:forget(key)
-
-    return nil
-  end
-
-  return hit.value
+  return records[1].value
 end
 
 function cache:forget(key)
-  cache:remove {
+  local records = repository:findBy({
     key = key,
     path = vim.fn.getcwd(),
-  }
+  })
+
+  if #records == 0 then
+    return
+  end
+
+  repository:delete(records[1].id)
 end
 
 function cache:has(key)
-  return cache:get(key) ~= nil
+  return repository:exists({
+    key = key,
+    path = vim.fn.getcwd(),
+    expire_at = "> " .. vim.fn.strftime("%s")
+  })
 end
 
 return cache

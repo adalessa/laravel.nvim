@@ -61,4 +61,21 @@ return {
       )
     end
   },
+  paths = {
+    ---@param resource string
+    ---@param onSuccess fun(path: string)|nil
+    ---@param onFailure fun(errorMessage: string)|nil
+    resolve = function(
+      resource,
+      onSuccess,
+      onFailure
+    )
+      return cache_decorator(
+        require 'laravel.resolvers.resource_path_resolver',
+        'paths_' .. resource,
+        onSuccess,
+        onFailure
+      )
+    end
+  },
 }

@@ -10,9 +10,6 @@ function views_resolver.resolve(
 )
   api.async("artisan", { "tinker", "--execute", "echo json_encode(array_keys(Arr::dot(Config::all())))" },
     function(response)
-      if response:failed() then
-        if onFailure then onFailure(response:prettyErrors()) end
-      end
       local configs = vim.json.decode(response:prettyContent())
 
       if not configs then
@@ -21,7 +18,11 @@ function views_resolver.resolve(
       end
 
       if onSuccess then onSuccess(configs) end
-    end)
+    end,
+    function(errResponse)
+      if onFailure then onFailure(errResponse:prettyErrors()) end
+    end
+  )
 end
 
 return views_resolver

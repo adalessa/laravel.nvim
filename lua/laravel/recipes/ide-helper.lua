@@ -3,23 +3,19 @@ local api = require "laravel.api"
 local M = {}
 
 local function writeModels()
-  api.async("artisan", { "ide-helper:models", "-n", "-W", "-M" }, function(response)
-    if response:failed() then
-      vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
-    else
-      vim.notify("Ide Helper Models Complete", vim.log.levels.INFO)
-    end
+  api.async("artisan", { "ide-helper:models", "-n", "-W", "-M" }, function()
+    vim.notify("Ide Helper Models Complete", vim.log.levels.INFO)
+  end, function(errResponse)
+    vim.notify(errResponse:prettyErrors(), vim.log.levels.ERROR)
   end)
 end
 
 local function installIdeHelperAndWrite()
-  api.async("composer", { "require", "--dev", "barryvdh/laravel-ide-helper" }, function(response)
-    if response:failed() then
-      vim.notify("Cant install ide-helper\n\r" .. response:prettyErrors(), vim.log.levels.ERROR)
-    else
-      require("laravel.commands").list = {}
-      writeModels()
-    end
+  api.async("composer", { "require", "--dev", "barryvdh/laravel-ide-helper" }, function()
+    require("laravel.commands").list = {}
+    writeModels()
+  end, function(errResponse)
+    vim.notify("Cant install ide-helper\n\r" .. errResponse:prettyErrors(), vim.log.levels.ERROR)
   end)
 end
 

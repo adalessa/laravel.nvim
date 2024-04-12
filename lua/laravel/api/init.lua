@@ -36,8 +36,9 @@ end
 --- Run the command async
 ---@param program string
 ---@param args string[]
----@param callback fun(response: ApiResponse)
-function M.async(program, args, callback)
+---@param onSuccess fun(response: ApiResponse)
+---@param onFailure fun(errResponse: ApiResponse)|nil
+function M.async(program, args, onSuccess, onFailure)
   local cmd = M.generate_command(program, args)
   local command = table.remove(cmd, 1)
 
@@ -45,7 +46,12 @@ function M.async(program, args, callback)
     command = command,
     args = cmd,
     on_exit = vim.schedule_wrap(function(j, exit_code)
-      callback(ApiResponse:new(j:result(), exit_code, j:stderr_result()))
+      local response = ApiResponse:new(j:result(), exit_code, j:stderr_result())
+      if response:successful() then
+        onSuccess(response)
+      else
+        if onFailure then onFailure(response) end
+      end
     end),
   }):start()
 end

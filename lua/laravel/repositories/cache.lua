@@ -8,7 +8,7 @@ local CacheRepository = {}
 ---@field id integer|nil
 ---@field path string
 ---@field key string
----@field value string
+---@field value table
 ---@field expiration integer
 
 ---@param table CacheTable
@@ -89,6 +89,12 @@ function CacheRepository:exists(condition)
   local records = self._table:get({ where = condition })
 
   return #records > 0
+end
+
+---@param condition table
+---@return boolean
+function CacheRepository:deleteBy(condition)
+  return self._table:remove(condition)
 end
 
 return CacheRepository:new(db.cache)

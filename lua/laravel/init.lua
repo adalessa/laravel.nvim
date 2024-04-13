@@ -10,8 +10,7 @@ local function setup(opts)
 end
 
 local function cleanCache()
-  require("laravel.commands").list = {}
-  require("laravel.routes").list = {}
+  require("laravel.cache"):flush()
 end
 
 return {

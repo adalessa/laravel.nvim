@@ -1,14 +1,16 @@
 local api = require "laravel.api"
 
+---@alias Config table<string, any>
+
 local views_resolver = {}
 
----@param onSuccess fun(configs: string[])|nil
+---@param onSuccess fun(config: Config)|nil
 ---@param onFailure fun(errorMessage: string)|nil
 function views_resolver.resolve(
   onSuccess,
   onFailure
 )
-  api.async("artisan", { "tinker", "--execute", "echo json_encode(array_keys(Arr::dot(Config::all())))" },
+  api.async("artisan", { "tinker", "--execute", "echo json_encode(Arr::dot(Config::all()))" },
     function(response)
       local configs = vim.json.decode(response:prettyContent())
 

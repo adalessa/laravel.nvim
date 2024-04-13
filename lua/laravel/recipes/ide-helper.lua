@@ -12,7 +12,8 @@ end
 
 local function installIdeHelperAndWrite()
   api.async("composer", { "require", "--dev", "barryvdh/laravel-ide-helper" }, function()
-    require("laravel.commands").list = {}
+    -- TODO: change to event.
+    require("laravel.cache"):forget("commands")
     writeModels()
   end, function(errResponse)
     vim.notify("Cant install ide-helper\n\r" .. errResponse:prettyErrors(), vim.log.levels.ERROR)

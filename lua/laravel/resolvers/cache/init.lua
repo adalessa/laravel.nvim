@@ -47,7 +47,7 @@ return {
     end
   },
   configs = {
-    ---@param onSuccess fun(configs: string[])|nil
+    ---@param onSuccess fun(config: Config)|nil
     ---@param onFailure fun(errorMessage: string)|nil
     resolve = function(
       onSuccess,

@@ -1,4 +1,3 @@
-local routes = require "laravel.routes"
 local config = require "laravel.config"
 
 local get_node_text = vim.treesitter.get_node_text
@@ -8,18 +7,19 @@ local function is_same_class(action, class)
   return string.sub(action, 1, string.len(class)) == class
 end
 
+---@param route Route
 local function generate_virtual_text_options(route)
   if options.position == "right" then
     return {
       virt_text = {
-        { "[", "comment" },
-        { "Method: ", "comment" },
-        { vim.fn.join(route.methods, "|"), "@enum" },
-        { " Uri: ", "comment" },
-        { route.uri, "@enum" },
-        { " Middleware: ", "comment" },
-        { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
-        { "]", "comment" },
+        { "[",                                              "comment" },
+        { "Method: ",                                       "comment" },
+        { route.method,                                     "@enum" },
+        { " Uri: ",                                         "comment" },
+        { route.uri,                                        "@enum" },
+        { " Middleware: ",                                  "comment" },
+        { vim.fn.join(route.middleware or { "None" }, ","), "@enum" },
+        { "]",                                              "comment" },
       },
     }
   end
@@ -27,15 +27,15 @@ local function generate_virtual_text_options(route)
     return {
       virt_lines = {
         {
-          { "    ", "" },
-          { "[", "comment" },
-          { "Method: ", "comment" },
-          { vim.fn.join(route.methods, "|"), "@enum" },
-          { " Uri: ", "comment" },
-          { route.uri, "@enum" },
-          { " Middleware: ", "comment" },
-          { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
-          { "]", "comment" },
+          { "    ",                                           "" },
+          { "[",                                              "comment" },
+          { "Method: ",                                       "comment" },
+          { route.method,                                     "@enum" },
+          { " Uri: ",                                         "comment" },
+          { route.uri,                                        "@enum" },
+          { " Middleware: ",                                  "comment" },
+          { vim.fn.join(route.middleware or { "None" }, ","), "@enum" },
+          { "]",                                              "comment" },
         },
       },
       virt_lines_above = true,
@@ -46,12 +46,11 @@ end
 local function set_route_to_methods(event)
   local bufnr = event.buf
   local namespace = vim.api.nvim_create_namespace "laravel.routes"
-
   -- clean namespace
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
   vim.diagnostic.reset(namespace, bufnr)
 
-  local setRouteInfo = function()
+  require("laravel.resolvers.cache").routes.resolve(function(routes)
     local php_parser = vim.treesitter.get_parser(bufnr, "php")
     local tree = php_parser:parse()[1]
     if tree == nil then
@@ -65,7 +64,7 @@ local function set_route_to_methods(event)
     local class, class_namespace, methods, visibilities = "", "", {}, {}
     local class_pos = 0
 
-    for id, node in query:iter_captures(tree:root(), bufnr) do
+    for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
       if query.captures[id] == "class" then
         class = get_node_text(node, bufnr)
         class_pos = node:start()
@@ -95,8 +94,10 @@ local function set_route_to_methods(event)
     end
 
     local errors = {}
-    for _, route in pairs(routes.list) do
+
+    for _, route in pairs(routes) do
       local found = false
+      --- Add extra to methods
       for _, method in pairs(class_methods) do
         local action_full = route.action
         if vim.fn.split(route.action, "@")[2] == nil then
@@ -108,14 +109,15 @@ local function set_route_to_methods(event)
         end
       end
 
+      --- generate diagnostics
       if is_same_class(route.action, full_class) and not found then
         table.insert(errors, {
           lnum = class_pos,
           col = 0,
           message = string.format(
-            "missing method %s [Method: %s, URI: %s]",
+            "Missing method `%s` [HTTP Method: %s, URI: %s]",
             vim.fn.split(route.action, "@")[2] or "__invoke",
-            vim.fn.join(route.methods, "|"),
+            route.method,
             route.uri
           ),
         })
@@ -125,17 +127,7 @@ local function set_route_to_methods(event)
     if #errors > 0 then
       vim.diagnostic.set(namespace, bufnr, errors)
     end
-  end
-
-  if #routes.list == 0 then
-    routes.asyncLoad(function(result)
-      if result:successful() then
-        setRouteInfo()
-      end
-    end)
-  else
-    setRouteInfo()
-  end
+  end)
 end
 
 local group = vim.api.nvim_create_augroup("laravel.route_info", {})
@@ -147,14 +139,15 @@ function M.setup()
     pattern = { "routes/*.php" },
     group = group,
     callback = function()
-      routes.asyncLoad()
+      --- clean the views from the cache
+      require("laravel.cache"):forget("routes")
     end,
   })
 
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = { "*Controller.php" },
     group = group,
-    callback = set_route_to_methods,
+    callback = vim.schedule_wrap(set_route_to_methods),
   })
 end
 

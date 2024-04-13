@@ -56,4 +56,10 @@ function cache:has(key)
   })
 end
 
+function cache:flush()
+  return repository:deleteBy({
+    path = vim.fn.getcwd(),
+  })
+end
+
 return cache

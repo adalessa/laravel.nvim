@@ -1,4 +1,4 @@
-local lsp_utils = require "laravel._lsp.utils"
+local lsp_utils = require "laravel.lsp.utils"
 
 ---@param client table
 ---@param is_new_instance boolean

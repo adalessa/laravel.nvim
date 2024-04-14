@@ -1,4 +1,4 @@
-local cache = require "laravel.cache"
+local cache = require "laravel.services.cache_service"
 
 return function(opts)
   if cache:has(opts.key) then

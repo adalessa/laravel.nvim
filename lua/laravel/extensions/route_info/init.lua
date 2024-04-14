@@ -135,15 +135,6 @@ local group = vim.api.nvim_create_augroup("laravel.route_info", {})
 local M = {}
 
 function M.setup()
-  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-    pattern = { "routes/*.php" },
-    group = group,
-    callback = function()
-      --- clean the views from the cache
-      require("laravel.cache"):forget("routes")
-    end,
-  })
-
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = { "*Controller.php" },
     group = group,

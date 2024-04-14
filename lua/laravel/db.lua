@@ -29,6 +29,13 @@ local history = tbl("history", {
   created_on = { "timestampt", default = sqlite.lib.strftime("%s", "now") }
 })
 
+-- TODO: define fields for the environment
+-- commands ? sail have a general prefix
+local environment = tbl("environments", {
+  id = true,
+  path = "text",
+})
+
 ---@type LaravelDatabase
 local DB = sqlite {
   uri = uri,

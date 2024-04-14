@@ -1,5 +1,5 @@
-local phpactor = require "laravel._lsp.phpactor"
-local intelephense = require "laravel._lsp.intelephense"
+local phpactor = require "laravel.lsp.phpactor"
+local intelephense = require "laravel.lsp.intelephense"
 local config = require "laravel.config"
 
 local servers = {

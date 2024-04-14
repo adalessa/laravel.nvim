@@ -82,6 +82,8 @@ function M.setup()
   if config.options.extensions.luasnip.enable then
     require("laravel.extensions.luasnip.init").setup()
   end
+
+  require("laravel.listeners"):register()
 end
 
 ---@param name string

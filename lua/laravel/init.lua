@@ -11,7 +11,7 @@ end
 
 return {
   setup = setup,
-  cleanCache = function() require("laravel.cache"):flush() end,
+  cleanCache = function() require("laravel.services.cache_service"):flush() end,
   routes = require("telescope").extensions.laravel.routes,
   artisan = require("telescope").extensions.laravel.artisan,
   history = require("telescope").extensions.laravel.history,

@@ -1,12 +1,11 @@
 local actions = require "telescope.actions"
 local action_state = require "telescope.actions.state"
-local ui_run = require "laravel.telescope.ui_run"
-local go = require "laravel.routes.go"
-local run = require "laravel.run"
-local lsp = require "laravel._lsp"
 local config = require "laravel.config"
-local utils = require "laravel.utils"
 local configService = require "laravel.services.config_service"
+local lsp = require "laravel.lsp.init"
+local run = require "laravel.run"
+local ui_run = require "laravel.telescope.ui_run"
+local utils = require "laravel.utils"
 
 local M = {}
 
@@ -34,7 +33,29 @@ function M.open_route(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
   vim.schedule(function()
-    go(entry.value)
+    local route = entry.value
+    if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
+      if vim.tbl_contains(route.middleware, "api") then
+        vim.cmd "edit routes/api.php"
+        vim.fn.search(route.uri:gsub("api", "") .. "")
+      elseif vim.tbl_contains(route.middleware, "web") then
+        vim.cmd "edit routes/web.php"
+        if route.uri == "/" then
+          vim.fn.search "['\"]/['\"]"
+        else
+          vim.fn.search("/" .. route.uri)
+        end
+      else
+        vim.notify("Could not open the route location", vim.log.levels.WARN)
+        return
+      end
+
+      vim.cmd "normal zt"
+      return
+    end
+
+    local action = vim.fn.split(route.action, "@")
+    lsp.go_to(action[1], action[2])
   end)
 end
 

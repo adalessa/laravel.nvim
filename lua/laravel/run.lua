@@ -62,10 +62,19 @@ return function(name, args, opts)
         -- without this will not be open
         vim.schedule(function()
           vim.cmd("e " .. class)
+          if args[1] == "make:view" then
+            vim.cmd([[doautocmd User LaravelViewCreated]])
+          elseif args[1] == "make:command" then
+            vim.cmd([[doautocmd User LaravelCommandCreated]])
+          end
         end)
         return
       end
     end)
+  end
+
+  if name == "composer" and not (args[1] == "dump-autoload" or args[1] == "dumpautoload") then
+    vim.cmd([[doautocmd User LaravelComposerRunned]])
   end
 
   historyService:add(jobId, name, args, opts)

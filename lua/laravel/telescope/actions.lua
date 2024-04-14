@@ -4,9 +4,9 @@ local ui_run = require "laravel.telescope.ui_run"
 local go = require "laravel.routes.go"
 local run = require "laravel.run"
 local lsp = require "laravel._lsp"
-local app_config = require "laravel.app.config"
 local config = require "laravel.config"
 local utils = require "laravel.utils"
+local configService = require "laravel.services.config_service"
 
 local M = {}
 
@@ -41,39 +41,40 @@ end
 function M.open_browser(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
-  local app_url = app_config.get "app.url"
-  if not app_url then
-    return
-  end
-
   local uri = entry.value.uri
-  for capturedString in uri:gmatch "{(.-)}" do
-    -- TODO: replace with vim.ui.input resolve the async
-    local val = vim.fn.input(capturedString .. ": ")
-    uri = uri:gsub("{" .. capturedString .. "}", val)
-  end
 
-  local url = string.format("%s/%s", app_url, uri)
-  local command = config.options.browser
-  if command == nil then
-    local browser = utils.get_env("BROWSER")
-    if browser ~= nil then
-      command = browser
-    elseif vim.fn.executable "xdg-open" == 1 then
-      command = "xdg-open"
-    elseif vim.fn.executable "open" == 1 then
-      command = "open"
-    else
-      vim.notify(
-        "There is no command to open the url add the option browser into your configuration",
-        vim.log.levels.WARN
-      )
+  configService:get("app.url", function(app_url)
+    assert(type(app_url) == 'string', 'app.url is expected to be an string')
+
+    local url = string.format("%s/%s", app_url, uri)
+
+    for capturedString in uri:gmatch "{(.-)}" do
+      -- TODO: replace with vim.ui.input resolve the async
+      local val = vim.fn.input(capturedString .. ": ")
+      uri = uri:gsub("{" .. capturedString .. "}", val)
     end
-  end
 
-  vim.schedule(function()
-    vim.fn.system { command, url }
-  end)
+    local command = config.options.browser
+    if command == nil then
+      local browser = utils.get_env("BROWSER")
+      if browser ~= nil then
+        command = browser
+      elseif vim.fn.executable "xdg-open" == 1 then
+        command = "xdg-open"
+      elseif vim.fn.executable "open" == 1 then
+        command = "open"
+      else
+        vim.notify(
+          "There is no command to open the url add the option browser into your configuration",
+          vim.log.levels.WARN
+        )
+      end
+    end
+
+    vim.schedule(function()
+      vim.fn.system { command, url }
+    end)
+  end, function() end)
 end
 
 function M.re_run_command(prompt_bufnr)

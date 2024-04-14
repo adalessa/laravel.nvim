@@ -43,6 +43,13 @@ function ApiResponse:prettyContent()
   return table.concat(self:content(), "\n")
 end
 
+---@return table|nil
+function ApiResponse:json()
+  return vim.json.decode(self:prettyContent(), {
+    luanil = { object = true, array = true }
+  })
+end
+
 ---@return string|nil
 function ApiResponse:first()
   if self:failed() then

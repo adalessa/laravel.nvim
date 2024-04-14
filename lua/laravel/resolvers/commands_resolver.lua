@@ -25,34 +25,21 @@ local api = require "laravel.api"
 
 local commands_resolver = {};
 
-local function parse(json)
-  local res = vim.json.decode(json, {
-    luanil = { object = true, array = true }
-  })
-
-  if not res then
-    return nil
-  end
-
-  return res.commands
-end
-
----@param onSuccess fun(commands: table)|nil
+---@param onSuccess fun(commands: Command[])|nil
 ---@param onFailure fun(errorMessage: string)|nil
 function commands_resolver.resolve(
   onSuccess,
   onFailure
 )
   api.async("artisan", { "list", "--format=json" }, function(response)
-    ---@type Command[]|nil
-    local commands = parse(response:prettyContent())
+    local commands = response:json()
 
     if not commands then
       if onFailure then onFailure("no artisan commands found") end
       return
     end
 
-    if onSuccess then onSuccess(commands) end
+    if onSuccess then onSuccess(commands.commands) end
   end, function(errResponse)
     if onFailure then onFailure(errResponse:prettyErrors()) end
   end)

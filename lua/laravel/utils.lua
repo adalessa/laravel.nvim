@@ -1,5 +1,12 @@
 local M = {}
 
+---@class Match
+---@field file string
+---@field line_number integer
+---@field text string
+
+---@param pattern string
+---@return Match[]
 function M.runRipgrep(pattern)
   -- Build the ripgrep command
   local rg_command = string.format('rg --vimgrep "%s"', pattern)

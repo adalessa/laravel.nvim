@@ -1,10 +1,11 @@
-local repository = require "laravel.repositories.cache"
+local repository = require "laravel.repositories.cache_repository"
 
 local default_expiriation = 600
 
-local cache = {}
+---@class CacheService
+local CacheService = {}
 
-function cache:put(key, value, expire_on)
+function CacheService:put(key, value, expire_on)
   local record = {
     path = vim.fn.getcwd(),
     key = key,
@@ -21,7 +22,7 @@ function cache:put(key, value, expire_on)
   end
 end
 
-function cache:get(key)
+function CacheService:get(key)
   local records = repository:findBy({
     key = key,
     path = vim.fn.getcwd(),
@@ -35,7 +36,7 @@ function cache:get(key)
   return records[1].value
 end
 
-function cache:forget(key)
+function CacheService:forget(key)
   local records = repository:findBy({
     key = key,
     path = vim.fn.getcwd(),
@@ -48,7 +49,7 @@ function cache:forget(key)
   repository:delete(records[1].id)
 end
 
-function cache:has(key)
+function CacheService:has(key)
   return repository:exists({
     key = key,
     path = vim.fn.getcwd(),
@@ -56,10 +57,10 @@ function cache:has(key)
   })
 end
 
-function cache:flush()
+function CacheService:flush()
   return repository:deleteBy({
     path = vim.fn.getcwd(),
   })
 end
 
-return cache
+return CacheService

@@ -1,33 +1,36 @@
-local views = require "laravel.views"
-local utils = require "laravel.utils"
+local viewService = require "laravel.services.view_service"
+local run = require "laravel.run"
 
 local M = {}
 
 -- Should be use from blades to find where is being use
 function M.go_to_usage()
-  local fname = vim.uri_to_fname(vim.uri_from_bufnr(vim.api.nvim_get_current_buf()))
-  local view = views.name_from_fname(fname)
-
-  local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
-
-  if #matches == 0 then
-    vim.notify("No usage of this view found", vim.log.levels.WARN)
-  elseif #matches == 1 then
-    vim.cmd("edit " .. matches[1].file)
-  else
-    vim.ui.select(
-      vim.fn.sort(vim.tbl_map(function(item)
-        return item.file
-      end, matches)),
-      { prompt = "File: " },
-      function(value)
-        if not value then
-          return
-        end
-        vim.cmd("edit " .. value)
+  viewService:usage(
+    vim.uri_to_fname(vim.uri_from_bufnr(vim.api.nvim_get_current_buf())),
+    function(usages)
+      if #usages == 0 then
+        vim.notify("No usage of this view found", vim.log.levels.WARN)
+      elseif #usages == 1 then
+        vim.cmd("edit " .. usages[1].file)
+      else
+        vim.ui.select(
+          vim.fn.sort(vim.tbl_map(function(item)
+            return item.file
+          end, usages)),
+          { prompt = "File: " },
+          function(value)
+            if not value then
+              return
+            end
+            vim.cmd("edit " .. value)
+          end
+        )
       end
-    )
-  end
+    end,
+    function (errMessage)
+      vim.notify(errMessage, vim.log.levels.ERROR, {})
+    end
+  )
 end
 
 -- should be use in files to find the views
@@ -55,9 +58,25 @@ function M.go_to_definition()
 
   founds = vim.tbl_keys(founds)
 
+
   if #founds == 0 then
     vim.notify("No usage of this view found", vim.log.levels.WARN)
     return
+  end
+
+  ---@param viewName string
+  local open = function(viewName)
+    viewService:find(
+      viewName,
+      function(view) vim.cmd("edit " .. view.path) end,
+      function(errMessage)
+        if errMessage == "view not found" then
+          if vim.fn.confirm("View " .. viewName .. " does not exists, Should create it?", "&Yes\n&No") == 1 then
+            run("artisan", { "make:view", viewName })
+          end
+        end
+      end
+    )
   end
 
   if #founds > 1 then
@@ -65,11 +84,11 @@ function M.go_to_definition()
       if not selected then
         return
       end
-      views.open(selected)
+      open(selected)
     end)
     return
   end
-  views.open(founds[1])
+  open(founds[1])
 end
 
 function M.auto()

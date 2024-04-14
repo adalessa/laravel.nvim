@@ -71,15 +71,17 @@ function M.setup()
   require("laravel.treesitter").setup()
   user_commands.setup()
 
-  if config.options.features.route_info.enable then
-    require("laravel.route_info").setup()
+  if config.options.extensions.route_info.enable then
+    require("laravel.extensions.route_info.init").setup()
   end
 
-  if config.options.features.null_ls.enable then
-    require("laravel.null_ls").setup()
+  if config.options.extensions.null_ls.enable then
+    require("laravel.extensions.null_ls.init").setup()
   end
 
-  require("laravel.luasnip").setup()
+  if config.options.extensions.luasnip.enable then
+    require("laravel.extensions.luasnip.init").setup()
+  end
 end
 
 ---@param name string

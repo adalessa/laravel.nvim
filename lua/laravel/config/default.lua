@@ -1,19 +1,23 @@
----@class NullLsFeature
+---@class NullLsExtension
 ---@field enable boolean
 
----@class RouteInfoFeature
+---@class RouteInfoExtension
 ---@field enable boolean
 ---@field position string
 
----@class LaravelFeatures
----@field null_ls NullLsFeature
----@field route_info RouteInfoFeature
+---@class LaravelExtensions
+---@field null_ls NullLsExtension
+---@field route_info RouteInfoExtension
+---@field luasnip LuasnipExtension
+
+---@class LuasnipExtension
+---@field enable boolean
 
 ---@class LaravelOptions
 ---@field lsp_server string
 ---@field browser string|nil
 ---@field register_user_commands boolean
----@field features LaravelFeatures
+---@field extensions LaravelExtensions
 ---@field ui LaravelOptionsUI
 ---@field commands_options table
 ---@field environments LaravelOptionsEnvironments
@@ -22,13 +26,16 @@
 return {
   lsp_server = "phpactor",
   register_user_commands = true,
-  features = {
+  extensions = {
     null_ls = {
       enable = true,
     },
     route_info = {
       enable = true,
       position = "right",
+    },
+    luasnip = {
+      enable = true,
     },
   },
   browser = nil,

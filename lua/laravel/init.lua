@@ -9,13 +9,9 @@ local function setup(opts)
   environment.setup()
 end
 
-local function cleanCache()
-  require("laravel.cache"):flush()
-end
-
 return {
   setup = setup,
-  cleanCache = cleanCache,
+  cleanCache = function() require("laravel.cache"):flush() end,
   routes = require("telescope").extensions.laravel.routes,
   artisan = require("telescope").extensions.laravel.artisan,
   history = require("telescope").extensions.laravel.history,

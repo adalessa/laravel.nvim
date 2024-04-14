@@ -1,6 +1,6 @@
 local config = require "laravel.config"
 local environment = require "laravel.environment"
-local history = require "laravel.history"
+local historyService = require "laravel.services.history_service"
 local Popup = require "nui.popup"
 local Split = require "nui.split"
 
@@ -68,7 +68,7 @@ return function(name, args, opts)
     end)
   end
 
-  history.add(jobId, name, args, opts)
+  historyService:add(jobId, name, args, opts)
 
   vim.cmd "startinsert"
 end

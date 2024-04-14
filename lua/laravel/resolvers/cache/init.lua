@@ -8,12 +8,12 @@ return {
       onSuccess,
       onFailure
     )
-      return cache_decorator(
-        require 'laravel.resolvers.routes_resolver',
-        'routes',
-        onSuccess,
-        onFailure
-      )
+      return cache_decorator({
+        decorated = require 'laravel.resolvers.routes_resolver',
+        key = 'routes',
+        onSuccess = onSuccess,
+        onFailure = onFailure,
+      })
     end
   },
   commands = {
@@ -23,12 +23,12 @@ return {
       onSuccess,
       onFailure
     )
-      return cache_decorator(
-        require 'laravel.resolvers.commands_resolver',
-        'commands',
-        onSuccess,
-        onFailure
-      )
+      return cache_decorator({
+        decorated = require 'laravel.resolvers.commands_resolver',
+        key = 'commands',
+        onSuccess = onSuccess,
+        onFailure = onFailure,
+      })
     end
   },
   views = {
@@ -38,12 +38,12 @@ return {
       onSuccess,
       onFailure
     )
-      return cache_decorator(
-        require 'laravel.resolvers.views_resolver',
-        'views',
-        onSuccess,
-        onFailure
-      )
+      return cache_decorator({
+        decorated = require 'laravel.resolvers.views_resolver',
+        key = 'views',
+        onSuccess = onSuccess,
+        onFailure = onFailure,
+      })
     end
   },
   configs = {
@@ -53,12 +53,12 @@ return {
       onSuccess,
       onFailure
     )
-      return cache_decorator(
-        require 'laravel.resolvers.configs_resolver',
-        'configs',
-        onSuccess,
-        onFailure
-      )
+      return cache_decorator({
+        decorated = require 'laravel.resolvers.configs_resolver',
+        key = 'configs',
+        onSuccess = onSuccess,
+        onFailure = onFailure,
+      })
     end
   },
   paths = {
@@ -70,12 +70,13 @@ return {
       onSuccess,
       onFailure
     )
-      return cache_decorator(
-        require 'laravel.resolvers.resource_path_resolver',
-        'paths_' .. resource,
-        onSuccess,
-        onFailure
-      )
+      return cache_decorator({
+        decorated = require 'laravel.resolvers.resource_path_resolver',
+        key = 'paths_' .. resource,
+        onSuccess = onSuccess,
+        onFailure = onFailure,
+        args = {resource}
+      })
     end
   },
 }

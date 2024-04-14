@@ -12,7 +12,7 @@ function views_resolver.resolve(
 )
   api.async("artisan", { "tinker", "--execute", "echo json_encode(Arr::dot(Config::all()))" },
     function(response)
-      local configs = vim.json.decode(response:prettyContent())
+      local configs = response:json()
 
       if not configs then
         if onFailure then onFailure("no configs found") end

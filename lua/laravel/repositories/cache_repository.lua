@@ -1,7 +1,6 @@
-local db = require "laravel.db"
+local table = require "laravel.db".cache
 
 ---@class CacheRepository
----@field _table CacheTable
 local CacheRepository = {}
 
 ---@class CacheRecord
@@ -9,26 +8,13 @@ local CacheRepository = {}
 ---@field path string
 ---@field key string
 ---@field value table
----@field expiration integer
-
----@param table CacheTable
----@return CacheRepository
-function CacheRepository:new(table)
-  local obj = {
-    _table = table
-  }
-
-  setmetatable(obj, self)
-  self.__index = self
-
-  return obj
-end
+---@field expire_at integer
 
 ---@param id integer
 ---@return CacheRecord|nil
 function CacheRepository:find(id)
   ---@diagnostic disable-next-line: missing-fields
-  local records = self._table:get { where = { id = id } }
+  local records = table:get { where = { id = id } }
 
   if #records == 0 then
     return nil
@@ -40,20 +26,20 @@ end
 ---@return CacheRecord[]
 function CacheRepository:findAll()
   ---@diagnostic disable-next-line: missing-parameter
-  return self._table:get()
+  return table:get()
 end
 
 ---@param condition table
 ---@return CacheRecord[]
 function CacheRepository:findBy(condition)
   ---@diagnostic disable-next-line: missing-fields
-  return self._table:get({ where = condition })
+  return table:get({ where = condition })
 end
 
 ---@param record CacheRecord
 ---@return CacheRecord
 function CacheRepository:save(record)
-  local id = self._table:insert(record)
+  local id = table:insert(record)
   record.id = id
 
   return record
@@ -62,7 +48,7 @@ end
 ---@param record CacheRecord
 ---@return boolean
 function CacheRepository:update(record)
-  return self._table:update {
+  return table:update {
     where = {
       id = record.id,
     },
@@ -74,19 +60,19 @@ end
 ---@return boolean
 function CacheRepository:delete(id)
   ---@diagnostic disable-next-line: assign-type-mismatch
-  return self._table:remove({ id = id })
+  return table:remove({ id = id })
 end
 
 ---@return number
 function CacheRepository:count()
-  return self._table:count()
+  return table:count()
 end
 
 ---@param condition table
 ---@return boolean
 function CacheRepository:exists(condition)
   ---@diagnostic disable-next-line: missing-fields
-  local records = self._table:get({ where = condition })
+  local records = table:get({ where = condition })
 
   return #records > 0
 end
@@ -94,7 +80,7 @@ end
 ---@param condition table
 ---@return boolean
 function CacheRepository:deleteBy(condition)
-  return self._table:remove(condition)
+  return table:remove(condition)
 end
 
-return CacheRepository:new(db.cache)
+return CacheRepository

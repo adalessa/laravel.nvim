@@ -66,9 +66,8 @@ return function(opts)
   end
 
   api.async("artisan", { "model:show", class, "--json" }, function(response)
-    local model_info = vim.json.decode(response:prettyContent(), {
-      luanil = { object = true, array = true }
-    })
+    local model_info = response:json()
+
     if model_info == nil then
       error(string.format("'artisan model:show %s --json' response could not be decoded", class), vim.log.levels.ERROR)
     end

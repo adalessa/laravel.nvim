@@ -1,4 +1,4 @@
-local paths = require "laravel.paths"
+local resolvers = require "laravel.resolvers.cache"
 local null_ls = require "null-ls"
 
 local M = {}
@@ -12,7 +12,7 @@ function M.setup()
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = { "php" },
     generator = {
-      fn = function(params)
+      fn = function(params, done)
         local diagnostics = {}
 
         local php_parser = vim.treesitter.get_parser(params.bufnr, "php")
@@ -26,45 +26,45 @@ function M.setup()
           error("Could not get treesitter query", vim.log.levels.ERROR)
         end
 
-        for id, node in query:iter_captures(tree:root(), params.bufnr, 0, -1) do
-          if query.captures[id] == "view" then
-            local view = vim.treesitter.get_node_text(node, params.bufnr):gsub("'", "")
-            local row, start_col = node:start()
-            local _, end_col = node:end_()
+        resolvers.paths.resolve("views", function(views_directory)
+          for id, node in query:iter_captures(tree:root(), params.bufnr, 0, -1) do
+            if query.captures[id] == "view" then
+              local view = vim.treesitter.get_node_text(node, params.bufnr):gsub("'", "")
+              local row, start_col = node:start()
+              local _, end_col = node:end_()
 
-            if view == "" then
-              table.insert(diagnostics, {
-                row = row + 1,
-                col = start_col + 1,
-                end_col = end_col + 1,
-                source = "laravel.nvim",
-                message = string.format("Need to provide a new to the view", view),
-                severity = vim.diagnostic.severity.ERROR,
-              })
-            else
-              local views_directory = paths.resource_path "views"
-
-              local file_path = string.format("%s/%s.blade.php", views_directory, string.gsub(view, "%.", "/"))
-
-              if vim.fn.filewritable(file_path) == 0 then
+              if view == "" then
                 table.insert(diagnostics, {
                   row = row + 1,
                   col = start_col + 1,
                   end_col = end_col + 1,
                   source = "laravel.nvim",
-                  message = string.format("view '%s' does not exists", view),
-                  user_data = {
-                    view = view,
-                  },
+                  message = string.format("Need to provide a new to the view", view),
                   severity = vim.diagnostic.severity.ERROR,
                 })
+              else
+                local file_path = string.format("%s/%s.blade.php", views_directory, string.gsub(view, "%.", "/"))
+
+                if vim.fn.filewritable(file_path) == 0 then
+                  table.insert(diagnostics, {
+                    row = row + 1,
+                    col = start_col + 1,
+                    end_col = end_col + 1,
+                    source = "laravel.nvim",
+                    message = string.format("view '%s' does not exists", view),
+                    user_data = {
+                      view = view,
+                    },
+                    severity = vim.diagnostic.severity.ERROR,
+                  })
+                end
               end
             end
           end
-        end
-
-        return diagnostics
+          done(diagnostics)
+        end)
       end,
+      async = true,
     },
   }
 end

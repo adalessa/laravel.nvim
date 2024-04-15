@@ -1,9 +1,9 @@
 local null_ls = require "null-ls"
 
 local completions = {
-  view = require "laravel.null_ls.completion.view",
-  route = require "laravel.null_ls.completion.route",
-  config = require "laravel.null_ls.completion.config",
+  view = require "laravel.extensions.null_ls.completion.view",
+  route = require "laravel.extensions.null_ls.completion.route",
+  config = require "laravel.extensions.null_ls.completion.config",
 }
 
 local M = {}

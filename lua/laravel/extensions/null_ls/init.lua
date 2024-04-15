@@ -6,9 +6,9 @@ function M.setup()
     return
   end
 
-  require("laravel.null_ls.completion").setup()
-  require("laravel.null_ls.diagnostic").setup()
-  require("laravel.null_ls.code_actions").setup()
+  require("laravel.extensions.null_ls.completion").setup()
+  require("laravel.extensions.null_ls.diagnostic").setup()
+  require("laravel.extensions.null_ls.code_actions").setup()
 end
 
 return M

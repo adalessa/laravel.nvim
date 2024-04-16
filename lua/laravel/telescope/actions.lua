@@ -1,11 +1,11 @@
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
-local config = require "laravel.config"
-local configService = require "laravel.services.config_service"
-local lsp = require "laravel.lsp.init"
-local run = require "laravel.run"
-local ui_run = require "laravel.telescope.ui_run"
-local utils = require "laravel.utils"
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local config = require("laravel.config")
+local configService = require("laravel.services.config_service")
+local lsp = require("laravel.lsp.init")
+local run = require("laravel.run")
+local ui_run = require("laravel.telescope.ui_run")
+local utils = require("laravel.utils")
 
 local M = {}
 
@@ -36,12 +36,12 @@ function M.open_route(prompt_bufnr)
     local route = entry.value
     if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
       if vim.tbl_contains(route.middleware, "api") then
-        vim.cmd "edit routes/api.php"
+        vim.cmd("edit routes/api.php")
         vim.fn.search(route.uri:gsub("api", "") .. "")
       elseif vim.tbl_contains(route.middleware, "web") then
-        vim.cmd "edit routes/web.php"
+        vim.cmd("edit routes/web.php")
         if route.uri == "/" then
-          vim.fn.search "['\"]/['\"]"
+          vim.fn.search("['\"]/['\"]")
         else
           vim.fn.search("/" .. route.uri)
         end
@@ -50,7 +50,7 @@ function M.open_route(prompt_bufnr)
         return
       end
 
-      vim.cmd "normal zt"
+      vim.cmd("normal zt")
       return
     end
 
@@ -69,7 +69,7 @@ function M.open_browser(prompt_bufnr)
 
     local url = string.format("%s/%s", app_url, uri)
 
-    for capturedString in uri:gmatch "{(.-)}" do
+    for capturedString in uri:gmatch("{(.-)}") do
       -- TODO: replace with vim.ui.input resolve the async
       local val = vim.fn.input(capturedString .. ": ")
       uri = uri:gsub("{" .. capturedString .. "}", val)
@@ -77,12 +77,12 @@ function M.open_browser(prompt_bufnr)
 
     local command = config.options.browser
     if command == nil then
-      local browser = utils.get_env "BROWSER"
+      local browser = utils.get_env("BROWSER")
       if browser ~= nil then
         command = browser
-      elseif vim.fn.executable "xdg-open" == 1 then
+      elseif vim.fn.executable("xdg-open") == 1 then
         command = "xdg-open"
-      elseif vim.fn.executable "open" == 1 then
+      elseif vim.fn.executable("open") == 1 then
         command = "open"
       else
         vim.notify(
@@ -93,7 +93,7 @@ function M.open_browser(prompt_bufnr)
     end
 
     vim.schedule(function()
-      vim.fn.system { command, url }
+      vim.fn.system({ command, url })
     end)
   end, function() end)
 end

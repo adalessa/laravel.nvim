@@ -1,5 +1,5 @@
-local scan = require "plenary.scandir"
-local resource_path_resolve = require "laravel.resolvers.resource_path_resolver"
+local resource_path_resolve = require("laravel.resolvers.resource_path_resolver")
+local scan = require("plenary.scandir")
 
 ---@class View
 ---@field name string

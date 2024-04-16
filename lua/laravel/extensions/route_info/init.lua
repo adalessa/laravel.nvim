@@ -1,4 +1,4 @@
-local config = require "laravel.config"
+local config = require("laravel.config")
 
 local get_node_text = vim.treesitter.get_node_text
 local options = config.options.extensions.route_info
@@ -45,7 +45,7 @@ end
 
 local function set_route_to_methods(event)
   local bufnr = event.buf
-  local namespace = vim.api.nvim_create_namespace "laravel.routes"
+  local namespace = vim.api.nvim_create_namespace("laravel.routes")
   -- clean namespace
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
   vim.diagnostic.reset(namespace, bufnr)

@@ -1,9 +1,9 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 local M = {}
 
 function M.run()
-  if not api.is_composer_package_install "doctrine/dbal" then
+  if not api.is_composer_package_install("doctrine/dbal") then
     api.async("composer", { "require", "--dev", "doctrine/dbal" }, function()
       vim.notify("Installation completed", vim.log.levels.INFO)
     end, function(errResponse)

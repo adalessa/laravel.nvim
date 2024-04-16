@@ -1,9 +1,9 @@
-local pickers = require "telescope.pickers"
-local make_entry = require "laravel.telescope.make_entry"
-local finders = require "telescope.finders"
+local finders = require("telescope.finders")
+local make_entry = require("laravel.telescope.make_entry")
+local pickers = require("telescope.pickers")
 local conf = require("telescope.config").values
-local api = require "laravel.api"
-local actions = require "laravel.telescope.actions"
+local actions = require("laravel.telescope.actions")
+local api = require("laravel.api")
 
 local get_model_class_name = function()
   local query = vim.treesitter.query.parse(
@@ -95,13 +95,13 @@ return function(opts)
     pickers
       .new(opts, {
         prompt_title = "Related Files",
-        finder = finders.new_table {
+        finder = finders.new_table({
           results = relations,
           entry_maker = make_entry.gen_from_model_relations(opts),
-        },
-        sorter = conf.prefilter_sorter {
+        }),
+        sorter = conf.prefilter_sorter({
           sorter = conf.generic_sorter(opts or {}),
-        },
+        }),
         attach_mappings = function(_, map)
           map("i", "<cr>", actions.open_relation)
 

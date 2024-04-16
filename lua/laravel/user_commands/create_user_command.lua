@@ -1,5 +1,5 @@
-local run = require "laravel.run"
-local environment = require "laravel.environment"
+local environment = require("laravel.environment")
+local run = require("laravel.run")
 
 return function(name, executable, commands, opts)
   if executable then

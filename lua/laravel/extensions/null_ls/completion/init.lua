@@ -1,9 +1,9 @@
-local null_ls = require "null-ls"
+local null_ls = require("null-ls")
 
 local completions = {
-  view = require "laravel.extensions.null_ls.completion.view",
-  route = require "laravel.extensions.null_ls.completion.route",
-  config = require "laravel.extensions.null_ls.completion.config",
+  view = require("laravel.extensions.null_ls.completion.view"),
+  route = require("laravel.extensions.null_ls.completion.route"),
+  config = require("laravel.extensions.null_ls.completion.config"),
 }
 
 local M = {}
@@ -12,7 +12,7 @@ M.name = "Laravel_completion"
 
 function M.setup()
   null_ls.deregister(M.name)
-  null_ls.register {
+  null_ls.register({
     name = M.name,
     method = null_ls.methods.COMPLETION,
     filetypes = { "php" },
@@ -137,11 +137,11 @@ function M.setup()
           end
         end
         --- END Completion routes
-        done { { items = {}, isIncomplete = false } }
+        done({ { items = {}, isIncomplete = false } })
       end,
       async = true,
     },
-  }
+  })
 end
 
 return M

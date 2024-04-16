@@ -1,6 +1,6 @@
-local create_user_command = require "laravel.user_commands.create_user_command"
-local config = require "laravel.config"
-local run = require "laravel.run"
+local config = require("laravel.config")
+local create_user_command = require("laravel.user_commands.create_user_command")
+local run = require("laravel.run")
 
 local commands = {}
 

@@ -1,4 +1,4 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 local resource_path_resolve = {}
 

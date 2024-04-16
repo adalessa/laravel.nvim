@@ -1,5 +1,5 @@
-local environment = require "laravel.environment"
-local api = require "laravel.api"
+local api = require("laravel.api")
+local environment = require("laravel.environment")
 
 local last_check = nil
 
@@ -16,14 +16,14 @@ local function get_values()
   if last_check and (last_check + frequency > os.time()) then
     return
   end
-  if environment.get_executable "php" then
+  if environment.get_executable("php") then
     api.async("php", { "-v" }, function(response)
-      values.php = response:first():match "PHP ([%d%.]+)"
+      values.php = response:first():match("PHP ([%d%.]+)")
     end)
   end
-  if environment.get_executable "artisan" then
+  if environment.get_executable("artisan") then
     api.async("artisan", { "--version" }, function(response)
-      values.laravel = response:first():match "Laravel Framework ([%d%.]+)"
+      values.laravel = response:first():match("Laravel Framework ([%d%.]+)")
     end)
   end
   last_check = os.time()
@@ -32,7 +32,7 @@ end
 local properties = {
   php = {
     has = function()
-      return environment.get_executable "php" ~= nil
+      return environment.get_executable("php") ~= nil
     end,
     get = function()
       return values.php
@@ -40,7 +40,7 @@ local properties = {
   },
   laravel = {
     has = function()
-      return environment.get_executable "artisan" ~= nil
+      return environment.get_executable("artisan") ~= nil
     end,
     get = function()
       return values.laravel

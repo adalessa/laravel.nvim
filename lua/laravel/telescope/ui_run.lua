@@ -1,7 +1,7 @@
-local Layout = require "nui.layout"
-local Popup = require "nui.popup"
-local preview = require "laravel.telescope.preview"
-local run = require "laravel.run"
+local Layout = require("nui.layout")
+local Popup = require("nui.popup")
+local preview = require("laravel.telescope.preview")
+local run = require("laravel.run")
 
 --- function to scroll a window
 ---@param popup any id of window
@@ -17,7 +17,7 @@ end
 
 return function(command)
   local entry_popup, help_popup =
-    Popup {
+    Popup({
       enter = true,
       border = {
         style = "rounded",
@@ -32,7 +32,7 @@ return function(command)
       win_options = {
         winhighlight = "Normal:LaravelPrompt",
       },
-    }, Popup {
+    }), Popup({
       border = {
         style = "rounded",
         text = {
@@ -43,7 +43,7 @@ return function(command)
       win_options = {
         winhighlight = "Normal:LaravelHelp",
       },
-    }
+    })
 
   local layout = Layout(
     {
@@ -63,7 +63,7 @@ return function(command)
 
   vim.api.nvim_buf_set_lines(help_popup.bufnr, 0, -1, false, command_preview.lines)
 
-  local hl = vim.api.nvim_create_namespace "laravel"
+  local hl = vim.api.nvim_create_namespace("laravel")
   for _, value in pairs(command_preview.highlights) do
     vim.api.nvim_buf_add_highlight(help_popup.bufnr, hl, value[1], value[2], value[3], value[4])
   end
@@ -90,5 +90,5 @@ return function(command)
   end)
 
   layout:mount()
-  vim.cmd [[startinsert]]
+  vim.cmd([[startinsert]])
 end

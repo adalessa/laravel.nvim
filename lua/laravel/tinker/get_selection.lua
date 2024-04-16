@@ -1,7 +1,7 @@
 local function get_vsel()
   local bufnr = vim.api.nvim_win_get_buf(0)
-  local start = vim.fn.getpos "v" -- [bufnum, lnum, col, off]
-  local _end = vim.fn.getpos "." -- [bufnum, lnum, col, off]
+  local start = vim.fn.getpos("v") -- [bufnum, lnum, col, off]
+  local _end = vim.fn.getpos(".") -- [bufnum, lnum, col, off]
   if start[2] > _end[2] then
     local x = _end
     _end = start

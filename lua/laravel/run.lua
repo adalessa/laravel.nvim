@@ -1,8 +1,8 @@
-local config = require "laravel.config"
-local environment = require "laravel.environment"
-local historyService = require "laravel.services.history_service"
-local Popup = require "nui.popup"
-local Split = require "nui.split"
+local Popup = require("nui.popup")
+local Split = require("nui.split")
+local config = require("laravel.config")
+local environment = require("laravel.environment")
+local historyService = require("laravel.services.history_service")
 
 local ui_builders = {
   split = Split,
@@ -63,9 +63,9 @@ return function(name, args, opts)
         vim.schedule(function()
           vim.cmd("e " .. class)
           if args[1] == "make:view" then
-            vim.cmd [[doautocmd User LaravelViewCreated]]
+            vim.cmd([[doautocmd User LaravelViewCreated]])
           elseif args[1] == "make:command" then
-            vim.cmd [[doautocmd User LaravelCommandCreated]]
+            vim.cmd([[doautocmd User LaravelCommandCreated]])
           end
         end)
         return
@@ -74,10 +74,10 @@ return function(name, args, opts)
   end
 
   if name == "composer" and not (args[1] == "dump-autoload" or args[1] == "dumpautoload") then
-    vim.cmd [[doautocmd User LaravelComposerRunned]]
+    vim.cmd([[doautocmd User LaravelComposerRunned]])
   end
 
   historyService:add(jobId, name, args, opts)
 
-  vim.cmd "startinsert"
+  vim.cmd("startinsert")
 end

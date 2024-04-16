@@ -1,13 +1,13 @@
-local environment = require "laravel.environment"
-local api = require "laravel.api"
+local api = require("laravel.api")
+local environment = require("laravel.environment")
 local M = {}
 
 M.check = function()
-  vim.health.report_start "Laravel"
+  vim.health.report_start("Laravel")
 
-  vim.health.report_start "External Dependencies"
-  if vim.fn.executable "rg" == 1 then
-    vim.health.report_ok "rg installed"
+  vim.health.report_start("External Dependencies")
+  if vim.fn.executable("rg") == 1 then
+    vim.health.report_ok("rg installed")
   else
     vim.health.report_warn(
       "ripgrep is missing, is required for finding view usage",
@@ -15,10 +15,10 @@ M.check = function()
     )
   end
 
-  vim.health.report_start "Plugin Dependencies"
+  vim.health.report_start("Plugin Dependencies")
   local ok_null_ls, _ = pcall(require, "null-ls")
   if ok_null_ls then
-    vim.health.report_ok "Null LS is installed"
+    vim.health.report_ok("Null LS is installed")
   else
     vim.health.report_warn(
       "Null LS is not installed, this is use to add completion, diagnostic and Code actions",
@@ -27,7 +27,7 @@ M.check = function()
   end
   local ok_luannip, _ = pcall(require, "luasnip")
   if ok_luannip then
-    vim.health.report_ok "luasnip is installed"
+    vim.health.report_ok("luasnip is installed")
   else
     vim.health.report_warn(
       "Luasnip is not installed, this is use to snippets related to larevel",
@@ -37,7 +37,7 @@ M.check = function()
 
   local ok_nui, _ = pcall(require, "nui.popup")
   if ok_nui then
-    vim.health.report_ok "Nui is installed"
+    vim.health.report_ok("Nui is installed")
   else
     vim.health.report_warn(
       "Nui is not installed, this is use to create the UI for the command",
@@ -47,7 +47,7 @@ M.check = function()
 
   local ok_telescope, _ = pcall(require, "telescope")
   if ok_telescope then
-    vim.health.report_ok "Telescope is installed"
+    vim.health.report_ok("Telescope is installed")
   else
     vim.health.report_warn(
       "Telescope is not installed, A lot of functions uses telescope for the pickers",
@@ -55,7 +55,7 @@ M.check = function()
     )
   end
 
-  vim.health.report_start "Environment"
+  vim.health.report_start("Environment")
 
   if not environment.environment then
     vim.health.report_error(
@@ -65,18 +65,18 @@ M.check = function()
     return
   end
 
-  vim.health.report_ok "Environment setup successful"
+  vim.health.report_ok("Environment setup successful")
 
   vim.health.report_info("Name: " .. environment.environment.name)
-  vim.health.report_info "Condition: "
+  vim.health.report_info("Condition: ")
   vim.health.report_info(vim.inspect(environment.environment.condition))
-  vim.health.report_info "Commands: "
+  vim.health.report_info("Commands: ")
   vim.health.report_info(vim.inspect(environment.environment.commands))
 
-  vim.health.report_start "Composer Dependencies"
+  vim.health.report_start("Composer Dependencies")
 
-  if not environment.get_executable "composer" then
-    vim.health.report_error "Composer executable not found can't check dependencies"
+  if not environment.get_executable("composer") then
+    vim.health.report_error("Composer executable not found can't check dependencies")
   end
 
   local composer_dependencies = {

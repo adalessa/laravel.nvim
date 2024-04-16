@@ -1,6 +1,6 @@
-local phpactor = require "laravel.lsp.phpactor"
-local intelephense = require "laravel.lsp.intelephense"
-local config = require "laravel.config"
+local config = require("laravel.config")
+local intelephense = require("laravel.lsp.intelephense")
+local phpactor = require("laravel.lsp.phpactor")
 
 local servers = {
   phpactor = phpactor,
@@ -10,7 +10,7 @@ local servers = {
 ---@param server_name string
 ---@return table|nil, boolean
 local get_client = function(server_name)
-  local clients = vim.lsp.get_active_clients { name = server_name }
+  local clients = vim.lsp.get_active_clients({ name = server_name })
   local client = clients[1] or nil
   local new_instance = false
 
@@ -18,7 +18,7 @@ local get_client = function(server_name)
     local server = require("lspconfig")[server_name]
     local client_id = vim.lsp.start(server.make_config(vim.fn.getcwd()))
     if not client_id then
-      error "Could not start lsp client"
+      error("Could not start lsp client")
     end
     client = vim.lsp.get_client_by_id(client_id)
     new_instance = true

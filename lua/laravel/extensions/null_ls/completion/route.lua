@@ -1,8 +1,8 @@
-local resolvers = require "laravel.resolvers.cache"
+local resolvers = require("laravel.resolvers.cache")
 
 return function(done, should_quote)
   resolvers.routes.resolve(function(routes)
-    done {
+    done({
       {
         items = vim.tbl_map(function(route)
           return {
@@ -14,6 +14,6 @@ return function(done, should_quote)
         end, routes),
         isIncomplete = false,
       },
-    }
+    })
   end)
 end

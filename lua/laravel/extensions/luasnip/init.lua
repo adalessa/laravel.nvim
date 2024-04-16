@@ -246,8 +246,8 @@ function M.setup()
       )
     ),
 
-    s({ trig = "@continue", des = "continue a loop" }, { t "@continue" }),
-    s({ trig = "@break", des = "break a loop" }, { t "@break" }),
+    s({ trig = "@continue", des = "continue a loop" }, { t("@continue") }),
+    s({ trig = "@break", des = "break a loop" }, { t("@break") }),
 
     --- can
     s(

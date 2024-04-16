@@ -1,5 +1,5 @@
-local resolver = require "laravel.resolvers.cache"
-local utils = require "laravel.utils"
+local resolver = require("laravel.resolvers.cache")
+local utils = require("laravel.utils")
 
 ---@class ViewService
 local ViewService = {}
@@ -15,7 +15,7 @@ function ViewService:find(name, onSuccess, onFailure)
     end, views)
     if not filter then
       if onFailure then
-        onFailure "view not found"
+        onFailure("view not found")
       end
       return
     end

@@ -1,8 +1,8 @@
 ---@param opts? LaravelOptions
 local function setup(opts)
-  local config = require "laravel.config"
-  local environment = require "laravel.environment"
-  local autocmds = require "laravel.autocommands"
+  local config = require("laravel.config")
+  local environment = require("laravel.environment")
+  local autocmds = require("laravel.autocommands")
 
   config.setup(opts)
   autocmds.setup()

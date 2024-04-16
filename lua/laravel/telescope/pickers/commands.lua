@@ -1,11 +1,11 @@
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
-local config = require "laravel.config"
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local config = require("laravel.config")
 local conf = require("telescope.config").values
-local finders = require "telescope.finders"
-local pickers = require "telescope.pickers"
-local previewers = require "telescope.previewers"
-local run = require "laravel.run"
+local finders = require("telescope.finders")
+local pickers = require("telescope.pickers")
+local previewers = require("telescope.previewers")
+local run = require("laravel.run")
 
 return function(opts)
   opts = opts or {}
@@ -33,7 +33,7 @@ return function(opts)
   pickers
     .new(opts, {
       prompt_title = "User Commands",
-      finder = finders.new_table {
+      finder = finders.new_table({
         results = commands,
         entry_maker = function(command)
           return {
@@ -42,8 +42,8 @@ return function(opts)
             ordinal = command.display,
           }
         end,
-      },
-      previewer = previewers.new_buffer_previewer {
+      }),
+      previewer = previewers.new_buffer_previewer({
         title = "Description",
         get_buffer_by_name = function(_, entry)
           return entry.value.name
@@ -51,7 +51,7 @@ return function(opts)
         define_preview = function(self, entry)
           vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { entry.value.desc })
         end,
-      },
+      }),
       sorter = conf.file_sorter(),
       attach_mappings = function(_, map)
         map("i", "<cr>", function(prompt_bufnr)

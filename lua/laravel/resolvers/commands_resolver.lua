@@ -1,4 +1,4 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 ---@class Command
 ---@field name string
@@ -33,7 +33,7 @@ function commands_resolver.resolve(onSuccess, onFailure)
 
     if not commands then
       if onFailure then
-        onFailure "no artisan commands found"
+        onFailure("no artisan commands found")
       end
       return
     end

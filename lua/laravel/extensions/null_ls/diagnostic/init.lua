@@ -1,5 +1,5 @@
-local resolvers = require "laravel.resolvers.cache"
-local null_ls = require "null-ls"
+local null_ls = require("null-ls")
+local resolvers = require("laravel.resolvers.cache")
 
 local M = {}
 
@@ -7,7 +7,7 @@ M.name = "Laravel_Diagnostics"
 
 function M.setup()
   null_ls.deregister(M.name)
-  null_ls.register {
+  null_ls.register({
     name = M.name,
     method = null_ls.methods.DIAGNOSTICS,
     filetypes = { "php" },
@@ -66,7 +66,7 @@ function M.setup()
       end,
       async = true,
     },
-  }
+  })
 end
 
 return M

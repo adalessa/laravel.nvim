@@ -1,5 +1,5 @@
-local create_user_command = require "laravel.user_commands.create_user_command"
-local environment = require "laravel.environment"
+local create_user_command = require("laravel.user_commands.create_user_command")
+local environment = require("laravel.environment")
 
 local commands = {
   ["cache:clean"] = function()
@@ -9,7 +9,7 @@ local commands = {
   ["routes"] = require("telescope").extensions.laravel.routes,
   ["artisan"] = require("telescope").extensions.laravel.artisan,
   ["test:watch"] = function()
-    require "laravel.watch"("artisan", { "test" })
+    require("laravel.watch")("artisan", { "test" })
   end,
   ["related"] = require("telescope").extensions.laravel.related,
   ["history"] = require("telescope").extensions.laravel.history,
@@ -18,20 +18,20 @@ local commands = {
   ["commands"] = require("telescope").extensions.laravel.commands,
   ["view-finder"] = require("laravel.view_finder").auto,
   ["health"] = function()
-    vim.cmd [[checkhealth laravel]]
+    vim.cmd([[checkhealth laravel]])
   end,
 }
 
 return {
   setup = function()
-    if environment.get_executable "sail" then
+    if environment.get_executable("sail") then
       commands["sail"] = function()
-        vim.cmd [[Sail]]
+        vim.cmd([[Sail]])
       end
     end
-    if environment.get_executable "compose" then
+    if environment.get_executable("compose") then
       commands["docker-compose"] = function()
-        vim.cmd [[DockerCompose]]
+        vim.cmd([[DockerCompose]])
       end
     end
     create_user_command("Laravel", nil, commands)

@@ -1,4 +1,4 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 local M = {}
 
@@ -12,7 +12,7 @@ end
 
 local function installIdeHelperAndWrite()
   api.async("composer", { "require", "--dev", "barryvdh/laravel-ide-helper" }, function()
-    vim.cmd [[doautocmd User LaravelComposerRunned]]
+    vim.cmd([[doautocmd User LaravelComposerRunned]])
     writeModels()
   end, function(errResponse)
     vim.notify("Cant install ide-helper\n\r" .. errResponse:prettyErrors(), vim.log.levels.ERROR)
@@ -20,7 +20,7 @@ local function installIdeHelperAndWrite()
 end
 
 function M.run()
-  if api.is_composer_package_install "barryvdh/laravel-ide-helper" then
+  if api.is_composer_package_install("barryvdh/laravel-ide-helper") then
     writeModels()
     return
   end

@@ -1,4 +1,4 @@
-local null_ls = require "null-ls"
+local null_ls = require("null-ls")
 
 local M = {}
 
@@ -6,14 +6,14 @@ M.name = "Laravel_CodeAction"
 
 function M.setup()
   null_ls.deregister(M.name)
-  null_ls.register {
+  null_ls.register({
     name = M.name,
     method = null_ls.methods.CODE_ACTION,
     filetypes = { "php" },
     generator = {
       fn = function(context)
         local fname = vim.uri_to_fname(context.lsp_params.textDocument.uri)
-        local className = vim.fs.basename(fname):match "(.+)%..+"
+        local className = vim.fs.basename(fname):match("(.+)%..+")
 
         local actions = {
           {
@@ -29,13 +29,13 @@ function M.setup()
             table.insert(actions, {
               title = "Related",
               action = function()
-                require("telescope").extensions.laravel.related { class = className }
+                require("telescope").extensions.laravel.related({ class = className })
               end,
             })
             table.insert(actions, {
               title = "Show DB Info",
               action = function()
-                require "laravel.run"("artisan", { "model:show", className }, {})
+                require("laravel.run")("artisan", { "model:show", className }, {})
               end,
             })
             break
@@ -54,7 +54,7 @@ function M.setup()
             table.insert(actions, {
               title = "Create view",
               action = function()
-                require "laravel.run"("artisan", { "make:view", diag.user_data.view })
+                require("laravel.run")("artisan", { "make:view", diag.user_data.view })
               end,
             })
           end
@@ -66,7 +66,7 @@ function M.setup()
           table.insert(actions, {
             title = "Run Pending migrations",
             action = function()
-              require "laravel.run"("artisan", { "migrate" })
+              require("laravel.run")("artisan", { "migrate" })
             end,
           })
         end
@@ -74,7 +74,7 @@ function M.setup()
         return actions
       end,
     },
-  }
+  })
 end
 
 return M

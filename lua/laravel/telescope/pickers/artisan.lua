@@ -1,17 +1,17 @@
 local conf = require("telescope.config").values
-local finders = require "telescope.finders"
-local pickers = require "telescope.pickers"
-local previewers = require "telescope.previewers"
-local preview = require "laravel.telescope.preview"
-local actions = require "laravel.telescope.actions"
-local resolvers = require "laravel.resolvers.cache"
+local actions = require("laravel.telescope.actions")
+local finders = require("telescope.finders")
+local pickers = require("telescope.pickers")
+local preview = require("laravel.telescope.preview")
+local previewers = require("telescope.previewers")
+local resolvers = require("laravel.resolvers.cache")
 
 return function(opts)
   resolvers.commands.resolve(function(commands)
     pickers
       .new(opts or {}, {
         prompt_title = "Artisan commands",
-        finder = finders.new_table {
+        finder = finders.new_table({
           results = vim.tbl_filter(function(command)
             return not command.hidden
           end, commands),
@@ -22,8 +22,8 @@ return function(opts)
               ordinal = command.name,
             }
           end,
-        },
-        previewer = previewers.new_buffer_previewer {
+        }),
+        previewer = previewers.new_buffer_previewer({
           title = "Help",
           get_buffer_by_name = function(_, entry)
             return entry.value.name
@@ -33,12 +33,12 @@ return function(opts)
 
             vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, command_preview.lines)
 
-            local hl = vim.api.nvim_create_namespace "laravel"
+            local hl = vim.api.nvim_create_namespace("laravel")
             for _, value in pairs(command_preview.highlights) do
               vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, value[1], value[2], value[3], value[4])
             end
           end,
-        },
+        }),
         sorter = conf.file_sorter(),
         attach_mappings = function(_, map)
           map("i", "<cr>", actions.run)

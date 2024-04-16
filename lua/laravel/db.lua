@@ -1,7 +1,7 @@
-local sqlite = require "sqlite.db"
-local tbl = require "sqlite.tbl"
+local sqlite = require("sqlite.db")
+local tbl = require("sqlite.tbl")
 
-local uri = vim.fn.stdpath "cache" .. "/laravel_db.sqlite"
+local uri = vim.fn.stdpath("cache") .. "/laravel_db.sqlite"
 
 ---@class CacheTable: sqlite_tbl
 ---@class HistoryTable: sqlite_tbl
@@ -37,10 +37,10 @@ local history = tbl("history", {
 -- })
 
 ---@type LaravelDatabase
-local DB = sqlite {
+local DB = sqlite({
   uri = uri,
   cache = cache,
   history = history,
-}
+})
 
 return DB

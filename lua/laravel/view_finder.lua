@@ -1,5 +1,5 @@
-local viewService = require "laravel.services.view_service"
-local run = require "laravel.run"
+local run = require("laravel.run")
+local viewService = require("laravel.services.view_service")
 
 local M = {}
 

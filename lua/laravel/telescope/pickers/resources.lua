@@ -1,10 +1,10 @@
-local finders = require "telescope.finders"
-local pickers = require "telescope.pickers"
-local previewers = require "telescope.previewers"
+local finders = require("telescope.finders")
+local pickers = require("telescope.pickers")
+local previewers = require("telescope.previewers")
 local conf = require("telescope.config").values
-local config = require "laravel.config"
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local config = require("laravel.config")
 
 return function(opts)
   opts = opts or {}
@@ -27,7 +27,7 @@ return function(opts)
   pickers
     .new(opts, {
       prompt_title = "User Commands",
-      finder = finders.new_table {
+      finder = finders.new_table({
         results = resources,
         entry_maker = function(resource)
           return {
@@ -36,12 +36,12 @@ return function(opts)
             ordinal = resource.name,
           }
         end,
-      },
-      previewer = previewers.new_termopen_previewer {
+      }),
+      previewer = previewers.new_termopen_previewer({
         get_command = function(entry)
           return { "ls", "-1", entry.value.path }
         end,
-      },
+      }),
 
       sorter = conf.file_sorter(),
 
@@ -51,7 +51,7 @@ return function(opts)
           local entry = action_state.get_selected_entry()
           local resource = entry.value
 
-          require("telescope.builtin").find_files { cwd = resource.path }
+          require("telescope.builtin").find_files({ cwd = resource.path })
         end)
 
         return true

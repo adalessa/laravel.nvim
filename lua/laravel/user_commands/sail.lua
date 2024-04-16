@@ -1,7 +1,7 @@
-local run = require "laravel.run"
-local create_user_command = require "laravel.user_commands.create_user_command"
-local api = require "laravel.api"
-local status = require "laravel.status"
+local api = require("laravel.api")
+local create_user_command = require("laravel.user_commands.create_user_command")
+local run = require("laravel.run")
+local status = require("laravel.status")
 
 return {
   setup = function()

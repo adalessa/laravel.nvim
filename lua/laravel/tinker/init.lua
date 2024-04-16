@@ -1,8 +1,8 @@
-local run = require "laravel.run"
-local get_selection = require "laravel.tinker.get_selection"
+local get_selection = require("laravel.tinker.get_selection")
+local run = require("laravel.run")
 
 local function trim(s)
-  return s:match "^%s*(.-)%s*$"
+  return s:match("^%s*(.-)%s*$")
 end
 
 local M = {}

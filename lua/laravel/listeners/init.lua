@@ -1,4 +1,4 @@
-local cacheService = require "laravel.services.cache_service"
+local cacheService = require("laravel.services.cache_service")
 
 local listeners = {}
 
@@ -9,7 +9,7 @@ function listeners:register()
     pattern = { "LaravelViewCreated" },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget "views"
+      cacheService:forget("views")
     end),
   })
 
@@ -20,7 +20,7 @@ function listeners:register()
     },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget "commands"
+      cacheService:forget("commands")
     end),
   })
 
@@ -28,7 +28,7 @@ function listeners:register()
     pattern = { "routes/*.php" },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget "routes"
+      cacheService:forget("routes")
     end),
   })
 end

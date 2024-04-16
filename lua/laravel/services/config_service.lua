@@ -1,4 +1,4 @@
-local resolver = require "laravel.resolvers.cache"
+local resolver = require("laravel.resolvers.cache")
 
 ---@class ConfigService
 local ConfigService = {}
@@ -11,7 +11,7 @@ function ConfigService:get(key, onSuccess, onFailure)
     if vim.tbl_contains(vim.tbl_keys(config), key) then
       onSuccess(config[key])
     else
-      onFailure "key not found in the config"
+      onFailure("key not found in the config")
     end
   end, onFailure)
 end

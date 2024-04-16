@@ -1,4 +1,4 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 ---@class Route
 ---@field action string
@@ -21,7 +21,7 @@ function routes_resolver.resolve(onSuccess, onFailure)
 
     if not routes then
       if onFailure then
-        onFailure "no routes found"
+        onFailure("no routes found")
       end
       return
     end

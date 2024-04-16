@@ -1,7 +1,7 @@
-local config = require "laravel.config"
-local user_commands = require "laravel.user_commands"
+local config = require("laravel.config")
+local user_commands = require("laravel.user_commands")
 local get_env = require("laravel.utils").get_env
-local Environment = require "laravel.environment.environment"
+local Environment = require("laravel.environment.environment")
 
 local M = {}
 
@@ -58,7 +58,7 @@ end
 
 function M.setup()
   M.environment = nil
-  if vim.fn.filereadable "artisan" == 0 then
+  if vim.fn.filereadable("artisan") == 0 then
     return
   end
 
@@ -94,7 +94,7 @@ function M.get_executable(name)
   end
 
   if name == "artisan" then
-    return vim.fn.extend(M.environment:executable "php", { "artisan" })
+    return vim.fn.extend(M.environment:executable("php"), { "artisan" })
   end
 
   return M.environment:executable(name)

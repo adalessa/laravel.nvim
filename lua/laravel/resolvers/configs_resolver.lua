@@ -1,4 +1,4 @@
-local api = require "laravel.api"
+local api = require("laravel.api")
 
 ---@alias Config table<string, any>
 
@@ -12,7 +12,7 @@ function views_resolver.resolve(onSuccess, onFailure)
 
     if not configs then
       if onFailure then
-        onFailure "no configs found"
+        onFailure("no configs found")
       end
       return
     end

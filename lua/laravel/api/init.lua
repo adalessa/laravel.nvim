@@ -1,6 +1,6 @@
-local Job = require "plenary.job"
-local environment = require "laravel.environment"
-local ApiResponse = require "laravel.api.response"
+local ApiResponse = require("laravel.api.response")
+local Job = require("plenary.job")
+local environment = require("laravel.environment")
 
 local M = {}
 

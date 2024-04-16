@@ -1,4 +1,4 @@
-local lsp_utils = require "laravel.lsp.utils"
+local lsp_utils = require("laravel.lsp.utils")
 
 ---@param client table
 ---@param is_new_instance boolean
@@ -84,7 +84,7 @@ local function go_to(client, is_new_instance, full_class, method)
       if not ok then
         vim.notify(string.format("Error setting row and col %s", err_msg), vim.log.levels.WARN)
       end
-      vim.cmd "normal zt"
+      vim.cmd("normal zt")
     end
     if is_new_instance then
       vim.lsp.stop_client(client.id)

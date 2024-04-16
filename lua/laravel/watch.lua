@@ -1,6 +1,6 @@
-local config = require "laravel.config"
-local environment = require "laravel.environment"
-local Split = require "nui.split"
+local Split = require("nui.split")
+local config = require("laravel.config")
+local environment = require("laravel.environment")
 local event = require("nui.utils.autocmd").event
 
 ---@param name string

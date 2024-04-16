@@ -93,22 +93,22 @@ return function(opts)
     end
 
     pickers
-        .new(opts, {
-          prompt_title = "Related Files",
-          finder = finders.new_table {
-            results = relations,
-            entry_maker = make_entry.gen_from_model_relations(opts),
-          },
-          sorter = conf.prefilter_sorter {
-            sorter = conf.generic_sorter(opts or {}),
-          },
-          attach_mappings = function(_, map)
-            map("i", "<cr>", actions.open_relation)
+      .new(opts, {
+        prompt_title = "Related Files",
+        finder = finders.new_table {
+          results = relations,
+          entry_maker = make_entry.gen_from_model_relations(opts),
+        },
+        sorter = conf.prefilter_sorter {
+          sorter = conf.generic_sorter(opts or {}),
+        },
+        attach_mappings = function(_, map)
+          map("i", "<cr>", actions.open_relation)
 
-            return true
-          end,
-        })
-        :find()
+          return true
+        end,
+      })
+      :find()
   end, function(errResponse)
     error(errResponse:prettyErrors(), vim.log.levels.ERROR)
   end)

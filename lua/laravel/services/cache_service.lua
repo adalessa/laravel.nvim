@@ -10,10 +10,10 @@ function CacheService:put(key, value, expire_on)
     path = vim.fn.getcwd(),
     key = key,
     value = value,
-    expire_at = vim.fn.strftime("%s") + (expire_on or default_expiriation)
+    expire_at = vim.fn.strftime "%s" + (expire_on or default_expiriation),
   }
 
-  local records = repository:findBy({ path = vim.fn.getcwd(), key = key })
+  local records = repository:findBy { path = vim.fn.getcwd(), key = key }
   if #records > 0 then
     record.id = records[1].id
     repository:update(record)
@@ -23,11 +23,11 @@ function CacheService:put(key, value, expire_on)
 end
 
 function CacheService:get(key)
-  local records = repository:findBy({
+  local records = repository:findBy {
     key = key,
     path = vim.fn.getcwd(),
-    expire_at = "> " .. vim.fn.strftime("%s")
-  })
+    expire_at = "> " .. vim.fn.strftime "%s",
+  }
 
   if #records == 0 then
     return nil
@@ -37,10 +37,10 @@ function CacheService:get(key)
 end
 
 function CacheService:forget(key)
-  local records = repository:findBy({
+  local records = repository:findBy {
     key = key,
     path = vim.fn.getcwd(),
-  })
+  }
 
   if #records == 0 then
     return
@@ -50,17 +50,17 @@ function CacheService:forget(key)
 end
 
 function CacheService:has(key)
-  return repository:exists({
+  return repository:exists {
     key = key,
     path = vim.fn.getcwd(),
-    expire_at = "> " .. vim.fn.strftime("%s")
-  })
+    expire_at = "> " .. vim.fn.strftime "%s",
+  }
 end
 
 function CacheService:flush()
-  return repository:deleteBy({
+  return repository:deleteBy {
     path = vim.fn.getcwd(),
-  })
+  }
 end
 
 return CacheService

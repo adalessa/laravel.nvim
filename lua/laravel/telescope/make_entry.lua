@@ -60,7 +60,7 @@ function M.gen_from_laravel_routes(opts)
       value = route,
       ordinal = route.uri,
       display = make_display,
-      route_method = route.method
+      route_method = route.method,
     }, opts)
   end
 end

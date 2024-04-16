@@ -5,7 +5,7 @@ local function get_artisan_auto_complete(current_match, full_command)
   if (#vim.fn.split(full_command, " ") >= 2 and current_match == "") or #vim.fn.split(full_command, " ") >= 3 then
     return {}
   end
-  local commands = require("laravel.services.cache_service"):get("commands")
+  local commands = require("laravel.services.cache_service"):get "commands"
 
   if commands == nil or vim.tbl_isempty(commands) then
     return

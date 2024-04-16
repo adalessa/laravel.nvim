@@ -11,8 +11,8 @@ return function(done, should_quote)
             kind = vim.lsp.protocol.CompletionItemKind["Value"],
           }
         end, vim.tbl_keys(config)),
-        isIncomplete = false
-      }
+        isIncomplete = false,
+      },
     }
   end)
 end

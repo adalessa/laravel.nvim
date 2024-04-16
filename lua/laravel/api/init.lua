@@ -50,7 +50,9 @@ function M.async(program, args, onSuccess, onFailure)
       if response:successful() then
         onSuccess(response)
       else
-        if onFailure then onFailure(response) end
+        if onFailure then
+          onFailure(response)
+        end
       end
     end),
   }):start()

@@ -12,14 +12,14 @@ local function generate_virtual_text_options(route)
   if options.position == "right" then
     return {
       virt_text = {
-        { "[",                                              "comment" },
-        { "Method: ",                                       "comment" },
-        { route.method,                                     "@enum" },
-        { " Uri: ",                                         "comment" },
-        { route.uri,                                        "@enum" },
-        { " Middleware: ",                                  "comment" },
+        { "[", "comment" },
+        { "Method: ", "comment" },
+        { route.method, "@enum" },
+        { " Uri: ", "comment" },
+        { route.uri, "@enum" },
+        { " Middleware: ", "comment" },
         { vim.fn.join(route.middleware or { "None" }, ","), "@enum" },
-        { "]",                                              "comment" },
+        { "]", "comment" },
       },
     }
   end
@@ -27,15 +27,15 @@ local function generate_virtual_text_options(route)
     return {
       virt_lines = {
         {
-          { "    ",                                           "" },
-          { "[",                                              "comment" },
-          { "Method: ",                                       "comment" },
-          { route.method,                                     "@enum" },
-          { " Uri: ",                                         "comment" },
-          { route.uri,                                        "@enum" },
-          { " Middleware: ",                                  "comment" },
+          { "    ", "" },
+          { "[", "comment" },
+          { "Method: ", "comment" },
+          { route.method, "@enum" },
+          { " Uri: ", "comment" },
+          { route.uri, "@enum" },
+          { " Middleware: ", "comment" },
           { vim.fn.join(route.middleware or { "None" }, ","), "@enum" },
-          { "]",                                              "comment" },
+          { "]", "comment" },
         },
       },
       virt_lines_above = true,

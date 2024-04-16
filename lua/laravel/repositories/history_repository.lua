@@ -1,4 +1,4 @@
-local table = require "laravel.db".history
+local table = require("laravel.db").history
 
 ---@class HistoryRepository
 local HistoryRepository = {}

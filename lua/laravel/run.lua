@@ -9,12 +9,12 @@ local ui_builders = {
   popup = Popup,
 }
 
-local make_rules = { "%[(.-)%]", "CLASS:%s+(.-)\n" }
+local make_rules = { "%[(.-)%]", "CLASS:%s+(.-.php)" }
 
 ---@param text string
 ---@return string|nil
 local function find_class(text)
-  text = text:gsub("\r", "\n")
+  text = text:gsub("\r", "")
   for _, rule in ipairs(make_rules) do
     local matche
     matche = text:gmatch(rule)()
@@ -63,9 +63,9 @@ return function(name, args, opts)
         vim.schedule(function()
           vim.cmd("e " .. class)
           if args[1] == "make:view" then
-            vim.cmd([[doautocmd User LaravelViewCreated]])
+            vim.cmd [[doautocmd User LaravelViewCreated]]
           elseif args[1] == "make:command" then
-            vim.cmd([[doautocmd User LaravelCommandCreated]])
+            vim.cmd [[doautocmd User LaravelCommandCreated]]
           end
         end)
         return
@@ -74,7 +74,7 @@ return function(name, args, opts)
   end
 
   if name == "composer" and not (args[1] == "dump-autoload" or args[1] == "dumpautoload") then
-    vim.cmd([[doautocmd User LaravelComposerRunned]])
+    vim.cmd [[doautocmd User LaravelComposerRunned]]
   end
 
   historyService:add(jobId, name, args, opts)

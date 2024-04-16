@@ -1,4 +1,4 @@
-local table = require "laravel.db".cache
+local table = require("laravel.db").cache
 
 ---@class CacheRepository
 local CacheRepository = {}
@@ -33,7 +33,7 @@ end
 ---@return CacheRecord[]
 function CacheRepository:findBy(condition)
   ---@diagnostic disable-next-line: missing-fields
-  return table:get({ where = condition })
+  return table:get { where = condition }
 end
 
 ---@param record CacheRecord
@@ -60,7 +60,7 @@ end
 ---@return boolean
 function CacheRepository:delete(id)
   ---@diagnostic disable-next-line: assign-type-mismatch
-  return table:remove({ id = id })
+  return table:remove { id = id }
 end
 
 ---@return number
@@ -72,7 +72,7 @@ end
 ---@return boolean
 function CacheRepository:exists(condition)
   ---@diagnostic disable-next-line: missing-fields
-  local records = table:get({ where = condition })
+  local records = table:get { where = condition }
 
   return #records > 0
 end

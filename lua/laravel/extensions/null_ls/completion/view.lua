@@ -12,8 +12,8 @@ return function(done, should_quote)
             documentation = view.path,
           }
         end, views),
-        isIncomplete = false
-      }
+        isIncomplete = false,
+      },
     }
   end)
 end

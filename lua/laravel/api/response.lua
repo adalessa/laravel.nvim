@@ -46,7 +46,7 @@ end
 ---@return table|nil
 function ApiResponse:json()
   return vim.json.decode(self:prettyContent(), {
-    luanil = { object = true, array = true }
+    luanil = { object = true, array = true },
   })
 end
 

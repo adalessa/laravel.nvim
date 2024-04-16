@@ -3,13 +3,13 @@ local environment = require "laravel.environment"
 
 local commands = {
   ["cache:clean"] = function()
-    require('laravel.services.cache_service'):flush()
+    require("laravel.services.cache_service"):flush()
     vim.notify("Laravel plugin cache cleaned", vim.log.levels.INFO)
   end,
   ["routes"] = require("telescope").extensions.laravel.routes,
   ["artisan"] = require("telescope").extensions.laravel.artisan,
   ["test:watch"] = function()
-    require "laravel.watch" ("artisan", { "test" })
+    require "laravel.watch"("artisan", { "test" })
   end,
   ["related"] = require("telescope").extensions.laravel.related,
   ["history"] = require("telescope").extensions.laravel.history,

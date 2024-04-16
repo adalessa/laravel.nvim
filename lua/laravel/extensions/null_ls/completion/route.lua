@@ -12,8 +12,8 @@ return function(done, should_quote)
             documentation = string.format("[%s] %s", route.method, route.uri),
           }
         end, routes),
-        isIncomplete = false
-      }
+        isIncomplete = false,
+      },
     }
   end)
 end

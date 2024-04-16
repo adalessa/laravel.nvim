@@ -9,27 +9,27 @@ function listeners:register()
     pattern = { "LaravelViewCreated" },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget('views')
-    end)
+      cacheService:forget "views"
+    end),
   })
 
   vim.api.nvim_create_autocmd("User", {
     pattern = {
       "LaravelCommandCreated",
-      "LaravelComposerRunned"
+      "LaravelComposerRunned",
     },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget('commands')
-    end)
+      cacheService:forget "commands"
+    end),
   })
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     pattern = { "routes/*.php" },
     group = group,
     callback = vim.schedule_wrap(function()
-      cacheService:forget('routes')
-    end)
+      cacheService:forget "routes"
+    end),
   })
 end
 

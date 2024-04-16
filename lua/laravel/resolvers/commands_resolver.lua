@@ -23,25 +23,28 @@ local api = require "laravel.api"
 ---@field name string
 ---@field shortcut string
 
-local commands_resolver = {};
+local commands_resolver = {}
 
 ---@param onSuccess fun(commands: Command[])|nil
 ---@param onFailure fun(errorMessage: string)|nil
-function commands_resolver.resolve(
-  onSuccess,
-  onFailure
-)
+function commands_resolver.resolve(onSuccess, onFailure)
   api.async("artisan", { "list", "--format=json" }, function(response)
     local commands = response:json()
 
     if not commands then
-      if onFailure then onFailure("no artisan commands found") end
+      if onFailure then
+        onFailure "no artisan commands found"
+      end
       return
     end
 
-    if onSuccess then onSuccess(commands.commands) end
+    if onSuccess then
+      onSuccess(commands.commands)
+    end
   end, function(errResponse)
-    if onFailure then onFailure(errResponse:prettyErrors()) end
+    if onFailure then
+      onFailure(errResponse:prettyErrors())
+    end
   end)
 end
 

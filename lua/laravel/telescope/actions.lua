@@ -65,7 +65,7 @@ function M.open_browser(prompt_bufnr)
   local uri = entry.value.uri
 
   configService:get("app.url", function(app_url)
-    assert(type(app_url) == 'string', 'app.url is expected to be an string')
+    assert(type(app_url) == "string", "app.url is expected to be an string")
 
     local url = string.format("%s/%s", app_url, uri)
 
@@ -77,7 +77,7 @@ function M.open_browser(prompt_bufnr)
 
     local command = config.options.browser
     if command == nil then
-      local browser = utils.get_env("BROWSER")
+      local browser = utils.get_env "BROWSER"
       if browser ~= nil then
         command = browser
       elseif vim.fn.executable "xdg-open" == 1 then

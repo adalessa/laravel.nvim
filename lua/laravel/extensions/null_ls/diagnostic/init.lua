@@ -39,7 +39,7 @@ function M.setup()
                   col = start_col + 1,
                   end_col = end_col + 1,
                   source = "laravel.nvim",
-                  message = string.format("Need to provide a new to the view", view),
+                  message = string.format("Need to provide a view", view),
                   severity = vim.diagnostic.severity.ERROR,
                 })
               else

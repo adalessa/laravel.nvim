@@ -11,7 +11,8 @@ function resource_path_resolve.resolve(resource, onSuccess, onFailure)
     { "tinker", "--execute", string.format("echo resource_path('%s');", resource) },
     function(response)
       if onSuccess then
-        onSuccess(response:prettyContent())
+        -- TODO have this map in the configuration per project
+        onSuccess(response:prettyContent():gsub("/var/www/html", vim.fn.getcwd()))
       end
     end,
     function(errResponse)

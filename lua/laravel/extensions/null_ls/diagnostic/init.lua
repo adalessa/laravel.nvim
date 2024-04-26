@@ -27,8 +27,6 @@ function M.setup()
         end
 
         resolvers.paths.resolve("views", function(views_directory)
-          -- FIX this is a fix to handle the docker case
-          views_directory = views_directory:gsub("/var/www/html", vim.fn.getcwd())
           for id, node in query:iter_captures(tree:root(), params.bufnr, 0, -1) do
             if query.captures[id] == "view" then
               local view = vim.treesitter.get_node_text(node, params.bufnr):gsub("'", "")

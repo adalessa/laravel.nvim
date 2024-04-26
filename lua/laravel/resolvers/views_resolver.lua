@@ -11,8 +11,6 @@ local views_resolver = {}
 ---@param onFailure fun(errorMessage: string)|nil
 function views_resolver.resolve(onSuccess, onFailure)
   resource_path_resolve.resolve("views", function(view_path)
-    -- FIX this is a fix to handle the docker case
-    view_path = view_path:gsub("/var/www/html", vim.fn.getcwd())
     local rule = string.format("^%s/(.*).blade.php$", view_path:gsub("-", "%%-"))
     local finds = scan.scan_dir(view_path, { hidden = false, depth = 4 })
 

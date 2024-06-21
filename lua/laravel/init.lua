@@ -3,9 +3,11 @@ local function setup(opts)
   local config = require "laravel.config"
   local environment = require "laravel.environment"
   local autocmds = require "laravel.autocommands"
+  local tinker = require "laravel.tinker"
 
   config.setup(opts)
   autocmds.setup()
+  tinker.setup()
   environment.setup()
 end
 

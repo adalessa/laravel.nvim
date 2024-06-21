@@ -15,10 +15,7 @@ M.check = function()
   if vim.fn.executable "rg" == 1 then
     report_ok "rg installed"
   else
-    report_warn(
-      "ripgrep is missing, is required for finding view usage",
-      { "Installed from your package manager" }
-    )
+    report_warn("ripgrep is missing, is required for finding view usage", { "Installed from your package manager" })
   end
 
   report_start "Plugin Dependencies"
@@ -96,10 +93,7 @@ M.check = function()
     if api.is_composer_package_install(dependency.name) then
       report_ok(string.format("Composer dependency `%s` is installed", dependency.name))
     else
-      report_warn(
-        string.format("Composer dependency `%s` is not installed", dependency.name),
-        { dependency.messages }
-      )
+      report_warn(string.format("Composer dependency `%s` is not installed", dependency.name), { dependency.messages })
     end
   end
 end

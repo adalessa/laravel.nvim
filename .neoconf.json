@@ -2,6 +2,7 @@
   "neodev": {
     "library": {
       "plugins": [
+        "telescope.nvim",
         "plenary.nvim"
       ]
     }

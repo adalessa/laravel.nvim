@@ -16,7 +16,7 @@ local split = Split({
   },
 })
 
-vim.api.nvim_create_autocmd({"BufEnter"}, {
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
   pattern = "*.tinker",
   group = group,
   callback = function(ev)
@@ -30,7 +30,7 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
   end
 });
 
-vim.api.nvim_create_autocmd({"BufWinLeave"}, {
+vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
   pattern = "*.tinker",
   group = group,
   callback = function()
@@ -52,7 +52,7 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
       local line = raw_line:gsub("^%s*(.-)%s*$", "%1")
       return line ~= "" and line:sub(1, 2) ~= "//" and line:sub(1, 2) ~= "/*"
           and line:sub(1, 2) ~= "*/" and line:sub(1, 1) ~= "*"
-        and line:sub(1, 1) ~= "#"
+          and line:sub(1, 1) ~= "#"
     end, lines)
 
     if #lines == 0 then

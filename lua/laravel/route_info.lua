@@ -43,7 +43,7 @@ local function generate_virtual_text_options(route)
   end
 end
 
-local function set_route_to_methods(event)
+return function(event)
   local bufnr = event.buf
   local namespace = vim.api.nvim_create_namespace "laravel.routes"
 
@@ -127,6 +127,7 @@ local function set_route_to_methods(event)
     end
   end
 
+  -- WARN: clean should be easier to resolve
   if #routes.list == 0 then
     routes.asyncLoad(function(result)
       if result:successful() then
@@ -137,25 +138,3 @@ local function set_route_to_methods(event)
     setRouteInfo()
   end
 end
-
-local group = vim.api.nvim_create_augroup("laravel.route_info", {})
-
-local M = {}
-
-function M.setup()
-  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-    pattern = { "routes/*.php" },
-    group = group,
-    callback = function()
-      routes.asyncLoad()
-    end,
-  })
-
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-    pattern = { "*Controller.php" },
-    group = group,
-    callback = set_route_to_methods,
-  })
-end
-
-return M

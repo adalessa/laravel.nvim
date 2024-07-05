@@ -1,10 +1,7 @@
-local M = {}
-
-function M.setup()
-  vim.treesitter.query.set(
-    "php",
-    "laravel_views",
-    [[
+vim.treesitter.query.set(
+  "php",
+  "laravel_views",
+  [[
       (function_call_expression
         (name) @function_name (#eq? @function_name "view")
         (arguments (argument (string) @view))
@@ -23,12 +20,12 @@ function M.setup()
           ))
       )
     ]]
-  )
+)
 
-  vim.treesitter.query.set(
-    "php",
-    "laravel_view_arguments",
-    [[
+vim.treesitter.query.set(
+  "php",
+  "laravel_view_arguments",
+  [[
       (scoped_call_expression
         scope: (name) @class
         name: (name) @method
@@ -46,34 +43,34 @@ function M.setup()
           arguments: (arguments) @viewMethodArugments (#eq? @method "view")
       )
     ]]
-  )
+)
 
-  vim.treesitter.query.set(
-    "php",
-    "laravel_route_argument",
-    [[
+vim.treesitter.query.set(
+  "php",
+  "laravel_route_argument",
+  [[
       (function_call_expression
         function: (name) @function
         arguments: (arguments) @routeFunctionArugments (#eq? @function "route")
       )
     ]]
-  )
+)
 
-  vim.treesitter.query.set(
-    "php",
-    "laravel_config_argument",
-    [[
+vim.treesitter.query.set(
+  "php",
+  "laravel_config_argument",
+  [[
       (function_call_expression
         function: (name) @function
         arguments: (arguments) @configFunctionArugments (#eq? @function "config")
       )
     ]]
-  )
+)
 
-  vim.treesitter.query.set(
-    "php",
-    "php_class",
-    [[
+vim.treesitter.query.set(
+  "php",
+  "php_class",
+  [[
       (namespace_definition (namespace_name) @namespace)
       (class_declaration (name) @class)
       (method_declaration
@@ -81,7 +78,4 @@ function M.setup()
           (name) @method
       )
     ]]
-  )
-end
-
-return M
+)

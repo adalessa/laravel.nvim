@@ -68,12 +68,7 @@ function M.setup()
     return
   end
 
-  require("laravel.treesitter").setup()
   user_commands.setup()
-
-  if config.options.features.route_info.enable then
-    require("laravel.route_info").setup()
-  end
 
   if config.options.features.null_ls.enable then
     require("laravel.null_ls").setup()

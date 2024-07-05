@@ -1,11 +1,12 @@
+-- can I remove this setup ?
+-- can it be initialize when it starts or runs a command ?
+
 ---@param opts? LaravelOptions
 local function setup(opts)
   local config = require "laravel.config"
   local environment = require "laravel.environment"
-  local autocmds = require "laravel.autocommands"
 
   config.setup(opts)
-  autocmds.setup()
   require "laravel.tinker"
   environment.setup()
 end

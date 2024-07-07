@@ -1,11 +1,20 @@
 local Job = require "plenary.job"
-local environment = require "laravel.environment"
 local ApiResponse = require "laravel.api.response"
 
-local M = {}
+---@class LaravelApi
+---@field env LaravelEnvironment
+local api = {}
 
-function M.generate_command(name, args)
-  local executable = environment.get_executable(name)
+---@return LaravelApi
+function api:new(env)
+  local instance = setmetatable({}, { __index = api })
+  instance.env = env
+  return instance
+end
+
+---@return string[]
+function api:generate_command(name, args)
+  local executable = self.env:get_executable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
   end
@@ -17,8 +26,8 @@ end
 ---@param program string
 ---@param args string[]
 ---@return ApiResponse
-function M.sync(program, args)
-  local cmd = M.generate_command(program, args)
+function api:sync(program, args)
+  local cmd = self:generate_command(program, args)
   local command = table.remove(cmd, 1)
   local stderr = {}
 
@@ -36,9 +45,9 @@ end
 --- Run the command async
 ---@param program string
 ---@param args string[]
----@param callback function
-function M.async(program, args, callback)
-  local cmd = M.generate_command(program, args)
+---@param callback fun(response: ApiResponse)
+function api:async(program, args, callback)
+  local cmd = self:generate_command(program, args)
   local command = table.remove(cmd, 1)
 
   Job:new({
@@ -50,12 +59,21 @@ function M.async(program, args, callback)
   }):start()
 end
 
-function M.is_composer_package_install(package)
-  return M.sync("composer", { "info", package }):successful()
+---@return boolean
+function api:is_composer_package_install(package)
+  return self:sync("composer", { "info", package }):successful()
 end
 
-function M.tinker_execute(code)
-  return M.sync("artisan", { "tinker", "--execute", "echo " .. code })
+---@return ApiResponse
+function api:tinker_execute(code)
+  assert(code, "Code is required")
+  return self:sync("artisan", { "tinker", "--execute", "echo " .. code })
 end
 
-return M
+---@param code string
+---@param callback fun(response: ApiResponse)
+function api:async_tinker(code, callback)
+  self:async("artisan", { "tinker", "--execute", "echo " .. code }, callback)
+end
+
+return api

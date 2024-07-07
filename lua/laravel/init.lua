@@ -3,22 +3,17 @@
 
 ---@param opts? LaravelOptions
 local function setup(opts)
-  local config = require "laravel.config"
-  local environment = require "laravel.environment"
+  -- register all the clases
+  require "laravel.bootstrap"
 
-  config.setup(opts)
-  require "laravel.tinker"
-  environment.setup()
-end
-
-local function cleanCache()
-  require("laravel.commands").list = {}
-  require("laravel.routes").list = {}
+  local app = require('laravel.app')
+  --- set the options by the user
+  app('options'):set(opts)
+  app('env'):boot()
 end
 
 return {
   setup = setup,
-  cleanCache = cleanCache,
   routes = require("telescope").extensions.laravel.routes,
   artisan = require("telescope").extensions.laravel.artisan,
   history = require("telescope").extensions.laravel.history,

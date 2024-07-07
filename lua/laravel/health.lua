@@ -2,6 +2,7 @@ local environment = require "laravel.environment"
 local api = require "laravel.api"
 local M = {}
 
+-- TODO: remove the drepectaed
 local report_start = vim.health.start or vim.health.report_start
 local report_ok = vim.health.ok or vim.health.report_ok
 local report_info = vim.health.info or vim.health.report_info

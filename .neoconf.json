@@ -3,7 +3,8 @@
     "library": {
       "plugins": [
         "telescope.nvim",
-        "plenary.nvim"
+        "plenary.nvim",
+        "cmp.nvim"
       ]
     }
   },

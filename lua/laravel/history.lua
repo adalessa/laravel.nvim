@@ -1,9 +1,21 @@
-local list = {}
+---@class LaravelHistory
+---@field jobId string
+---@field name string
+---@field args table
+---@field opts table
 
-local M = {}
+---@class LaravelHistoryService
+---@field list LaravelHistory[]
+local history = {}
 
-function M.add(jobId, name, args, opts)
-  table.insert(list, {
+function history:new()
+  local instance = setmetatable({}, { __index = history })
+  instance.list = {}
+  return instance
+end
+
+function history:add(jobId, name, args, opts)
+  table.insert(self.list, {
     jobId = jobId,
     name = name,
     args = args,
@@ -11,8 +23,9 @@ function M.add(jobId, name, args, opts)
   })
 end
 
-function M.all()
-  return list
+---@return Iter<LaravelHistory>
+function history:get()
+  return vim.iter(self.list)
 end
 
-return M
+return history

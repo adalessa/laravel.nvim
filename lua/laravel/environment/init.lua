@@ -1,11 +1,5 @@
-local config = require "laravel.config"
-local user_commands = require "laravel.user_commands"
 local get_env = require("laravel.utils").get_env
-local Environment = require "laravel.environment.environment"
-
-local M = {}
-
-M.environment = nil
+local Environment = require("laravel.environment.environment")
 
 ---@param name string|nil
 ---@param envs table
@@ -23,14 +17,32 @@ local function find_env_by_name(name, envs)
   return nil
 end
 
----@return Environment|nil
-local function resolve()
-  local opts = config.options.environments
+---@class LaravelEnvironment
+---@field environment Environment|nil
+---@field options LaravelOptionsProvider
+local environment = {}
+
+---@return LaravelEnvironment
+function environment:new(options)
+  local instance = setmetatable({}, { __index = environment })
+  instance.environment = nil
+  instance.options = options
+  return instance
+end
+
+function environment:boot()
+  if vim.fn.filereadable("artisan") == 0 then
+    self.environment = nil
+    return
+  end
+
+  local opts = self.options:get().environments
 
   if opts.env_variable then
     local env_opts = find_env_by_name(get_env(opts.env_variable), opts.definitions)
     if env_opts then
-      return Environment:new(env_opts)
+      self.environment = Environment:new(env_opts)
+      return
     end
   end
 
@@ -38,7 +50,8 @@ local function resolve()
     for _, opt in ipairs(opts.definitions) do
       local env = Environment:new(opt)
       if env:check() then
-        return env
+        self.environment = env
+        return
       end
     end
   end
@@ -48,47 +61,31 @@ local function resolve()
     if env_opts then
       local env = Environment:new(env_opts)
       if env:check() then
-        return env
+        self.environment = env
+        return
       end
     end
   end
 
-  return nil
-end
-
-function M.setup()
-  M.environment = nil
-  if vim.fn.filereadable "artisan" == 0 then
-    return
-  end
-
-  M.environment = resolve()
-
-  if not M.environment then
-    return
-  end
-
-  user_commands.setup()
-
-  if config.options.features.null_ls.enable then
-    require("laravel.null_ls").setup()
-  end
-
-  require("laravel.luasnip").setup()
+  self.environment = nil
 end
 
 ---@param name string
 ---@return string[]|nil
-function M.get_executable(name)
-  if not M.environment then
+function environment:get_executable(name)
+  if not self.environment then
     return nil
   end
 
   if name == "artisan" then
-    return vim.fn.extend(M.environment:executable "php", { "artisan" })
+    return vim.fn.extend(self.environment:executable("php"), { "artisan" })
   end
 
-  return M.environment:executable(name)
+  return self.environment:executable(name)
 end
 
-return M
+function environment:is_active()
+  return self.environment ~= nil
+end
+
+return environment

@@ -1,9 +1,10 @@
 local run = require "laravel.run"
-local paths = require "laravel.paths"
+local paths = require "laravel.providers.paths"
 
 local M = {}
 
 function M.open(view)
+  -- FIX: the paths usage
   local views_directory = paths.resource_path "views"
 
   local file_path = string.format("%s/%s.blade.php", views_directory, string.gsub(view, "%.", "/"))

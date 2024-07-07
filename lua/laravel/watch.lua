@@ -1,25 +1,24 @@
-local config = require "laravel.config"
-local environment = require "laravel.environment"
-local Split = require "nui.split"
+local Split = require("nui.split")
 local event = require("nui.utils.autocmd").event
+local app = require("laravel.app")
 
 ---@param name string
 ---@param args string[]
 ---@param opts table|nil
 return function(name, args, opts)
   opts = opts or {}
-  local executable = environment.get_executable(name)
+  local executable = app("env"):get_executable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
     return
   end
   local cmd = vim.fn.extend(executable, args)
 
-  local command_option = config.options.commands_options[args[1]] or {}
+  local command_option = app("options"):get().commands_options[args[1]] or {}
 
   opts = vim.tbl_extend("force", command_option, opts)
 
-  local nui_opts = opts.nui_opts or config.options.ui.nui_opts.split
+  local nui_opts = opts.nui_opts or app("options"):get().options.ui.nui_opts.split
   nui_opts.enter = false
   local instance = Split(nui_opts)
 

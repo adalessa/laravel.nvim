@@ -18,6 +18,8 @@ return function(opts)
   -- if not api.is_composer_package_install "doctrine/dbal" then
   --   error "doctrine dbal not install this picker depends on it"
   -- end
+  --
+  -- FIX: create a service to get class name from bufnr
 
   local get_model_class_name = function()
     local query = vim.treesitter.query.parse(

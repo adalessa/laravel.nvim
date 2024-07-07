@@ -44,7 +44,7 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
   callback = function(ev)
     local bufnr = ev.buf
 
-    local api = require("laravel.api")
+    local app = require("laravel.app")
     local lines = vim.api.nvim_buf_get_lines(bufnr, 1, -1, false)
 
     -- filter empty lines
@@ -81,15 +81,13 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     --   table.insert(lines, "echo '\n\nDone by Alpha Developer';")
     -- end
 
-    local cmd = api.generate_command("artisan", { "tinker", "--execute", vim.fn.join(lines, "") })
+    local cmd = app('api'):generate_command("artisan", { "tinker", "--execute", vim.fn.join(lines, "") })
 
     -- clean the output
     local channel_id = vim.api.nvim_open_term(split.bufnr, {})
     vim.fn.jobstart(cmd, {
       stdeout_buffered = true,
       on_stdout = function(_, data)
-        -- { "\27[0;38;5;208m\27[1;38;5;38m22\27[0;38;5;208m\27[m \27[90m// \27[39m\27[90mvendor/psy/psysh/src/ExecutionClosure.php(40) : eval()'d code:2\27[39m\r", "" }
-        -- remove the text after // vendor/psy/psysh/src not the hole line
         data = vim.tbl_map(function(line)
           if line:find("vendor/psy/psysh/src") then
             local sub = line:gsub("vendor/psy/psysh/src.*$", "")

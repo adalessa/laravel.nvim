@@ -1,8 +1,6 @@
-local config = require "laravel.config"
-local environment = require "laravel.environment"
-local history = require "laravel.history"
-local Popup = require "nui.popup"
-local Split = require "nui.split"
+local Popup = require("nui.popup")
+local Split = require("nui.split")
+local app = require("laravel.app")
 
 local ui_builders = {
   split = Split,
@@ -31,7 +29,7 @@ end
 ---@param opts table|nil
 return function(name, args, opts)
   opts = opts or {}
-  local executable = environment.get_executable(name)
+  local executable = app("env"):get_executable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
     return
@@ -39,13 +37,13 @@ return function(name, args, opts)
 
   local cmd = vim.fn.extend(executable, args)
 
-  local command_option = config.options.commands_options[args[1]] or {}
+  local command_option = app("options"):get().commands_options[args[1]] or {}
 
   opts = vim.tbl_extend("force", command_option, opts)
 
-  local selected_ui = opts.ui or config.options.ui.default
+  local selected_ui = opts.ui or app("options"):get().ui.default
 
-  local instance = ui_builders[selected_ui](opts.nui_opts or config.options.ui.nui_opts[selected_ui])
+  local instance = ui_builders[selected_ui](opts.nui_opts or app("options"):get().ui.nui_opts[selected_ui])
 
   instance:mount()
 
@@ -68,7 +66,7 @@ return function(name, args, opts)
     end)
   end
 
-  history.add(jobId, name, args, opts)
+  app('history'):add(jobId, name, args, opts)
 
-  vim.cmd "startinsert"
+  vim.cmd("startinsert")
 end

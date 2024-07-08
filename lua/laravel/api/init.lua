@@ -27,19 +27,12 @@ end
 ---@param args string[]
 ---@return ApiResponse
 function api:sync(program, args)
-  local cmd = self:generate_command(program, args)
-  local command = table.remove(cmd, 1)
-  local stderr = {}
+  local res = {}
+  self:async(program, args, function(result)
+    res = result
+  end):wait()
 
-  local stdout, ret = Job:new({
-    command = command,
-    args = cmd,
-    on_stderr = function(_, data)
-      table.insert(stderr, data)
-    end,
-  }):sync()
-
-  return ApiResponse:new(stdout, ret, stderr)
+  return res
 end
 
 --- Run the command async

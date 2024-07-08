@@ -1,5 +1,5 @@
-local Job = require "plenary.job"
-local ApiResponse = require "laravel.api.response"
+local Job = require("plenary.job")
+local ApiResponse = require("laravel.api.response")
 
 ---@class LaravelApi
 ---@field env LaravelEnvironment
@@ -46,17 +46,21 @@ end
 ---@param program string
 ---@param args string[]
 ---@param callback fun(response: ApiResponse)
+---@return Job
 function api:async(program, args, callback)
   local cmd = self:generate_command(program, args)
   local command = table.remove(cmd, 1)
 
-  Job:new({
+  local job = Job:new({
     command = command,
     args = cmd,
-    on_exit = vim.schedule_wrap(function(j, exit_code)
+    on_exit = function(j, exit_code)
       callback(ApiResponse:new(j:result(), exit_code, j:stderr_result()))
-    end),
-  }):start()
+    end,
+  })
+  job:start()
+
+  return job
 end
 
 ---@return boolean
@@ -72,8 +76,9 @@ end
 
 ---@param code string
 ---@param callback fun(response: ApiResponse)
+---@return Job
 function api:async_tinker(code, callback)
-  self:async("artisan", { "tinker", "--execute", "echo " .. code }, callback)
+  return self:async("artisan", { "tinker", "--execute", "echo " .. code }, callback)
 end
 
 return api

@@ -12,9 +12,9 @@ local parse = function(json)
     return cmds
   end
 
-  return vim.tbl_filter(function (command)
+  return vim.tbl_filter(function(command)
     return not command.hidden
-  end, vim.fn.json_decode(json).commands)
+  end, vim.json.decode(json, { luanil = { object = true } }).commands)
 end
 
 function commands:new(api)
@@ -24,13 +24,14 @@ function commands:new(api)
 end
 
 ---@param callback fun(commands: Iter<LaravelCommand>)
+---@return Job
 function commands:get(callback)
-  self.api:async("artisan", { "list", "--format=json" }, function(result)
+  return self.api:async("artisan", { "list", "--format=json" }, function(result)
     if result:failed() then
       vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
       return
     end
-    callback(vim.iter(parse(result.stdout)))
+    callback(vim.iter(parse(result:prettyContent())))
   end)
 end
 

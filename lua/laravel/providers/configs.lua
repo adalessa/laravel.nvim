@@ -9,8 +9,9 @@ function configs:new(api)
 end
 
 ---@param callback fun(configs: Iter<string>)
+---@return Job
 function configs:get(callback)
-  self.api:async_tinker("json_encode(array_keys(Arr::dot(Config::all())));", function(response)
+  return self.api:async_tinker("json_encode(array_keys(Arr::dot(Config::all())));", function(response)
     if response:failed() then
       callback({})
     end

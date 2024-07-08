@@ -5,11 +5,13 @@
 ---@field api LaravelApi
 local routes = {}
 
-local function check_nil(value)
-  if value == vim.NIL then
-    return nil
-  end
-  return value
+local function split(str, sep)
+   local result = {}
+   local regex = ("([^%s]+)"):format(sep)
+   for each in str:gmatch(regex) do
+      table.insert(result, each)
+   end
+   return result
 end
 
 local parse = function(json)
@@ -21,12 +23,12 @@ local parse = function(json)
     return {
       uri = route.uri,
       action = route.action,
-      domain = check_nil(route.domain),
-      methods = vim.fn.split(route.method, "|"),
+      domain = route.domain,
+      methods = split(route.method, "|"),
       middlewares = route.middleware,
-      name = check_nil(route.name),
+      name = route.name,
     }
-  end, vim.fn.json_decode(json))
+  end, vim.json.decode(json, { luanil = { object = true } }))
 end
 
 function routes:new(api)
@@ -36,13 +38,14 @@ function routes:new(api)
 end
 
 ---@param callback fun(commands: Iter<LaravelRoute>)
+---@return Job
 function routes:get(callback)
-  self.api:async("artisan", { "route:list", "--json" }, function(result)
+  return self.api:async("artisan", { "route:list", "--json" }, function(result)
     if result:failed() then
       vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
       return
     end
-    callback(vim.iter(parse(result.stdout)))
+    callback(vim.iter(parse(result:prettyContent())))
   end)
 end
 

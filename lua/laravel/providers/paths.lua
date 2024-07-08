@@ -10,6 +10,7 @@ function path:new(api)
 end
 
 ---@param callback fun(path: string)
+---@return Job
 function path:base(callback)
   return self.api:async_tinker("base_path()", function(response)
     if response:failed() then
@@ -25,8 +26,9 @@ function path:base(callback)
 end
 
 ---@param callback fun(commands: string)
+---@return Job
 function path:resource(resource, callback)
-  self.api:async_tinker(string.format("resource_path('%s')", resource), function(response)
+  return self.api:async_tinker(string.format("resource_path('%s')", resource), function(response)
     self:base(function(base_path)
       callback(response:first():gsub(base_path:gsub("-", "%%-"), vim.fn.getcwd()))
     end)

@@ -15,8 +15,9 @@ function views:new(paths_provider)
 end
 
 ---@param callback fun(commands: Iter<LaravelView>)
+---@return Job
 function views:get(callback)
-  self.paths_provider:resource("views", function(views_directory)
+  return self.paths_provider:resource("views", function(views_directory)
     local rule = string.format("^%s/(.*).blade.php$", views_directory:gsub("-", "%%-"))
     local finds = scan.scan_dir(views_directory, { hidden = false, depth = 4 })
 

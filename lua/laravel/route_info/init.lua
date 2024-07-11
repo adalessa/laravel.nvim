@@ -8,7 +8,12 @@ local function is_same_class(action, class)
   return string.sub(action, 1, string.len(class)) == class
 end
 
-local function generate_virtual_text_options(route)
+local function get_line_indent(line)
+  local line_content = vim.fn.getline(line)
+  return string.match(line_content, "^%s*")
+end
+
+local function generate_virtual_text_options(route, indent)
   if options.position == "right" then
     return {
       virt_text = {
@@ -24,20 +29,26 @@ local function generate_virtual_text_options(route)
     }
   end
   if options.position == "top" then
+    local middleware_lines = {}
+    for _, mw in ipairs(route.middlewares or { "None" }) do
+      table.insert(middleware_lines, { {indent .. "  " .. mw, "@enum"} })
+    end
+
+    local virt_lines = {
+      { { indent .. "[", "comment" } },
+      { { indent .. " Method: ", "comment" }, { vim.fn.join(route.methods, "|"), "@enum" } },
+      { { indent .. " Uri: ", "comment" }, { route.uri, "@enum" } },
+      { { indent .. " Middleware: ", "comment" } },
+    }
+
+    for _, line in ipairs(middleware_lines) do
+      table.insert(virt_lines, line)
+    end
+
+    table.insert(virt_lines, { { indent .. "]", "comment" } })
+
     return {
-      virt_lines = {
-        {
-          { "    ", "" },
-          { "[", "comment" },
-          { "Method: ", "comment" },
-          { vim.fn.join(route.methods, "|"), "@enum" },
-          { " Uri: ", "comment" },
-          { route.uri, "@enum" },
-          { " Middleware: ", "comment" },
-          { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
-          { "]", "comment" },
-        },
-      },
+      virt_lines = virt_lines,
       virt_lines_above = true,
     }
   end
@@ -72,9 +83,12 @@ local function set_route_to_methods(event)
       elseif query.captures[id] == "namespace" then
         class_namespace = get_node_text(node, bufnr)
       elseif query.captures[id] == "method" then
+        local method_pos = node:start()
+        local method_indent = get_line_indent(method_pos + 1)
         table.insert(methods, {
           pos = node:start(),
           name = get_node_text(node, bufnr),
+          indent = method_indent
         })
       elseif query.captures[id] == "visibility" then
         table.insert(visibilities, get_node_text(node, bufnr))
@@ -90,6 +104,7 @@ local function set_route_to_methods(event)
           full = string.format("%s\\%s@%s", class_namespace, class, method.name),
           name = method.name,
           pos = method.pos,
+          indent = method.indent,
         })
       end
     end
@@ -103,7 +118,7 @@ local function set_route_to_methods(event)
           action_full = action_full .. "@__invoke"
         end
         if action_full == method.full then
-          vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, generate_virtual_text_options(route))
+          vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, generate_virtual_text_options(route, method.indent))
           found = true
         end
       end

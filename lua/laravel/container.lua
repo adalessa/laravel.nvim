@@ -1,3 +1,6 @@
+---@class LaravelContainer
+---@field registry table<string, function>
+---@field cont table<string, object>
 local Container = {}
 
 function Container:new()
@@ -11,6 +14,7 @@ end
 ---@param factory function
 function Container:register(name, factory)
   self.registry[name] = factory
+  self.cont[name] = nil
 end
 
 ---@param name string

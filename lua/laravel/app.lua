@@ -1,6 +1,6 @@
 local container = require "laravel.container":new()
 
----@param abstract string|nil
+---@param abstract ?string
 ---@return any
 return function(abstract)
   if not abstract then

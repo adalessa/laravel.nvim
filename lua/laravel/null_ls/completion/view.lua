@@ -1,4 +1,4 @@
-local paths = require "laravel.paths"
+local paths = require "laravel.providers.paths"
 local scan = require "plenary.scandir"
 
 return function(done, should_quote)

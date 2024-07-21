@@ -1,7 +1,3 @@
--- TODO: renable when the options are in vim format
--- require "laravel.bootstrap"
--- require('laravel.app')('env'):boot()
-
 local group = vim.api.nvim_create_augroup("laravel", {})
 
 vim.api.nvim_create_autocmd({ "DirChanged" }, {
@@ -34,38 +30,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
   end,
 })
 
-local function subcommands()
-  return vim.iter({
-    "art",
-    "artisan",
-    "routes",
-    "composer",
-    "sail",
-    "assets",
-    "commands",
-  })
-end
-
-vim.api.nvim_create_user_command("Laravel", function(args)
-  local subcommand = args.fargs[1]
-  if subcommand == "art" or subcommand == "artisan" then
-    require("laravel").artisan()
-  end
-end, {
-  nargs = "*",
-  complete = function(argLead, cmdLine)
-    -- If is the first subcommand
-    if #vim.split(cmdLine, " ") <= 2 then
-      return subcommands()
-          :filter(function(subcommand)
-            return vim.startswith(subcommand, argLead)
-          end)
-          :totable()
-    end
-
-    return {}
-  end,
-})
+require("laravel.user_command")
 
 --- set treesitter queires
 require("laravel.treesitter_queries")
@@ -74,5 +39,5 @@ require("laravel.tinker")
 --- register cmp
 local ok, cmp = pcall(require, "cmp")
 if ok then
-  cmp.register_source("laravel", require("laravel.cmp"))
+  cmp.register_source("laravel", require("laravel.services.completion"))
 end

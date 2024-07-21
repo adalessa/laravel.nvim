@@ -13,8 +13,6 @@ app('commands'):get()
 app('routes'):get()
 app('views'):get()
 app('config'):get()
-app('cache'):get('commands')
-app('cache'):get('routes')
 ```
 
 General parts
@@ -22,6 +20,12 @@ General parts
 ```lua
 local api
 local run
+
+app('api'):sync()
+
+-- Should cahnge async with call
+app('api'):call()
+
 ```
 
 Do I have 2 levels ?
@@ -48,6 +52,8 @@ ftplugin
 
 expose features from lua api.
 expose features in just `Laravel` commands dont add to many
+
+-- need to resolve how to deal with async
 
 `Laravel`
     - artisan (art)

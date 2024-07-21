@@ -1,5 +1,6 @@
 local Popup = require("nui.popup")
 local Split = require("nui.split")
+
 local app = require("laravel.app")
 
 local ui_builders = {

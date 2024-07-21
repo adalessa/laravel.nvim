@@ -35,3 +35,15 @@ end)
 app():register('paths', function ()
   return require('laravel.providers.paths'):new(app('api'))
 end)
+
+app():register('status', function()
+  return require('laravel.services.status'):new(app('artisan'), app('php'), 120)
+end)
+
+app():register('artisan', function()
+  return require('laravel.services.artisan'):new(app('api'), app('env'))
+end)
+
+app():register('php', function()
+  return require('laravel.services.php'):new(app('api'), app('env'))
+end)

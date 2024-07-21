@@ -1,6 +1,3 @@
--- can I remove this setup ?
--- can it be initialize when it starts or runs a command ?
-
 ---@param opts? LaravelOptions
 local function setup(opts)
   -- register all the clases

@@ -37,7 +37,7 @@ function routes:new(api)
   return instance
 end
 
----@param callback fun(commands: Iter<LaravelRoute>)
+---@param callback fun(commands: Iter)
 ---@return Job
 function routes:get(callback)
   return self.api:async("artisan", { "route:list", "--json" }, function(result)

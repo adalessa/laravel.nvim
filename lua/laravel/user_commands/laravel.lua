@@ -3,7 +3,7 @@ local environment = require "laravel.environment"
 
 local commands = {
   ["cache:clean"] = function()
-    require("laravel.commands").list = {}
+    require("laravel.providers.commands").list = {}
     require("laravel.routes").list = {}
     vim.notify("Laravel plugin cache cleaned", vim.log.levels.INFO)
   end,

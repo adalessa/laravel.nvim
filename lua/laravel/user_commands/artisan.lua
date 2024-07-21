@@ -1,4 +1,3 @@
-local commands = require "laravel.commands"
 local run = require "laravel.run"
 
 local function get_artisan_auto_complete(current_match, full_command)

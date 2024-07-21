@@ -14,7 +14,7 @@ local parse = function(json)
 
   return vim.tbl_filter(function(command)
     return not command.hidden
-  end, vim.json.decode(json, { luanil = { object = true } }).commands)
+  end, vim.json.decode(json, { luanil = { object = true } }).commands or {})
 end
 
 function commands:new(api)
@@ -23,7 +23,7 @@ function commands:new(api)
   return instance
 end
 
----@param callback fun(commands: Iter<LaravelCommand>)
+---@param callback fun(commands: Iter) Iterable of LaravelCommand
 ---@return Job
 function commands:get(callback)
   return self.api:async("artisan", { "list", "--format=json" }, function(result)

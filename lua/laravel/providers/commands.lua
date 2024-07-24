@@ -5,21 +5,13 @@
 ---@field api LaravelApi
 local commands = {}
 
-local parse = function(json)
-  local cmds = {}
-
-  if json == "" or json == nil or #json == 0 then
-    return cmds
-  end
-
-  return vim.tbl_filter(function(command)
-    return not command.hidden
-  end, vim.json.decode(json, { luanil = { object = true } }).commands or {})
-end
-
 function commands:new(api)
-  local instance = setmetatable({}, { __index = commands })
-  instance.api = api
+  local instance = {
+    api = api,
+  }
+  setmetatable(instance, self)
+  self.__index = self
+
   return instance
 end
 
@@ -31,7 +23,9 @@ function commands:get(callback)
       vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
       return
     end
-    callback(vim.iter(parse(result:prettyContent())))
+    callback(vim.iter(result:json().commands or {}):filter(function(command)
+      return not command.hidden
+    end))
   end)
 end
 

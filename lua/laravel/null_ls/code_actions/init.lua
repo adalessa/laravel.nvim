@@ -62,7 +62,7 @@ function M.setup()
 
         -- check pending migrations
         local response = require("laravel.api").sync("artisan", { "migrate:status", "--pending" })
-        if response:content()[2] ~= "   INFO  No pending migrations.  " then
+        if response:raw()[2] ~= "   INFO  No pending migrations.  " then
           table.insert(actions, {
             title = "Run Pending migrations",
             action = function()

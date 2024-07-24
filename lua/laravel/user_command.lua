@@ -1,40 +1,39 @@
--- Should be able to have a class for each
--- and register in the bootstrap
--- each class should have two methos
--- aliases this mainly for art and artisan
--- complete should return the list available
--- other option is the action, important and the complete could be missing
-
-local function subcommands()
-  return vim.iter({
-    "art",
-    "artisan",
-    "routes",
-    "composer",
-    "sail",
-    "assets",
-    "commands",
-  })
-end
+local app = require("laravel.app")
 
 vim.api.nvim_create_user_command("Laravel", function(args)
-  local subcommand = args.fargs[1]
-  if subcommand == "art" or subcommand == "artisan" then
-    require("laravel").artisan()
+  local command = vim.iter(app("user_commands")):find(function(cmd)
+    return vim.iter(cmd:commands()):any(function(name)
+      return vim.startswith(name, args.fargs[1])
+    end)
+  end)
+
+  if command then
+    command:handle(args)
   end
 end, {
   nargs = "*",
   complete = function(argLead, cmdLine)
     local fCmdLine = vim.split(cmdLine, " ")
     if #fCmdLine <= 2 then
-      return subcommands()
+      return vim
+          .iter(app("user_commands"))
+          :map(function(command)
+            return command:commands()
+          end)
+          :flatten()
           :filter(function(subcommand)
             return vim.startswith(subcommand, argLead)
           end)
           :totable()
     elseif #fCmdLine == 3 then
-        -- complete for the sub commands
-        return {"next"}
+      local command = vim.iter(app("user_commands")):find(function(cmd)
+        return vim.iter(cmd:commands()):any(function(name)
+          return vim.startswith(name, fCmdLine[2])
+        end)
+      end)
+      if command then
+        return command:complete(argLead, cmdLine)
+      end
     end
 
     return {}

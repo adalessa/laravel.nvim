@@ -16,3 +16,22 @@ function composer:is_installed(package, callback)
     callback(response:successful())
   end)
 end
+
+---@param package string
+---@param callback fun(response: ApiResponse)
+function composer:update(package, callback)
+  return self.api:async("composer", { "update", package }, callback)
+end
+
+---@param package string
+---@param callback fun(response: ApiResponse)
+function composer:require(package, callback)
+  return self.api:async("composer", { "require", package }, callback)
+end
+
+---@param callback fun(response: ApiResponse)
+function composer:install(callback)
+  return self.api:async("composer", { "install" }, callback)
+end
+
+return composer

@@ -10,7 +10,7 @@ local app = require("laravel.app")
 return function(opts)
   opts = opts or {}
 
-  app("routes"):get(function(routes)
+  app("routes"):get(vim.schedule_wrap(function(routes)
     pickers
         .new(opts, {
           prompt_title = "Artisan Routes",
@@ -46,5 +46,5 @@ return function(opts)
           end,
         })
         :find()
-  end)
+  end))
 end

@@ -1,7 +1,7 @@
 local run = require "laravel.run"
 local create_user_command = require "laravel.user_commands.create_user_command"
 local api = require "laravel.api"
-local status = require "laravel.status"
+local status = require "laravel.services.status"
 
 return {
   setup = function()
@@ -35,7 +35,7 @@ return {
             if response:failed() then
               vim.notify(response:prettyErrors(), vim.log.levels.ERROR)
             else
-              vim.notify(response:prettyContent(), vim.log.levels.INFO)
+              vim.notify(response:content(), vim.log.levels.INFO)
             end
           end
         )

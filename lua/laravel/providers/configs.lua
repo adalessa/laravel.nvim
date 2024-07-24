@@ -16,7 +16,7 @@ function configs:get(callback)
       callback({})
     end
 
-    callback(vim.iter(vim.json.decode(response:prettyContent())):filter(function(c)
+    callback(vim.iter(vim.json.decode(response:content())):filter(function(c)
       return type(c) == "string"
     end))
   end)

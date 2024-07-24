@@ -34,13 +34,22 @@ end
 
 --- Returns the content
 ---@return string[]
-function ApiResponse:content()
+function ApiResponse:raw()
   return self.stdout
 end
 
 ---@return string
-function ApiResponse:prettyContent()
-  return table.concat(self:content(), "\n")
+function ApiResponse:content()
+  return table.concat(self:raw(), "\n")
+end
+
+function ApiResponse:json()
+  local ok, res = pcall(vim.json.decode, self:content(), { luanil = { object = true } })
+  if not ok then
+    return nil
+  end
+
+  return res
 end
 
 ---@return string|nil
@@ -62,7 +71,7 @@ function ApiResponse:errors()
     return self.stderror
   end
 
-  return self:content()
+  return self:raw()
 end
 
 function ApiResponse:prettyErrors()

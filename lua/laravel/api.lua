@@ -3,13 +3,11 @@ local ApiResponse = require("laravel.api_response")
 
 ---@class LaravelApi
 ---@field env LaravelEnvironment
----@field wrap boolean
 local api = {}
 
 ---@return LaravelApi
-function api:new(env, wrap)
+function api:new(env)
   local instance = setmetatable({}, { __index = api })
-  instance.wrap = wrap or true
   instance.env = env
   return instance
 end
@@ -26,13 +24,15 @@ end
 
 ---@param program string
 ---@param args string[]
+---@param opts table|nil
 ---@return ApiResponse
-function api:sync(program, args)
+function api:sync(program, args, opts)
+  opts = opts or {}
   local res = {}
   self
       :async(program, args, function(result)
         res = result
-      end)
+      end, opts)
       :wait()
 
   return res
@@ -41,8 +41,11 @@ end
 ---@param program string
 ---@param args string[]
 ---@param callback fun(response: ApiResponse)
+---@param opts table|nil
 ---@return Job
-function api:async(program, args, callback)
+function api:async(program, args, callback, opts)
+  opts = opts or {}
+
   local cmd = self:generate_command(program, args)
   local command = table.remove(cmd, 1)
 
@@ -50,7 +53,7 @@ function api:async(program, args, callback)
     callback(ApiResponse:new(j:result(), exit_code, j:stderr_result()))
   end
 
-  if self.wrap then
+  if opts.wrap then
     on_exit = vim.schedule_wrap(on_exit)
   end
 

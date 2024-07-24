@@ -1,31 +1,58 @@
 ---@class LaravelStatusService
 ---@field artisan LaravelArtisanService
 ---@field php LaravelPhpService
----@field last_check number|nil
 ---@field values table
 ---@field frequency number
 local status = {}
 
+local function setInterval(interval, callback)
+  local timer = vim.loop.new_timer()
+  timer:start(interval, interval, function()
+    callback()
+  end)
+
+  return timer
+end
+
 function status:new(artisan, php, frequency)
-  local instance = setmetatable({}, { __index = status })
-  instance.artisan = artisan
-  instance.php = php
-
-  instance.last_check = nil
-  instance.frequency = frequency or 120
-
-  instance.values = {
-    php = nil,
-    laravel = nil,
+  local instance = {
+    artisan = artisan,
+    php = php,
+    frequency = frequency or 120,
+    values = {
+      php = nil,
+      laravel = nil,
+    },
   }
+  setmetatable(instance, self)
+  self.__index = self
+
+  local refresh = function()
+    instance.php:available(function(available)
+      if available then
+        instance.php:version(function(version)
+          instance.values.php = version
+        end)
+      end
+    end)
+    instance.artisan:available(function(available)
+      if available then
+        instance.artisan:version(function(version)
+          instance.values.laravel = version
+        end)
+      end
+    end)
+  end
+
+  setInterval(instance.frequency * 1000, refresh)
+
+  refresh()
 
   return instance
 end
 
 ---@return table|string|nil
 function status:get(property)
-  self:_get_values()
-
   if property == nil then
     return self.values
   end
@@ -38,38 +65,7 @@ function status:get(property)
 end
 
 function status:has(values)
-  self:_get_values()
-
   return self.values[values] ~= nil
-end
-
---- internal function don't use
-function status:_get_values()
-  if self.last_check and (self.last_check + self.frequency > os.time()) then
-    return
-  end
-
-  self.php:available(function(available)
-    if available then
-      self.php:version(function(version)
-        self.values.php = version
-      end)
-    end
-  end)
-
-  self.artisan:available(function(available)
-    if available then
-      self.artisan:version(function(version)
-        self.values.laravel = version
-      end)
-    end
-  end)
-
-  self.last_check = os.time()
-end
-
-function status:refresh()
-  self.last_check = nil
 end
 
 return status

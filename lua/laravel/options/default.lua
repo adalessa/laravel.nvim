@@ -27,7 +27,7 @@ return {
     },
     route_info = {
       enable = true,
-      position = "right",
+      position = "top",
     },
   },
   ui = require "laravel.options.ui",

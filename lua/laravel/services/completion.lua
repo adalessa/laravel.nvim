@@ -1,11 +1,22 @@
-local app = require("laravel.app")
-
 local source = {}
+
+function source:new(env, views, configs)
+  local instance = {
+    env = env,
+    views = views,
+    configs = configs,
+  }
+
+  setmetatable(instance, self)
+  self.__index = self
+
+  return instance
+end
 
 ---Return whether this source is available in the current context or not (optional).
 ---@return boolean
 function source:is_available()
-  return app("env"):is_active()
+  return self.env:is_active()
 end
 
 ---Return the debug name of this source (optional).
@@ -33,7 +44,7 @@ function source:complete(params, callback)
 
   -- only advance if the text contains the call to `view('`
   if text:match("view%([%'|%\"]") then
-    app("views"):get(function(views)
+    self.views:get(function(views)
       callback({
         items = views
             :map(function(view)
@@ -53,7 +64,7 @@ function source:complete(params, callback)
   end
 
   if text:match("config%([%'|%\"]") then
-    app("configs"):get(function(configs)
+    self.configs:get(function(configs)
       callback({
         items = configs
             :map(function(config)

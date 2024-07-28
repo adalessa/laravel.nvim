@@ -1,6 +1,8 @@
 local Job = require("plenary.job")
 local ApiResponse = require("laravel.api_response")
 
+local combine_tables = require "laravel.utils".combine_tables
+
 ---@class LaravelApi
 ---@field env LaravelEnvironment
 local api = {}
@@ -19,7 +21,7 @@ function api:generate_command(name, args)
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
   end
 
-  return vim.fn.extend(executable, args)
+  return combine_tables(executable, args)
 end
 
 ---@param program string
@@ -72,6 +74,7 @@ end
 ---@return Job
 function api:tinker(code, callback)
   assert(code, "Code is required")
+
   return self:async("artisan", { "tinker", "--execute", "echo " .. code }, callback)
 end
 

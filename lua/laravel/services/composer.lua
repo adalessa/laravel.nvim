@@ -3,8 +3,12 @@
 local composer = {}
 
 function composer:new(api)
-  local instance = setmetatable({}, { __index = composer })
-  instance.api = api
+  local instance = {
+    api = api
+  }
+  setmetatable(instance, self)
+  self.__index = self
+
   return instance
 end
 

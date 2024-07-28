@@ -1,80 +1,52 @@
 local app = require("laravel.app")
 
-app():register("api", function()
-  return require("laravel.api"):new(app("env"))
-end)
+-- SERVICES
+app():register_many({
+  artisan = "laravel.services.artisan",
+  commands = "laravel.services.commands",
+  composer = "laravel.services.composer",
+  configs = "laravel.services.configs",
+  history = "laravel.services.history",
+  paths = "laravel.services.paths",
+  php = "laravel.services.php",
+  routes = "laravel.services.routes",
+  status = function()
+    return require("laravel.services.status"):new(app("artisan"), app("php"), 120)
+  end,
+  views = "laravel.services.views",
+  runner = "laravel.services.runner",
+  ui_handler = "laravel.services.ui_handler",
+  completion = "laravel.services.completion",
+})
 
-app():register("options", function()
-  return require("laravel.options"):new()
-end)
+-- CACHE DECORATORS
+app():register_many({
+  cache_commands = function()
+    return require("laravel.services.cache_decorator"):new(app("commands"))
+  end,
+  cache_routes = function()
+    return require("laravel.services.cache_decorator"):new(app("routes"))
+  end,
+})
 
-app():register("env", function()
-  return require("laravel.environment"):new(app("options"))
-end)
-
-app():register("history", function()
-  return require("laravel.history"):new()
-end)
-
-app():register("commands", function()
-  return require("laravel.providers.commands"):new(app("api"))
-end)
-
-app():register("configs", function()
-  return require("laravel.providers.configs"):new(app("api"))
-end)
-
-app():register("views", function()
-  return require("laravel.providers.views"):new(app("paths"))
-end)
-
-app():register("routes", function()
-  return require("laravel.providers.routes"):new(app("api"))
-end)
-
-app():register("paths", function()
-  return require("laravel.providers.paths"):new(app("api"))
-end)
-
-app():register("status", function()
-  return require("laravel.services.status"):new(app("artisan"), app("php"), 120)
-end)
-
-app():register("artisan", function()
-  return require("laravel.services.artisan"):new(app("api"), app("env"))
-end)
-
-app():register("php", function()
-  return require("laravel.services.php"):new(app("api"), app("env"))
-end)
-
-app():register("composer", function()
-  return require("laravel.services.composer"):new(app("api"))
-end)
-
-app():register("composer_command", function()
-  return require("laravel.services.commands.composer"):new(app('runner'))
-end)
-
-app():register("cache_commands", function()
-  return require("laravel.providers.cache_decorator"):new(app('commands'))
-end)
-
-app():register("artisan_command", function()
-  return require("laravel.services.commands.artisan"):new(app('runner'), app('cache_commands'))
-end)
+-- USER COMMANDS
+app():register_many({
+  composer_command = "laravel.services.commands.composer",
+  artisan_command = function()
+    return require("laravel.services.commands.artisan"):new(app("run"), app("cache_commands"))
+  end,
+})
 
 app():register("user_commands", function()
   return {
-    app('composer_command'),
-    app('artisan_command'),
+    app("composer_command"),
+    app("artisan_command"),
   }
 end)
 
-app():register('runner', function()
-  return require("laravel.run")
-end)
-
-app():register('artisan_picker', function()
-  return require("laravel.telescope.pickers.artisan"):new(app('cache_commands'))
-end)
+-- TELESCOPE PICKER
+app():register_many({
+  artisan_picker = "laravel.telescope.pickers.artisan",
+  routes_picker = "laravel.telescope.pickers.routes",
+  make_picker = "laravel.telescope.pickers.make",
+})

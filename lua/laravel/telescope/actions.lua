@@ -1,10 +1,10 @@
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
-local ui_run = require "laravel.telescope.ui_run"
-local go = require "laravel.routes.go"
-local run = require "laravel.run"
-local lsp = require "laravel._lsp"
-local config = require "laravel.app.config"
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
+local ui_run = require("laravel.telescope.ui_run")
+local go = require("laravel.routes.go")
+local run = require("laravel.run")
+local lsp = require("laravel._lsp")
+local app = require("laravel.app")
 
 local M = {}
 
@@ -39,13 +39,18 @@ end
 function M.open_browser(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
-  local app_url = config.get "app.url"
+  local app_url = nil
+  app("configs")
+      :get(function(value)
+        app_url = value["app.url"]
+      end)
+      :wait()
   if not app_url then
     return
   end
 
   local uri = entry.value.uri
-  for capturedString in uri:gmatch "{(.-)}" do
+  for capturedString in uri:gmatch("{(.-)}") do
     -- TODO: replace with vim.ui.input resolve the async
     local val = vim.fn.input(capturedString .. ": ")
     uri = uri:gsub("{" .. capturedString .. "}", val)
@@ -54,9 +59,9 @@ function M.open_browser(prompt_bufnr)
   local url = string.format("%s/%s", app_url, uri)
   local command = nil
 
-  if vim.fn.executable "xdg-open" == 1 then
+  if vim.fn.executable("xdg-open") == 1 then
     command = "xdg-open"
-  elseif vim.fn.executable "open" == 1 then
+  elseif vim.fn.executable("open") == 1 then
     command = "open"
   end
   if not command then
@@ -64,7 +69,7 @@ function M.open_browser(prompt_bufnr)
   end
 
   vim.schedule(function()
-    vim.fn.system { command, url }
+    vim.fn.system({ command, url })
   end)
 end
 

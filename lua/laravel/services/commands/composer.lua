@@ -1,8 +1,8 @@
 local composer = {}
 
-function composer:new(runner)
+function composer:new(run)
   local instance = {
-    runner = runner,
+    run = run,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -15,7 +15,8 @@ function composer:commands()
 end
 
 function composer:handle(args)
-  vim.print(args)
+  table.remove(args.fargs, 1)
+  self.run('composer', args.fargs)
 end
 
 function composer:complete(argLead, cmdLine)
@@ -23,7 +24,7 @@ function composer:complete(argLead, cmdLine)
       .iter({
         "install",
         "require",
-        "udpate",
+        "update",
         "remove",
       })
       :filter(function(name)

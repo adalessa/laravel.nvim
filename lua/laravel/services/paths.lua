@@ -30,7 +30,12 @@ end
 function path:resource(resource, callback)
   return self.api:tinker(string.format("resource_path('%s')", resource), function(response)
     self:base(function(base_path)
-      callback(response:first():gsub(base_path:gsub("-", "%%-"), vim.fn.getcwd()))
+      local cwd = vim.loop.cwd()
+      if not cwd then
+        -- TODO: add log
+        return
+      end
+      callback(response:first():gsub(base_path:gsub("-", "%%-"), cwd))
     end)
   end)
 end

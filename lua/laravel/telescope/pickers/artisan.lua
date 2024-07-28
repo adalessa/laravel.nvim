@@ -5,13 +5,13 @@ local previewers = require("telescope.previewers")
 local preview = require("laravel.telescope.preview")
 local actions = require("laravel.telescope.actions")
 
-local artisan = {}
+local artisan_picker = {}
 
-function artisan:new(commands_provider)
+function artisan_picker:new(cache_commands)
   return function(opts)
     opts = opts or {}
 
-    commands_provider:get(vim.schedule_wrap(function(commands)
+    cache_commands:get(vim.schedule_wrap(function(commands)
       pickers
           .new(opts, {
             prompt_title = "Artisan commands",
@@ -53,4 +53,4 @@ function artisan:new(commands_provider)
   end
 end
 
-return artisan
+return artisan_picker

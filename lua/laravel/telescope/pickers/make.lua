@@ -4,52 +4,58 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local preview = require("laravel.telescope.preview")
 local actions = require("laravel.telescope.actions")
-local app = require("laravel.app")
+local is_make_command = require("laravel.utils").is_make_command
 
-return function(opts)
-  opts = opts or {}
+local make_picker = {}
 
-  app("commands"):get(function(commands)
-    pickers
-        .new(opts, {
-          prompt_title = "Make commands",
-          finder = finders.new_table({
-            results = commands:filter(function(command)
-              local prefix = "make"
+function make_picker:new(cache_commands)
+  return function(opts)
+    opts = opts or {}
 
-              return command.name:sub(1, #prefix) == prefix or command.name == "livewire:make" or command.name == "pest:test"
-            end):totable(),
-            entry_maker = function(command)
-              return {
-                value = command,
-                display = command.name,
-                ordinal = command.name,
-              }
+    cache_commands:get(vim.schedule_wrap(function(commands)
+      pickers
+          .new(opts, {
+            prompt_title = "Make commands",
+            finder = finders.new_table({
+              results = commands
+                  :filter(function(command)
+                    return is_make_command(command.name)
+                  end)
+                  :totable(),
+              entry_maker = function(command)
+                return {
+                  value = command,
+                  display = command.name,
+                  ordinal = command.name,
+                }
+              end,
+            }),
+            previewer = previewers.new_buffer_previewer({
+              title = "Help",
+              get_buffer_by_name = function(_, entry)
+                return entry.value.name
+              end,
+              define_preview = function(preview_self, entry)
+                local command_preview = preview.command(entry.value)
+
+                vim.api.nvim_buf_set_lines(preview_self.state.bufnr, 0, -1, false, command_preview.lines)
+
+                local hl = vim.api.nvim_create_namespace("laravel")
+                for _, value in pairs(command_preview.highlights) do
+                  vim.api.nvim_buf_add_highlight(preview_self.state.bufnr, hl, value[1], value[2], value[3], value[4])
+                end
+              end,
+            }),
+            sorter = conf.file_sorter(),
+            attach_mappings = function(_, map)
+              map("i", "<cr>", actions.make_run)
+
+              return true
             end,
-          }),
-          previewer = previewers.new_buffer_previewer({
-            title = "Help",
-            get_buffer_by_name = function(_, entry)
-              return entry.value.name
-            end,
-            define_preview = function(self, entry)
-              local command_preview = preview.command(entry.value)
-
-              vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, command_preview.lines)
-
-              local hl = vim.api.nvim_create_namespace("laravel")
-              for _, value in pairs(command_preview.highlights) do
-                vim.api.nvim_buf_add_highlight(self.state.bufnr, hl, value[1], value[2], value[3], value[4])
-              end
-            end,
-          }),
-          sorter = conf.file_sorter(),
-          attach_mappings = function(_, map)
-            map("i", "<cr>", actions.make_run)
-
-            return true
-          end,
-        })
-        :find()
-  end)
+          })
+          :find()
+    end))
+  end
 end
+
+return make_picker

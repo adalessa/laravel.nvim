@@ -74,8 +74,16 @@ vim.treesitter.query.set(
       (namespace_definition (namespace_name) @namespace)
       (class_declaration (name) @class)
       (method_declaration
-          (visibility_modifier) @visibility
-          (name) @method
+          (visibility_modifier) @method_visibility
+          (name) @method_name
+      )
+      (property_declaration
+        (visibility_modifier) @property_visibility
+        (property_element
+          (variable_name
+            (name) @property_name
+            )
+        )
       )
     ]]
 )

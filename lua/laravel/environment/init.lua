@@ -1,4 +1,5 @@
 local get_env = require("laravel.utils").get_env
+local combine_tables = require("laravel.utils").combine_tables
 local Environment = require("laravel.environment.environment")
 
 ---@param name string|nil
@@ -78,7 +79,12 @@ function environment:get_executable(name)
   end
 
   if name == "artisan" then
-    return vim.fn.extend(self.environment:executable("php"), { "artisan" })
+    local exec = self.environment:executable("php")
+    if not exec then
+      return nil
+    end
+
+    return combine_tables(exec, { "artisan" })
   end
 
   return self.environment:executable(name)

@@ -34,7 +34,7 @@ return function(bufnr)
     end
   end
 
-  app("views"):get(function(views)
+  app("views"):get(vim.schedule_wrap(function(views)
     views = views:map(function(view)
       return view.name
     end)
@@ -67,5 +67,5 @@ return function(bufnr)
       end)
       :totable()
     )
-  end)
+  end))
 end

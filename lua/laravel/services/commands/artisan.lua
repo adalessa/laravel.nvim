@@ -1,8 +1,8 @@
 local artisan = {}
 
-function artisan:new(runner, commands_provider)
+function artisan:new(run, commands_provider)
   local instance = {
-    runner = runner,
+    run = run,
     commands_provider = commands_provider,
   }
   setmetatable(instance, self)
@@ -16,7 +16,8 @@ function artisan:commands()
 end
 
 function artisan:handle(args)
-  vim.print(args)
+  table.remove(args.fargs, 1)
+  self.run('artisan', args.fargs)
 end
 
 function artisan:complete(argLead, cmdLine)

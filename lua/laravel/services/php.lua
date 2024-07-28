@@ -4,9 +4,13 @@
 local php = {}
 
 function php:new(api, env)
-  local instance = setmetatable({}, { __index = php })
-  instance.api = api
-  instance.env = env
+  local instance = {
+    api = api,
+    env = env,
+  }
+
+  setmetatable(instance, self)
+  self.__index = self
 
   return instance
 end

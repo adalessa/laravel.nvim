@@ -16,7 +16,7 @@ local get_client = function(server_name)
 
   if not client then
     local server = require("lspconfig")[server_name]
-    local client_id = vim.lsp.start(server.make_config(vim.fn.getcwd()))
+    local client_id = vim.lsp.start(server.make_config(vim.loop.cwd()))
     if not client_id then
       error "Could not start lsp client"
     end

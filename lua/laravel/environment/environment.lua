@@ -1,4 +1,5 @@
 local get_env = require("laravel.utils").get_env
+local combine_tables = require("laravel.utils").combine_tables
 
 ---@class Environment
 ---@field name string
@@ -82,13 +83,13 @@ function Environment:executable(name)
           error("Need to define a docker exec command", vim.log.levels.ERROR)
         end
 
-        cache[name] = vim.fn.extend(value.docker.exec, { container, name })
+        cache[name] = combine_tables(value.docker.exec, { container, name })
 
         return cache[name]
       end
 
       if value.prefix then
-        cache[name] = vim.fn.extend(value.prefix, { name })
+        cache[name] = combine_tables(value.prefix, { name })
 
         return cache[name]
       end
@@ -98,6 +99,7 @@ function Environment:executable(name)
   -- if is not define look for the executable in the system
   if vim.fn.executable(name) == 1 then
     cache[name] = { name }
+
     return { name }
   end
 

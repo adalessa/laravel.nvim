@@ -26,7 +26,7 @@ local function installIdeHelperAndWrite()
       if response:failed() then
         vim.notify("Cant install ide-helper\n\r" .. response:prettyErrors(), vim.log.levels.ERROR)
       else
-        require("laravel.providers.commands").list = {}
+        require("laravel.services.commands").list = {}
         writeModels()
       end
     end

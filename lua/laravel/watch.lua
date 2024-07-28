@@ -12,7 +12,7 @@ return function(name, args, opts)
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
     return
   end
-  local cmd = vim.fn.extend(executable, args)
+  local cmd = { unpack(executable), unpack(args) }
 
   local command_option = app("options"):get().commands_options[args[1]] or {}
 

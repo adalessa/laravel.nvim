@@ -1,5 +1,5 @@
 local run = require "laravel.run"
-local paths = require "laravel.providers.paths"
+local paths = require "laravel.services.paths"
 
 local M = {}
 

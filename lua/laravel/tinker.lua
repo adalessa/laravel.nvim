@@ -67,6 +67,8 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     end
 
     -- dont dump the last line if it's not a statement
+    -- FIX: there is a bug when the last line is a multi line statement
+    -- should use more treesitter to get the last element and get the last statement
     if
         lines[#lines] ~= "}"
         and lines[#lines]:sub(1, 4) ~= "dump"
@@ -81,7 +83,7 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     --   table.insert(lines, "echo '\n\nDone by Alpha Developer';")
     -- end
 
-    local cmd = app('api'):generate_command("artisan", { "tinker", "--execute", vim.fn.join(lines, "") })
+    local cmd = app('api'):generate_command("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
 
     -- clean the output
     local channel_id = vim.api.nvim_open_term(split.bufnr, {})

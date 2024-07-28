@@ -6,10 +6,8 @@
 local status = {}
 
 local function setInterval(interval, callback)
-  local timer = vim.loop.new_timer()
-  timer:start(interval, interval, function()
-    callback()
-  end)
+  local timer = vim.uv.new_timer()
+  timer:start(interval, interval, vim.schedule_wrap(callback))
 
   return timer
 end

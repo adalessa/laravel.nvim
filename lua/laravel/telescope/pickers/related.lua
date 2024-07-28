@@ -28,7 +28,7 @@ return function(opts)
         (class_declaration name: (name) @class) ]]
     )
     local tree = vim.treesitter.get_parser():parse()[1]:root()
-    local bufNr = vim.fn.bufnr()
+    local bufNr = vim.api.nvim_get_current_buf()
     local class = ""
     for id, node, _ in query:iter_captures(tree, bufNr, tree:start(), tree:end_()) do
       if query.captures[id] == "class" then

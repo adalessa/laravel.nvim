@@ -16,6 +16,7 @@ function M.go_to_usage()
     vim.cmd("edit " .. matches[1].file)
   else
     vim.ui.select(
+      ---FIX: use table sort
       vim.fn.sort(vim.tbl_map(function(item)
         return item.file
       end, matches)),
@@ -61,6 +62,7 @@ function M.go_to_definition()
   end
 
   if #founds > 1 then
+    ---FIX: use table sort
     vim.ui.select(vim.fn.sort(founds), { prompt = "Which view:" }, function(selected)
       if not selected then
         return

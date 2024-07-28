@@ -12,7 +12,7 @@ describe("routes provider", function()
       }, 0, {}))
     end
 
-    local cut = require("laravel.providers.commands"):new(api)
+    local cut = require("laravel.services.commands"):new(api)
 
     cut:get(function(routes)
       assert.equals(0, #routes:totable())

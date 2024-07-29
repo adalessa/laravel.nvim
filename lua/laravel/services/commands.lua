@@ -1,4 +1,5 @@
 --TODO: add missing fields
+
 ---@class LaravelCommand
 
 ---@class LaravelCommandProvider
@@ -15,7 +16,7 @@ function commands:new(api)
   return instance
 end
 
----@param callback fun(commands: Iter) Iterable of LaravelCommand
+---@param callback fun(commands: LaravelCommand[])
 ---@return Job
 function commands:get(callback)
   return self.api:async("artisan", { "list", "--format=json" }, function(result)
@@ -23,9 +24,12 @@ function commands:get(callback)
       vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
       return
     end
-    callback(vim.iter(result:json().commands or {}):filter(function(command)
-      return not command.hidden
-    end))
+    callback(vim
+      .iter(result:json().commands or {})
+      :filter(function(command)
+        return not command.hidden
+      end)
+      :totable())
   end)
 end
 

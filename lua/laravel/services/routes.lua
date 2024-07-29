@@ -1,5 +1,9 @@
---TODO: add missing fields
 ---@class LaravelRoute
+---@field uri string
+---@field action string
+---@field domain string|nil
+---@field methods string[]
+---@field middlewares string[]
 
 ---@class LaravelRouteProvider
 ---@field api LaravelApi
@@ -20,7 +24,7 @@ function routes:new(api)
   return instance
 end
 
----@param callback fun(commands: Iter)
+---@param callback fun(commands: LaravelRoute[])
 ---@return Job
 function routes:get(callback)
   return self.api:async("artisan", { "route:list", "--json" }, function(result)
@@ -28,16 +32,19 @@ function routes:get(callback)
       vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
       return
     end
-    callback(vim.iter(result:json() or {}):map(function(route)
-      return {
-        uri = route.uri,
-        action = route.action,
-        domain = route.domain,
-        methods = split(route.method, "|"),
-        middlewares = route.middleware,
-        name = route.name,
-      }
-    end))
+    callback(vim
+      .iter(result:json() or {})
+      :map(function(route)
+        return {
+          uri = route.uri,
+          action = route.action,
+          domain = route.domain,
+          methods = split(route.method, "|"),
+          middlewares = route.middleware,
+          name = route.name,
+        }
+      end)
+      :totable())
   end)
 end
 

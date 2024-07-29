@@ -1,7 +1,7 @@
 local mock = require('luassert.mock')
 local stub = require('luassert.stub')
 
-local ApiResponse = require("laravel.api_response")
+local ApiResponse = require("laravel.dto.api_response")
 
 describe("routes provider", function()
   it("get empty list", function()
@@ -15,7 +15,7 @@ describe("routes provider", function()
     local cut = require("laravel.services.commands"):new(api)
 
     cut:get(function(routes)
-      assert.equals(0, #routes:totable())
+      assert.equals(0, #routes)
     end)
   end)
 
@@ -32,7 +32,7 @@ describe("routes provider", function()
     local cut = require("laravel.providers.routes"):new(api)
 
     cut:get(function(routes)
-      local route = routes:totable()[1]
+      local route = routes[1]
       assert.equals("/", route.uri)
       assert.equals("GET", route.methods[1])
       assert.equals("Closure", route.action)

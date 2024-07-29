@@ -17,7 +17,8 @@ function make_picker:new(cache_commands)
           .new(opts, {
             prompt_title = "Make commands",
             finder = finders.new_table({
-              results = commands
+              results = vim
+                  .iter(commands)
                   :filter(function(command)
                     return is_make_command(command.name)
                   end)

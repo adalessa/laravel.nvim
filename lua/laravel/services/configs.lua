@@ -8,7 +8,7 @@ function configs:new(api)
   return instance
 end
 
----@param callback fun(configs: Iter<string>)
+---@param callback fun(configs: string[])
 ---@return Job
 function configs:get(callback)
   return self.api:tinker("json_encode(array_keys(Arr::dot(Config::all())));", function(response)
@@ -16,9 +16,12 @@ function configs:get(callback)
       callback({})
     end
 
-    callback(vim.iter(vim.json.decode(response:content())):filter(function(c)
-      return type(c) == "string"
-    end))
+    callback(vim
+      .iter(vim.json.decode(response:content()))
+      :filter(function(c)
+        return type(c) == "string"
+      end)
+      :totable())
   end)
 end
 

@@ -1,5 +1,5 @@
 local Job = require("plenary.job")
-local ApiResponse = require("laravel.api_response")
+local ApiResponse = require("laravel.dto.api_response")
 
 local combine_tables = require "laravel.utils".combine_tables
 

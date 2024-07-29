@@ -11,7 +11,7 @@ return function(opts)
       .new(opts, {
         prompt_title = "Laravel Command History",
         finder = finders.new_table({
-          results = app("history"):get():totable(),
+          results = app("history"):get(),
           entry_maker = function(history_entry)
             return {
               value = history_entry,

@@ -1,7 +1,7 @@
 local mock = require('luassert.mock')
 local stub = require('luassert.stub')
 
-local ApiResponse = require("laravel.api_response")
+local ApiResponse = require("laravel.dto.api_response")
 
 describe("commands provider", function()
   it("Filters the hidden commands", function()
@@ -15,7 +15,7 @@ describe("commands provider", function()
     local cut = require("laravel.providers.commands"):new(api)
 
     cut:get(function(commands)
-      assert.equals(1, #commands:totable())
+      assert.equals(1, #commands)
     end)
   end)
 
@@ -30,7 +30,7 @@ describe("commands provider", function()
     local cut = require("laravel.providers.commands"):new(api)
 
     cut:get(function(commands)
-      assert.equals(0, #commands:totable())
+      assert.equals(0, #commands)
     end)
   end)
 

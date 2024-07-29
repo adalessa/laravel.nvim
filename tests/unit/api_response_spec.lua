@@ -1,4 +1,4 @@
-local ApiResponse = require("laravel.api_response")
+local ApiResponse = require("laravel.dto.api_response")
 
 describe("api response", function()
   it("can parse json response", function()

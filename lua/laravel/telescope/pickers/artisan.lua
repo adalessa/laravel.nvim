@@ -16,7 +16,7 @@ function artisan_picker:new(cache_commands)
           .new(opts, {
             prompt_title = "Artisan commands",
             finder = finders.new_table({
-              results = commands:totable(),
+              results = commands,
               entry_maker = function(command)
                 return {
                   value = command,

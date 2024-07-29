@@ -1,10 +1,34 @@
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local ui_run = require("laravel.telescope.ui_run")
-local go = require("laravel.routes.go")
 local run = require("laravel.run")
 local lsp = require("laravel._lsp")
 local app = require("laravel.app")
+
+local function go(route)
+  if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
+    if vim.tbl_contains(route.middlewares, "api") then
+      vim.cmd("edit routes/api.php")
+      vim.fn.search(route.uri:gsub("api", "") .. "")
+    elseif vim.tbl_contains(route.middlewares, "web") then
+      vim.cmd("edit routes/web.php")
+      if route.uri == "/" then
+        vim.fn.search("['\"]/['\"]")
+      else
+        vim.fn.search("/" .. route.uri)
+      end
+    else
+      vim.notify("Could not open the route location", vim.log.levels.WARN)
+      return
+    end
+
+    vim.cmd("normal zt")
+    return
+  end
+
+  local action = vim.fn.split(route.action, "@")
+  lsp.go_to(action[1], action[2])
+end
 
 local M = {}
 

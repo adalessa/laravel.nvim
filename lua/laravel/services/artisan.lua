@@ -4,9 +4,12 @@
 local artisan = {}
 
 function artisan:new(api, env)
-  local instance = setmetatable({}, { __index = artisan })
-  instance.api = api
-  instance.env = env
+  local instance = {
+    api = api,
+    env = env,
+  }
+  setmetatable(instance, self)
+  self.__index = self
 
   return instance
 end

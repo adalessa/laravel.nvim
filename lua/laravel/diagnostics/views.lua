@@ -49,7 +49,7 @@ return function(bufnr)
           return true
         end
 
-        if vim.tbl_contains(views:totable(), match.view) then
+        if vim.tbl_contains(views, match.view) then
           return false
         end
 

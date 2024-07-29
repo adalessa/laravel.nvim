@@ -25,28 +25,30 @@ function status:new(artisan, php, frequency)
   setmetatable(instance, self)
   self.__index = self
 
+  return instance
+end
+
+function status:start()
   local refresh = function()
-    instance.php:available(function(available)
+    self.php:available(function(available)
       if available then
-        instance.php:version(function(version)
-          instance.values.php = version
+        self.php:version(function(version)
+          self.values.php = version
         end)
       end
     end)
-    instance.artisan:available(function(available)
+    self.artisan:available(function(available)
       if available then
-        instance.artisan:version(function(version)
-          instance.values.laravel = version
+        self.artisan:version(function(version)
+          self.values.laravel = version
         end)
       end
     end)
   end
 
-  setInterval(instance.frequency * 1000, refresh)
+  setInterval(self.frequency * 1000, refresh)
 
   refresh()
-
-  return instance
 end
 
 ---@return table|string|nil

@@ -1,8 +1,8 @@
 local composer = {}
 
-function composer:new(run)
+function composer:new(runner)
   local instance = {
-    run = run,
+    runner = runner,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -16,7 +16,7 @@ end
 
 function composer:handle(args)
   table.remove(args.fargs, 1)
-  self.run('composer', args.fargs)
+  self.runner:run('composer', args.fargs)
 end
 
 function composer:complete(argLead, cmdLine)

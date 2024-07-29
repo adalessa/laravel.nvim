@@ -46,7 +46,8 @@ function source:complete(params, callback)
   if text:match("view%([%'|%\"]") then
     self.views:get(function(views)
       callback({
-        items = views
+        items = vim
+            .iter(views)
             :map(function(view)
               return {
                 label = string.format("%s (view)", view.name),
@@ -66,7 +67,8 @@ function source:complete(params, callback)
   if text:match("config%([%'|%\"]") then
     self.configs:get(function(configs)
       callback({
-        items = configs
+        items = vim
+            .iter(configs)
             :map(function(config)
               return {
                 label = string.format("%s (config)", config),

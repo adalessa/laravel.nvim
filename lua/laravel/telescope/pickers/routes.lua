@@ -17,7 +17,7 @@ function routes_picker:new(cache_routes)
           .new(opts, {
             prompt_title = "Artisan Routes",
             finder = finders.new_table({
-              results = routes:totable(),
+              results = routes,
               entry_maker = opts.entry_maker or make_entry.gen_from_laravel_routes(opts),
             }),
             previewer = previewers.new_buffer_previewer({

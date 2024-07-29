@@ -32,7 +32,7 @@ function route_info:handle(bufnr)
     end
     self.routes:get(vim.schedule_wrap(function(routes)
       local errors = {}
-      for _, route in routes:enumerate() do
+      for _, route in routes do
         local found = false
         for _, method in pairs(class.methods) do
           local action_full = route.action

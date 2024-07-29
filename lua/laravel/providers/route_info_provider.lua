@@ -13,6 +13,9 @@ function route_info_provider:boot(app)
     pattern = { "*Controller.php" },
     group = group,
     callback = function(ev)
+      if not app("env"):is_active() then
+        return
+      end
       app("route_info"):handle(ev.buf)
     end,
   })

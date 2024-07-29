@@ -37,7 +37,6 @@ end
 
 return {
   setup = setup,
-  -- routes = require("telescope").extensions.laravel.routes,
   -- history = require("telescope").extensions.laravel.history,
   -- make = require("telescope").extensions.laravel.make,
   -- commands = require("telescope").extensions.laravel.commands,

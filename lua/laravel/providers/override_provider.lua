@@ -10,6 +10,10 @@ function override_provider:boot(app)
     pattern = "*.php",
     group = group,
     callback = function(ev)
+      if not app("env"):is_active() then
+        return
+      end
+
       app("override"):handle(ev.buf)
     end,
   })

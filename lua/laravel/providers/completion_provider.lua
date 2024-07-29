@@ -7,10 +7,6 @@ function completion_provider:register(app)
 end
 
 function completion_provider:boot(app)
-  if not app('env'):is_active() then
-    return
-  end
-
   local ok, cmp = pcall(require, "cmp")
   if ok then
     cmp.register_source("laravel", app("completion"))

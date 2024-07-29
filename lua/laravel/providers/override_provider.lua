@@ -7,6 +7,7 @@ end
 function override_provider:boot(app)
   local group = vim.api.nvim_create_augroup("laravel.override", {})
   vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
+    pattern = "*.php",
     group = group,
     callback = function(ev)
       app("override"):handle(ev.buf)

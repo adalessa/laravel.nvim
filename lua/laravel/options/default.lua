@@ -36,6 +36,7 @@ return {
   providers = {
     require("laravel.providers.provider"),
     require("laravel.providers.override_provider"),
+    require("laravel.providers.completion_provider"),
     require("laravel.providers.route_info_provider"),
     require("laravel.providers.tinker_provider"),
     require("laravel.providers.telescope_provider"),

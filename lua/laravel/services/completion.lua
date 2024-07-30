@@ -1,10 +1,11 @@
 local source = {}
 
-function source:new(env, views, configs)
+function source:new(env, views, configs, routes)
   local instance = {
     env = env,
     views = views,
     configs = configs,
+    routes = routes,
   }
 
   setmetatable(instance, self)
@@ -37,13 +38,7 @@ end
 function source:complete(params, callback)
   local text = params.context.cursor_before_line
 
-  -- FIX: add other ways to call the view not just view() View::make() Route::view()
-
-  -- TODO: handle not just views - config - route
-  -- add tests to check that
-
-  -- only advance if the text contains the call to `view('`
-  if text:match("view%([%'|%\"]") then
+  if text:match("view%([%'|%\"]") or text:match("View::make%([%'|%\"]") then
     self.views:get(function(views)
       callback({
         items = vim
@@ -75,6 +70,40 @@ function source:complete(params, callback)
                 insertText = config,
                 kind = vim.lsp.protocol.CompletionItemKind["Value"],
                 documentation = config,
+              }
+            end)
+            :totable(),
+        isIncomplete = false,
+      })
+    end)
+
+    return
+  end
+
+  if text:match("route%([%'|%\"]") then
+    self.routes:get(function(routes)
+      callback({
+        items = vim
+            .iter(routes)
+            :filter(function(route)
+              return route.name ~= nil
+            end)
+            :map(function(route)
+              return {
+                label = string.format("%s (route)", route.name),
+                insertText = route.name,
+                kind = vim.lsp.protocol.CompletionItemKind["Value"],
+                documentation = string.format(
+                  [[ # Route: %s
+  - methods: %s
+  - uri: %s
+  - middleware: %s
+]],
+                  route.name,
+                  table.concat(route.methods, " | "),
+                  route.uri,
+                  table.concat(route.middlewares or { "None" }, " | ")
+                ),
               }
             end)
             :totable(),

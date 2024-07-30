@@ -16,10 +16,6 @@ function route_info:new(class, routes, route_virutal_text)
   return instance
 end
 
-local function is_same_class(action, class)
-  return string.sub(action, 1, string.len(class)) == class
-end
-
 function route_info:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
@@ -31,36 +27,57 @@ function route_info:handle(bufnr)
       return
     end
     self.routes:get(vim.schedule_wrap(function(routes)
-      local errors = {}
-      for _, route in ipairs(routes) do
-        local found = false
-        for _, method in pairs(class.methods) do
-          local action_full = route.action
-          if vim.fn.split(route.action, "@")[2] == nil then
-            action_full = action_full .. "@__invoke"
-          end
-          if action_full == string.format("%s@%s", class.fqn, method.name) then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, method.pos, 0, self.route_virutal_text:get(route, method))
-            found = true
-          end
-        end
+      local missing_routes = {}
+      local route_methods = {}
 
-        if is_same_class(route.action, class.fqn) and not found then
-          table.insert(errors, {
+      vim
+          .iter(routes)
+          :filter(function(route)
+            return vim.startswith(route.action, class.fqn)
+          end)
+          :each(function(route)
+            local class_method = vim.iter(class.methods):find(function(method)
+              return route.action == method.fqn or (method.name == "__invoke" and route.action == class.fqn)
+            end)
+
+            if not class_method then
+              table.insert(missing_routes, route)
+            else
+              table.insert(route_methods, { route = route, method = class_method })
+            end
+          end)
+
+      -- set the virtual text
+      vim.iter(route_methods):each(function(route_method)
+        vim.api.nvim_buf_set_extmark(
+          bufnr,
+          namespace,
+          route_method.method.pos,
+          0,
+          self.route_virutal_text:get(route_method.route, route_method.method)
+        )
+      end)
+
+      -- set the errors
+      vim.diagnostic.set(
+        namespace,
+        bufnr,
+        vim
+        .iter(missing_routes)
+        :map(function(route)
+          return {
             lnum = class.line,
             col = 0,
             message = string.format(
               "missing method %s [Method: %s, URI: %s]",
               vim.fn.split(route.action, "@")[2] or "__invoke",
-              vim.fn.join(route.methods, "|"),
+              table.concat(route.methods, "|"),
               route.uri
             ),
-          })
-        end
-      end
-      if #errors > 0 then
-        vim.diagnostic.set(namespace, bufnr, errors)
-      end
+          }
+        end)
+        :totable()
+      )
     end))
   end)
 end

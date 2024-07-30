@@ -67,6 +67,7 @@ function class:get(bufnr, callback)
   end
   for idx, _ in ipairs(response.methods) do
     response.methods[idx].visibility = methods_visibility[idx]
+    response.methods[idx].fqn = string.format("%s@%s", response.fqn, response.methods[idx].name)
   end
 
   callback(response)

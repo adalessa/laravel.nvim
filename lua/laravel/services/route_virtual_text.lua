@@ -1,5 +1,5 @@
 ---@class LaravelRouteVirtualTextService
----@field options LaravelOptionsProvider
+---@field options LaravelOptionsService
 local route_virtual_text = {}
 
 function route_virtual_text:new(options)

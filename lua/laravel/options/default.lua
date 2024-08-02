@@ -1,12 +1,8 @@
----@class NullLsFeature
----@field enable boolean
-
 ---@class RouteInfoFeature
 ---@field enable boolean
 ---@field position string
 
 ---@class LaravelFeatures
----@field null_ls NullLsFeature
 ---@field route_info RouteInfoFeature
 
 ---@class LaravelOptions
@@ -20,9 +16,6 @@
 return {
   lsp_server = "phpactor",
   features = {
-    null_ls = {
-      enable = true,
-    },
     route_info = {
       enable = true,
       position = "top",

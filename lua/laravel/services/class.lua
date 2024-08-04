@@ -73,4 +73,30 @@ function class:get(bufnr, callback)
   callback(response)
 end
 
+function class:views(bufnr, callback)
+  local php_parser = vim.treesitter.get_parser(bufnr, "php")
+  local tree = php_parser:parse()[1]
+  if tree == nil then
+    error("Could not retrive syntax tree", vim.log.levels.ERROR)
+  end
+
+  local query = vim.treesitter.query.get("php", "laravel_views")
+
+  if not query then
+    error("Could not get treesitter query", vim.log.levels.ERROR)
+  end
+
+  local founds = {}
+  for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
+    if query.captures[id] == "view" then
+      local view = vim.treesitter.get_node_text(node, bufnr):gsub("'", "")
+      founds[view] = true
+    end
+  end
+
+  founds = vim.tbl_keys(founds)
+
+  callback(founds)
+end
+
 return class

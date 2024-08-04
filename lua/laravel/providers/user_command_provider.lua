@@ -10,6 +10,7 @@ function user_command_provider:register(app)
   app:bindIf("commands_command", "laravel.services.commands.commands", { tags = { "command" } })
   app:bindIf("resources_command", "laravel.services.commands.resources", { tags = { "command" } })
   app:bindIf("history_command", "laravel.services.commands.history", { tags = { "command" } })
+  app:bindIf("view_finder_command", "laravel.services.commands.view_finder", { tags = { "command" } })
 
   app:bindIf("user_commands", function()
     return app:makeByTag("command")

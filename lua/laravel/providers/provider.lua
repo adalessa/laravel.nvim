@@ -19,6 +19,7 @@ function provider:register(app)
   app:bindIf("views", "laravel.services.views")
   app:bindIf("runner", "laravel.services.runner")
   app:bindIf("ui_handler", "laravel.services.ui_handler")
+  app:bindIf("view_finder", "laravel.services.view_finder")
 
   -- CACHE DECORATORS
   app:singeltonIf("cache_commands", function()

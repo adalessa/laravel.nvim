@@ -1,5 +1,3 @@
---TODO: add missing fields
-
 ---@class LaravelCommand
 
 ---@class LaravelCommandProvider

@@ -75,7 +75,6 @@ function M.open_browser(prompt_bufnr)
 
   local uri = entry.value.uri
   for capturedString in uri:gmatch("{(.-)}") do
-    -- TODO: replace with vim.ui.input resolve the async
     local val = vim.fn.input(capturedString .. ": ")
     uri = uri:gsub("{" .. capturedString .. "}", val)
   end

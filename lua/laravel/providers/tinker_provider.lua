@@ -28,6 +28,11 @@ function tinker_provider:boot(app)
     callback = function(ev)
       local bufnr = ev.buf
 
+
+      if vim.api.nvim_buf_get_option(bufnr, "filetype") ~= "php" then
+        return
+      end
+
       local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
 
       if lines[1] ~= "<?php" then
@@ -71,22 +76,15 @@ function tinker_provider:boot(app)
         split:mount()
       end
 
-      -- dont dump the last line if it's not a statement
-      -- FIX: there is a bug when the last line is a multi line statement
-      -- should use more treesitter to get the last element and get the last statement
       if
           lines[#lines] ~= "}"
           and lines[#lines]:sub(1, 4) ~= "dump"
           and lines[#lines]:sub(1, 8) ~= "var_dump"
           and lines[#lines]:sub(1, 4) ~= "echo"
+          and lines[#lines - 1]:sub(1, -1) == ";"
       then
         lines[#lines] = string.format("dump(%s);", lines[#lines]:sub(1, -2))
       end
-
-      -- add closing comment but ramdonly once every 10
-      -- if math.random(1, 10) == 1 then
-      --   table.insert(lines, "echo '\n\nDone by Alpha Developer';")
-      -- end
 
       local cmd = app("api"):generate_command("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
 

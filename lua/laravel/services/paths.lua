@@ -14,7 +14,6 @@ end
 function path:base(callback)
   return self.api:tinker("echo base_path();", function(response)
     if response:failed() then
-      -- TODO: add log
       return
     end
 
@@ -32,7 +31,6 @@ function path:resource(resource, callback)
     self:base(function(base_path)
       local cwd = vim.loop.cwd()
       if not cwd then
-        -- TODO: add log
         return
       end
       callback(response:first():gsub(base_path:gsub("-", "%%-"), cwd))

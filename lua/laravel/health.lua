@@ -15,34 +15,16 @@ M.check = function()
   if vim.fn.executable "rg" == 1 then
     report_ok "rg installed"
   else
-    report_warn("ripgrep is missing, is required for finding view usage", { "Installed from your package manager" })
+    report_error("ripgrep is missing, is required for finding view usage", { "Installed from your package manager" })
   end
 
   report_start "Plugin Dependencies"
-  local ok_null_ls, _ = pcall(require, "null-ls")
-  if ok_null_ls then
-    report_ok "Null LS is installed"
-  else
-    report_warn(
-      "Null LS is not installed, this is use to add completion, diagnostic and Code actions",
-      { "Install it from `https://github.com/nvimtools/none-ls.nvim`" }
-    )
-  end
-  local ok_luannip, _ = pcall(require, "luasnip")
-  if ok_luannip then
-    report_ok "luasnip is installed"
-  else
-    report_warn(
-      "Luasnip is not installed, this is use to snippets related to larevel",
-      { "Install it from `https://github.com/L3MON4D3/LuaSnip`" }
-    )
-  end
 
   local ok_nui, _ = pcall(require, "nui.popup")
   if ok_nui then
     report_ok "Nui is installed"
   else
-    report_warn(
+    report_error(
       "Nui is not installed, this is use to create the UI for the command",
       { "Install it from `https://github.com/MunifTanjim/nui.nvim`" }
     )
@@ -55,6 +37,16 @@ M.check = function()
     report_warn(
       "Telescope is not installed, A lot of functions uses telescope for the pickers",
       { "Install it from `https://github.com/nvim-telescope/telescope.nvim`" }
+    )
+  end
+
+  local ok_cmp, _ = pcall(require, "cmp")
+  if ok_cmp then
+    report_ok "CMP is installed"
+  else
+    report_warn(
+      "CMP is not installed, completion source is available for it",
+      { "Install it from `https://github.com/hrsh7th/nvim-cmp`" }
     )
   end
 

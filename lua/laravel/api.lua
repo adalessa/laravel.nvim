@@ -75,7 +75,7 @@ end
 function api:tinker(code, callback)
   assert(code, "Code is required")
 
-  return self:async("artisan", { "tinker", "--execute", "echo " .. code }, callback)
+  return self:async("artisan", { "tinker", "--execute", code }, callback)
 end
 
 return api

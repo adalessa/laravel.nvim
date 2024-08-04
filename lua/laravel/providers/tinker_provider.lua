@@ -1,7 +1,8 @@
 local tinker_provider = {}
 
-function tinker_provider:register(app) end
+-- function tinker_provider:register(app) end
 
+---@param app LaravelApp
 function tinker_provider:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 

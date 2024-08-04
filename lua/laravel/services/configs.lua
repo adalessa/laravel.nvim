@@ -11,7 +11,7 @@ end
 ---@param callback fun(configs: string[])
 ---@return Job
 function configs:get(callback)
-  return self.api:tinker("json_encode(array_keys(Arr::dot(Config::all())));", function(response)
+  return self.api:tinker("echo json_encode(array_keys(Arr::dot(Config::all())));", function(response)
     if response:failed() then
       callback({})
     end

@@ -1,23 +1,25 @@
 local user_command_provider = {}
 
+---@param app LaravelApp
 function user_command_provider:register(app)
-  app():register_many({
-    composer_command = "laravel.services.commands.composer",
-    artisan_command = function()
-      return require("laravel.services.commands.artisan"):new(app("runner"), app("cache_commands"))
-    end,
-    routes_command = "laravel.services.commands.routes",
-  })
+  app:bindIf("composer_command", "laravel.services.commands.composer")
+  app:bindIf("artisan_command", "laravel.services.commands.artisan")
+  app:bindIf("routes_command", "laravel.services.commands.routes")
+  app:bindIf("make_command", "laravel.services.commands.make")
+  app:bindIf("related_command", "laravel.services.commands.related")
 
-  app():register("user_commands", function()
+  app:bindIf("user_commands", function()
     return {
       app("composer_command"),
       app("artisan_command"),
       app("routes_command"),
+      app("make_command"),
+      app("related_command"),
     }
   end)
 end
 
+---@param app LaravelApp
 function user_command_provider:boot(app)
   vim.api.nvim_create_user_command("Laravel", function(args)
     if not app("env"):is_active() then

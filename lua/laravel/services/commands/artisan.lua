@@ -1,9 +1,10 @@
 local artisan = {}
 
-function artisan:new(runner, commands_provider)
+function artisan:new(runner, cache_commands, artisan_picker)
   local instance = {
     runner = runner,
-    commands_provider = commands_provider,
+    commands_provider = cache_commands,
+    picker = artisan_picker,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -18,13 +19,13 @@ end
 function artisan:handle(args)
   table.remove(args.fargs, 1)
   if vim.tbl_isempty(args.fargs) then
-    require("telescope").extensions.laravel.artisan()
+    self.artisan_picker()
   else
-    self.runner:run('artisan', args.fargs)
+    self.runner:run("artisan", args.fargs)
   end
 end
 
-function artisan:complete(argLead, cmdLine)
+function artisan:complete(argLead)
   local commands = vim.iter({})
 
   self.commands_provider
@@ -33,7 +34,8 @@ function artisan:complete(argLead, cmdLine)
       end)
       :wait()
 
-  return vim.iter(commands)
+  return vim
+      .iter(commands)
       :map(function(cmd)
         return cmd.name
       end)

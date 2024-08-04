@@ -28,8 +28,9 @@ function override:handle(bufnr)
     self.api:tinker(
       string.format(
         [[
-          collect((new ReflectionClass('%s'))->getMethods())
-            ->filter(fn (ReflectionMethod $method) => $method->hasPrototype())
+          $r = new ReflectionClass('%s');
+          echo collect($r->getMethods())
+            ->filter(fn (ReflectionMethod $method) => $method->hasPrototype() && $method->class == $r->name)
             ->map(fn (ReflectionMethod $method) => [
                 'name' => $method->getName(),
                 'line' => $method->getStartLine(),

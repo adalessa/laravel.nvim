@@ -1,4 +1,4 @@
-local app = require("laravel.app")
+local app = require("laravel").app
 
 return function(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.views")

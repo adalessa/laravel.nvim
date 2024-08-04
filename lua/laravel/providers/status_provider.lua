@@ -1,11 +1,13 @@
 local status_provider = {}
 
+---@param app LaravelApp
 function status_provider:register(app)
-  app():register("status", function()
+  app:singeltonIf("status", function()
     return require("laravel.services.status"):new(app("artisan"), app("php"), 120)
   end)
 end
 
+---@param app LaravelApp
 function status_provider:boot(app)
   app('status'):start()
 end

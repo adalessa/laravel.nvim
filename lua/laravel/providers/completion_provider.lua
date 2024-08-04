@@ -1,11 +1,11 @@
 local completion_provider = {}
 
+---@param app LaravelApp
 function completion_provider:register(app)
-  app():register_many({
-    completion = "laravel.services.completion",
-  })
+  app:bindIf('completion', 'laravel.services.completion')
 end
 
+---@param app LaravelApp
 function completion_provider:boot(app)
   local ok, cmp = pcall(require, "cmp")
   if ok then

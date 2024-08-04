@@ -20,7 +20,7 @@ end
 
 ---@class LaravelEnvironment
 ---@field environment Environment|nil
----@field options LaravelOptionsProvider
+---@field options LaravelOptionsService
 local environment = {}
 
 ---@return LaravelEnvironment

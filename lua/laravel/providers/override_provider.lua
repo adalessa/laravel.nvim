@@ -1,9 +1,11 @@
 local override_provider = {}
 
+---@param app LaravelApp
 function override_provider:register(app)
-  app():register("override", "laravel.services.override")
+  app:bindIf("override", "laravel.services.override")
 end
 
+---@param app LaravelApp
 function override_provider:boot(app)
   local group = vim.api.nvim_create_augroup("laravel.override", {})
   vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {

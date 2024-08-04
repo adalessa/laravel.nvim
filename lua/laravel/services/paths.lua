@@ -12,7 +12,7 @@ end
 ---@param callback fun(path: string)
 ---@return Job
 function path:base(callback)
-  return self.api:tinker("base_path()", function(response)
+  return self.api:tinker("echo base_path();", function(response)
     if response:failed() then
       -- TODO: add log
       return
@@ -28,7 +28,7 @@ end
 ---@param callback fun(commands: string)
 ---@return Job
 function path:resource(resource, callback)
-  return self.api:tinker(string.format("resource_path('%s')", resource), function(response)
+  return self.api:tinker(string.format("echo resource_path('%s');", resource), function(response)
     self:base(function(base_path)
       local cwd = vim.loop.cwd()
       if not cwd then

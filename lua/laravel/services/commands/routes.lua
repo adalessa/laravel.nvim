@@ -1,7 +1,9 @@
 local routes = {}
 
-function routes:new()
-  local instance = {}
+function routes:new(routes_picker)
+  local instance = {
+    picker = routes_picker,
+  }
   setmetatable(instance, self)
   self.__index = self
 
@@ -9,11 +11,11 @@ function routes:new()
 end
 
 function routes:commands()
-  return {"routes"}
+  return { "routes" }
 end
 
 function routes:handle()
-  require("telescope").extensions.laravel.routes()
+  self.picker()
 end
 
 function routes:complete()

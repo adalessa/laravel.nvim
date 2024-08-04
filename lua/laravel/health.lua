@@ -1,4 +1,4 @@
-local app = require "laravel.app"
+local app = require "laravel".app
 
 local M = {}
 

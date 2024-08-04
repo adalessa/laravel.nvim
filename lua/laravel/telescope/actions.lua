@@ -3,7 +3,7 @@ local action_state = require("telescope.actions.state")
 local ui_run = require("laravel.telescope.ui_run")
 local run = require("laravel.run")
 local lsp = require("laravel._lsp")
-local app = require("laravel.app")
+local app = require("laravel").app
 
 local function go(route)
   if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then

@@ -12,7 +12,7 @@ function provider:register(app)
   app:bindIf("commands", "laravel.services.commands")
   app:bindIf("composer", "laravel.services.composer")
   app:bindIf("configs", "laravel.services.configs")
-  app:bindIf("history", "laravel.services.history")
+  app:singeltonIf("history", "laravel.services.history")
   app:bindIf("paths", "laravel.services.paths")
   app:bindIf("php", "laravel.services.php")
   app:bindIf("routes", "laravel.services.routes")
@@ -21,11 +21,11 @@ function provider:register(app)
   app:bindIf("ui_handler", "laravel.services.ui_handler")
 
   -- CACHE DECORATORS
-  app:bindIf("cache_commands", function()
+  app:singeltonIf("cache_commands", function()
     return require("laravel.services.cache_decorator"):new(app("commands"))
   end)
 
-  app:bindIf("cache_routes", function()
+  app:singeltonIf("cache_routes", function()
     return require("laravel.services.cache_decorator"):new(app("routes"))
   end)
 end
@@ -42,6 +42,19 @@ function provider:boot(app)
     group = group,
     callback = function()
       app("env"):boot()
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({"User"}, {
+    group = group,
+    pattern = "LaravelCommandRun",
+    callback = function(ev)
+      app("history"):add(
+        ev.data.job_id,
+        ev.data.cmd,
+        ev.data.args,
+        ev.data.options
+      )
     end,
   })
 end

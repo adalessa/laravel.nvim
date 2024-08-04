@@ -15,7 +15,7 @@ function make:commands()
 end
 
 function make:handle()
-  self.picker()
+  self.picker:run()
 end
 
 return make

@@ -70,7 +70,7 @@ function route_info:handle(bufnr)
             col = 0,
             message = string.format(
               "missing method %s [Method: %s, URI: %s]",
-              vim.fn.split(route.action, "@")[2] or "__invoke",
+              route.method or "__invoke",
               table.concat(route.methods, "|"),
               route.uri
             ),

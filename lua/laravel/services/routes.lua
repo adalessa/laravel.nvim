@@ -1,6 +1,8 @@
 ---@class LaravelRoute
 ---@field uri string
 ---@field action string
+---@field controller string|nil
+---@field method string|nil
 ---@field domain string|nil
 ---@field methods string[]
 ---@field middlewares string[]
@@ -35,9 +37,20 @@ function routes:get(callback)
     callback(vim
       .iter(result:json() or {})
       :map(function(route)
+        local controller = nil
+        local method = nil
+
+        local parts = split(route.action, "@")
+        if #parts == 2 then
+          controller = parts[1]
+          method = parts[2]
+        end
+
         return {
           uri = route.uri,
           action = route.action,
+          controller = controller,
+          method = method,
           domain = route.domain,
           methods = split(route.method, "|"),
           middlewares = route.middleware,

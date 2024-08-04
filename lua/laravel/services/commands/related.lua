@@ -15,7 +15,7 @@ function related:commands()
 end
 
 function related:handle()
-  self.picker()
+  self.picker:run()
 end
 
 return related

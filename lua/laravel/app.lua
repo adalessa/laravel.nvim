@@ -34,26 +34,33 @@ function app:make(abstract, arguments)
   return self.container:get(abstract)(arguments)
 end
 
+function app:makeByTag(tag)
+  return vim.tbl_map(function(element)
+    return self:make(element)
+  end, self.container:byTag(tag))
+end
+
 ---@param abstract string
 ---@param factory string|function
-function app:bind(abstract, factory)
+---@param opts table|nil
+function app:bind(abstract, factory, opts)
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
     factory = self:_createFactory(factory)
   end
 
-  self.container:set(abstract, factory)
+  self.container:set(abstract, factory, opts)
 
   return self
 end
 
-
 ---@param abstract string
 ---@param factory string|function
-function app:bindIf(abstract, factory)
+---@param opts table|nil
+function app:bindIf(abstract, factory, opts)
   if not self.container:has(abstract) then
-    self:bind(abstract, factory)
+    self:bind(abstract, factory, opts)
   end
 
   return self
@@ -61,17 +68,19 @@ end
 
 ---@param abstract string
 ---@param instance table
-function app:instance(abstract, instance)
+---@param opts table|nil
+function app:instance(abstract, instance, opts)
   self.container:set(abstract, function()
     return instance
-  end)
+  end, opts)
 
   return self
 end
 
 ---@param abstract string
 ---@param factory string|function
-function app:singelton(abstract, factory)
+---@param opts table|nil
+function app:singelton(abstract, factory, opts)
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
@@ -85,14 +94,15 @@ function app:singelton(abstract, factory)
     end)
 
     return instance
-  end)
+  end, opts)
 end
 
 ---@param abstract string
 ---@param factory string|function
-function app:singeltonIf(abstract, factory)
+---@param opts table|nil
+function app:singeltonIf(abstract, factory, opts)
   if not self.container:has(abstract) then
-    self:singelton(abstract, factory)
+    self:singelton(abstract, factory, opts)
   end
 
   return self

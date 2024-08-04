@@ -19,7 +19,7 @@ end
 function artisan:handle(args)
   table.remove(args.fargs, 1)
   if vim.tbl_isempty(args.fargs) then
-    self.artisan_picker()
+    self.picker:run()
   else
     self.runner:run("artisan", args.fargs)
   end

@@ -4,15 +4,26 @@ local conf = require("telescope.config").values
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
-local run = require("laravel.run")
-local app = require("laravel.app")
 
-return function(opts)
+local commands_picker = {}
+
+function commands_picker:new(runner, options)
+  local instance = {
+    runner = runner,
+    options = options,
+  }
+  setmetatable(instance, self)
+  self.__index = self
+
+  return instance
+end
+
+function commands_picker:run(opts)
   opts = opts or {}
 
   local commands = {}
 
-  for command_name, group_commands in pairs(app('options'):get().user_commands) do
+  for command_name, group_commands in pairs(self.options:get().user_commands) do
     for name, details in pairs(group_commands) do
       table.insert(commands, {
         executable = command_name,
@@ -48,8 +59,8 @@ return function(opts)
           get_buffer_by_name = function(_, entry)
             return entry.value.name
           end,
-          define_preview = function(self, entry)
-            vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, { entry.value.desc })
+          define_preview = function(self_preview, entry)
+            vim.api.nvim_buf_set_lines(self_preview.state.bufnr, 0, -1, false, { entry.value.desc })
           end,
         }),
         sorter = conf.file_sorter(),
@@ -59,7 +70,7 @@ return function(opts)
             local entry = action_state.get_selected_entry()
             local command = entry.value
 
-            run(command.executable, command.cmd, command.opts)
+            self.runner:run(command.executable, command.cmd, command.opts)
           end)
 
           return true
@@ -67,3 +78,5 @@ return function(opts)
       })
       :find()
 end
+
+return commands_picker

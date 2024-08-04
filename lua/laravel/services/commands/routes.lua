@@ -15,7 +15,7 @@ function routes:commands()
 end
 
 function routes:handle()
-  self.picker()
+  self.picker:run()
 end
 
 function routes:complete()

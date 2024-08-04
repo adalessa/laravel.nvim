@@ -23,9 +23,9 @@ function history:add(jobId, name, args, opts)
   })
 end
 
----@return Iter<LaravelHistory>
+---@return LaravelHistory[]
 function history:get()
-  return vim.iter(self.list)
+  return self.list
 end
 
 return history

@@ -4,12 +4,12 @@ local find_class = require("laravel.utils").find_class_from_make_output
 
 ---@class LaravelRunner
 ---@field env LaravelEnvironment
----@field options LaravelOptionsProvider
+---@field options LaravelOptionsService
 ---@field ui_handler LaravelUIHandler
 local runner = {}
 
 ---@param env LaravelEnvironment
----@param options LaravelOptionsProvider
+---@param options LaravelOptionsService
 function runner:new(env, options, ui_handler)
   local instance = {
     env = env,

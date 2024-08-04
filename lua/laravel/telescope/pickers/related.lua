@@ -35,58 +35,67 @@ end
 local types = { "observers", "relations", "policy" }
 
 function related_picker:new(class, api)
-  return function(opts)
-    opts = opts or {}
+  local instance = {
+    class = class,
+    api = api,
+  }
+  setmetatable(instance, self)
+  self.__index = self
 
-    local bufnr = vim.api.nvim_get_current_buf()
+  return instance
+end
 
-    class:get(bufnr, function(class)
-      api:async(
-        "artisan",
-        { "model:show", class.fqn, "--json" },
-        vim.schedule_wrap(function(response)
-          local model_info = response:json()
+function related_picker:run(opts)
+  opts = opts or {}
 
-          local relations = {}
-          for _, relation_type in ipairs(types) do
-            if model_info[relation_type] and #model_info[relation_type] > 0 then
-              if type(model_info[relation_type]) == "table" and model_info[relation_type][1] then
-                for _, info in ipairs(model_info[relation_type]) do
-                  local relation = build_relation(info, relation_type)
-                  if relation ~= nil then
-                    table.insert(relations, relation)
-                  end
-                end
-              else
-                local relation = build_relation({ model_info[relation_type] }, relation_type)
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  self.class:get(bufnr, function(class)
+    self.api:async(
+      "artisan",
+      { "model:show", class.fqn, "--json" },
+      vim.schedule_wrap(function(response)
+        local model_info = response:json()
+
+        local relations = {}
+        for _, relation_type in ipairs(types) do
+          if model_info[relation_type] and #model_info[relation_type] > 0 then
+            if type(model_info[relation_type]) == "table" and model_info[relation_type][1] then
+              for _, info in ipairs(model_info[relation_type]) do
+                local relation = build_relation(info, relation_type)
                 if relation ~= nil then
                   table.insert(relations, relation)
                 end
               end
+            else
+              local relation = build_relation({ model_info[relation_type] }, relation_type)
+              if relation ~= nil then
+                table.insert(relations, relation)
+              end
             end
           end
+        end
 
-          pickers
-              .new(opts, {
-                prompt_title = "Related Files",
-                finder = finders.new_table({
-                  results = relations,
-                  entry_maker = make_entry.gen_from_model_relations(opts),
-                }),
-                sorter = conf.prefilter_sorter({
-                  sorter = conf.generic_sorter(opts or {}),
-                }),
-                attach_mappings = function(_, map)
-                  map("i", "<cr>", actions.open_relation)
+        pickers
+            .new(opts, {
+              prompt_title = "Related Files",
+              finder = finders.new_table({
+                results = relations,
+                entry_maker = make_entry.gen_from_model_relations(opts),
+              }),
+              sorter = conf.prefilter_sorter({
+                sorter = conf.generic_sorter(opts or {}),
+              }),
+              attach_mappings = function(_, map)
+                map("i", "<cr>", actions.open_relation)
 
-                  return true
-                end,
-              })
-              :find()
-        end)
-      )
-    end)
-  end
+                return true
+              end,
+            })
+            :find()
+      end)
+    )
+  end)
 end
 
 return related_picker

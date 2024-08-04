@@ -1,7 +1,6 @@
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local ui_run = require("laravel.telescope.ui_run")
-local run = require("laravel.run")
 local lsp = require("laravel._lsp")
 local app = require("laravel").app
 
@@ -48,7 +47,7 @@ function M.make_run(prompt_bufnr)
   local command = entry.value
 
   vim.schedule(function()
-    run("artisan", { command.name }, { ui = "popup" })
+    app("runner"):run("artisan", { command.name }, { ui = "popup" })
   end)
 end
 

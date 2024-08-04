@@ -1,6 +1,6 @@
 local get_env = require("laravel.utils").get_env
 local combine_tables = require("laravel.utils").combine_tables
-local Environment = require("laravel.environment.environment")
+local Environment = require("laravel.dto.environment")
 
 ---@param name string|nil
 ---@param envs table
@@ -23,11 +23,14 @@ end
 ---@field options LaravelOptionsService
 local environment = {}
 
----@return LaravelEnvironment
 function environment:new(options)
-  local instance = setmetatable({}, { __index = environment })
-  instance.environment = nil
-  instance.options = options
+  local instance = {
+    options = options,
+    environment = nil,
+  }
+  setmetatable(instance, self)
+  self.__index = self
+
   return instance
 end
 

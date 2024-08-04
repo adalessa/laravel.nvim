@@ -4,7 +4,7 @@ local provider = {}
 ---@param app LaravelApp
 function provider:register(app)
   app:bindIf("api", "laravel.api")
-  app:singeltonIf("env", "laravel.environment")
+  app:singeltonIf("env", "laravel.services.environment")
   app:bindIf("class", "laravel.services.class")
 
   -- SERVICES

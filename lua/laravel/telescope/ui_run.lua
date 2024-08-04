@@ -1,7 +1,7 @@
 local Layout = require "nui.layout"
 local Popup = require "nui.popup"
 local preview = require "laravel.telescope.preview"
-local run = require "laravel.run"
+local app = require "laravel".app
 
 --- function to scroll a window
 ---@param popup any id of window
@@ -86,7 +86,7 @@ return function(command)
     local args = vim.fn.split(input, " ", false)
     table.insert(args, 1, command.name)
 
-    run("artisan", args)
+    app('runner'):run("artisan", args)
   end)
 
   layout:mount()

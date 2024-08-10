@@ -1,6 +1,16 @@
-local app = require("laravel").app
+local views_diagnostic = {}
 
-return function(bufnr)
+function views_diagnostic:new(views)
+  local instance = {
+    views = views,
+  }
+  setmetatable(instance, self)
+  self.__index = self
+
+  return instance
+end
+
+function views_diagnostic:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.views")
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
   vim.diagnostic.reset(namespace, bufnr)
@@ -34,8 +44,8 @@ return function(bufnr)
     end
   end
 
-  app("views"):get(vim.schedule_wrap(function(views)
-    views = views:map(function(view)
+  self.views:get(vim.schedule_wrap(function(views)
+    views = vim.iter(views):map(function(view)
       return view.name
     end)
 
@@ -69,3 +79,5 @@ return function(bufnr)
     )
   end))
 end
+
+return views_diagnostic

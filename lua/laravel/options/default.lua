@@ -35,6 +35,7 @@ return {
     require("laravel.providers.telescope_provider"),
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),
+    require("laravel.providers.diagnostics_provider"),
   },
   user_providers = {
   },

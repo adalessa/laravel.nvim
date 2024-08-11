@@ -47,7 +47,7 @@ function views_diagnostic:handle(bufnr)
   self.views:get(vim.schedule_wrap(function(views)
     views = vim.iter(views):map(function(view)
       return view.name
-    end)
+    end):totable()
 
     vim.diagnostic.set(
       namespace,

@@ -30,7 +30,7 @@ function path:resource(resource, callback)
   return self.api:tinker(string.format("echo resource_path('%s');", resource), function(response)
     self:base(function(base_path)
       local cwd = vim.loop.cwd()
-      if not cwd then
+      if not cwd or response:failed() then
         return
       end
       callback(response:first():gsub(base_path:gsub("-", "%%-"), cwd))

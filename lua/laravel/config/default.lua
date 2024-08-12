@@ -3,6 +3,9 @@
 
 ---@class RouteInfoFeature
 ---@field enable boolean
+---@field middlewares boolean
+---@field method boolean
+---@field uri boolean
 ---@field position string
 
 ---@class LaravelFeatures
@@ -27,6 +30,9 @@ return {
     },
     route_info = {
       enable = true,
+      middlewares = true,
+      method = true,
+      uri = true,
       position = "right",
     },
   },

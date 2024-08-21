@@ -10,7 +10,7 @@ local servers = {
 ---@param server_name string
 ---@return table|nil, boolean
 local get_client = function(server_name)
-  local clients = vim.lsp.get_active_clients { name = server_name }
+  local clients = vim.lsp.get_clients { name = server_name }
   local client = clients[1] or nil
   local new_instance = false
 

@@ -15,34 +15,57 @@ end
 
 local function generate_virtual_text_options(route, indent)
   if options.position == "right" then
+    local virt_text = {
+      { "[", "comment" },
+    }
+
+    if options.method then
+      table.insert(virt_text, { " Method: ", "comment" })
+      table.insert(virt_text, { route.methods[1], "@enum" })
+    end
+
+    if options.uri then
+      table.insert(virt_text, { " Uri: ", "comment" })
+      table.insert(virt_text, { route.uri, "@enum" })
+    end
+
+    if options.middlewares then
+      table.insert(virt_text, { " Middleware: ", "comment" })
+      table.insert(virt_text, { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" })
+    end
+
+    table.insert(virt_text, { "]", "comment" })
+
     return {
-      virt_text = {
-        { "[", "comment" },
-        { "Method: ", "comment" },
-        { vim.fn.join(route.methods, "|"), "@enum" },
-        { " Uri: ", "comment" },
-        { route.uri, "@enum" },
-        { " Middleware: ", "comment" },
-        { vim.fn.join(route.middlewares or { "None" }, ","), "@enum" },
-        { "]", "comment" },
-      },
+      virt_text = virt_text,
     }
   end
   if options.position == "top" then
+
     local middleware_lines = {}
-    for _, mw in ipairs(route.middlewares or { "None" }) do
-      table.insert(middleware_lines, { {indent .. "  " .. mw, "@enum"} })
+    if options.middlewares then
+      for _, mw in ipairs(route.middlewares or { "None" }) do
+        table.insert(middleware_lines, { {indent .. "  " .. mw, "@enum"} })
+      end
     end
 
     local virt_lines = {
-      { { indent .. "[", "comment" } },
-      { { indent .. " Method: ", "comment" }, { vim.fn.join(route.methods, "|"), "@enum" } },
-      { { indent .. " Uri: ", "comment" }, { route.uri, "@enum" } },
-      { { indent .. " Middleware: ", "comment" } },
+      { { indent .. "[", "comment" } }
     }
 
-    for _, line in ipairs(middleware_lines) do
-      table.insert(virt_lines, line)
+    if options.method then
+      table.insert(virt_lines, { { indent .. " Method: ", "comment" }, { vim.fn.join(route.methods, "|"), "@enum" } })
+    end
+
+    if options.uri then
+      table.insert(virt_lines, { { indent .. " Uri: ", "comment" }, { route.uri, "@enum" } })
+    end
+
+    if options.middlewares then
+      table.insert(virt_lines,  { { indent .. " Middleware: ", "comment" } })
+      for _, line in ipairs(middleware_lines) do
+        table.insert(virt_lines, line)
+      end
     end
 
     table.insert(virt_lines, { { indent .. "]", "comment" } })

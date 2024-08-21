@@ -1,7 +1,7 @@
-local Layout = require "nui.layout"
-local Popup = require "nui.popup"
-local preview = require "laravel.telescope.preview"
-local app = require "laravel".app
+local Layout = require("nui.layout")
+local Popup = require("nui.popup")
+local preview = require("laravel.telescope.preview")
+local app = require("laravel").app
 
 --- function to scroll a window
 ---@param popup any id of window
@@ -17,33 +17,33 @@ end
 
 return function(command)
   local entry_popup, help_popup =
-    Popup {
-      enter = true,
-      border = {
-        style = "rounded",
-        text = {
-          top = "Artisan",
-          top_align = "center",
+      Popup({
+        enter = true,
+        border = {
+          style = "rounded",
+          text = {
+            top = "Artisan",
+            top_align = "center",
+          },
         },
-      },
-      buf_options = {
-        buftype = "prompt",
-      },
-      win_options = {
-        winhighlight = "Normal:LaravelPrompt",
-      },
-    }, Popup {
-      border = {
-        style = "rounded",
-        text = {
-          top = "Help (<c-c> to cancel)",
-          top_align = "center",
+        buf_options = {
+          buftype = "prompt",
         },
-      },
-      win_options = {
-        winhighlight = "Normal:LaravelHelp",
-      },
-    }
+        win_options = {
+          winhighlight = "Normal:LaravelPrompt",
+        },
+      }), Popup({
+        border = {
+          style = "rounded",
+          text = {
+            top = "Help (<c-c> to cancel)",
+            top_align = "center",
+          },
+        },
+        win_options = {
+          winhighlight = "Normal:LaravelHelp",
+        },
+      })
 
   local layout = Layout(
     {
@@ -52,18 +52,19 @@ return function(command)
         width = "80%",
         height = "90%",
       },
+      relative = "editor",
     },
     Layout.Box({
       Layout.Box(entry_popup, { size = 3 }), -- 3 because of borders to be 1 row
       Layout.Box(help_popup, { grow = 1 }),
-    }, { dir = "col", relative = "editor" })
+    }, { dir = "col" })
   )
 
   local command_preview = preview.command(command)
 
   vim.api.nvim_buf_set_lines(help_popup.bufnr, 0, -1, false, command_preview.lines)
 
-  local hl = vim.api.nvim_create_namespace "laravel"
+  local hl = vim.api.nvim_create_namespace("laravel")
   for _, value in pairs(command_preview.highlights) do
     vim.api.nvim_buf_add_highlight(help_popup.bufnr, hl, value[1], value[2], value[3], value[4])
   end
@@ -86,9 +87,9 @@ return function(command)
     local args = vim.fn.split(input, " ", false)
     table.insert(args, 1, command.name)
 
-    app('runner'):run("artisan", args)
+    app("runner"):run("artisan", args)
   end)
 
   layout:mount()
-  vim.cmd [[startinsert]]
+  vim.cmd([[startinsert]])
 end

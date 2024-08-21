@@ -20,7 +20,7 @@ end
 function artisan_picker:run(opts)
   opts = opts or {}
 
-  self.cache_commands:get(vim.schedule_wrap(function(commands)
+  self.cache_commands:get(function(commands)
     pickers
         .new(opts, {
           prompt_title = "Artisan commands",
@@ -58,7 +58,9 @@ function artisan_picker:run(opts)
           end,
         })
         :find()
-  end))
+  end, function(error)
+    vim.api.nvim_err_writeln(error)
+  end)
 end
 
 return artisan_picker

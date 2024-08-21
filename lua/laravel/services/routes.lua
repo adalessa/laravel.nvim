@@ -27,13 +27,17 @@ function routes:new(api)
 end
 
 ---@param callback fun(commands: LaravelRoute[])
+---@param error_callback fun(error: string)|nil
 ---@return Job
-function routes:get(callback)
+function routes:get(callback, error_callback)
   return self.api:async("artisan", { "route:list", "--json" }, function(result)
     if result:failed() then
-      vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
+      if error_callback then
+        error_callback(result:prettyErrors())
+      end
       return
     end
+
     callback(vim
       .iter(result:json() or {})
       :map(function(route)
@@ -58,7 +62,7 @@ function routes:get(callback)
         }
       end)
       :totable())
-  end)
+  end, { wrap = true })
 end
 
 return routes

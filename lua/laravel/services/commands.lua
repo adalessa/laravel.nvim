@@ -15,11 +15,14 @@ function commands:new(api)
 end
 
 ---@param callback fun(commands: LaravelCommand[])
+---@param error_callback fun(error: string)|nil
 ---@return Job
-function commands:get(callback)
+function commands:get(callback, error_callback)
   return self.api:async("artisan", { "list", "--format=json" }, function(result)
     if result:failed() then
-      vim.notify(result:prettyErrors(), vim.log.levels.ERROR)
+      if error_callback then
+        error_callback(result:prettyErrors())
+      end
       return
     end
     callback(vim
@@ -28,7 +31,7 @@ function commands:get(callback)
         return not command.hidden
       end)
       :totable())
-  end)
+  end, { wrap = true })
 end
 
 return commands

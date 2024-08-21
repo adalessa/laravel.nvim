@@ -19,14 +19,11 @@ end
 function route_info:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.routes")
 
-  vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-  vim.diagnostic.reset(namespace, bufnr)
-
   self.class:get(bufnr, function(class)
     if not class.fqn then
       return
     end
-    self.routes:get(vim.schedule_wrap(function(routes)
+    self.routes:get(function(routes)
       local missing_routes = {}
       local route_methods = {}
 
@@ -48,6 +45,7 @@ function route_info:handle(bufnr)
           end)
 
       -- set the virtual text
+      vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
       vim.iter(route_methods):each(function(route_method)
         vim.api.nvim_buf_set_extmark(
           bufnr,
@@ -78,7 +76,11 @@ function route_info:handle(bufnr)
         end)
         :totable()
       )
-    end))
+    end, function(error)
+      vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+      vim.diagnostic.reset(namespace, bufnr)
+      vim.api.nvim_err_writeln(error)
+    end)
   end)
 end
 

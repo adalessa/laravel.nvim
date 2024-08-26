@@ -1,14 +1,14 @@
 ---@class LaravelRouteInfo
 ---@field class LaravelClassService
 ---@field routes LaravelRouteProvider
----@field route_virtual_text LaravelRouteVirtualTextService
+---@field route_info_view table
 local route_info = {}
 
-function route_info:new(class, routes, route_virtual_text)
+function route_info:new(class, routes, route_info_view)
   local instance = {
     class = class,
     routes = routes,
-    route_virtual_text = route_virtual_text,
+    route_info_view = route_info_view,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -52,7 +52,7 @@ function route_info:handle(bufnr)
           namespace,
           route_method.method.pos,
           0,
-          self.route_virtual_text:get(route_method.route, route_method.method)
+          self.route_info_view:get(route_method.route, route_method.method)
         )
       end)
 

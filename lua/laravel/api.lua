@@ -71,11 +71,12 @@ end
 
 ---@param code string
 ---@param callback fun(response: ApiResponse)
+---@param opts table|nil
 ---@return Job
-function api:tinker(code, callback)
+function api:tinker(code, callback, opts)
   assert(code, "Code is required")
 
-  return self:async("artisan", { "tinker", "--execute", code }, callback)
+  return self:async("artisan", { "tinker", "--execute", code }, callback, opts)
 end
 
 return api

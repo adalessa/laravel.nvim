@@ -1,6 +1,6 @@
 ---@class RouteInfoFeature
 ---@field enable boolean
----@field position string
+---@field view string|table|function module to load or to use
 
 ---@class LaravelFeatures
 ---@field route_info RouteInfoFeature
@@ -18,14 +18,14 @@ return {
   features = {
     route_info = {
       enable = true,
-      position = "top",
+      view = "top",
     },
   },
-  ui = require "laravel.options.ui",
-  commands_options = require "laravel.options.command_options",
-  environments = require "laravel.options.environments",
-  user_commands = require "laravel.options.user_commands",
-  resources = require "laravel.options.resources",
+  ui = require("laravel.options.ui"),
+  commands_options = require("laravel.options.command_options"),
+  environments = require("laravel.options.environments"),
+  user_commands = require("laravel.options.user_commands"),
+  resources = require("laravel.options.resources"),
   providers = {
     require("laravel.providers.provider"),
     require("laravel.providers.override_provider"),
@@ -36,7 +36,7 @@ return {
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),
     require("laravel.providers.diagnostics_provider"),
+    require("laravel.providers.model_info_provider"),
   },
-  user_providers = {
-  },
+  user_providers = {},
 }

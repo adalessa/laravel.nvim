@@ -13,16 +13,23 @@ local class = {}
 
 ---@param bufnr number
 ---@param callback fun(class: LaravelClass)
-function class:get(bufnr, callback)
+---@param error_callback fun(error: string)|nil
+function class:get(bufnr, callback, error_callback)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   local tree = php_parser:parse()[1]
   if tree == nil then
-    error("Could not retrieve syntx tree", vim.log.levels.ERROR)
+    if error_callback then
+      error_callback("Could not retrieve syntx tree")
+    end
+    return
   end
 
   local query = vim.treesitter.query.get("php", "php_class")
   if not query then
-    error("Could not get treesitter query", vim.log.levels.ERROR)
+    if error_callback then
+      error_callback("Could not get treesitter query")
+    end
+    return
   end
 
   local response = {

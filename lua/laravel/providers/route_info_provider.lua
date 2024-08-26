@@ -2,8 +2,13 @@ local route_info_provider = {}
 
 ---@param app LaravelApp
 function route_info_provider:register(app)
-  app:bindIf('route_info', 'laravel.services.route_info')
-  app:bindIf('route_virtual_text', 'laravel.services.route_virtual_text')
+  app:bindIf("route_info", "laravel.services.route_info")
+  app:bindIf("route_info_view", function()
+    return require("laravel.services.route_info.view_factory"):new(app("options"), {
+      top = require("laravel.services.route_info.view_top"),
+      right = require("laravel.services.route_info.view_right"),
+    })
+  end)
 end
 
 ---@param app LaravelApp

@@ -58,9 +58,9 @@ function M.is_make_command(command)
   end
 
   if
-      command[1] == "artisan" and command[2]:sub(1, #prefix) == prefix
-      or command[2] == "livewire:make"
-      or command[2] == "pest:test"
+      command[2] == "artisan" and command[3]:sub(1, #prefix) == prefix
+      or command[3] == "livewire:make"
+      or command[3] == "pest:test"
   then
     return true
   end

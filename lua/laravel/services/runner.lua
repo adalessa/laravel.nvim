@@ -42,7 +42,7 @@ function runner:run(cmd, args, opts)
 
   local job_id = vim.fn.termopen(table.concat(command, " "))
 
-  if is_make_command(command) then
+  if is_make_command(args[1]) then
     instance:on("TermClose", function()
       local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
       local class = find_class(table.concat(lines, "\r"))

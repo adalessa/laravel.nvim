@@ -49,22 +49,12 @@ function M.combine_tables(...)
   return result
 end
 
----@param command string[]|string
+---@param command string
 ---@return boolean
 function M.is_make_command(command)
   local prefix = "make"
-  if type(command) == "string" then
-    return command:sub(1, #prefix) == prefix or command == "livewire:make" or command == "pest:test"
-  end
 
-  if
-      command[2] == "artisan" and command[3]:sub(1, #prefix) == prefix
-      or command[3] == "livewire:make"
-      or command[3] == "pest:test"
-  then
-    return true
-  end
-  return false
+  return command:sub(1, #prefix) == prefix or command == "livewire:make" or command == "pest:test"
 end
 
 ---@param text string

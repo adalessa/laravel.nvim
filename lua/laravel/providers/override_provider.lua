@@ -15,6 +15,11 @@ function override_provider:boot(app)
       if not app("env"):is_active() then
         return
       end
+      -- check that is not from the vendor folder
+      local cwd = vim.uv.cwd()
+      if vim.startswith(ev.file, cwd .. "/vendor") then
+        return
+      end
 
       app("override"):handle(ev.buf)
     end,

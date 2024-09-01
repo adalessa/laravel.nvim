@@ -49,7 +49,7 @@ function model_info:handle(bufnr)
               for _, attribute in ipairs(info.attributes) do
                 table.insert(virt_lines, {
                   { "   " .. attribute.name, "@enum" },
-                  { " " .. attribute.type,   "comment" },
+                  attribute.type and { " " .. attribute.type,   "comment" } or nil,
                   attribute.cast and { " -> " .. attribute.cast, "@enum" } or nil,
                 })
               end

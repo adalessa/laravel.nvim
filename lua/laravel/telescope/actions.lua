@@ -64,8 +64,8 @@ function M.open_browser(prompt_bufnr)
   local entry = action_state.get_selected_entry()
   local app_url = nil
   app("configs")
-      :get(function(value)
-        app_url = value["app.url"]
+      :get("app.url", function(value)
+        app_url = value
       end)
       :wait()
   if not app_url then
@@ -98,7 +98,7 @@ end
 function M.re_run_command(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
-  run(entry.value.name, entry.value.args, entry.value.opts)
+  app("runner"):run(entry.value.name, entry.value.args, entry.value.opts)
 end
 
 function M.open_relation(prompt_bufnr)

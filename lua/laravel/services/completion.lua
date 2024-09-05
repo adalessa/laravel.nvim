@@ -1,3 +1,8 @@
+---@class LaravelCompletionSource
+---@field configs LaravelConfigsProvider
+---@field env LaravelEnvironment
+---@field views LaravelViewsProvider
+---@field routes LaravelRouteProvider
 local source = {}
 
 function source:new(env, views, configs, routes)
@@ -60,7 +65,7 @@ function source:complete(params, callback)
   end
 
   if text:match("config%([%'|%\"]") then
-    self.configs:get(function(configs)
+    self.configs:keys(function(configs)
       callback({
         items = vim
             .iter(configs)

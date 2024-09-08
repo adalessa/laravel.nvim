@@ -13,4 +13,5 @@ return {
   ["FeatureTest"] = "tests/Feature",
   ["UnitTest"] = "tests/Unit",
   ["Requests"] = "app/Http/Requests",
+  ["Policies"] = "app/Policies",
 }

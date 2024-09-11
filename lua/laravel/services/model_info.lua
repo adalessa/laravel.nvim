@@ -30,7 +30,7 @@ function model_info:handle(bufnr)
         class.fqn
       ),
       function(res)
-        if res:successful() and res:json().is_model then
+        if res:json() and res:json().is_model then
           self.api:async("artisan", { "model:show", "--json", string.format("\\%s", class.fqn) }, function(result)
             if result:successful() then
               local info = result:json()

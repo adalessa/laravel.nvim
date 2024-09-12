@@ -16,7 +16,7 @@ end
 
 ---@param callback fun(commands: LaravelCommand[])
 ---@param error_callback fun(error: string)|nil
----@return Job
+---@return vim.SystemObj
 function commands:get(callback, error_callback)
   return self.api:async("artisan", { "list", "--format=json" }, function(result)
     if result:failed() then

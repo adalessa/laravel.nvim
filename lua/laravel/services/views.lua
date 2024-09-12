@@ -21,7 +21,7 @@ function views:new(paths, runner)
 end
 
 ---@param callback fun(commands: LaravelView[])
----@return Job
+---@return vim.SystemObj
 function views:get(callback)
   return self.paths_service:resource("views", function(views_directory)
     local rule = string.format("^%s/(.*).blade.php$", views_directory:gsub("-", "%%-"))

@@ -1,4 +1,3 @@
-local Job = require("plenary.job")
 local ApiResponse = require("laravel.dto.api_response")
 
 local combine_tables = require "laravel.utils".combine_tables
@@ -44,35 +43,29 @@ end
 ---@param args string[]
 ---@param callback fun(response: ApiResponse)
 ---@param opts table|nil
----@return Job
+---@return vim.SystemObj
 function api:async(program, args, callback, opts)
   opts = opts or {}
 
   local cmd = self:generate_command(program, args)
-  local command = table.remove(cmd, 1)
 
-  local on_exit = function(j, exit_code)
-    callback(ApiResponse:new(j:result(), exit_code, j:stderr_result()))
+  local cb = function (out)
+    callback(ApiResponse:new({out.stdout}, out.code, {out.stderr}))
   end
 
   if opts.wrap then
-    on_exit = vim.schedule_wrap(on_exit)
+    cb = vim.schedule_wrap(cb)
   end
 
-  local job = Job:new({
-    command = command,
-    args = cmd,
-    on_exit = on_exit,
-  })
-  job:start()
+  local sysObj = vim.system(cmd, {}, cb)
 
-  return job
+  return sysObj
 end
 
 ---@param code string
 ---@param callback fun(response: ApiResponse)
 ---@param opts table|nil
----@return Job
+---@return vim.SystemObj
 function api:tinker(code, callback, opts)
   assert(code, "Code is required")
 

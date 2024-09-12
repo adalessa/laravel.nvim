@@ -9,7 +9,7 @@ function configs:new(api)
 end
 
 ---@param callback fun(configs: string[])
----@return Job
+---@return vim.SystemObj
 function configs:keys(callback)
   return self.api:tinker("echo json_encode(array_keys(Arr::dot(Config::all())));", function(response)
     if response:failed() then
@@ -27,7 +27,7 @@ end
 
 ---@param key string
 ---@param callback fun(value: string | table | nil)
----@return Job
+---@return vim.SystemObj
 function configs:get(key, callback)
   return self.api:tinker(string.format("echo json_encode(config('%s'));", key), function (response)
     if response:failed() then

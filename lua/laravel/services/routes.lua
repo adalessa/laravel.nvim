@@ -28,7 +28,7 @@ end
 
 ---@param callback fun(commands: LaravelRoute[])
 ---@param error_callback fun(error: string)|nil
----@return Job
+---@return vim.SystemObj
 function routes:get(callback, error_callback)
   return self.api:async("artisan", { "route:list", "--json" }, function(result)
     if result:failed() then

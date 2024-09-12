@@ -10,7 +10,7 @@ function path:new(api)
 end
 
 ---@param callback fun(path: string)
----@return Job
+---@return vim.SystemObj
 function path:base(callback)
   return self.api:tinker("echo base_path();", function(response)
     if response:failed() then
@@ -25,7 +25,7 @@ function path:base(callback)
 end
 
 ---@param callback fun(commands: string)
----@return Job
+---@return vim.SystemObj
 function path:resource(resource, callback)
   return self.api:tinker(string.format("echo resource_path('%s');", resource), function(response)
     self:base(function(base_path)

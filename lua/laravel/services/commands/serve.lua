@@ -19,6 +19,7 @@ function serve:commands()
 end
 
 function serve:handle()
+  --TODO: support stop
   if self.job then
     vim.notify("Server already running", vim.log.levels.INFO, {})
     return

@@ -58,7 +58,7 @@ function ApiResponse:first()
     return nil
   end
 
-  return self.stdout[1]
+  return vim.trim(self.stdout[1])
 end
 
 ---@return string[]|nil

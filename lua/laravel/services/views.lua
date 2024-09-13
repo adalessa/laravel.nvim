@@ -25,17 +25,21 @@ end
 function views:get(callback)
   return self.paths_service:resource("views", function(views_directory)
     local rule = string.format("^%s/(.*).blade.php$", views_directory:gsub("-", "%%-"))
-    local finds = scan.scan_dir(views_directory, { hidden = false, depth = 4 })
-
-    callback(vim
-      .iter(finds)
-      :map(function(value)
-        return {
-          name = value:match(rule):gsub("/", "."),
-          path = value,
-        }
-      end)
-      :totable())
+    scan.scan_dir_async(views_directory, {
+      hidden = false,
+      depth = 4,
+      on_exit = function(finds)
+        callback(vim
+          .iter(finds)
+          :map(function(value)
+            return {
+              name = value:match(rule):gsub("/", "."),
+              path = value,
+            }
+          end)
+          :totable())
+      end,
+    })
   end)
 end
 
@@ -61,7 +65,7 @@ function views:name(fname, callback)
   self.paths_service:resource(
     "views",
     vim.schedule_wrap(function(views_directory)
-      views_directory = views_directory  .. "/"
+      views_directory = views_directory .. "/"
       local view = fname:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", ".")
       callback(view)
     end)

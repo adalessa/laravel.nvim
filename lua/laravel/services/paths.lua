@@ -29,7 +29,7 @@ end
 function path:resource(resource, callback)
   return self.api:tinker(string.format("echo resource_path('%s');", resource), function(response)
     self:base(function(base_path)
-      local cwd = vim.loop.cwd()
+      local cwd = vim.uv.cwd()
       if not cwd or response:failed() then
         return
       end

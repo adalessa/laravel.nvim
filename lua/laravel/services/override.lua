@@ -22,9 +22,6 @@ function override:handle(bufnr)
   vim.fn.sign_unplace(group, { buffer = bufnr })
 
   self.class:get(bufnr, function(class)
-    if not class.fqn then
-      return
-    end
     self.api:tinker(
       string.format(
         [[

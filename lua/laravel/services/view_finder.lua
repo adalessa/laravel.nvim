@@ -41,7 +41,7 @@ function view_finder:definition(view)
 end
 
 function view_finder:handle(bufnr)
-  local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
+  local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
   if ft == "blade" then
     self.views_service:name(
       vim.uri_to_fname(vim.uri_from_bufnr(bufnr)),

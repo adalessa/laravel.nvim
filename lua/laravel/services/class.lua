@@ -77,6 +77,13 @@ function class:get(bufnr, callback, error_callback)
     response.methods[idx].fqn = string.format("%s@%s", response.fqn, response.methods[idx].name)
   end
 
+  if response.class == "" then
+    if error_callback then
+      error_callback("Buffer is not a class")
+    end
+    return
+  end
+
   callback(response)
 end
 

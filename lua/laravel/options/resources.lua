@@ -2,6 +2,7 @@ return {
   ["Controllers"] = "app/Http/Controllers",
   ["Livewire"] = "app/Livewire",
   ["Models"] = "app/Models",
+  ["Jobs"] = "app/Jobs",
   ["Views"] = "resources/views",
   ["Migrations"] = "database/migrations",
   ["Providers"] = "app/Providers",

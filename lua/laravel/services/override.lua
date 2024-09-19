@@ -27,7 +27,7 @@ function override:handle(bufnr)
         [[
           $r = new ReflectionClass('%s');
           echo collect($r->getMethods())
-            ->filter(fn (ReflectionMethod $method) => $method->hasPrototype() && $method->class == $r->name)
+            ->filter(fn (ReflectionMethod $method) => $method->hasPrototype() && $method->getFileName() == $r->getFileName())
             ->map(fn (ReflectionMethod $method) => [
                 'name' => $method->getName(),
                 'line' => $method->getStartLine(),

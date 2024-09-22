@@ -1,9 +1,10 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local related = {}
 
-function related:new(related_picker)
-  local instance = {
-    picker = related_picker,
-  }
+function related:new()
+  local instance = {}
   setmetatable(instance, self)
   self.__index = self
 
@@ -15,7 +16,11 @@ function related:commands()
 end
 
 function related:handle()
-  self.picker:run()
+  if app:has('related_picker') then
+    app('related_picker'):run()
+    return
+  end
+  vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 
 return related

@@ -26,6 +26,10 @@ function app:new(opts)
   return instance
 end
 
+function app:has(abstract)
+  return self.container:has(abstract)
+end
+
 function app:make(abstract, arguments)
   if not self.container:has(abstract) then
     error("Could not find " .. abstract)

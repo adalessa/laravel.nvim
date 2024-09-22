@@ -1,9 +1,10 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local make = {}
 
-function make:new(make_picker)
-  local instance = {
-    picker = make_picker,
-  }
+function make:new()
+  local instance = {}
   setmetatable(instance, self)
   self.__index = self
 
@@ -15,7 +16,11 @@ function make:commands()
 end
 
 function make:handle()
-  self.picker:run()
+  if app:has('make_picker') then
+    app('make_picker'):run()
+    return
+  end
+  vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 
 return make

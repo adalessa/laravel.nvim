@@ -1,9 +1,10 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local history = {}
 
-function history:new(history_picker)
-  local instance = {
-    picker = history_picker,
-  }
+function history:new()
+  local instance = {}
   setmetatable(instance, self)
   self.__index = self
 
@@ -15,7 +16,11 @@ function history:commands()
 end
 
 function history:handle()
-  self.picker:run()
+  if app:has('history_picker') then
+    app('history_picker'):run()
+    return
+  end
+  vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 
 return history

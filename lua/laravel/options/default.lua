@@ -37,6 +37,7 @@ return {
     require("laravel.providers.status_provider"),
     require("laravel.providers.diagnostics_provider"),
     require("laravel.providers.model_info_provider"),
+    require("laravel.providers.history_provider"),
   },
   user_providers = {},
 }

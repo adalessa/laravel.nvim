@@ -1,9 +1,10 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local resources = {}
 
-function resources:new(resources_picker)
-  local instance = {
-    picker = resources_picker,
-  }
+function resources:new()
+  local instance = {}
   setmetatable(instance, self)
   self.__index = self
 
@@ -15,7 +16,11 @@ function resources:commands()
 end
 
 function resources:handle()
-  self.picker:run()
+  if app:has('resources_picker') then
+    app('resources_picker'):run()
+    return
+  end
+  vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 
 return resources

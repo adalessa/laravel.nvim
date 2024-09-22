@@ -12,6 +12,7 @@ local function setInterval(interval, callback)
   return timer
 end
 
+
 function status:new(artisan, php, frequency)
   local instance = {
     artisan = artisan,
@@ -21,11 +22,18 @@ function status:new(artisan, php, frequency)
       php = nil,
       laravel = nil,
     },
+    refresh = nil,
   }
   setmetatable(instance, self)
   self.__index = self
 
   return instance
+end
+
+function status:update()
+  if self.refresh then
+    self.refresh()
+  end
 end
 
 function status:start()
@@ -45,6 +53,8 @@ function status:start()
       end
     end)
   end
+
+  self.refresh = refresh
 
   setInterval(self.frequency * 1000, refresh)
 

@@ -49,9 +49,12 @@ function M.combine_tables(...)
   return result
 end
 
----@param command string
+---@param command string|nil
 ---@return boolean
 function M.is_make_command(command)
+  if not command then
+    return false
+  end
   local prefix = "make"
 
   return command:sub(1, #prefix) == prefix or command == "livewire:make" or command == "pest:test"

@@ -1,10 +1,12 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local artisan = {}
 
-function artisan:new(runner, cache_commands, artisan_picker)
+function artisan:new(runner, cache_commands)
   local instance = {
     runner = runner,
     commands_provider = cache_commands,
-    picker = artisan_picker,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -19,10 +21,13 @@ end
 function artisan:handle(args)
   table.remove(args.fargs, 1)
   if vim.tbl_isempty(args.fargs) then
-    self.picker:run()
-  else
-    self.runner:run("artisan", args.fargs)
+    if app:has('artisan_picker') then
+      app('artisan_picker'):run()
+      return
+    end
   end
+
+  self.runner:run("artisan", args.fargs)
 end
 
 function artisan:complete(argLead)

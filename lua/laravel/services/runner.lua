@@ -55,18 +55,20 @@ function runner:run(cmd, args, opts)
     end)
   end
 
-  vim.api.nvim_exec_autocmds(
-    "User",
-    {
-      pattern = "LaravelCommandRun",
-      data = {
-        cmd = cmd,
-        args = args,
-        options = opts,
-        job_id = job_id,
-      },
-    }
-  )
+  instance:on("TermClose", function()
+    vim.api.nvim_exec_autocmds(
+      "User",
+      {
+        pattern = "LaravelCommandRun",
+        data = {
+          cmd = cmd,
+          args = args,
+          options = opts,
+          job_id = job_id,
+        },
+      }
+    )
+  end)
 
   vim.cmd("startinsert")
 end

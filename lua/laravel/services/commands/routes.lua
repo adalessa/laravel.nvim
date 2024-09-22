@@ -1,9 +1,10 @@
+---@type LaravelApp
+local app = require('laravel').app
+
 local routes = {}
 
-function routes:new(routes_picker)
-  local instance = {
-    picker = routes_picker,
-  }
+function routes:new()
+  local instance = {}
   setmetatable(instance, self)
   self.__index = self
 
@@ -15,7 +16,11 @@ function routes:commands()
 end
 
 function routes:handle()
-  self.picker:run()
+  if app:has('routes_picker') then
+    app('routes_picker'):run()
+    return
+  end
+  vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 
 function routes:complete()

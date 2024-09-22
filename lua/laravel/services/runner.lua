@@ -45,7 +45,7 @@ function runner:run(cmd, args, opts)
   if is_make_command(args[1]) then
     instance:on("TermClose", function()
       local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
-      local class = find_class(table.concat(lines, "\r"))
+      local class = find_class(table.concat(lines, "\n"))
       if class ~= nil and class ~= "" then
         instance:unmount()
         vim.schedule(function()
@@ -56,18 +56,15 @@ function runner:run(cmd, args, opts)
   end
 
   instance:on("TermClose", function()
-    vim.api.nvim_exec_autocmds(
-      "User",
-      {
-        pattern = "LaravelCommandRun",
-        data = {
-          cmd = cmd,
-          args = args,
-          options = opts,
-          job_id = job_id,
-        },
-      }
-    )
+    vim.api.nvim_exec_autocmds("User", {
+      pattern = "LaravelCommandRun",
+      data = {
+        cmd = cmd,
+        args = args,
+        options = opts,
+        job_id = job_id,
+      },
+    })
   end)
 
   vim.cmd("startinsert")

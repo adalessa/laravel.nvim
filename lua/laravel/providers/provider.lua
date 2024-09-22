@@ -12,7 +12,6 @@ function provider:register(app)
   app:bindIf("commands", "laravel.services.commands")
   app:bindIf("composer", "laravel.services.composer")
   app:bindIf("configs", "laravel.services.configs")
-  app:singeltonIf("history", "laravel.services.history")
   app:bindIf("paths", "laravel.services.paths")
   app:bindIf("php", "laravel.services.php")
   app:bindIf("routes", "laravel.services.routes")
@@ -43,19 +42,6 @@ function provider:boot(app)
     group = group,
     callback = function()
       app("env"):boot()
-    end,
-  })
-
-  vim.api.nvim_create_autocmd({"User"}, {
-    group = group,
-    pattern = "LaravelCommandRun",
-    callback = function(ev)
-      app("history"):add(
-        ev.data.job_id,
-        ev.data.cmd,
-        ev.data.args,
-        ev.data.options
-      )
     end,
   })
 end

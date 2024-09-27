@@ -1,5 +1,6 @@
 ---@class LaravelApp
 ---@field container LaravelContainer
+---@field associations table
 local app = {}
 
 local function get_args(func)
@@ -13,6 +14,7 @@ end
 function app:new(opts)
   local instance = {
     container = require("laravel.container"):new(),
+    associations = {},
   }
   setmetatable(instance, self)
   self.__index = self
@@ -44,6 +46,10 @@ function app:makeByTag(tag)
   end, self.container:byTag(tag))
 end
 
+function app:associate(abstract, associations)
+  self.associations[abstract] = vim.tbl_extend("force", self.associations[abstract] or {}, associations)
+end
+
 ---@param abstract string
 ---@param factory string|function
 ---@param opts table|nil
@@ -51,7 +57,7 @@ function app:bind(abstract, factory, opts)
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
-    factory = self:_createFactory(factory)
+    factory = self:_createFactory(abstract, factory)
   end
 
   self.container:set(abstract, factory, opts)
@@ -60,7 +66,7 @@ function app:bind(abstract, factory, opts)
 end
 
 ---@param abstract string
----@param factory string|function
+---@param factory string|fun(app: LaravelApp)
 ---@param opts table|nil
 function app:bindIf(abstract, factory, opts)
   if not self.container:has(abstract) then
@@ -88,7 +94,7 @@ function app:singelton(abstract, factory, opts)
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
-    factory = self:_createFactory(factory)
+    factory = self:_createFactory(abstract, factory)
   end
 
   self.container:set(abstract, function(arguments)
@@ -169,7 +175,7 @@ end
 --- PRIVATE FUNCTIONS
 
 --- private usage not recomended
-function app:_createFactory(moduleName)
+function app:_createFactory(abstract, moduleName)
   return function(arguments)
     local ok, module = pcall(require, moduleName)
     if not ok then
@@ -182,7 +188,12 @@ function app:_createFactory(moduleName)
       return module
     end
 
-    local args = vim.tbl_extend("force", get_args(constructor), arguments or {})
+    local args = vim.tbl_extend(
+      "force",
+      get_args(constructor),
+      self.associations[abstract] or {},
+      arguments or {}
+    )
 
     if #args > 1 then
       table.remove(args, 1)

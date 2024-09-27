@@ -7,9 +7,9 @@ local actions = require("laravel.telescope.actions")
 
 local artisan_picker = {}
 
-function artisan_picker:new(cache_commands)
+function artisan_picker:new(commands)
   local instance = {
-    cache_commands = cache_commands,
+    cache_commands = commands,
   }
   setmetatable(instance, self)
   self.__index = self

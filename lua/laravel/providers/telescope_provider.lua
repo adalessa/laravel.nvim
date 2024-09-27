@@ -1,6 +1,6 @@
+---@class LaravelTelescopeProvider : LaravelProvider
 local telescope_provider = {}
 
----@param app LaravelApp
 function telescope_provider:register(app)
   local _, ok = pcall(require, "telescope")
   if not ok then

@@ -26,7 +26,7 @@ function decorator:get(callback)
     end),
   }
 
-  local timer = vim.loop.new_timer()
+  local timer = vim.uv.new_timer()
   timer:start(self.timeout, 0, function()
     timer:stop()
     timer:close()
@@ -34,6 +34,10 @@ function decorator:get(callback)
   end)
 
   return self.cache.value
+end
+
+function decorator:forget()
+  self.cache = nil
 end
 
 return decorator

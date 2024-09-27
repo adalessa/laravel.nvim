@@ -9,7 +9,11 @@ function tinker_provider:boot(app)
   local group = vim.api.nvim_create_augroup("tinker", {})
 
   local Split = require("nui.split")
-  -- TODO allow to change this by configuration
+  -- TODO: allow to change this by configuration
+  -- FIX: some times the window is re-created
+  -- problem of using nui is that the split creates the buffer.
+  -- I don't see an option to pass a buffer.
+  -- so Have to use the same or update by window.
   local split = Split({
     enter = false,
     relative = "editor",
@@ -28,8 +32,7 @@ function tinker_provider:boot(app)
     callback = function(ev)
       local bufnr = ev.buf
 
-
-      if vim.api.nvim_buf_get_option(bufnr, "filetype") ~= "php" then
+      if vim.api.nvim_get_option_value('filetype', {buf = bufnr}) ~= "php" then
         return
       end
 
@@ -41,13 +44,14 @@ function tinker_provider:boot(app)
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
-    pattern = "*.tinker",
-    group = group,
-    callback = function()
-      split:unmount()
-    end,
-  })
+  -- TODO: review, not sure of this, some times is annoying
+  -- vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
+  --   pattern = "*.tinker",
+  --   group = group,
+  --   callback = function()
+  --     split:unmount()
+  --   end,
+  -- })
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     pattern = "*.tinker",

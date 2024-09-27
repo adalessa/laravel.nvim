@@ -2,6 +2,7 @@
 ---@field api LaravelApi
 local configs = {}
 
+---@param api LaravelApi
 function configs:new(api)
   local instance = setmetatable({}, { __index = configs })
   instance.api = api

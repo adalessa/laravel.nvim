@@ -8,9 +8,9 @@ local actions = require("laravel.telescope.actions")
 
 local routes_picker = {}
 
-function routes_picker:new(cache_routes)
+function routes_picker:new(routes)
   local instance = {
-    routes_provider = cache_routes,
+    routes_provider = routes,
   }
   setmetatable(instance, self)
   self.__index = self

@@ -3,14 +3,16 @@
 ---@field env LaravelEnvironment
 ---@field views LaravelViewsProvider
 ---@field routes LaravelRouteProvider
+---@field templates LaravelTemplates
 local source = {}
 
-function source:new(env, views, configs, routes)
+function source:new(env, views, configs, routes, templates)
   local instance = {
     env = env,
     views = views,
     configs = configs,
     routes = routes,
+    templates = templates,
   }
 
   setmetatable(instance, self)
@@ -50,7 +52,7 @@ function source:complete(params, callback)
             .iter(views)
             :map(function(view)
               return {
-                label = string.format("%s (view)", view.name),
+                label = self.templates:build("view_label", view.name),
                 insertText = view.name,
                 kind = vim.lsp.protocol.CompletionItemKind["Value"],
                 documentation = view.path,
@@ -71,7 +73,7 @@ function source:complete(params, callback)
             .iter(configs)
             :map(function(config)
               return {
-                label = string.format("%s (config)", config),
+                label = self.templates:build('config_label', config),
                 insertText = config,
                 kind = vim.lsp.protocol.CompletionItemKind["Value"],
                 documentation = config,
@@ -95,15 +97,11 @@ function source:complete(params, callback)
             end)
             :map(function(route)
               return {
-                label = string.format("%s (route)", route.name),
+                label = self.templates:build("route_label", route.name),
                 insertText = route.name,
                 kind = vim.lsp.protocol.CompletionItemKind["Value"],
-                documentation = string.format(
-                  [[ # Route: %s
-  - methods: %s
-  - uri: %s
-  - middleware: %s
-]],
+                documentation = self.templates:build(
+                  "route_documentation",
                   route.name,
                   table.concat(route.methods, " | "),
                   route.uri,

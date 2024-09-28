@@ -4,7 +4,8 @@
       "plugins": [
         "telescope.nvim",
         "plenary.nvim",
-        "cmp.nvim"
+        "cmp.nvim",
+        "promise-async"
       ]
     }
   },

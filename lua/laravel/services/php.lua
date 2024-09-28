@@ -1,3 +1,5 @@
+local promise = require("promise")
+
 ---@class LaravelPhpService
 ---@field api LaravelApi
 ---@field env LaravelEnvironment
@@ -15,18 +17,22 @@ function php:new(api, env)
   return instance
 end
 
-function php:version(callback)
-  self.api:async("php", { "-v" }, function(response)
-    if response:successful() then
-      callback(response:first():match("PHP ([%d%.]+)"))
-    else
-      callback(nil)
+---@return Promise
+function php:version()
+  return self.api:send("php", { "-v" }):thenCall(
+  ---@param response ApiResponse
+    function(response)
+      return response:first():match("PHP ([%d%.]+)")
+    end,
+    function()
+      return promise.resolve(nil)
     end
-  end)
+  )
 end
 
-function php:available(callback)
-  callback(self.env:get_executable("php") ~= nil)
+---@return Promise
+function php:available()
+  return promise.resolve(self.env:get_executable("php") ~= nil)
 end
 
 return php

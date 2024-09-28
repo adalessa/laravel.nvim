@@ -66,7 +66,7 @@ function app:bind(abstract, factory, opts)
 end
 
 ---@param abstract string
----@param factory string|fun(app: LaravelApp)
+---@param factory string|fun(app: LaravelApp): any
 ---@param opts table|nil
 function app:bindIf(abstract, factory, opts)
   if not self.container:has(abstract) then
@@ -199,6 +199,9 @@ function app:_createFactory(abstract, moduleName)
       table.remove(args, 1)
       local module_args = {}
       for k, v in pairs(args) do
+        if not self:has(v) then
+          error(string.format("could not find %s for %s", v, abstract))
+        end
         module_args[k] = self:make(v)
       end
 

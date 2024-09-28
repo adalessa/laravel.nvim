@@ -15,7 +15,6 @@ end
 
 ---@param view string
 function view_finder:usage(view)
-  vim.print(view)
   local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
   if #matches == 0 then
     vim.notify("No usage of this view found", vim.log.levels.WARN)
@@ -43,16 +42,15 @@ end
 function view_finder:handle(bufnr)
   local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
   if ft == "blade" then
-    self.views_service:name(
+    return self.views_service:name(
       vim.uri_to_fname(vim.uri_from_bufnr(bufnr)),
       vim.schedule_wrap(function(view)
         self:usage(view)
       end)
     )
-    return
   end
   if ft == "php" then
-    self.class_service:views(bufnr, function(views)
+    return self.class_service:views(bufnr):thenCall(function(views)
       if #views == 0 then
         vim.notify("No views found", vim.log.levels.WARN)
         return
@@ -68,7 +66,6 @@ function view_finder:handle(bufnr)
         self:definition(view)
       end)
     end)
-    return
   end
 end
 

@@ -4,6 +4,9 @@ local finders = require("telescope.finders")
 local conf = require("telescope.config").values
 local actions = require("laravel.telescope.actions")
 
+---@class LaravelRelatedPicker
+---@field class LaravelClassService
+---@field api LaravelApi
 local related_picker = {}
 
 local build_relation = function(info, relation_type)
@@ -50,11 +53,12 @@ function related_picker:run(opts)
 
   local bufnr = vim.api.nvim_get_current_buf()
 
-  self.class:get(bufnr, function(class)
-    self.api:async(
-      "artisan",
-      { "model:show", class.fqn, "--json" },
-      vim.schedule_wrap(function(response)
+  return self.class
+      :get(bufnr)
+      :thenCall(function(class)
+        return self.api:send("artisan", { "model:show", class.fqn, "--json" })
+      end)
+      :thenCall(function(response)
         local model_info = response:json()
 
         local relations = {}
@@ -94,8 +98,6 @@ function related_picker:run(opts)
             })
             :find()
       end)
-    )
-  end)
 end
 
 return related_picker

@@ -1,29 +1,28 @@
 ---@class LaravelProvider
-local provider = {}
+local laravel_provider = {}
 
 ---@param app LaravelApp
-function provider:register(app)
+function laravel_provider:register(app)
   app:bindIf("api", "laravel.api")
+  app:bindIf("tinker", "laravel.tinker")
   app:bindIf("templates", "laravel.templates")
-  app:singeltonIf("env", "laravel.services.environment")
-  app:bindIf("class", "laravel.services.class")
-  app:singeltonIf("cache", "laravel.services.cache")
 
   -- SERVICES
   app:bindIf("artisan", "laravel.services.artisan")
-  app:bindIf("commands", "laravel.services.commands")
+  app:bindIf("class", "laravel.services.class")
   app:bindIf("composer", "laravel.services.composer")
-  app:bindIf("configs", "laravel.services.configs")
-  app:bindIf("paths", "laravel.services.paths")
   app:bindIf("php", "laravel.services.php")
-  app:bindIf("routes", "laravel.services.routes")
   app:bindIf("runner", "laravel.services.runner")
   app:bindIf("ui_handler", "laravel.services.ui_handler")
   app:bindIf("view_finder", "laravel.services.view_finder")
+  app:bindIf("views", "laravel.services.views")
+
+  app:singeltonIf("cache", "laravel.services.cache")
+  app:singeltonIf("env", "laravel.services.environment")
 end
 
 ---@param app LaravelApp
-function provider:boot(app)
+function laravel_provider:boot(app)
   app("env"):boot()
 
   require("laravel.treesitter_queries")
@@ -38,4 +37,4 @@ function provider:boot(app)
   })
 end
 
-return provider
+return laravel_provider

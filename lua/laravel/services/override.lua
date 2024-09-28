@@ -1,11 +1,11 @@
 ---@class LarvelOverrideService
----@field api LaravelApi
+---@field tinker Tinker
 ---@field class LaravelClassService
 local override = {}
 
-function override:new(api, class)
+function override:new(tinker, class)
   local instance = {
-    api = api,
+    tinker = tinker,
     class = class,
   }
 
@@ -17,14 +17,16 @@ function override:new(api, class)
   return instance
 end
 
+---@return Promise
 function override:handle(bufnr)
   local group = "laravel_overwrite"
   vim.fn.sign_unplace(group, { buffer = bufnr })
 
-  self.class:get(bufnr, function(class)
-    self.api:tinker(
-      string.format(
-        [[
+  return self.class
+      :get(bufnr)
+      :thenCall(function(class)
+        return self.tinker:json(string.format(
+          [[
           $r = new ReflectionClass('%s');
           echo collect($r->getMethods())
             ->filter(fn (ReflectionMethod $method) => $method->hasPrototype() && $method->getFileName() == $r->getFileName())
@@ -36,14 +38,10 @@ function override:handle(bufnr)
             ->values()
             ->toJson();
         ]],
-        class.fqn
-      ),
-      vim.schedule_wrap(function(response)
-        local methods = response:json()
-        if not methods then
-          return
-        end
-
+          class.fqn
+        ))
+      end)
+      :thenCall(function(methods)
         vim.fn.sign_placelist(vim
           .iter(methods)
           :map(function(method)
@@ -56,8 +54,7 @@ function override:handle(bufnr)
           end)
           :totable())
       end)
-    )
-  end)
+      :catch(function() end)
 end
 
 return override

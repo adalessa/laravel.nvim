@@ -2,7 +2,6 @@ local user_command_provider = {}
 
 ---@param app LaravelApp
 function user_command_provider:register(app)
-
   app:bindIf("composer_command", "laravel.services.commands.composer", { tags = { "command" } })
   app:bindIf("artisan_command", "laravel.services.commands.artisan", { tags = { "command" } })
   app:bindIf("routes_command", "laravel.services.commands.routes", { tags = { "command" } })

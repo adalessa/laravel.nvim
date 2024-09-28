@@ -5,11 +5,13 @@ local previewers = require("telescope.previewers")
 local preview = require("laravel.telescope.preview")
 local actions = require("laravel.telescope.actions")
 
+---@class LaravelArtisanPicker
+---@field commands_repository CommandsRepository
 local artisan_picker = {}
 
-function artisan_picker:new(commands)
+function artisan_picker:new(cache_commands_repository)
   local instance = {
-    cache_commands = commands,
+    commands_repository = cache_commands_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -20,7 +22,7 @@ end
 function artisan_picker:run(opts)
   opts = opts or {}
 
-  self.cache_commands:get(function(commands)
+  return self.commands_repository:all():thenCall(function(commands)
     pickers
         .new(opts, {
           prompt_title = "Artisan commands",

@@ -6,11 +6,13 @@ local preview = require("laravel.telescope.preview")
 local actions = require("laravel.telescope.actions")
 local is_make_command = require("laravel.utils").is_make_command
 
+---@class LaravelMakePicker
+---@field commands_repository CommandsRepository
 local make_picker = {}
 
-function make_picker:new(cache_commands)
+function make_picker:new(cache_commands_repository)
   local instance = {
-    commands_provider = cache_commands,
+    commands_repository = cache_commands_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -21,7 +23,7 @@ end
 function make_picker:run(opts)
   opts = opts or {}
 
-  self.commands_provider:get(vim.schedule_wrap(function(commands)
+  self.commands_repository:all():thenCall(function(commands)
     pickers
         .new(opts, {
           prompt_title = "Make commands",
@@ -64,7 +66,7 @@ function make_picker:run(opts)
           end,
         })
         :find()
-  end))
+  end)
 end
 
 return make_picker

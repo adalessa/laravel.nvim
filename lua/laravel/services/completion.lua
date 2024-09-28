@@ -1,17 +1,17 @@
 ---@class LaravelCompletionSource
----@field configs LaravelConfigsProvider
 ---@field env LaravelEnvironment
----@field views LaravelViewsProvider
----@field routes LaravelRouteProvider
+---@field views_repository ViewsRepository
+---@field routes_repository RoutesRepository
+---@field configs_repository ConfigsRespository
 ---@field templates LaravelTemplates
 local source = {}
 
-function source:new(env, views, configs, routes, templates)
+function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, templates)
   local instance = {
     env = env,
-    views = views,
-    configs = configs,
-    routes = routes,
+    views_repository = cache_views_repository,
+    configs_repository = cache_configs_repository,
+    routes_repository = cache_routes_repository,
     templates = templates,
   }
 
@@ -46,7 +46,7 @@ function source:complete(params, callback)
   local text = params.context.cursor_before_line
 
   if text:match("view%([%'|%\"]") or text:match("View::make%([%'|%\"]") then
-    self.views:get(function(views)
+    self.views_repository:all():thenCall(function(views)
       callback({
         items = vim
             .iter(views)
@@ -67,13 +67,13 @@ function source:complete(params, callback)
   end
 
   if text:match("config%([%'|%\"]") then
-    self.configs:keys(function(configs)
+    self.configs_repository:all():thenCall(function(configs)
       callback({
         items = vim
             .iter(configs)
             :map(function(config)
               return {
-                label = self.templates:build('config_label', config),
+                label = self.templates:build("config_label", config),
                 insertText = config,
                 kind = vim.lsp.protocol.CompletionItemKind["Value"],
                 documentation = config,
@@ -88,7 +88,7 @@ function source:complete(params, callback)
   end
 
   if text:match("route%([%'|%\"]") then
-    self.routes:get(function(routes)
+    self.routes_repository:all():thenCall(function(routes)
       callback({
         items = vim
             .iter(routes)

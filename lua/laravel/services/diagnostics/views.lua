@@ -1,8 +1,8 @@
 local views_diagnostic = {}
 
-function views_diagnostic:new(views)
+function views_diagnostic:new(cache_views_repository)
   local instance = {
-    views = views,
+    views_repository = cache_views_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -44,10 +44,13 @@ function views_diagnostic:handle(bufnr)
     end
   end
 
-  self.views:get(vim.schedule_wrap(function(views)
-    views = vim.iter(views):map(function(view)
-      return view.name
-    end):totable()
+  return self.views_repository:all():thenCall(function(views)
+    views = vim
+        .iter(views)
+        :map(function(view)
+          return view.name
+        end)
+        :totable()
 
     vim.diagnostic.set(
       namespace,
@@ -77,7 +80,7 @@ function views_diagnostic:handle(bufnr)
       end)
       :totable()
     )
-  end))
+  end)
 end
 
 return views_diagnostic

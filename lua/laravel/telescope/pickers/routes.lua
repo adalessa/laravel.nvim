@@ -6,11 +6,13 @@ local preview = require("laravel.telescope.preview")
 local make_entry = require("laravel.telescope.make_entry")
 local actions = require("laravel.telescope.actions")
 
+---@class LaravelRoutesPicker
+---@field routes_repository RoutesRepository
 local routes_picker = {}
 
-function routes_picker:new(routes)
+function routes_picker:new(cache_routes_repository)
   local instance = {
-    routes_provider = routes,
+    routes_repository = cache_routes_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -21,7 +23,7 @@ end
 function routes_picker:run(opts)
   opts = opts or {}
 
-  self.routes_provider:get(vim.schedule_wrap(function(routes)
+  self.routes_repository:all():thenCall(function(routes)
     pickers
         .new(opts, {
           prompt_title = "Artisan Routes",
@@ -57,7 +59,7 @@ function routes_picker:run(opts)
           end,
         })
         :find()
-  end))
+  end)
 end
 
 return routes_picker

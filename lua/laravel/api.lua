@@ -1,6 +1,7 @@
+local promise = require("promise")
 local ApiResponse = require("laravel.dto.api_response")
 
-local combine_tables = require "laravel.utils".combine_tables
+local combine_tables = require("laravel.utils").combine_tables
 
 ---@class LaravelApi
 ---@field env LaravelEnvironment
@@ -49,8 +50,8 @@ function api:async(program, args, callback, opts)
 
   local cmd = self:generate_command(program, args)
 
-  local cb = function (out)
-    callback(ApiResponse:new({out.stdout}, out.code, {out.stderr}))
+  local cb = function(out)
+    callback(ApiResponse:new({ out.stdout }, out.code, { out.stderr }))
   end
 
   if opts.wrap then
@@ -62,14 +63,19 @@ function api:async(program, args, callback, opts)
   return sysObj
 end
 
----@param code string
----@param callback fun(response: ApiResponse)
----@param opts table|nil
----@return vim.SystemObj
-function api:tinker(code, callback, opts)
-  assert(code, "Code is required")
-
-  return self:async("artisan", { "tinker", "--execute", code }, callback, opts)
+---@param program string
+---@param args string[]
+---@return Promise
+function api:send(program, args)
+  return promise:new(function(resolve, reject)
+    self:async(program, args, function(result)
+      if result:failed() then
+        reject(result:prettyErrors())
+        return
+      end
+      resolve(result)
+    end)
+  end)
 end
 
 return api

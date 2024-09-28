@@ -98,6 +98,14 @@ function cache:forget(key)
   self.store[key] = nil
 end
 
+function cache:forgetByPrefix(prefix)
+  for key, _ in pairs(self.store) do
+    if key:find(prefix) == 1 then
+      self:forget(key)
+    end
+  end
+end
+
 function cache:flush()
   self.store = {}
 end

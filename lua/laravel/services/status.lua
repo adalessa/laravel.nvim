@@ -45,8 +45,7 @@ function status:start()
           self.artisan:version(),
         })
         :thenCall(function(resp)
-          self.values.php = resp[1]
-          self.values.laravel = resp[2]
+          self.values.php, self.values.laravel = unpack(resp)
         end)
   end
 

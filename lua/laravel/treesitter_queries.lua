@@ -42,3 +42,20 @@ vim.treesitter.query.set(
       )
     ]]
 )
+
+vim.treesitter.query.set(
+  "json",
+  "composer_dependencies",
+  [[
+    (pair
+        key: (string
+            (string_content) @key (#match? @key "require|require-dev")
+        )
+        value: (object
+            (pair
+                key: (string (string_content) @depen)
+            )
+        )
+    )
+  ]]
+)

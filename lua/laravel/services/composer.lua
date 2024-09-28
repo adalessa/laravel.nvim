@@ -1,10 +1,12 @@
+local promise = require("promise")
+
 ---@class LaravelComposerService
 ---@field api LaravelApi
 local composer = {}
 
 function composer:new(api)
   local instance = {
-    api = api
+    api = api,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -12,30 +14,55 @@ function composer:new(api)
   return instance
 end
 
----@param package string
----@param callback fun(installed: boolean)
----@return vim.SystemObj
-function composer:is_installed(package, callback)
-  return self.api:async("composer", { "info", package }, function(response)
-    callback(response:successful())
+---@return Promise
+function composer:info()
+  return self.api:send("composer", { "info", "-f", "json" }):thenCall(
+  ---@param response ApiResponse
+    function(response)
+      return response:json().installed
+    end
+  )
+end
+
+---@return Promise
+function composer:outdated()
+  return self.api:send("composer", { "outdated", "-f", "json" }):thenCall(
+  ---@param response ApiResponse
+    function(response)
+      return response:json().installed
+    end
+  )
+end
+
+---@return Promise
+function composer:dependencies(bufnr)
+  return promise:new(function(resolve, reject)
+    local parser = vim.treesitter.get_parser(bufnr, "json")
+    local tree = parser:parse()[1]
+    if tree == nil then
+      reject("Could not retrieve syntx tree")
+      return
+    end
+
+    local query = vim.treesitter.query.get("json", "composer_dependencies")
+    if not query then
+      reject("Could not get treesitter query")
+      return
+    end
+
+    local dependencies = {}
+
+    for id, node in query:iter_captures(tree:root(), bufnr) do
+      if query.captures[id] == "depen" then
+        table.insert(dependencies, {
+          name = vim.treesitter.get_node_text(node, bufnr),
+          line = node:start(),
+        })
+      end
+    end
+
+    resolve(dependencies)
   end)
-end
-
----@param package string
----@param callback fun(response: ApiResponse)
-function composer:update(package, callback)
-  return self.api:async("composer", { "update", package }, callback)
-end
-
----@param package string
----@param callback fun(response: ApiResponse)
-function composer:require(package, callback)
-  return self.api:async("composer", { "require", package }, callback)
-end
-
----@param callback fun(response: ApiResponse)
-function composer:install(callback)
-  return self.api:async("composer", { "install" }, callback)
 end
 
 return composer

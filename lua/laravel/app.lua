@@ -188,21 +188,22 @@ function app:_createFactory(abstract, moduleName)
       return module
     end
 
-    local args = vim.tbl_extend(
-      "force",
-      get_args(constructor),
-      self.associations[abstract] or {},
-      arguments or {}
-    )
+    local args = get_args(constructor)
+
+    local params = vim.tbl_extend("force", self.associations[abstract] or {}, arguments or {})
 
     if #args > 1 then
       table.remove(args, 1)
       local module_args = {}
       for k, v in pairs(args) do
-        if not self:has(v) then
-          error(string.format("could not find %s for %s", v, abstract))
+        if params[v] then
+          module_args[k] = params[v]
+        else
+          if not self:has(v) then
+            error(string.format("could not find %s for %s", v, abstract))
+          end
+          module_args[k] = self:make(v)
         end
-        module_args[k] = self:make(v)
       end
 
       return module:new(unpack(module_args))

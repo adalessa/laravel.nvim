@@ -1,8 +1,5 @@
-local promise = require("promise")
-
 ---@class LaravelStatusService
 ---@field artisan LaravelArtisanService
----@field php LaravelPhpService
 ---@field values table
 ---@field frequency number
 local status = {}
@@ -14,10 +11,9 @@ local function setInterval(interval, callback)
   return timer
 end
 
-function status:new(artisan, php, frequency)
+function status:new(artisan, frequency)
   local instance = {
     artisan = artisan,
-    php = php,
     frequency = frequency or 120,
     values = {
       php = nil,
@@ -39,13 +35,10 @@ end
 
 function status:start()
   local refresh = function()
-    promise
-        .all({
-          self.php:version(),
-          self.artisan:version(),
-        })
-        :thenCall(function(resp)
-          self.values.php, self.values.laravel = unpack(resp)
+    self.artisan:info()
+        :thenCall(function(info)
+          self.values.laravel = info.environment.laravel_version
+          self.values.php = info.environment.php_version
         end)
   end
 

@@ -1,5 +1,3 @@
-local promise = require("promise")
-
 ---@class LaravelArtisanService
 ---@field api LaravelApi
 ---@field env LaravelEnvironment
@@ -16,22 +14,10 @@ function artisan:new(api, env)
   return instance
 end
 
----@return Promise
-function artisan:version()
-  return self.api:send("artisan", { "--version" }):thenCall(
-  ---@param response ApiResponse
-    function(response)
-      return response:first():match("Laravel Framework ([%d%.]+)")
-    end,
-    function()
-      return promise.resolve(nil)
-    end
-  )
-end
-
----@return Promise
-function artisan:available()
-  return promise.resolve(self.env:get_executable("artisan") ~= nil)
+function artisan:info()
+  return self.api:send("artisan", { "about", "--json" }):thenCall(function(response)
+    return response:json()
+  end)
 end
 
 return artisan

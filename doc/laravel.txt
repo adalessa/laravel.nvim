@@ -4,6 +4,6 @@ Author: Ariel D'Alessandro
 Repo: https://github.com/adalessa/laravel.nvim
 License: Same terms as Vim itself (see |license|)
 
-Usage                               *laravel* *:Artisan*
+Usage                               *laravel* *:Laravel*
 
  vim:tw=78:et:ft=help:norl:

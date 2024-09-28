@@ -11,7 +11,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   local resp = client.request_sync("workspace/symbol", { query = class }, nil)
 
-  local locations = vim.lsp.util.symbols_to_items(resp.result or {}, nil) or {}
+  local locations = vim.lsp.util.symbols_to_items(resp.result or {}, 0) or {}
   if vim.tbl_isempty(locations) then
     vim.notify("Could not find the class " .. full_class, vim.log.levels.WARN)
     if is_new_instance then

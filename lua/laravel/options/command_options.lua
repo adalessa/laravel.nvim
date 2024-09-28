@@ -1,0 +1,3 @@
+return {
+  ["docs"] = { ui = "popup" },
+}

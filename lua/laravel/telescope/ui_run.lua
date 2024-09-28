@@ -8,7 +8,7 @@ local app = require("laravel").app
 ---@param direction string j o k for the direction
 local function scroll_fn(popup, direction)
   return function()
-    local scroll = vim.api.nvim_win_get_option(popup.winid, "scroll")
+    local scroll = vim.api.nvim_get_option_value("scroll", { win = popup.winid })
     vim.api.nvim_win_call(popup.winid, function()
       vim.cmd("normal! " .. scroll .. direction)
     end)

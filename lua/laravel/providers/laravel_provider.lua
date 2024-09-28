@@ -10,6 +10,7 @@ function laravel_provider:register(app)
   -- SERVICES
   app:bindIf("artisan", "laravel.services.artisan")
   app:bindIf("class", "laravel.services.class")
+  app:bindIf("model", "laravel.services.model")
   app:bindIf("composer", "laravel.services.composer")
   app:bindIf("runner", "laravel.services.runner")
   app:bindIf("ui_handler", "laravel.services.ui_handler")

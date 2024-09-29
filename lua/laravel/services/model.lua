@@ -51,6 +51,7 @@ end
 function model:info(fqn)
   return self.api:send("artisan", { "model:show", "--json", string.format("\\%s", fqn) }):thenCall(function(result)
     local info = result:json()
+
     if not info then
       return promise.reject("info is not json")
     end

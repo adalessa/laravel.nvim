@@ -12,7 +12,7 @@ function model_info_provider:boot(app)
     pattern = "*.php",
     group = group,
     callback = function(ev)
-      if not app("env"):is_active() then
+      if not app("env"):is_active() or not app('options'):get().features.model_info.enable then
         return
       end
       -- check that is not from the vendor folder

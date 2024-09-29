@@ -17,6 +17,7 @@ end
 
 function model_info:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.model")
+
   return self.model
       :parse(bufnr)
       :thenCall(function(model)

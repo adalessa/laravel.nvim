@@ -2,8 +2,16 @@
 ---@field enable boolean
 ---@field view string|table|function module to load or to use
 
+---@class ModelInfoFeature
+---@field enable boolean
+
+---@class OverrideFeature
+---@field enable boolean
+
 ---@class LaravelFeatures
 ---@field route_info RouteInfoFeature
+---@field model_info ModelInfoFeature
+---@field override OverrideFeature
 
 ---@class LaravelOptions
 ---@field lsp_server string
@@ -20,6 +28,12 @@ return {
       enable = true,
       view = "top",
     },
+    model_info = {
+      enable = true,
+    },
+    override = {
+      enable = true,
+    }
   },
   ui = require("laravel.options.ui"),
   commands_options = require("laravel.options.command_options"),

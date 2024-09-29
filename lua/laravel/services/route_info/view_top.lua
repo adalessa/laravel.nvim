@@ -1,9 +1,6 @@
-local view_right = {}
+local get_line_indent = require("laravel.utils").get_line_indent
 
-local function get_line_indent(line)
-  local line_content = vim.fn.getline(line)
-  return string.match(line_content, "^%s*")
-end
+local view_right = {}
 
 function view_right:get(route, method)
   local indent = get_line_indent(method.pos + 1)

@@ -85,4 +85,10 @@ function M.split(str, sep)
   return result
 end
 
+function M.get_line_indent(line)
+  local line_content = vim.fn.getline(line)
+
+  return string.match(line_content, "^%s*")
+end
+
 return M

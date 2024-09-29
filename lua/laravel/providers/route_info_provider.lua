@@ -18,13 +18,14 @@ function route_info_provider:boot(app)
     pattern = { "*Controller.php" },
     group = group,
     callback = function(ev)
-      if not app("env"):is_active() then
+      if not app("env"):is_active() or not app('options'):get().features.route_info.enable then
         return
       end
       local cwd = vim.uv.cwd()
       if vim.startswith(ev.file, cwd .. "/vendor") then
         return
       end
+
       app("route_info"):handle(ev.buf)
     end,
   })

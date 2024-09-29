@@ -1,15 +1,19 @@
 ---@class LarvelOverrideService
 ---@field tinker Tinker
 ---@field class LaravelClassService
+---@field sign_name string
 local override = {}
 
 function override:new(tinker, class)
   local instance = {
     tinker = tinker,
     class = class,
+    sign_name = "LaravelOverride",
   }
 
-  vim.fn.sign_define("LaravelOverwrite", { text = " ", texthl = "String" })
+  if vim.tbl_isempty(vim.fn.sign_getdefined(instance.sign_name)) then
+    vim.fn.sign_define(instance.sign_name, { text = " ", texthl = "String" })
+  end
 
   setmetatable(instance, self)
   self.__index = self
@@ -48,7 +52,7 @@ function override:handle(bufnr)
             return {
               group = group,
               lnum = method.line,
-              name = "LaravelOverwrite",
+              name = self.sign_name,
               buffer = bufnr,
             }
           end)

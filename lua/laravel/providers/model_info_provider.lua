@@ -1,11 +1,11 @@
+---@class LaravelModelInfoProvider : LaravelProvider
 local model_info_provider = {}
 
----@param app LaravelApp
 function model_info_provider:register(app)
   app:bindIf("model_info", "laravel.services.model_info")
+  app:bindIf("model_info_view", "laravel.services.model_info_view")
 end
 
----@param app LaravelApp
 function model_info_provider:boot(app)
   local group = vim.api.nvim_create_augroup("laravel.model_info", {})
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {

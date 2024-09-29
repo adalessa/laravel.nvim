@@ -36,6 +36,7 @@ function model:parse(bufnr)
           if not res.is_model then
             return promise.reject("class is not a model")
           end
+
           return self:info(class.fqn):thenCall(function(info)
             info.start = res.class_start
 

@@ -11,6 +11,10 @@ end
 
 ---@param app LaravelApp
 function status_provider:boot(app)
+  if not app("env"):is_active() then
+    return
+  end
+
   app("status"):start()
 
   local group = vim.api.nvim_create_augroup("laravel", {})

@@ -10,6 +10,7 @@ function user_command_provider:register(app)
   app:bindIf("commands_command", "laravel.services.commands.commands", { tags = { "command" } })
   app:bindIf("resources_command", "laravel.services.commands.resources", { tags = { "command" } })
   app:bindIf("view_finder_command", "laravel.services.commands.view_finder", { tags = { "command" } })
+  app:bindIf("flush_cache_command", "laravel.services.commands.flush_cache", { tags = { "command" } })
 
   app:singeltonIf("serve_command", "laravel.services.commands.serve", { tags = { "command" } })
   app:singeltonIf("assets_command", "laravel.services.commands.assets", { tags = { "command" } })

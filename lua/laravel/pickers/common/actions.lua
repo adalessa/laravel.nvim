@@ -1,8 +1,8 @@
-local actions = require("telescope.actions")
-local action_state = require("telescope.actions.state")
-local ui_run = require("laravel.telescope.ui_run")
+-- local ui_run = require("laravel.pickers.ui_select.ui_run")
 local lsp = require("laravel._lsp")
 local app = require("laravel").app
+
+local M = {}
 
 local function go(route)
   if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
@@ -29,41 +29,21 @@ local function go(route)
   lsp.go_to(action[1], action[2])
 end
 
-local M = {}
-
-function M.run(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  local command = entry.value
-
+function M.run(command, ui_run)
   vim.schedule(function()
     ui_run(command)
   end)
 end
 
-function M.make_run(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  local command = entry.value
-
+function M.open_route(route)
   vim.schedule(function()
-    app("runner"):run("artisan", { command.name }, { ui = "popup" })
+    go(route)
   end)
 end
 
-function M.open_route(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  vim.schedule(function()
-    go(entry.value)
-  end)
-end
-
-function M.open_browser(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
+function M.open_browser(route)
   app("configs_repository"):get("app.url"):thenCall(function(app_url)
-    local uri = entry.value.uri
+    local uri = route.uri
     for capturedString in uri:gmatch("{(.-)}") do
       local val = vim.fn.input(capturedString .. ": ")
       uri = uri:gsub("{" .. capturedString .. "}", val)
@@ -85,18 +65,49 @@ function M.open_browser(prompt_bufnr)
   end)
 end
 
-function M.re_run_command(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
-  app("runner"):run(entry.value.name, entry.value.args, entry.value.opts)
+function M.make_run(command)
+  vim.schedule(function()
+    app("runner"):run("artisan", { command.name }, { ui = "popup" })
+  end)
 end
 
-function M.open_relation(prompt_bufnr)
-  actions.close(prompt_bufnr)
-  local entry = action_state.get_selected_entry()
+function M.open_relation(relation)
   vim.schedule(function()
-    local action = vim.fn.split(entry.value.class, "@")
+    local action = vim.fn.split(relation.class, "@")
     lsp.go_to(action[1], action[2])
+  end)
+end
+
+function M.open_resource(resource)
+  local command = "ls -1 -A " .. resource.path
+  local handle = io.popen(command)
+  if not handle then
+    vim.notify("Could not open the resource", vim.log.levels.WARN)
+    return
+  end
+
+  local output = handle:read("*a")
+  handle:close()
+
+  if not output then
+    vim.notify("Could not read the resource", vim.log.levels.WARN)
+    return
+  end
+
+  local lines = vim
+    .iter(vim.split(output, "\n"))
+    :filter(function(line)
+      return line ~= ""
+    end)
+    :totable()
+
+  vim.ui.select(lines, {
+    prompt = "Resources",
+    kind = "resources",
+  }, function(resource)
+    if resource ~= nil then
+      vim.cmd("edit " .. resource.path .. "/" .. resource.name)
+    end
   end)
 end
 

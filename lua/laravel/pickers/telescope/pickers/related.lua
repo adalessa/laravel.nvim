@@ -1,6 +1,10 @@
-local actions = require("laravel.ui_select.actions")
+local pickers = require("telescope.pickers")
+local make_entry = require("laravel.pickers.telescope.make_entry")
+local finders = require("telescope.finders")
+local conf = require("telescope.config").values
+local actions = require("laravel.pickers.telescope.actions")
 
----@class LaravelUISelectRelatedPicker
+---@class LaravelRelatedPicker
 ---@field class LaravelClassService
 ---@field api LaravelApi
 local related_picker = {}
@@ -76,19 +80,23 @@ function related_picker:run(opts)
         end
       end
 
-      print(vim.inspect(relations))
+      pickers
+        .new(opts, {
+          prompt_title = "Related Files",
+          finder = finders.new_table({
+            results = relations,
+            entry_maker = make_entry.gen_from_model_relations(opts),
+          }),
+          sorter = conf.prefilter_sorter({
+            sorter = conf.generic_sorter(opts or {}),
+          }),
+          attach_mappings = function(_, map)
+            map("i", "<cr>", actions.open_relation)
 
-      vim.ui.select(relations, {
-        prompt = "Related Files",
-        format_item = function(relation)
-          return relation.class .. " " .. relation.extra_information
-        end,
-        kind = "make",
-      }, function(choice)
-        if choice ~= nil then
-          actions.open_relation(choice)
-        end
-      end)
+            return true
+          end,
+        })
+        :find()
     end)
 end
 

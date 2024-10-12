@@ -1,4 +1,4 @@
-local entry_display = require "telescope.pickers.entry_display"
+local entry_display = require("telescope.pickers.entry_display")
 
 local M = {}
 
@@ -37,7 +37,7 @@ end
 function M.gen_from_laravel_routes(opts)
   opts = opts or {}
 
-  local displayer = entry_display.create {
+  local displayer = entry_display.create({
     separator = " ",
     hl_chars = { ["["] = "TelescopeBorder", ["]"] = "TelescopeBorder" },
     items = {
@@ -45,14 +45,14 @@ function M.gen_from_laravel_routes(opts)
       { width = 40 },
       { remaining = true },
     },
-  }
+  })
 
   local make_display = function(entry)
-    return displayer {
+    return displayer({
       { vim.fn.join(entry.value.methods, "|"), "TelescopeResultsConstant" },
       { entry.value.uri, "TelescopeResultsIdentifier" },
       { entry.value.name or "", "TelescopeResultsFunction" },
-    }
+    })
   end
 
   return function(route)
@@ -68,7 +68,7 @@ end
 function M.gen_from_model_relations(opts)
   opts = opts or {}
 
-  local displayer = entry_display.create {
+  local displayer = entry_display.create({
     separator = " ",
     hl_chars = { ["["] = "TelescopeBorder", ["]"] = "TelescopeBorder" },
     items = {
@@ -76,14 +76,14 @@ function M.gen_from_model_relations(opts)
       { width = 20 },
       { remaining = true },
     },
-  }
+  })
 
   local make_display = function(entry)
-    return displayer {
+    return displayer({
       { entry.value.class_name, "TelescopeResultsConstant" },
       { entry.value.type, "TelescopeResultsIdentifier" },
       { entry.value.extra_information or "", "TelescopeResultsFunction" },
-    }
+    })
   end
 
   return function(relation)

@@ -1,5 +1,4 @@
-local actions = require("laravel.ui_select.actions")
--- local action_state = require("telescope.actions.state")
+local actions = require("laravel.pickers.common.actions")
 
 local resources_picker = {}
 function resources_picker:new(options)

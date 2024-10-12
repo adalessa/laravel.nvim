@@ -1,4 +1,4 @@
-local actions = require("laravel.ui_select.actions")
+local actions = require("laravel.pickers.common.actions")
 local is_make_command = require("laravel.utils").is_make_command
 
 ---@class LaravelUISelectMakePicker
@@ -35,10 +35,8 @@ function make_picker:run(opts)
       },
       function(command)
         if command == nil then
-          return
+          actions.make_run(command)
         end
-
-        actions.make_run(command)
       end
     )
   end)

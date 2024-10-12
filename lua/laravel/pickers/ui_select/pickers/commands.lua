@@ -1,5 +1,3 @@
-local actions = require("laravel.ui_select.actions")
-
 local commands_picker = {}
 
 function commands_picker:new(runner, options)

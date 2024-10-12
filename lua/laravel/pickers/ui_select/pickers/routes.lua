@@ -1,4 +1,4 @@
-local actions = require("laravel.ui_select.actions")
+local actions = require("laravel.pickers.ui_select.actions")
 
 ---@class LaravelUISelectRoutesPicker
 ---@field routes_repository RoutesRepository
@@ -26,10 +26,8 @@ function routes_picker:run(opts)
       kind = "route",
     }, function(route)
       if route == nil then
-        return
+        actions.open_route(route)
       end
-
-      actions.open_route(route)
     end)
   end)
 end

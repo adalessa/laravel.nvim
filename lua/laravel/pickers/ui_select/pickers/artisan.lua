@@ -1,4 +1,4 @@
-local actions = require("laravel.ui_select.actions")
+local actions = require("laravel.pickers.ui_select.actions")
 
 ---@class LaravelUISelectArtisanPicker
 ---@field commands_repository CommandsRepository
@@ -25,11 +25,9 @@ function ui_artisan_picker:run(opts)
       end,
       kind = "artisan",
     }, function(command)
-      if command == nil then
-        return
+      if command ~= nil then
+        actions.run(command)
       end
-
-      actions.run(command)
     end)
   end, function(error)
     vim.api.nvim_err_writeln(error)

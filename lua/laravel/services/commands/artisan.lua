@@ -37,7 +37,11 @@ end
 
 function artisan:complete(argLead)
   local commands = self.cache:remember("laravel-commands", 60, function()
-    local resp = self.api:sync("artisan", { "list", "--format=json" })
+    local resp = {}
+    self.api:async("artisan", { "list", "--format=json" }, function(result)
+      resp = result
+    end):wait()
+
     if resp:failed() then
       return {}
     end

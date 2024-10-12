@@ -1,7 +1,9 @@
 local commands = {}
 
-function commands:new()
-  local instance = {}
+function commands:new(pickers)
+  local instance = {
+    pickers = pickers,
+  }
   setmetatable(instance, self)
   self.__index = self
   return instance

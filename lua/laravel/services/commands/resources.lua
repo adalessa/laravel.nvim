@@ -1,7 +1,9 @@
 local resources = {}
 
-function resources:new()
-  local instance = {}
+function resources:new(pickers)
+  local instance = {
+    pickers = pickers,
+  }
   setmetatable(instance, self)
   self.__index = self
 

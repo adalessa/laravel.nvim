@@ -1,7 +1,9 @@
 local related = {}
 
-function related:new()
-  local instance = {}
+function related:new(pickers)
+  local instance = {
+    pickers = pickers,
+  }
   setmetatable(instance, self)
   self.__index = self
 

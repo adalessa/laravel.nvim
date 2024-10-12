@@ -1,7 +1,9 @@
 local make = {}
 
-function make:new()
-  local instance = {}
+function make:new(pickers)
+  local instance = {
+    pickers = pickers,
+  }
   setmetatable(instance, self)
   self.__index = self
 

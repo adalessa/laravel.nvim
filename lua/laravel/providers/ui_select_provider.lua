@@ -2,13 +2,17 @@
 local ui_select_provider = {}
 
 function ui_select_provider:register(app)
-  app:bindIf("artisan_picker", "laravel.pickers.ui_select.pickers.artisan", { tags = { "picker" } })
-  app:bindIf("routes_picker", "laravel.pickers.ui_select.pickers.routes", { tags = { "picker" } })
-  app:bindIf("make_picker", "laravel.pickers.ui_select.pickers.make", { tags = { "picker" } })
-  app:bindIf("related_picker", "laravel.pickers.ui_select.pickers.related", { tags = { "picker" } })
-  app:bindIf("resources_picker", "laravel.pickers.ui_select.pickers.resources", { tags = { "picker" } })
-  app:bindIf("commands_picker", "laravel.pickers.ui_select.pickers.commands", { tags = { "picker" } })
-  app:bindIf("history_picker", "laravel.pickers.ui_select.pickers.history", { tags = { "picker" } })
+  app:singeltonIf("ui.select.pickers", function()
+    return {
+      artisan = "laravel.pickers.ui_select.pickers.artisan",
+      routes = "laravel.pickers.ui_select.pickers.routes",
+      make = "laravel.pickers.ui_select.pickers.make",
+      related = "laravel.pickers.ui_select.pickers.related",
+      resources = "laravel.pickers.ui_select.pickers.resources",
+      commands = "laravel.pickers.ui_select.pickers.commands",
+      history = "laravel.pickers.ui_select.pickers.history",
+    }
+  end)
 end
 
 return ui_select_provider

@@ -34,7 +34,12 @@ end
 
 function app:make(abstract, arguments)
   if not self.container:has(abstract) then
-    error("Could not find " .. abstract)
+    local ok, _ = pcall(require, abstract)
+    if ok then
+      self:bind(abstract, abstract)
+    else
+      error("Could not find " .. abstract)
+    end
   end
 
   return self.container:get(abstract)(arguments)

@@ -1,6 +1,3 @@
----@type LaravelApp
-local app = require('laravel').app
-
 local commands = {}
 
 function commands:new()
@@ -11,12 +8,12 @@ function commands:new()
 end
 
 function commands:commands()
-  return {"commands"}
+  return { "commands" }
 end
 
 function commands:handle()
-  if app:has('commands_picker') then
-    app('commands_picker'):run()
+  if self.pickers:exists("commands") then
+    self.pickers:run("commands")
     return
   end
   vim.notify("No picker defined", vim.log.levels.ERROR)

@@ -8,10 +8,15 @@
 ---@class OverrideFeature
 ---@field enable boolean
 
+---@class PickersFeature
+---@field enable boolean
+---@field provider string 'telescope'
+
 ---@class LaravelFeatures
 ---@field route_info RouteInfoFeature
 ---@field model_info ModelInfoFeature
 ---@field override OverrideFeature
+---@field pickers PickersFeature
 
 ---@class LaravelOptions
 ---@field lsp_server string
@@ -33,7 +38,11 @@ return {
     },
     override = {
       enable = true,
-    }
+    },
+    pickers = {
+      enable = true,
+      provider = 'telescope',
+    },
   },
   ui = require("laravel.options.ui"),
   commands_options = require("laravel.options.command_options"),

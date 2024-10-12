@@ -6,6 +6,7 @@ function laravel_provider:register(app)
   app:bindIf("api", "laravel.api")
   app:bindIf("tinker", "laravel.tinker")
   app:bindIf("templates", "laravel.templates")
+  app:bindIf("pickers", "laravel.pickers_manager")
 
   -- SERVICES
   app:bindIf("artisan", "laravel.services.artisan")

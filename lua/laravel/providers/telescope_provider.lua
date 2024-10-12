@@ -7,13 +7,17 @@ function telescope_provider:register(app)
     return
   end
 
-  app:bindIf("artisan_picker", "laravel.telescope.pickers.artisan", { tags = { "picker" } })
-  app:bindIf("routes_picker", "laravel.telescope.pickers.routes", { tags = { "picker" } })
-  app:bindIf("make_picker", "laravel.telescope.pickers.make", { tags = { "picker" } })
-  app:bindIf("related_picker", "laravel.telescope.pickers.related", { tags = { "picker" } })
-  app:bindIf("resources_picker", "laravel.telescope.pickers.resources", { tags = { "picker" } })
-  app:bindIf("commands_picker", "laravel.telescope.pickers.commands", { tags = { "picker" } })
-  app:bindIf("history_picker", "laravel.telescope.pickers.history", { tags = { "picker" } })
+  app:singeltonIf("telescope.pickers", function()
+    return {
+      artisan = "laravel.telescope.pickers.artisan",
+      routes = "laravel.telescope.pickers.routes",
+      make = "laravel.telescope.pickers.make",
+      related = "laravel.telescope.pickers.related",
+      resources = "laravel.telescope.pickers.resources",
+      commands = "laravel.telescope.pickers.commands",
+      history = "laravel.telescope.pickers.history",
+    }
+  end)
 end
 
 return telescope_provider

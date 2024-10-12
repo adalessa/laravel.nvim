@@ -1,17 +1,16 @@
----@type LaravelApp
-local app = require("laravel").app
-
 ---@class ArtisanCommand
 ---@field runner LaravelRunner
 ---@field api LaravelApi
 ---@field cache LaravelCache
+---@field pickers LaravelPickersManager
 local artisan = {}
 
-function artisan:new(runner, api, cache)
+function artisan:new(runner, api, cache, pickers)
   local instance = {
     runner = runner,
     api = api,
     cache = cache,
+    pickers = pickers,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -26,8 +25,8 @@ end
 function artisan:handle(args)
   table.remove(args.fargs, 1)
   if vim.tbl_isempty(args.fargs) then
-    if app:has("artisan_picker") then
-      app("artisan_picker"):run()
+    if self.pickers:exists('artisan') then
+      self.pickers:run('artisan')
       return
     end
   end

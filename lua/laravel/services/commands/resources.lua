@@ -1,6 +1,3 @@
----@type LaravelApp
-local app = require('laravel').app
-
 local resources = {}
 
 function resources:new()
@@ -16,8 +13,8 @@ function resources:commands()
 end
 
 function resources:handle()
-  if app:has('resources_picker') then
-    app('resources_picker'):run()
+  if self.pickers:exists("resources") then
+    self.pickers:run("resources")
     return
   end
   vim.notify("No picker defined", vim.log.levels.ERROR)

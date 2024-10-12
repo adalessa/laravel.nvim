@@ -1,6 +1,3 @@
----@type LaravelApp
-local app = require('laravel').app
-
 local make = {}
 
 function make:new()
@@ -16,8 +13,8 @@ function make:commands()
 end
 
 function make:handle()
-  if app:has('make_picker') then
-    app('make_picker'):run()
+  if self.pickers:exists("make") then
+    self.pickers:run("make")
     return
   end
   vim.notify("No picker defined", vim.log.levels.ERROR)

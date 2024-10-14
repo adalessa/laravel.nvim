@@ -1,6 +1,6 @@
 local phpactor = require "laravel._lsp.phpactor"
 local intelephense = require "laravel._lsp.intelephense"
-local config = require "laravel.config"
+local app = require "laravel".app
 
 local servers = {
   phpactor = phpactor,
@@ -16,7 +16,7 @@ local get_client = function(server_name)
 
   if not client then
     local server = require("lspconfig")[server_name]
-    local client_id = vim.lsp.start(server.make_config(vim.fn.getcwd()))
+    local client_id = vim.lsp.start(server.make_config(vim.loop.cwd()))
     if not client_id then
       error "Could not start lsp client"
     end
@@ -30,7 +30,7 @@ end
 ---@param full_class string
 ---@param method string
 local go_to = function(full_class, method)
-  local server_name = config.options.lsp_server
+  local server_name = app('options'):get().lsp_server
 
   local server = servers[server_name]
   if server == nil then

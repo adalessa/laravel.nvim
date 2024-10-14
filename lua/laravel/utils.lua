@@ -38,4 +38,57 @@ function M.get_env(var)
   return envVal
 end
 
+function M.combine_tables(...)
+  local result = {}
+  for _, tbl in ipairs({ ... }) do
+    for _, value in ipairs(tbl) do
+      table.insert(result, value)
+    end
+  end
+
+  return result
+end
+
+---@param command string|nil
+---@return boolean
+function M.is_make_command(command)
+  if not command then
+    return false
+  end
+  local prefix = "make"
+
+  return command:sub(1, #prefix) == prefix or command == "livewire:make" or command == "pest:test"
+end
+
+---@param text string
+---@return string|nil
+function M.find_class_from_make_output(text)
+  local make_rules = { "%[(.-)%]", "CLASS:%s+(.-)\n" }
+  text = text:gsub("\r", "")
+  for _, rule in ipairs(make_rules) do
+    local matche
+    matche = text:gmatch(rule)()
+    if matche then
+      return matche
+    end
+  end
+
+  return nil
+end
+
+function M.split(str, sep)
+  local result = {}
+  local regex = ("([^%s]+)"):format(sep)
+  for each in str:gmatch(regex) do
+    table.insert(result, each)
+  end
+  return result
+end
+
+function M.get_line_indent(line)
+  local line_content = vim.fn.getline(line)
+
+  return string.match(line_content, "^%s*")
+end
+
 return M

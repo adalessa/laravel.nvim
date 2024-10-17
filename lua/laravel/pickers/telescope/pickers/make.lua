@@ -2,7 +2,7 @@ local conf = require("telescope.config").values
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
-local preview = require("laravel.pickers.telescope.preview")
+local preview = require("laravel.pickers.common.preview")
 local actions = require("laravel.pickers.telescope.actions")
 local is_make_command = require("laravel.utils").is_make_command
 

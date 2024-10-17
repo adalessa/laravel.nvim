@@ -10,7 +10,7 @@
 
 ---@class PickersFeature
 ---@field enable boolean
----@field provider 'telescope'|'ui.select'
+---@field provider 'telescope'|'ui.select'|'fzf-lua'
 
 ---@class LaravelFeatures
 ---@field route_info RouteInfoFeature
@@ -57,6 +57,7 @@ return {
     require("laravel.providers.route_info_provider"),
     require("laravel.providers.tinker_provider"),
     require("laravel.providers.telescope_provider"),
+    require("laravel.providers.fzf_lua_provider"),
     require("laravel.providers.ui_select_provider"),
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),

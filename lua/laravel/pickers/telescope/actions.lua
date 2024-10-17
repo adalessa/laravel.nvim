@@ -1,7 +1,6 @@
 local common_actions = require("laravel.pickers.common.actions")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
-local ui_run = require("laravel.pickers.telescope.ui_run")
 local app = require("laravel").app
 
 local M = {}
@@ -11,7 +10,7 @@ function M.run(prompt_bufnr)
   local entry = action_state.get_selected_entry()
   local command = entry.value
 
-  common_actions.run(command, ui_run)
+  common_actions.run(command)
 end
 
 function M.make_run(prompt_bufnr)

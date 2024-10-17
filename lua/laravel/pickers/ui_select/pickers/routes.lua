@@ -25,7 +25,7 @@ function routes_picker:run(opts)
       end,
       kind = "route",
     }, function(route)
-      if route == nil then
+      if route ~= nil then
         actions.open_route(route)
       end
     end)

@@ -1,6 +1,6 @@
--- local ui_run = require("laravel.pickers.ui_select.ui_run")
 local lsp = require("laravel._lsp")
 local app = require("laravel").app
+local ui_run = require("laravel.pickers.common.ui_run")
 
 local M = {}
 
@@ -29,7 +29,7 @@ local function go(route)
   lsp.go_to(action[1], action[2])
 end
 
-function M.run(command, ui_run)
+function M.run(command)
   vim.schedule(function()
     ui_run(command)
   end)

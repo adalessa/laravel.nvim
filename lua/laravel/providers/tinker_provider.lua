@@ -6,6 +6,10 @@ local tinker_provider = {}
 function tinker_provider:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 
+  if not app('options'):get().features.tinker.enable then
+    return
+  end
+
   local group = vim.api.nvim_create_augroup("tinker", {})
 
   local Split = require("nui.split")

@@ -1,6 +1,5 @@
 local NuiLine = require("nui.line")
 local NuiText = require("nui.text")
-local NuiTree = require("nui.tree")
 local Popup = require("nui.popup")
 local Layout = require("nui.layout")
 
@@ -129,7 +128,7 @@ function logs_panel:setup(opts)
   end)
   self._panel:map("n", "s", function()
     vim.ui.select(get_log_files(), { prompt = "Select the log file" }, function(selected)
-      if not selected then
+      if selected then
         self._current_log_file = selected
         self:load_logs()
       end

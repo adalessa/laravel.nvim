@@ -43,6 +43,9 @@ return {
       enable = true,
       provider = 'telescope',
     },
+    tinker = {
+      enable = false,
+    },
   },
   ui = require("laravel.options.ui"),
   commands_options = require("laravel.options.command_options"),
@@ -65,6 +68,7 @@ return {
     require("laravel.providers.model_info_provider"),
     require("laravel.providers.composer_info_provider"),
     require("laravel.providers.history_provider"),
+    require("laravel.providers.panel_provider"),
   },
   user_providers = {},
 }

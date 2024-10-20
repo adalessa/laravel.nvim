@@ -15,10 +15,10 @@ function history:commands()
 end
 
 function history:handle()
-    if self.pickers:exists('history') then
-      self.pickers:run('history')
-      return
-    end
+  if self.pickers:exists("history") then
+    self.pickers:run("history")
+    return
+  end
   vim.notify("No picker defined", vim.log.levels.ERROR)
 end
 

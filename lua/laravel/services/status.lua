@@ -35,11 +35,13 @@ end
 
 function status:start()
   local refresh = function()
-    self.artisan:info()
-        :thenCall(function(info)
-          self.values.laravel = info.environment.laravel_version
-          self.values.php = info.environment.php_version
-        end)
+    self.artisan:info():thenCall(function(info)
+      if not info then
+        return
+      end
+      self.values.laravel = info.environment.laravel_version
+      self.values.php = info.environment.php_version
+    end)
   end
 
   self.refresh = refresh

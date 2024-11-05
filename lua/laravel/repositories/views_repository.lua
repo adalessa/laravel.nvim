@@ -32,6 +32,7 @@ function views_repository:all()
         on_exit = function(finds)
           resolve(vim
             .iter(finds)
+            :filter(function (value) return value ~= nil end)
             :map(function(value)
               return {
                 name = value:match(rule):gsub("/", "."),

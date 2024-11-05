@@ -20,6 +20,7 @@ end
 function panels:init()
   self.menu = require("laravel_panel.menu"):new()
 
+  -- TODO: maybe use promises on the modules
   for _, module in ipairs(self.modules) do
     if module:active() then
       self.menu:add(module.id, module.text)

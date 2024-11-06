@@ -34,11 +34,16 @@ function views_repository:all()
             .iter(finds)
             :filter(function (value) return value ~= nil end)
             :map(function(value)
+              local match = value:match(rule)
+              if not match then
+                return nil
+              end
               return {
-                name = value:match(rule):gsub("/", "."),
+                name = match:gsub("/", "."),
                 path = value,
               }
             end)
+            :filter(function (value) return value ~= nil end)
             :totable())
         end,
       })

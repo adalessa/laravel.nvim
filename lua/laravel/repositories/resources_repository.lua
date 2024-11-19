@@ -25,10 +25,12 @@ function resources_repository:get(resource)
     self.tinker:text("echo base_path();"),
     self.tinker:text(string.format("echo resource_path(%s);", name)),
   }):thenCall(function(results)
-    local base_path, resource_path = unpack(results)
-    local cwd = vim.uv.cwd()
+      local base_path, resource_path = unpack(vim.tbl_map(vim.trim, results))
+      local cwd = vim.uv.cwd()
 
-    return vim.trim(resource_path:gsub(base_path:gsub("-", "%%-"), cwd))
+      local res, _ = resource_path:gsub(base_path:gsub("-", "%%-"), cwd)
+
+      return res
   end)
 end
 

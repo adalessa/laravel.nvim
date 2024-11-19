@@ -41,7 +41,7 @@ function status:start()
       end
       self.values.laravel = info.environment.laravel_version
       self.values.php = info.environment.php_version
-    end)
+    end):catch(function() end)
   end
 
   self.refresh = refresh

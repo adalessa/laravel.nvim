@@ -80,7 +80,7 @@ function views_diagnostic:handle(bufnr)
       end)
       :totable()
     )
-  end)
+  end):catch(function() end)
 end
 
 return views_diagnostic

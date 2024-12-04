@@ -42,8 +42,8 @@ function runner:run(cmd, args, opts)
 
   local job_id = vim.fn.termopen(table.concat(command, " "))
 
-  if is_make_command(args[1]) then
-    instance:on("TermClose", function()
+  instance:on("TermClose", function()
+    if is_make_command(args[1]) then
       local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
       local class = find_class(table.concat(lines, ""))
       if class ~= nil and class ~= "" then
@@ -52,10 +52,7 @@ function runner:run(cmd, args, opts)
           vim.cmd("e " .. class)
         end)
       end
-    end)
-  end
-
-  instance:on("TermClose", function()
+    end
     vim.api.nvim_exec_autocmds("User", {
       pattern = "LaravelCommandRun",
       data = {

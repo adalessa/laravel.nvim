@@ -21,11 +21,18 @@ function status_provider:boot(app)
 
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
-    pattern = "LaravelCommandRun",
+    pattern = { "LaravelCommandRun" },
     callback = function(ev)
       if ev.data.cmd == "composer" then
         app("status"):update()
       end
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "User" }, {
+    group = group,
+    pattern = { "LaravelFlushCache" },
+    callback = function()
+      app("status"):update()
     end,
   })
 end

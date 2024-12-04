@@ -30,6 +30,16 @@ M.check = function()
     )
   end
 
+  local ok_promise, _ = pcall(require, "promise")
+  if ok_promise then
+    report_ok("Promise-async is installed")
+  else
+    report_error(
+      "Promise Async is not installed, this is use to handle async functionalities",
+      { "Install it from `https://github.com/kevinhwang91/promise-async`" }
+    )
+  end
+
   local ok_telescope, _ = pcall(require, "telescope")
   if ok_telescope then
     report_ok("Telescope is installed")

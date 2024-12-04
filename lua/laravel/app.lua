@@ -155,7 +155,29 @@ function app:boot()
 end
 
 function app:start()
+  self:validate_instalation()
   return self:boot()
+end
+
+function app:validate_instalation()
+  local plenary_ok, _ = pcall(require, "plenary")
+  local async_ok, _ = pcall(require, "promise")
+  local nui_ok, _ = pcall(require, "nui.popup")
+
+  if not plenary_ok or not async_ok or not nui_ok then
+    local errors = {}
+    if not plenary_ok then
+      table.insert(errors, "Plenary is required for Laravel, please install it")
+    end
+    if not async_ok then
+      table.insert(errors, "Promise-async is required for Laravel, please install it")
+    end
+    if not nui_ok then
+      table.insert(errors, "Nui is required for Laravel, please install it")
+    end
+
+    error(table.concat(errors, "\n"))
+  end
 end
 
 function app:down()

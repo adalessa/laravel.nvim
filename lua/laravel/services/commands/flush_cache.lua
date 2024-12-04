@@ -15,6 +15,9 @@ end
 
 function flush_cache:handle()
   self.cache:flush()
+  vim.api.nvim_exec_autocmds("User", {
+    pattern = "LaravelFlushCache",
+  })
 end
 
 return flush_cache

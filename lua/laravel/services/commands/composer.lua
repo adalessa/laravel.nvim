@@ -8,6 +8,7 @@ function composer:new(runner)
       "require",
       "update",
       "remove",
+      "info",
     },
   }
   setmetatable(instance, self)
@@ -23,12 +24,12 @@ end
 function composer:handle(args)
   table.remove(args.fargs, 1)
   if vim.tbl_isempty(args.fargs) then
-    vim.ui.select({prompt = "Composer commands"}, self.sub_commands, function(selected)
+    vim.ui.select(self.sub_commands, { prompt = "Composer commands" }, function(selected)
       if selected == nil then
         return
       end
 
-      self.runner:run("composer", selected)
+      self.runner:run("composer", { selected })
     end)
     return
   end

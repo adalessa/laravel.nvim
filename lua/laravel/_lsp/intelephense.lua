@@ -16,7 +16,7 @@ local function go_to(client, is_new_instance, full_class, method)
     if
       location.location
       and location.containerName .. "\\" .. location.name == full_class
-      and vim.lsp.util._get_symbol_kind_name(location.kind) == "Class"
+      and vim.lsp.protocol.SymbolKind[location.kind] or '' == "Class"
     then
       class_location = location
       break

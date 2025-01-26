@@ -64,17 +64,21 @@ function M.gen_from_related(relations)
   return string_names, relation_hash
 end
 
+local function formatRouteText(route)
+  local uri = require("fzf-lua").utils.ansi_codes.magenta(route.uri)
+  if route.name ~= nil and route.name ~= "" then
+    return string.format("[%s] %s", require("fzf-lua").utils.ansi_codes.blue(route.name), uri)
+  end
+
+  return uri
+end
+
 function M.gen_from_routes(routes)
-  local string_names = vim
-    .iter(routes)
-    :map(function(route)
-      return route.uri .. " " .. (route.name or "")
-    end)
-    :totable()
+  local string_names = vim.iter(routes):map(formatRouteText):totable()
 
   local route_hash = {}
   for _, route in ipairs(routes) do
-    route_hash[route.uri .. " " .. (route.name or "")] = route
+    route_hash[require("fzf-lua").utils.strip_ansi_coloring(formatRouteText(route))] = route
   end
 
   return string_names, route_hash

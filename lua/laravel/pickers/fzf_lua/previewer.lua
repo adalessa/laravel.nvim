@@ -41,7 +41,6 @@ M.RoutePreviewer = function(route_table)
   end
 
   function previewer:populate_preview_buf(selected)
-    vim.print(route_table, selected)
     local tmpbuf = self:get_tmp_buffer()
     local route = route_table[selected]
     local route_preview = preview.route(route)

@@ -1,11 +1,28 @@
 local M = {}
 
+local function split_string(input)
+    local group, command = input:match("([^:]+):([^:]+)")
+    if not group then
+        command = input
+    end
+    return group, command
+end
+
+local function formatCommandText(command)
+  -- command can be like "info" or "make:command" need to color on make in one color and info and command in other
+  local group, cmd = split_string(command.name)
+  cmd = require("fzf-lua").utils.ansi_codes.magenta(cmd)
+  if group ~= nil then
+    return string.format("%s:%s", require("fzf-lua").utils.ansi_codes.blue(group), cmd)
+  end
+
+  return cmd
+end
+
 function M.gen_from_artisan(commands)
   local string_names = vim
     .iter(commands)
-    :map(function(command)
-      return command.name
-    end)
+    :map(formatCommandText)
     :totable()
 
   local command_hash = {}

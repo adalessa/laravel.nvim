@@ -25,7 +25,7 @@ M.CommandPreviewer = function(command_table)
     end
 
     self:set_preview_buf(tmpbuf)
-    self.win:update_scrollbar()
+    self.win:update_preview_scrollbar()
   end
 
   return previewer
@@ -53,7 +53,7 @@ M.RoutePreviewer = function(route_table)
     end
 
     self:set_preview_buf(tmpbuf)
-    self.win:update_scrollbar()
+    self.win:update_preview_scrollbar()
   end
 
   return previewer

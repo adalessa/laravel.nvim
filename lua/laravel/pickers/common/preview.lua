@@ -250,7 +250,38 @@ local route = function(route)
   }
 end
 
+local composer = function(cmd)
+  local lines = {}
+  local highlights = {}
+
+  table.insert(lines, "Description:")
+  table.insert(highlights, {
+    "WarningMsg",
+    #lines - 1,
+    0,
+    -1,
+  })
+
+  table.insert(lines, "\t" .. cmd.description)
+
+  table.insert(lines, "Usage:")
+  table.insert(highlights, {
+    "WarningMsg",
+    #lines - 1,
+    0,
+    -1,
+  })
+
+  table.insert(lines, "\t" .. vim.fn.join(cmd.usage, " "))
+
+  return {
+    lines = lines,
+    highlights = highlights,
+  }
+end
+
 return {
   command = command,
   route = route,
+  composer = composer,
 }

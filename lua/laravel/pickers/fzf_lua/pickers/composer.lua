@@ -1,15 +1,15 @@
-local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_artisan
+local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_composer
 local actions = require("laravel.pickers.common.actions")
 local fzf_exec = require("fzf-lua").fzf_exec
-local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").CommandPreviewer
+local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").ComposerPreviewer
 
----@class LaravelFzfLuaArtisanPicker
----@field commands_repository CommandsRepository
-local ui_artisan_picker = {}
+---@class LaravelFzfLuaComposerPicker
+---@field composer_repository ComposerRepository
+local ui_composer_picker = {}
 
-function ui_artisan_picker:new(cache_commands_repository)
+function ui_composer_picker:new(composer_repository)
   local instance = {
-    commands_repository = cache_commands_repository,
+    composer_repository = composer_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -17,20 +17,20 @@ function ui_artisan_picker:new(cache_commands_repository)
   return instance
 end
 
-function ui_artisan_picker:run(opts)
+function ui_composer_picker:run(opts)
   opts = opts or {}
 
-  return self.commands_repository:all():thenCall(function(commands)
+  return self.composer_repository:all():thenCall(function(commands)
     local command_names, command_table = format_entry(commands)
 
     fzf_exec(command_names, {
       actions = {
         ["default"] = function(selected)
           local command = command_table[selected[1]]
-          actions.artisan_run(command)
+          actions.composer_run(command)
         end,
       },
-      prompt = "Artisan > ",
+      prompt = "Composer > ",
       previewer = CommandPreviewer(command_table),
       fzf_opts = {
         ["--preview-window"] = "nohidden,70%",
@@ -41,4 +41,4 @@ function ui_artisan_picker:run(opts)
   end)
 end
 
-return ui_artisan_picker
+return ui_composer_picker

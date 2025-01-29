@@ -1,12 +1,12 @@
 local actions = require("laravel.pickers.common.actions")
 
----@class LaravelUISelectArtisanPicker
----@field commands_repository CommandsRepository
+---@class LaravelUISelectComposerPicker
+---@field composer_repository ComposerRepository
 local ui_artisan_picker = {}
 
-function ui_artisan_picker:new(cache_commands_repository)
+function ui_artisan_picker:new(composer_repository)
   local instance = {
-    commands_repository = cache_commands_repository,
+    composer_repository = composer_repository,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -17,16 +17,16 @@ end
 function ui_artisan_picker:run(opts)
   opts = opts or {}
 
-  return self.commands_repository:all():thenCall(function(commands)
+  return self.composer_repository:all():thenCall(function(commands)
     vim.ui.select(commands, {
-      prompt_title = "Artisan commands",
+      prompt_title = "Composer commands",
       format_item = function(command)
         return command.name
       end,
       kind = "artisan",
     }, function(command)
       if command ~= nil then
-          actions.artisan_run(command)
+          actions.composer_run(command)
       end
     end)
   end, function(error)

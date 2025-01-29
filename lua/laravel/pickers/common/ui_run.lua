@@ -1,7 +1,6 @@
 local Layout = require("nui.layout")
 local Popup = require("nui.popup")
 local Input = require("nui.input")
-local app = require("laravel").app
 local event = require("nui.utils.autocmd").event
 local preview = require("laravel.pickers.common.preview")
 
@@ -14,13 +13,28 @@ local function scroll_fn(popup, direction)
   end
 end
 
-return function(command)
+return function(command, opts)
+  opts = vim.tbl_deep_extend("force", {
+    title = "UI RUN",
+    prompt = "$",
+    on_submit = function(input)
+      vim.print(vim.inspect(input))
+    end
+  }, opts)
+
+  local prompt = ""
+  if type(opts.prompt) == "function" then
+    prompt = opts.prompt(command)
+  else
+    prompt = opts.prompt
+  end
+
   local entry_popup = Input({
     focusable = true,
     border = {
       style = "rounded",
       text = {
-        top = "Artisan",
+        top = opts.title,
         top_align = "center",
       },
     },
@@ -28,13 +42,8 @@ return function(command)
       winhighlight = "Normal:LaravelPrompt",
     },
   }, {
-    prompt = "$ artisan " .. command.name .. " ",
-    on_submit = function(input)
-      local args = vim.fn.split(input, " ", false)
-      table.insert(args, 1, command.name)
-
-      app("runner"):run("artisan", args)
-    end,
+    prompt = prompt,
+    on_submit = opts.on_submit,
   })
 
   local help_popup = Popup({
@@ -50,7 +59,15 @@ return function(command)
     },
   })
 
-  local command_preview = preview.command(command)
+  local command_preview = {
+    lines = {},
+    highlights = {},
+  }
+  if type(opts.preview) == "function" then
+    command_preview = opts.preview()
+  else
+    command_preview = opts.preview
+  end
 
   vim.api.nvim_buf_set_lines(help_popup.bufnr, 0, -1, false, command_preview.lines)
 

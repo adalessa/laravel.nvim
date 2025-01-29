@@ -14,7 +14,7 @@ end
 ---@return Promise
 function commands_repository:all()
   return self.api:send("artisan", { "list", "--format=json" }):thenCall(
-  ---@param result ApiResponse
+    ---@param result ApiResponse
     function(result)
       return vim
           .iter(result:json().commands or {})

@@ -10,6 +10,7 @@ function telescope_provider:register(app)
   app:singeltonIf("telescope.pickers", function()
     return {
       artisan = "laravel.pickers.telescope.pickers.artisan",
+      composer = "laravel.pickers.telescope.pickers.composer",
       routes = "laravel.pickers.telescope.pickers.routes",
       make = "laravel.pickers.telescope.pickers.make",
       related = "laravel.pickers.telescope.pickers.related",

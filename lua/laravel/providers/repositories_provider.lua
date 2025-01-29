@@ -16,6 +16,8 @@ function repositories_provider:register(app)
 
   app:bindIf('configs_repository', 'laravel.repositories.configs_repository')
   app:bindIf('cache_configs_repository', 'laravel.repositories.cache_configs_repository')
+
+  app:bindIf('composer_repository', 'laravel.repositories.composer_repository')
 end
 
 function repositories_provider:boot(app)

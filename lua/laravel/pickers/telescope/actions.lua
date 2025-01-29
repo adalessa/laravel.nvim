@@ -10,7 +10,15 @@ function M.run(prompt_bufnr)
   local entry = action_state.get_selected_entry()
   local command = entry.value
 
-  common_actions.run(command)
+  common_actions.artisan_run(command)
+end
+
+function M.composer_run(prompt_bufnr)
+  actions.close(prompt_bufnr)
+  local entry = action_state.get_selected_entry()
+  local command = entry.value
+
+  common_actions.composer_run(command)
 end
 
 function M.make_run(prompt_bufnr)

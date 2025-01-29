@@ -1,6 +1,7 @@
 local lsp = require("laravel._lsp")
 local app = require("laravel").app
 local ui_run = require("laravel.pickers.common.ui_run")
+local preview = require("laravel.pickers.common.preview")
 
 local M = {}
 
@@ -29,9 +30,35 @@ local function go(route)
   lsp.go_to(action[1], action[2])
 end
 
-function M.run(command)
+function M.artisan_run(command)
   vim.schedule(function()
-    ui_run(command)
+    ui_run(command, {
+      title = "Artisan",
+      prompt = "$ artisan " .. command.name .. " ",
+      on_submit = function(input)
+        local args = vim.fn.split(input, " ", false)
+        table.insert(args, 1, command.name)
+
+        app("runner"):run("artisan", args)
+      end,
+      preview = preview.command(command),
+    })
+  end)
+end
+
+function M.composer_run(command)
+  vim.schedule(function()
+    ui_run(command, {
+      title = "Composer",
+      prompt = "$ composer " .. command.name .. " ",
+      on_submit = function(input)
+        local args = vim.fn.split(input, " ", false)
+        table.insert(args, 1, command.name)
+
+        app("runner"):run("composer", args)
+      end,
+      preview = preview.composer(command),
+    })
   end)
 end
 

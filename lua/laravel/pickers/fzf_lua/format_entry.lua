@@ -33,6 +33,20 @@ function M.gen_from_artisan(commands)
   return string_names, command_hash
 end
 
+function M.gen_from_composer(commands)
+  local string_names = vim
+    .iter(commands)
+    :map(formatCommandText)
+    :totable()
+
+  local command_hash = {}
+  for _, command in ipairs(commands) do
+    command_hash[command.name] = command
+  end
+
+  return string_names, command_hash
+end
+
 function M.gen_from_commands(commands)
   local string_names = vim
     .iter(commands)

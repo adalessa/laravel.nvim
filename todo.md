@@ -55,3 +55,21 @@ that can be pass to
 `nvim_open_win({buffer}, {enter}, {config})`
 
 create a buffer with just that and the common options.
+
+
+
+Thinker how to set parser for filetype.
+I want to set filetype thinker and map to PHP_ONLY parser
+
+
+Model completion, cache model show info
+Need to get current position, get the MODEL on parent.
+also check the alias to see if it's a model
+
+
+
+TODO I was able to reproduce the issue of laravel is not active, need to check when locale or lative, that composer and php are executalble.
+I have the check but the environment looks like is still set, so need to debug more there
+
+Improve the healthcheck and how to map using some check for cmp, blink and the provider.
+The provider for picker can be auto to look for the plugins configured

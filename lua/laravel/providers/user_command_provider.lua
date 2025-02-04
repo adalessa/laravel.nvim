@@ -25,6 +25,7 @@ function user_command_provider:boot(app)
   vim.api.nvim_create_user_command("Laravel", function(args)
     if not app("env"):is_active() then
       vim.notify("Laravel is not active", vim.log.levels.ERROR)
+      return
     end
 
     if not args.fargs[1] then

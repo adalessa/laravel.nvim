@@ -58,7 +58,7 @@ function M.gen_from_laravel_routes(opts)
   return function(route)
     return M.set_default_entry_mt({
       value = route,
-      ordinal = vim.fn.join({ route.uri, route.name or "" }, " "),
+      ordinal = string.format("%s %s %s", vim.iter(route.methods):join(" "), route.uri, route.name or "" ),
       display = make_display,
       route_method = vim.fn.join(route.methods, "|"),
     }, opts)

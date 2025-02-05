@@ -12,6 +12,11 @@ local function go(route)
       vim.fn.search(route.uri:gsub("api", "") .. "")
     elseif vim.tbl_contains(route.middlewares, "web") then
       vim.cmd("edit routes/web.php")
+      -- TODO: use the get or post to find the right route or view
+            -- get or view can be for GET
+            -- post if not we need the resources
+            -- can improce this with a treesitter query ?
+            -- should be able to look for specif methods
       if route.uri == "/" then
         vim.fn.search("['\"]/['\"]")
       else

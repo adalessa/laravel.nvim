@@ -18,24 +18,25 @@ function ui_artisan_picker:new(cache_commands_repository)
 end
 
 function ui_artisan_picker:run(opts)
-  opts = opts or {}
-
   return self.commands_repository:all():thenCall(function(commands)
     local command_names, command_table = format_entry(commands)
 
-    fzf_exec(command_names, {
-      actions = {
-        ["default"] = function(selected)
-          local command = command_table[selected[1]]
-          actions.artisan_run(command)
-        end,
-      },
-      prompt = "Artisan > ",
-      previewer = CommandPreviewer(command_table),
-      fzf_opts = {
-        ["--preview-window"] = "nohidden,70%",
-      },
-    })
+    fzf_exec(
+      command_names,
+      vim.tbl_extends("force", {
+        actions = {
+          ["default"] = function(selected)
+            local command = command_table[selected[1]]
+            actions.artisan_run(command)
+          end,
+        },
+        prompt = "Artisan > ",
+        previewer = CommandPreviewer(command_table),
+        fzf_opts = {
+          ["--preview-window"] = "nohidden,70%",
+        },
+      }, opts or {})
+    )
   end, function(error)
     vim.api.nvim_err_writeln(error)
   end)

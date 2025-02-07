@@ -20,11 +20,9 @@ function composer_picker:new(composer_repository)
 end
 
 function composer_picker:run(opts)
-  opts = opts or {}
-
   return self.composer_repository:all():thenCall(function(commands)
     pickers
-      .new(opts, {
+      .new(opts or {}, {
         prompt_title = "Composer commands",
         finder = finders.new_table({
           results = commands,

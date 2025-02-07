@@ -15,10 +15,8 @@ function history_picker:new(history)
 end
 
 function history_picker:run(opts)
-  opts = opts or {}
-
   pickers
-    .new(opts, {
+    .new(opts or {}, {
       prompt_title = "Laravel Command History",
       finder = finders.new_table({
         results = self.history_provider:get(),

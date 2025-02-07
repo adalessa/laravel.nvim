@@ -11,6 +11,7 @@ function user_command_provider:register(app)
   app:bindIf("resources_command", "laravel.services.commands.resources", { tags = { "command" } })
   app:bindIf("view_finder_command", "laravel.services.commands.view_finder", { tags = { "command" } })
   app:bindIf("flush_cache_command", "laravel.services.commands.flush_cache", { tags = { "command" } })
+  app:bindIf("gf_command", "laravel.services.commands.gf", { tags = { "command" } })
 
   app:singeltonIf("serve_command", "laravel.services.commands.serve", { tags = { "command" } })
   app:singeltonIf("assets_command", "laravel.services.commands.assets", { tags = { "command" } })
@@ -31,12 +32,12 @@ function user_command_provider:boot(app)
     if not args.fargs[1] then
       vim.ui.select(
         vim
-        .iter(app("user_commands"))
-        :map(function(command)
-          return command:commands()
-        end)
-        :flatten()
-        :totable(),
+          .iter(app("user_commands"))
+          :map(function(command)
+            return command:commands()
+          end)
+          :flatten()
+          :totable(),
         { prompt = "Laravel command: " },
         function(selected)
           if not selected then
@@ -67,15 +68,15 @@ function user_command_provider:boot(app)
       local fCmdLine = vim.split(cmdLine, " ")
       if #fCmdLine <= 2 then
         return vim
-            .iter(app("user_commands"))
-            :map(function(command)
-              return command:commands()
-            end)
-            :flatten()
-            :filter(function(subcommand)
-              return vim.startswith(subcommand, argLead)
-            end)
-            :totable()
+          .iter(app("user_commands"))
+          :map(function(command)
+            return command:commands()
+          end)
+          :flatten()
+          :filter(function(subcommand)
+            return vim.startswith(subcommand, argLead)
+          end)
+          :totable()
       elseif #fCmdLine == 3 then
         local command = vim.iter(app("user_commands")):find(function(cmd)
           return vim.iter(cmd:commands()):any(function(name)

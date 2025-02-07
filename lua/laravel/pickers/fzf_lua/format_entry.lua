@@ -1,11 +1,11 @@
 local M = {}
 
 local function split_string(input)
-    local group, command = input:match("([^:]+):([^:]+)")
-    if not group then
-        command = input
-    end
-    return group, command
+  local group, command = input:match("([^:]+):([^:]+)")
+  if not group then
+    command = input
+  end
+  return group, command
 end
 
 local function formatCommandText(command)
@@ -20,10 +20,7 @@ local function formatCommandText(command)
 end
 
 function M.gen_from_artisan(commands)
-  local string_names = vim
-    .iter(commands)
-    :map(formatCommandText)
-    :totable()
+  local string_names = vim.iter(commands):map(formatCommandText):totable()
 
   local command_hash = {}
   for _, command in ipairs(commands) do
@@ -34,10 +31,7 @@ function M.gen_from_artisan(commands)
 end
 
 function M.gen_from_composer(commands)
-  local string_names = vim
-    .iter(commands)
-    :map(formatCommandText)
-    :totable()
+  local string_names = vim.iter(commands):map(formatCommandText):totable()
 
   local command_hash = {}
   for _, command in ipairs(commands) do
@@ -96,12 +90,12 @@ function M.gen_from_related(relations)
 end
 
 local function formatRouteText(route)
-  local uri = require("fzf-lua").utils.ansi_codes.magenta(route.uri)
-  if route.name ~= nil and route.name ~= "" then
-    return string.format("[%s] %s", require("fzf-lua").utils.ansi_codes.blue(route.name), uri)
-  end
-
-  return uri
+  return string.format(
+    "%s [%s] %s",
+    vim.iter(route.methods):join("|"),
+    require("fzf-lua").utils.ansi_codes.blue(route.name or ""),
+    require("fzf-lua").utils.ansi_codes.magenta(route.uri)
+  )
 end
 
 function M.gen_from_routes(routes)

@@ -23,7 +23,7 @@ function ui_artisan_picker:run(opts)
 
     fzf_exec(
       command_names,
-      vim.tbl_extends("force", {
+      vim.tbl_extend("force", {
         actions = {
           ["default"] = function(selected)
             local command = command_table[selected[1]]

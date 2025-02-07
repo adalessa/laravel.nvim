@@ -36,6 +36,21 @@ function routes_picker:run(opts)
           common_actions.go(item.value)
         end
       end,
+      actions = {
+        open_browser = function(picker, item)
+          picker:close()
+          if item then
+            common_actions.open_browser(item.value)
+          end
+        end,
+      },
+      win = {
+        input = {
+          keys = {
+            ["<c-o>"] = { "open_browser", mode = { "n", "i" }, desc = "Open Route in Browser" },
+          },
+        },
+      },
     }, opts or {}))
   end)
 end

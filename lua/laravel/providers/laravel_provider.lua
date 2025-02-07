@@ -18,6 +18,7 @@ function laravel_provider:register(app)
   app:bindIf("ui_handler", "laravel.services.ui_handler")
   app:bindIf("view_finder", "laravel.services.view_finder")
   app:bindIf("views", "laravel.services.views")
+  app:bindIf("gf", "laravel.services.gf")
 
   app:singeltonIf("cache", "laravel.services.cache")
   app:singeltonIf("env", "laravel.services.environment")

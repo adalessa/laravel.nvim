@@ -7,7 +7,7 @@ Plugin for Neovim to enhance the development experience of Laravel projects
 Quick executing of artisan commands, list and navigate to routes. Information about the routes.
 Robust API to allow you to run any command in the way that you need.
 
-Check the Oficial Docs [Doc](https://adalessa.github.io/laravel-nvim-docs/)
+For more information, see the [official documentation](https://adalessa.github.io/laravel-nvim-docs/)
 
 # Self promotion
 I am Ariel I am a developer and also content creator (mostly in Spanish) if you would like to show some love leave a start into the plugin and subscribe to my [Youtube](https://youtube.com/@Alpha_Dev) if you want to show even more love you can support becoming a member on Youtube. But just leaving a like or letting me know that you like and enjoy the plugin is appreciated.

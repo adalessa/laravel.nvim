@@ -33,7 +33,7 @@ function routes_picker:run(opts)
       confirm = function(picker, item)
         picker:close()
         if item then
-          common_actions.go(item.value)
+          common_actions.open_route(item.value)
         end
       end,
       actions = {

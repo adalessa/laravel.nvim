@@ -6,12 +6,13 @@
 ---@field templates LaravelTemplates
 local source = {}
 
-function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, templates)
+function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, env_vars, templates)
   local instance = {
     env = env,
     views_repository = cache_views_repository,
     configs_repository = cache_configs_repository,
     routes_repository = cache_routes_repository,
+    env_vars = env_vars,
     templates = templates,
   }
 
@@ -49,16 +50,16 @@ function source:complete(params, callback)
     self.views_repository:all():thenCall(function(views)
       callback({
         items = vim
-            .iter(views)
-            :map(function(view)
-              return {
-                label = self.templates:build("view_label", view.name),
-                insertText = view.name,
-                kind = vim.lsp.protocol.CompletionItemKind["Value"],
-                documentation = view.path,
-              }
-            end)
-            :totable(),
+          .iter(views)
+          :map(function(view)
+            return {
+              label = self.templates:build("view_label", view.name),
+              insertText = view.name,
+              kind = vim.lsp.protocol.CompletionItemKind["Value"],
+              documentation = view.path,
+            }
+          end)
+          :totable(),
         isIncomplete = false,
       })
     end)
@@ -70,16 +71,16 @@ function source:complete(params, callback)
     self.configs_repository:all():thenCall(function(configs)
       callback({
         items = vim
-            .iter(configs)
-            :map(function(config)
-              return {
-                label = self.templates:build("config_label", config),
-                insertText = config,
-                kind = vim.lsp.protocol.CompletionItemKind["Value"],
-                documentation = config,
-              }
-            end)
-            :totable(),
+          .iter(configs)
+          :map(function(config)
+            return {
+              label = self.templates:build("config_label", config),
+              insertText = config,
+              kind = vim.lsp.protocol.CompletionItemKind["Value"],
+              documentation = config,
+            }
+          end)
+          :totable(),
         isIncomplete = false,
       })
     end)
@@ -91,25 +92,46 @@ function source:complete(params, callback)
     self.routes_repository:all():thenCall(function(routes)
       callback({
         items = vim
-            .iter(routes)
-            :filter(function(route)
-              return route.name ~= nil
-            end)
-            :map(function(route)
-              return {
-                label = self.templates:build("route_label", route.name),
-                insertText = route.name,
-                kind = vim.lsp.protocol.CompletionItemKind["Value"],
-                documentation = self.templates:build(
-                  "route_documentation",
-                  route.name,
-                  table.concat(route.methods, " | "),
-                  route.uri,
-                  table.concat(route.middlewares or { "None" }, " | ")
-                ),
-              }
-            end)
-            :totable(),
+          .iter(routes)
+          :filter(function(route)
+            return route.name ~= nil
+          end)
+          :map(function(route)
+            return {
+              label = self.templates:build("route_label", route.name),
+              insertText = route.name,
+              kind = vim.lsp.protocol.CompletionItemKind["Value"],
+              documentation = self.templates:build(
+                "route_documentation",
+                route.name,
+                table.concat(route.methods, " | "),
+                route.uri,
+                table.concat(route.middlewares or { "None" }, " | ")
+              ),
+            }
+          end)
+          :totable(),
+        isIncomplete = false,
+      })
+    end)
+
+    return
+  end
+
+  if text:match("env%([%'|%\"]") then
+    self.env_vars:get():thenCall(function(variables)
+      callback({
+        items = vim
+          .iter(variables)
+          :map(function(variable)
+            return {
+              label = self.templates:build("env_var", variable.key),
+              insertText = variable.key,
+              kind = vim.lsp.protocol.CompletionItemKind["Value"],
+              documentation = string.format("%s = %s", variable.key, variable.value),
+            }
+          end)
+          :totable(),
         isIncomplete = false,
       })
     end)

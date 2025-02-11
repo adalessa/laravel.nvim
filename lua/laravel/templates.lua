@@ -8,6 +8,7 @@ local templates = {
   ["route_label"] = "%s (route)",
   ["config_label"] = "%s (config)",
   ["view_label"] = "%s (view)",
+  ["env_var"] = "%s (env)",
 }
 
 function templates:build(name, ...)

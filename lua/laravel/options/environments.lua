@@ -51,6 +51,19 @@ return {
       },
     },
     {
+      name = "herd",
+      condition = {
+        executable = { "herd" },
+      },
+      commands = {
+        herd = { "herd" },
+        {
+          commands = { "php", "composer" },
+          prefix = { "herd" },
+        },
+      },
+    },
+    {
       name = "local",
       condition = {
         executable = { "php" },

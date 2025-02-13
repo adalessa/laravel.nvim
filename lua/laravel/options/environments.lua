@@ -9,12 +9,12 @@
 
 ---@class LaravelOptionsEnvironments
 ---@field env_variable string
----@field auto_dicover boolean
+---@field auto_discover boolean
 ---@field default string
 ---@field definitions LaravelEnvironmentConfig[]
 return {
   env_variable = "NVIM_LARAVEL_ENV",
-  auto_dicover = true,
+  auto_discover = true,
   default = "local",
   definitions = {
     {

@@ -50,7 +50,7 @@ function environment:boot()
     end
   end
 
-  if opts.auto_dicover then
+  if opts.auto_discover then
     for _, opt in ipairs(opts.definitions) do
       local env = Environment:new(opt)
       if env:check() then

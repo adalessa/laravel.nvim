@@ -16,14 +16,20 @@ local app = require("laravel").app
 
 ---@class LaravelPickersManager
 ---@field _enable boolean
----@field provider string
+---@field provider {}
 local pickers_manager = {}
 
 function pickers_manager:new(options)
+  local providerName = options:get().features.pickers.provider
   local instance = {
     _enable = options:get().features.pickers.enable,
-    provider = options:get().features.pickers.provider,
+    provider = app("pickers." .. providerName),
   }
+
+  if instance._enable and not instance.provider.check() then
+    error("Picker provider not found: " .. providerName .. ". Check your configuration")
+  end
+
   setmetatable(instance, self)
   self.__index = self
 
@@ -46,7 +52,7 @@ function pickers_manager:exists(name)
 end
 
 function pickers_manager:get_pickers()
-  return app(self.provider .. ".pickers") or {}
+  return self.provider.pickers or {}
 end
 
 function pickers_manager:enable()

@@ -40,16 +40,6 @@ M.check = function()
     )
   end
 
-  local ok_telescope, _ = pcall(require, "telescope")
-  if ok_telescope then
-    report_ok("Telescope is installed")
-  else
-    report_warn(
-      "Telescope is not installed, A lot of functions uses telescope for the pickers",
-      { "Install it from `https://github.com/nvim-telescope/telescope.nvim`" }
-    )
-  end
-
   local ok_cmp, _ = pcall(require, "cmp")
   if ok_cmp then
     report_ok("CMP is installed")
@@ -58,6 +48,21 @@ M.check = function()
       "CMP is not installed, completion source is available for it",
       { "Install it from `https://github.com/hrsh7th/nvim-cmp`" }
     )
+  end
+
+  report_start("Pickers")
+  report_info("Enabled: " .. (app("options"):get().features.pickers.enable and "Yes" or "No"))
+  if app("options"):get().features.pickers.enable then
+    report_info("Selected Picker: " .. app("options"):get().features.pickers.provider)
+    local provider = app("pickers." .. app("options"):get().features.pickers.provider)
+    if provider.check() then
+      report_ok("Picker check successfull")
+    else
+      report_error(
+        "Picker check failed",
+        { "Check your configuration change picker or install the required dependencies" }
+      )
+    end
   end
 
   report_start("Environment")

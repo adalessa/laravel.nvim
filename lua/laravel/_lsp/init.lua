@@ -15,10 +15,15 @@ local get_client = function(server_name)
   local new_instance = false
 
   if not client then
-    local server = require("lspconfig")[server_name]
+    local ok, lsp_config = pcall(require, "lspconfig")
+    if not ok then
+      error "lspconfig not found native way not develop yet"
+    end
+
+    local server = lsp_config[server_name]
     local client_id = vim.lsp.start(server.make_config(vim.loop.cwd()))
     if not client_id then
-      error "Could not start lsp client"
+      error "Cold not start lsp client"
     end
     client = vim.lsp.get_client_by_id(client_id)
     new_instance = true

@@ -1,6 +1,6 @@
-local phpactor = require "laravel._lsp.phpactor"
-local intelephense = require "laravel._lsp.intelephense"
-local app = require "laravel".app
+local phpactor = require("laravel._lsp.phpactor")
+local intelephense = require("laravel._lsp.intelephense")
+local app = require("laravel").app
 
 local servers = {
   phpactor = phpactor,
@@ -10,20 +10,23 @@ local servers = {
 ---@param server_name string
 ---@return table|nil, boolean
 local get_client = function(server_name)
-  local clients = vim.lsp.get_clients { name = server_name }
+  local clients = vim.lsp.get_clients({ name = server_name })
   local client = clients[1] or nil
   local new_instance = false
 
   if not client then
     local ok, lsp_config = pcall(require, "lspconfig")
+    local config = {}
     if not ok then
-      error "lspconfig not found native way not develop yet"
+      config = vim.lsp.config[server_name]
+    else
+      local server = lsp_config[server_name]
+      config = server.make_config(vim.loop.cwd())
     end
 
-    local server = lsp_config[server_name]
-    local client_id = vim.lsp.start(server.make_config(vim.loop.cwd()))
+    local client_id = vim.lsp.start(config)
     if not client_id then
-      error "Cold not start lsp client"
+      error("Cold not start lsp client")
     end
     client = vim.lsp.get_client_by_id(client_id)
     new_instance = true
@@ -35,7 +38,7 @@ end
 ---@param full_class string
 ---@param method string
 local go_to = function(full_class, method)
-  local server_name = app('options'):get().lsp_server
+  local server_name = app("options"):get().lsp_server
 
   local server = servers[server_name]
   if server == nil then

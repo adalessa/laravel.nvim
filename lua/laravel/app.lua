@@ -181,8 +181,8 @@ function app:validate_instalation()
 end
 
 function app:down()
-  local providers = self.container:get("options"):get().providers
-  local user_providers = self.container:get("options"):get().user_providers
+  local providers = self:make("options"):get().providers
+  local user_providers = self:make("options"):get().user_providers
 
   for _, provider in pairs(providers) do
     if provider.down then

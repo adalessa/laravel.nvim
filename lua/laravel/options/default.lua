@@ -41,7 +41,7 @@ return {
     },
     pickers = {
       enable = true,
-      provider = 'telescope',
+      provider = "telescope",
     },
   },
   ui = require("laravel.options.ui"),
@@ -66,6 +66,7 @@ return {
     require("laravel.providers.model_info_provider"),
     require("laravel.providers.composer_info_provider"),
     require("laravel.providers.history_provider"),
+    require("laravel.features.dump_server.dump_server_provider"),
   },
   user_providers = {},
 }

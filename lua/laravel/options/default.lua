@@ -29,16 +29,6 @@
 return {
   lsp_server = "phpactor",
   features = {
-    route_info = {
-      enable = true,
-      view = "top",
-    },
-    model_info = {
-      enable = true,
-    },
-    override = {
-      enable = true,
-    },
     pickers = {
       enable = true,
       provider = "telescope",
@@ -50,15 +40,17 @@ return {
   user_commands = require("laravel.options.user_commands"),
   resources = require("laravel.options.resources"),
   extensions = {
+    composer_info = { enable = true },
     dump_server = { enable = true },
+    model_info = { enable = true },
+    override = { enable = true },
+    route_info = { enable = true, view = "top" },
+    tinker = { enable = true },
   },
   providers = {
     require("laravel.providers.laravel_provider"),
     require("laravel.providers.repositories_provider"),
-    require("laravel.providers.override_provider"),
     require("laravel.providers.completion_provider"),
-    require("laravel.providers.route_info_provider"),
-    require("laravel.providers.tinker_provider"),
     require("laravel.providers.telescope_provider"),
     require("laravel.providers.fzf_lua_provider"),
     require("laravel.providers.ui_select_provider"),
@@ -66,8 +58,6 @@ return {
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),
     require("laravel.providers.diagnostics_provider"),
-    require("laravel.providers.model_info_provider"),
-    require("laravel.providers.composer_info_provider"),
     require("laravel.providers.history_provider"),
   },
   user_providers = {},

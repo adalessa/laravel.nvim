@@ -132,11 +132,19 @@ end
 function ui:open()
   if not self.instance then
     if not self.service:isRunning() then
-      self.service:start()
+      self.service
+        :start()
+        :thenCall(function()
+          self:_create_layout()
+          self:update()
+          self.instance:mount()
+        end)
+        :catch(function() end)
+    else
+      self:_create_layout()
+      self:update()
+      self.instance:mount()
     end
-    self:_create_layout()
-    self:update()
-    self.instance:mount()
   end
 end
 

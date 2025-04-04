@@ -1,8 +1,10 @@
+local promise = require("promise")
 local dump_server = {}
 
-function dump_server:new(api)
+function dump_server:new(api, cache_commands_repository)
   local instance = {
     api = api,
+    commands_repository = cache_commands_repository,
     job = nil,
     in_header = false,
     current_index = nil,
@@ -15,12 +17,34 @@ function dump_server:new(api)
   return instance
 end
 
+---@return Promise
+function dump_server:isInstalled()
+  return self.commands_repository:all():thenCall(function(commands)
+    return vim.iter(commands):any(function(command)
+      return command.name == "dump-server"
+    end)
+  end)
+end
+
 function dump_server:start()
   if self.job then
     vim.notify("Server already running", vim.log.levels.INFO, {})
-    return
+
+    return promise.resolve()
   end
 
+  return self:isInstalled():thenCall(function(isInstalled)
+    if not isInstalled then
+      vim.notify("Dump server not installed", vim.log.levels.ERROR, {})
+      return promise.reject("Dump server not installed")
+    end
+
+    self:_start()
+    return promise.resolve()
+  end)
+end
+
+function dump_server:_start()
   -- reseting
   self.records = {}
   self.in_header = false

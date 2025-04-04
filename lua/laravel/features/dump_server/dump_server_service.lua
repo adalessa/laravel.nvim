@@ -1,10 +1,11 @@
 local promise = require("promise")
 local dump_server = {}
 
-function dump_server:new(api, cache_commands_repository)
+function dump_server:new(api, cache_commands_repository, runner)
   local instance = {
     api = api,
     commands_repository = cache_commands_repository,
+    runner = runner,
     job = nil,
     in_header = false,
     current_index = nil,
@@ -23,6 +24,17 @@ function dump_server:isInstalled()
     return vim.iter(commands):any(function(command)
       return command.name == "dump-server"
     end)
+  end)
+end
+
+function dump_server:install()
+  self:isInstalled():thenCall(function(isInstalled)
+    if isInstalled then
+      vim.notify("Dump server already installed", vim.log.levels.INFO, {})
+      return promise.resolve()
+    end
+
+    return self.runner:run("composer", { "require", "--dev", "beyondcode/laravel-dump-server" })
   end)
 end
 

@@ -28,6 +28,8 @@ function command:handle(args)
     self.ui:close()
   elseif args.fargs[1] == "toggle" then
     self.ui:toggle()
+  elseif args.fargs[1] == "install" then
+    self.service:install()
   end
 end
 
@@ -39,6 +41,7 @@ function command:complete(argLead)
       "open",
       "close",
       "toggle",
+      "install",
     })
     :filter(function(name)
       return vim.startswith(name, argLead)

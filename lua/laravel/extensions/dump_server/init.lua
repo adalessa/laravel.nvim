@@ -2,9 +2,9 @@
 local dump_server_provider = {}
 
 function dump_server_provider:register(app)
-  app:singeltonIf("dump_server", "laravel.features.dump_server.dump_server_service")
-  app:singeltonIf("dump_server_ui", "laravel.features.dump_server.dump_server_ui")
-  app:bind("dump_server_command", "laravel.features.dump_server.dump_server_command", { tags = { "command" } })
+  app:singeltonIf("dump_server", "laravel.extensions.dump_server.dump_server_service")
+  app:singeltonIf("dump_server_ui", "laravel.extensions.dump_server.dump_server_ui")
+  app:bind("dump_server_command", "laravel.extensions.dump_server.dump_server_command", { tags = { "command" } })
 end
 
 function dump_server_provider:boot(app)

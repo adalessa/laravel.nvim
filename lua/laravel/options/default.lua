@@ -49,6 +49,9 @@ return {
   environments = require("laravel.options.environments"),
   user_commands = require("laravel.options.user_commands"),
   resources = require("laravel.options.resources"),
+  extensions = {
+    dump_server = { enable = true },
+  },
   providers = {
     require("laravel.providers.laravel_provider"),
     require("laravel.providers.repositories_provider"),
@@ -66,7 +69,6 @@ return {
     require("laravel.providers.model_info_provider"),
     require("laravel.providers.composer_info_provider"),
     require("laravel.providers.history_provider"),
-    require("laravel.features.dump_server.dump_server_provider"),
   },
   user_providers = {},
 }

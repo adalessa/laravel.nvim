@@ -41,7 +41,7 @@ return {
     },
     pickers = {
       enable = true,
-      provider = 'telescope',
+      provider = "telescope",
     },
   },
   ui = require("laravel.options.ui"),
@@ -49,6 +49,9 @@ return {
   environments = require("laravel.options.environments"),
   user_commands = require("laravel.options.user_commands"),
   resources = require("laravel.options.resources"),
+  extensions = {
+    dump_server = { enable = true },
+  },
   providers = {
     require("laravel.providers.laravel_provider"),
     require("laravel.providers.repositories_provider"),

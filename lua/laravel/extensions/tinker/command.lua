@@ -1,7 +1,8 @@
 local command = {}
 
-function command:new()
+function command:new(tinker_service)
   local instance = {
+    service = tinker_service,
     command = "tinker",
     subCommands = {
       "open",
@@ -16,11 +17,11 @@ function command:new()
 end
 
 function command:open()
-  vim.print("Tinker open")
+  self.service:open()
 end
 
 function command:select()
-  vim.print("Tinker select")
+  self.service:select()
 end
 
 return command

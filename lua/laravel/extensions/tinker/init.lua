@@ -2,6 +2,8 @@ local tinker_provider = {}
 
 function tinker_provider:register(app)
   app:bindIf("tinker_command", "laravel.extensions.tinker.command", { tags = { "command" } })
+  app:singeltonIf("tinker_service", "laravel.extensions.tinker.service")
+  app:bindIf("tinker_ui", "laravel.extensions.tinker.ui")
 end
 
 ---@param app LaravelApp
@@ -9,6 +11,27 @@ function tinker_provider:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 
   local group = vim.api.nvim_create_augroup("tinker", {})
+  vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    pattern = "*.tinker",
+    group = group,
+    callback = function(ev)
+      local bufnr = ev.buf
+
+      if vim.api.nvim_get_option_value("filetype", { buf = bufnr }) ~= "php" then
+        return
+      end
+
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
+
+      if lines[1] ~= "<?php" then
+        vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, { "<?php" })
+      end
+    end,
+  })
+
+  if true then
+    return
+  end
 
   local Split = require("nui.split")
   -- TODO: allow to change this by configuration
@@ -26,24 +49,6 @@ function tinker_provider:boot(app)
       number = false,
       relativenumber = false,
     },
-  })
-
-  vim.api.nvim_create_autocmd({ "BufEnter" }, {
-    pattern = "*.tinker",
-    group = group,
-    callback = function(ev)
-      local bufnr = ev.buf
-
-      if vim.api.nvim_get_option_value("filetype", { buf = bufnr }) ~= "php" then
-        return
-      end
-
-      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
-
-      if lines[1] ~= "<?php" then
-        vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, { "<?php" })
-      end
-    end,
   })
 
   -- TODO: review, not sure of this, some times is annoying

@@ -8,14 +8,11 @@ function gf_command:new(views, gf, cache_routes_repository)
     views = views,
     gf = gf,
     routes = cache_routes_repository,
+    command = "gf",
   }
   setmetatable(instance, self)
   self.__index = self
   return instance
-end
-
-function gf_command:commands()
-  return { "gf" }
 end
 
 function gf_command:handle()

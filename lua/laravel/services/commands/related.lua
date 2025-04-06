@@ -3,6 +3,7 @@ local related = {}
 function related:new(pickers)
   local instance = {
     pickers = pickers,
+    command = "related",
   }
   setmetatable(instance, self)
   self.__index = self
@@ -10,16 +11,8 @@ function related:new(pickers)
   return instance
 end
 
-function related:commands()
-  return { "related" }
-end
-
 function related:handle()
-  if self.pickers:exists("related") then
-    self.pickers:run("related")
-    return
-  end
-  vim.notify("No picker defined", vim.log.levels.ERROR)
+  self.pickers:run("related")
 end
 
 return related

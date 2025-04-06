@@ -1,21 +1,8 @@
----@class RouteInfoFeature
----@field enable boolean
----@field view string|table|function module to load or to use
-
----@class ModelInfoFeature
----@field enable boolean
-
----@class OverrideFeature
----@field enable boolean
-
 ---@class PickersFeature
 ---@field enable boolean
 ---@field provider 'telescope'|'ui.select'|'fzf-lua'|'snacks'
 
 ---@class LaravelFeatures
----@field route_info RouteInfoFeature
----@field model_info ModelInfoFeature
----@field override OverrideFeature
 ---@field pickers PickersFeature
 
 ---@class LaravelOptions
@@ -46,6 +33,7 @@ return {
     override = { enable = true },
     route_info = { enable = true, view = "top" },
     tinker = { enable = true },
+    composer_dev = { enable = true },
   },
   providers = {
     require("laravel.providers.laravel_provider"),

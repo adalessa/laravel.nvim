@@ -11,15 +11,12 @@ function artisan:new(runner, api, cache, pickers)
     api = api,
     cache = cache,
     pickers = pickers,
+    commands = {"art", "artisan"}
   }
   setmetatable(instance, self)
   self.__index = self
 
   return instance
-end
-
-function artisan:commands()
-  return { "artisan", "art" }
 end
 
 function artisan:handle(args)

@@ -3,6 +3,7 @@ local routes = {}
 function routes:new(pickers)
   local instance = {
     pickers = pickers,
+    command = "routes",
   }
   setmetatable(instance, self)
   self.__index = self
@@ -10,16 +11,8 @@ function routes:new(pickers)
   return instance
 end
 
-function routes:commands()
-  return { "routes" }
-end
-
 function routes:handle()
-  if self.pickers:exists("routes") then
-    self.pickers:run("routes")
-    return
-  end
-  vim.notify("No picker defined", vim.log.levels.ERROR)
+  self.pickers:run("routes")
 end
 
 function routes:complete()

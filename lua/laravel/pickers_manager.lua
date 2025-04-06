@@ -42,6 +42,10 @@ function pickers_manager:run(name, ...)
     return
   end
   local picker_name = self:get_pickers()[name]
+  if not picker_name then
+    vim.notify("Picker not found: " .. name, vim.log.levels.ERROR)
+    return
+  end
 
   app(picker_name):run(...)
 end

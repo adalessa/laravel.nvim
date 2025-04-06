@@ -91,4 +91,10 @@ function M.get_line_indent(line)
   return string.match(line_content, "^%s*")
 end
 
+function M.match_complete(list, search)
+  return vim.tbl_filter(function(name)
+    return vim.startswith(name, search)
+  end, list)
+end
+
 return M

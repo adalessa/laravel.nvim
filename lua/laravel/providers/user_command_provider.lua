@@ -13,9 +13,6 @@ function user_command_provider:register(app)
   app:bindIf("flush_cache_command", "laravel.services.commands.flush_cache", { tags = { "command" } })
   app:bindIf("gf_command", "laravel.services.commands.gf", { tags = { "command" } })
 
-  app:singeltonIf("serve_command", "laravel.services.commands.serve", { tags = { "command" } })
-  app:singeltonIf("assets_command", "laravel.services.commands.assets", { tags = { "command" } })
-
   app:bindIf("user_commands", function()
     return app:makeByTag("command")
   end)
@@ -23,6 +20,15 @@ end
 
 ---@param app LaravelApp
 function user_command_provider:boot(app)
+  local function get_command_names(command)
+    if type(command.command) == "string" then
+      return { command.command }
+    elseif type(command.commands) == "table" then
+      return command.commands
+    end
+    return command:commands()
+  end
+
   vim.api.nvim_create_user_command("Laravel", function(args)
     if not app("env"):is_active() then
       vim.notify("Laravel is not active", vim.log.levels.ERROR)
@@ -31,13 +37,7 @@ function user_command_provider:boot(app)
 
     if not args.fargs[1] then
       vim.ui.select(
-        vim
-          .iter(app("user_commands"))
-          :map(function(command)
-            return command:commands()
-          end)
-          :flatten()
-          :totable(),
+        vim.iter(app("user_commands")):map(get_command_names):flatten():totable(),
         { prompt = "Laravel command: " },
         function(selected)
           if not selected then
@@ -50,7 +50,7 @@ function user_command_provider:boot(app)
     end
 
     local command = vim.iter(app("user_commands")):find(function(cmd)
-      return vim.iter(cmd:commands()):any(function(name)
+      return vim.iter(get_command_names(cmd)):any(function(name)
         return vim.startswith(name, args.fargs[1])
       end)
     end)
@@ -69,9 +69,7 @@ function user_command_provider:boot(app)
       if #fCmdLine <= 2 then
         return vim
           .iter(app("user_commands"))
-          :map(function(command)
-            return command:commands()
-          end)
+          :map(get_command_names)
           :flatten()
           :filter(function(subcommand)
             return vim.startswith(subcommand, argLead)
@@ -79,11 +77,20 @@ function user_command_provider:boot(app)
           :totable()
       elseif #fCmdLine == 3 then
         local command = vim.iter(app("user_commands")):find(function(cmd)
-          return vim.iter(cmd:commands()):any(function(name)
+          return vim.iter(get_command_names(cmd)):any(function(name)
             return vim.startswith(name, fCmdLine[2])
           end)
         end)
         if command then
+          if type(command.subCommands) == "table" then
+            return vim
+              .iter(command.subCommands)
+              :filter(function(subcommand)
+                return vim.startswith(subcommand, argLead)
+              end)
+              :totable()
+          end
+
           return command:complete(argLead, cmdLine)
         end
       end

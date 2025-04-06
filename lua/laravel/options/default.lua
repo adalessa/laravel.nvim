@@ -32,6 +32,7 @@ return {
     composer_info = { enable = true },
     diagnostic = { enable = true },
     dump_server = { enable = true },
+    history = {enable = true },
     model_info = { enable = true },
     override = { enable = true },
     route_info = { enable = true, view = "top" },
@@ -46,7 +47,6 @@ return {
     require("laravel.providers.snacks_provider"),
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),
-    require("laravel.providers.history_provider"),
   },
   user_providers = {},
 }

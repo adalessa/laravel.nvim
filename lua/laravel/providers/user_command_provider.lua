@@ -56,7 +56,31 @@ function user_command_provider:boot(app)
     end)
 
     if command then
-      command:handle(args)
+      -- if function handle exists use it
+      if command.handle then
+        return command:handle(args)
+      end
+
+      -- remove the command from the list
+      table.remove(args.fargs, 1)
+      local subcommand = args.fargs[1]
+      if subcommand == "" or subcommand == "" or subcommand == nil then
+        if not command.default then
+          vim.notify("Sub command not provided and there is no default option set", vim.log.levels.ERROR)
+          return
+        end
+        subcommand = command.default
+      else
+        -- remove the subcommand from the list
+        table.remove(args.fargs, 1)
+      end
+
+      if not command[subcommand] then
+        vim.notify("Command " .. subcommand .. " not found", vim.log.levels.ERROR)
+        return
+      end
+
+      command[subcommand](command, args.fargs)
     end
   end, {
     nargs = "*",

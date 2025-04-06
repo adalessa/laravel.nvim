@@ -13,6 +13,7 @@ function command:new(api, configs_repository)
       "start",
       "stop",
     },
+    default = "start",
   }
   setmetatable(instance, self)
   self.__index = self
@@ -46,16 +47,6 @@ end
 
 function command:isRunning()
   return self.task:running()
-end
-
-function command:handle(args)
-  table.remove(args.fargs, 1)
-
-  if args.fargs[1] == "start" or args.fargs[1] == "" or args.fargs[1] == nil then
-    self:start()
-  elseif args.fargs[1] == "stop" then
-    self:stop()
-  end
 end
 
 return command

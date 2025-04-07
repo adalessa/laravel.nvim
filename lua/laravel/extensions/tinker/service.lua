@@ -6,6 +6,7 @@ function tinker:new(tinker_ui, api)
   local instance = {
     ui = tinker_ui,
     api = api,
+    data = {},
   }
   setmetatable(instance, self)
   self.__index = self
@@ -35,10 +36,17 @@ local function cleanResult(data)
   end, data)
 end
 
+-- TODO implement, should be able to add dump if is missing
+local function addDump(lines)
+  return lines
+end
+
 function tinker:open(filename)
   filename = filename or "main.tinker"
   -- need to pass the main.tinker file at least for now
   local file = vim.fs.find(filename, {})[1]
+
+  self.data[filename] = self.data[filename] or {}
 
   if not file then
     -- file not found, create it
@@ -49,11 +57,11 @@ function tinker:open(filename)
   local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(file))
   vim.fn.bufload(bufnr)
 
-  self.ui:open(bufnr, function()
+  self.ui:open(bufnr, filename, function()
+    self.data.file = {}
     local lines = vim.api.nvim_buf_get_lines(bufnr, 1, -1, false)
     lines = cleanLines(lines)
-
-    -- TODO add the auto dump
+    lines = addDump(lines)
 
     local cmd = self.api:generate_command("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
 
@@ -61,16 +69,21 @@ function tinker:open(filename)
     vim.fn.jobstart(cmd, {
       stdeout_buffered = true,
       on_stdout = function(_, data)
-        vim.fn.chansend(channelId, cleanResult(data))
+        data = cleanResult(data)
+        vim.fn.chansend(channelId, data)
+        for _, line in ipairs(data) do
+          table.insert(self.data[filename], line)
+        end
       end,
       on_exit = function() end,
       pty = true,
     })
   end)
-  -- prepare the callback
-  -- create the ui with the callback
-  -- the callback read the buffer, reset the result to get the
-  -- channel id with createTerm
+
+  if not vim.tbl_isempty(self.data[filename]) then
+    local channelId = self.ui:createTerm()
+    vim.fn.chansend(channelId, self.data[filename])
+  end
 end
 
 function tinker:select()
@@ -108,17 +121,19 @@ function tinker:select()
   })
 end
 
--- should be able to handle multiple .tinker files in the directory
--- should have the history of the output for each
+function tinker:create()
+  vim.ui.input({ prompt = "Enter the name of the tinker file" }, function(input)
+    if not input then
+      return
+    end
 
--- a better auto dump to print the output
+    -- check if name end with .tinker if not add it and call the tinker:open with it
+    if not vim.endswith(input, ".tinker") then
+      input = input .. ".tinker"
+    end
 
--- an idea can be how the scrat buffer handles it, a selector for the files
--- open a selector, use vim.ui.select from simplicity
--- this will open the window, which will be a popup 70 % of the screen
--- which the editor should be 70% and 30% for the ouput
-
--- the results should be store separetly so can be re-written for each different option.
--- the ui should not be for ever, when quits it's unmount, not keept in memory
+    self:open(input)
+  end)
+end
 
 return tinker

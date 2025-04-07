@@ -1,5 +1,7 @@
 local Popup = require("nui.popup")
 local Layout = require("nui.layout")
+local NuiText = require("nui.text")
+local NuiLine = require("nui.line")
 
 local ui = {}
 
@@ -17,14 +19,19 @@ function ui:new()
   return instance
 end
 
-function ui:_create_layout(bufnr, callback)
+function ui:_create_layout(bufnr, name, callback)
+  local title = NuiLine()
+  title:append("Tinkering: ", "@attribute")
+  title:append(name, "@character")
+
   self.editor, self.result =
     Popup({
       enter = true,
       border = {
         style = "rounded",
         text = {
-          top = "Tinker",
+          top = title,
+          bottom = NuiText("Press <Tab> to switch between windows", "comment"),
         },
       },
       bufnr = bufnr,
@@ -32,13 +39,13 @@ function ui:_create_layout(bufnr, callback)
       win_options = {
         number = true,
         relativenumber = true,
+        signcolumn = "yes",
       },
     }), Popup({
       border = {
         style = "rounded",
         text = {
-          top = "Result",
-          bottom = "Press <Tab> to switch between windows",
+          top = NuiText("Result", "@string"),
         },
       },
       buf_options = {
@@ -59,8 +66,8 @@ function ui:_create_layout(bufnr, callback)
       },
     },
     Layout.Box({
-      Layout.Box(self.editor, { size = "65%" }),
-      Layout.Box(self.result, { size = "35%" }),
+      Layout.Box(self.editor, { size = "60%" }),
+      Layout.Box(self.result, { size = "40%" }),
     }, { dir = "row" })
   )
 
@@ -87,8 +94,8 @@ function ui:_create_layout(bufnr, callback)
   self.instance = layout
 end
 
-function ui:open(bufnr, callback)
-  self:_create_layout(bufnr, callback)
+function ui:open(bufnr, name, callback)
+  self:_create_layout(bufnr, name, callback)
   self.instance:mount()
 end
 

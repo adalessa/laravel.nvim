@@ -7,6 +7,7 @@ function command:new(tinker_service)
     subCommands = {
       "open",
       "select",
+      "create",
     },
     default = "open",
   }
@@ -22,6 +23,10 @@ end
 
 function command:select()
   self.service:select()
+end
+
+function command:create()
+  self.service:create()
 end
 
 return command

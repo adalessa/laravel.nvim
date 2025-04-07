@@ -100,6 +100,17 @@ function ui:open(bufnr, name, callback)
 end
 
 function ui:close()
+  if not self.instance then
+    return
+  end
+
+  self.editor:unmap("n", "q")
+  self.editor:unmap("n", "<tab>")
+  self.editor:unmap("n", "<cr>")
+
+  self.result:unmap("n", "q")
+  self.result:unmap("n", "<tab>")
+
   self.instance:unmount()
   self.instance = nil
 end

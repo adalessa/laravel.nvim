@@ -14,18 +14,6 @@ function tinker:new(tinker_ui, api)
   return instance
 end
 
-local function cleanLines(lines)
-  return vim.tbl_filter(function(raw_line)
-    local line = raw_line:gsub("^%s*(.-)%s*$", "%1")
-    return line ~= ""
-      and line:sub(1, 2) ~= "//"
-      and line:sub(1, 2) ~= "/*"
-      and line:sub(1, 2) ~= "*/"
-      and line:sub(1, 1) ~= "*"
-      and line:sub(1, 1) ~= "#"
-  end, lines)
-end
-
 local function cleanResult(data)
   return vim.tbl_map(function(line)
     if line:find("vendor/psy/psysh/src") then
@@ -36,9 +24,32 @@ local function cleanResult(data)
   end, data)
 end
 
--- TODO implement, should be able to add dump if is missing
-local function addDump(lines)
-  return lines
+local function get_lines(bufnr)
+  local php_parser = vim.treesitter.get_parser(bufnr, "php")
+
+  if not php_parser then
+    error("parser not found")
+  end
+
+  local tree = php_parser:parse()[1]
+
+  local nodes = {}
+  for node in tree:root():iter_children() do
+    -- remove the comment and others
+    if not vim.tbl_contains({ "php_tag", "comment" }, node:type(), {}) then
+      table.insert(nodes, vim.treesitter.get_node_text(node, bufnr, {}))
+    end
+  end
+
+  local last = nodes[#nodes]
+
+  if not (last:match("dump") or last:match("echo") or last:match("print_r")) then
+    local body = last:gsub("%s*;%s*$", "")
+    local output = "dump(" .. body .. ");"
+    nodes[#nodes] = output
+  end
+
+  return nodes
 end
 
 function tinker:open(filename)
@@ -59,9 +70,8 @@ function tinker:open(filename)
 
   self.ui:open(bufnr, filename, function()
     self.data.file = {}
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 1, -1, false)
-    lines = cleanLines(lines)
-    lines = addDump(lines)
+
+    local lines = get_lines(bufnr)
 
     local cmd = self.api:generate_command("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
 

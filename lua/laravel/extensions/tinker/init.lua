@@ -1,12 +1,37 @@
 local tinker_provider = {}
 
--- function tinker_provider:register(app) end
+function tinker_provider:register(app)
+  app:bindIf("tinker_command", "laravel.extensions.tinker.command", { tags = { "command" } })
+  app:singeltonIf("tinker_service", "laravel.extensions.tinker.service")
+  app:bindIf("tinker_ui", "laravel.extensions.tinker.ui")
+end
 
 ---@param app LaravelApp
 function tinker_provider:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 
   local group = vim.api.nvim_create_augroup("tinker", {})
+  vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    pattern = "*.tinker",
+    group = group,
+    callback = function(ev)
+      local bufnr = ev.buf
+
+      if vim.api.nvim_get_option_value("filetype", { buf = bufnr }) ~= "php" then
+        return
+      end
+
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
+
+      if lines[1] ~= "<?php" then
+        vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, { "<?php" })
+      end
+    end,
+  })
+
+  if true then
+    return
+  end
 
   local Split = require("nui.split")
   -- TODO: allow to change this by configuration
@@ -24,24 +49,6 @@ function tinker_provider:boot(app)
       number = false,
       relativenumber = false,
     },
-  })
-
-  vim.api.nvim_create_autocmd({ "BufEnter" }, {
-    pattern = "*.tinker",
-    group = group,
-    callback = function(ev)
-      local bufnr = ev.buf
-
-      if vim.api.nvim_get_option_value('filetype', {buf = bufnr}) ~= "php" then
-        return
-      end
-
-      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
-
-      if lines[1] ~= "<?php" then
-        vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, { "<?php" })
-      end
-    end,
   })
 
   -- TODO: review, not sure of this, some times is annoying
@@ -65,11 +72,11 @@ function tinker_provider:boot(app)
       lines = vim.tbl_filter(function(raw_line)
         local line = raw_line:gsub("^%s*(.-)%s*$", "%1")
         return line ~= ""
-            and line:sub(1, 2) ~= "//"
-            and line:sub(1, 2) ~= "/*"
-            and line:sub(1, 2) ~= "*/"
-            and line:sub(1, 1) ~= "*"
-            and line:sub(1, 1) ~= "#"
+          and line:sub(1, 2) ~= "//"
+          and line:sub(1, 2) ~= "/*"
+          and line:sub(1, 2) ~= "*/"
+          and line:sub(1, 1) ~= "*"
+          and line:sub(1, 1) ~= "#"
       end, lines)
 
       if #lines == 0 then
@@ -80,12 +87,13 @@ function tinker_provider:boot(app)
         split:mount()
       end
 
+      -- todo improve this, not good
       if
-          lines[#lines] ~= "}"
-          and lines[#lines]:sub(1, 4) ~= "dump"
-          and lines[#lines]:sub(1, 8) ~= "var_dump"
-          and lines[#lines]:sub(1, 4) ~= "echo"
-          and lines[#lines - 1]:sub(1, -1) == ";"
+        lines[#lines] ~= "}"
+        and lines[#lines]:sub(1, 4) ~= "dump"
+        and lines[#lines]:sub(1, 8) ~= "var_dump"
+        and lines[#lines]:sub(1, 4) ~= "echo"
+        and ((#lines - 1 > 1) and lines[#lines - 1]:sub(1, -1) == ";")
       then
         lines[#lines] = string.format("dump(%s);", lines[#lines]:sub(1, -2))
       end

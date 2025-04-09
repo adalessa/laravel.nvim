@@ -1,8 +1,9 @@
+---@class LaravelOverrideProvider : LaravelProvider
 local override_provider = {}
 
 ---@param app LaravelApp
 function override_provider:register(app)
-  app:bindIf("override", "laravel.services.override")
+  app:bindIf("override", "laravel.extensions.override.service")
 end
 
 ---@param app LaravelApp
@@ -12,7 +13,7 @@ function override_provider:boot(app)
     pattern = "*.php",
     group = group,
     callback = function(ev)
-      if not app("env"):is_active() or not app('options'):get().features.override.enable then
+      if not app("env"):is_active() then
         return
       end
       -- check that is not from the vendor folder

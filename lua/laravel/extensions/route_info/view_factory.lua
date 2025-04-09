@@ -1,6 +1,6 @@
 ---@class ViewFactory
----@field options LaravelOptionsService
 ---@field views table<string, table>
+---@field options table
 local view_factory = {}
 
 function view_factory:new(options, views)
@@ -15,7 +15,7 @@ function view_factory:new(options, views)
 end
 
 function view_factory:get(route, method)
-  local view_name = self.options:get().features.route_info.view
+  local view_name = self.options.view
 
   if type(view_name) == "function" then
     return view_name(route, method)

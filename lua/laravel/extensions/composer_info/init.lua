@@ -2,7 +2,7 @@
 local composer_provider = {}
 
 function composer_provider:register(app)
-  app:bindIf("composer_info", "laravel.services.composer_info")
+  app:bindIf("composer_info", "laravel.extensions.composer_info.service")
 end
 
 function composer_provider:boot(app)

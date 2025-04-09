@@ -3,6 +3,7 @@ local make = {}
 function make:new(pickers)
   local instance = {
     pickers = pickers,
+    command = "make",
   }
   setmetatable(instance, self)
   self.__index = self
@@ -10,16 +11,8 @@ function make:new(pickers)
   return instance
 end
 
-function make:commands()
-  return { "make" }
-end
-
 function make:handle()
-  if self.pickers:exists("make") then
-    self.pickers:run("make")
-    return
-  end
-  vim.notify("No picker defined", vim.log.levels.ERROR)
+  self.pickers:run("make")
 end
 
 return make

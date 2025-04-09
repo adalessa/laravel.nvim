@@ -2,7 +2,7 @@
 local completion_provider = {}
 
 function completion_provider:register(app)
-  app:bindIf('completion', 'laravel.services.completion')
+  app:bindIf('completion', 'laravel.extensions.completion.service')
 end
 
 function completion_provider:boot(app)

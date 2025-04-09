@@ -19,7 +19,7 @@ function task:running()
 end
 
 --- @param command string[]
-function task:run(command)
+function task:run(command, stdCallback, errCallback)
   local cmd = table.remove(command, 1)
 
   self.stdout = vim.uv.new_pipe()
@@ -52,6 +52,9 @@ function task:run(command)
     end
     if data then
       self.data = self.data .. data
+      if stdCallback then
+        stdCallback(data)
+      end
     end
   end)
 
@@ -62,6 +65,9 @@ function task:run(command)
     end
     if data then
       self.error = self.error .. data
+      if errCallback then
+        errCallback(data)
+      end
     end
   end)
 

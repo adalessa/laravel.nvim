@@ -1,3 +1,5 @@
+local Task = require("laravel.task")
+
 local promise = require("promise")
 local dump_server = {}
 
@@ -6,11 +8,10 @@ function dump_server:new(api, cache_commands_repository, runner)
     api = api,
     commands_repository = cache_commands_repository,
     runner = runner,
-    job = nil,
+    task = Task:new(),
     in_header = false,
     current_index = nil,
     records = {},
-    commandId = nil,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -39,7 +40,7 @@ function dump_server:install()
 end
 
 function dump_server:start()
-  if self.job then
+  if self.task:running() then
     vim.notify("Server already running", vim.log.levels.INFO, {})
 
     return promise.resolve()
@@ -62,34 +63,24 @@ function dump_server:_start()
   self.in_header = false
   self.current_index = nil
 
-  self.commandId = vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
-    callback = function()
-      self.job:kill(15)
-    end,
-  })
-
   local cmd = self.api:generate_command("artisan", { "dump-server" })
-  self.job = vim.system(
+  self.task:run(
     cmd,
-    {
-      stdout = vim.schedule_wrap(function(err, data)
-        self:_stdout(err, data)
-      end),
-    },
-    vim.schedule_wrap(function()
-      vim.api.nvim_del_autocmd(self.commandId)
-      self.job = nil
-      self.commandId = nil
+    vim.schedule_wrap(function(data)
+      self:_stdout(nil, data)
+    end),
+    vim.schedule_wrap(function(err)
+      self:_stdout(err, nil)
     end)
   )
 end
 
 function dump_server:stop()
-  self.job:kill(15)
+  self.task:stop()
 end
 
 function dump_server:isRunning()
-  return self.job ~= nil
+  return self.task:running()
 end
 
 function dump_server:getRecords()

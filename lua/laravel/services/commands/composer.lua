@@ -4,13 +4,6 @@ function composer:new(runner, pickers)
   local instance = {
     runner = runner,
     pickers = pickers,
-    sub_commands = {
-      "install",
-      "require",
-      "update",
-      "remove",
-      "info",
-    },
   }
   setmetatable(instance, self)
   self.__index = self
@@ -40,15 +33,6 @@ function composer:handle(args)
     return
   end
   self.runner:run("composer", args.fargs)
-end
-
-function composer:complete(argLead, cmdLine)
-  return vim
-      .iter(self.sub_commands)
-      :filter(function(name)
-        return vim.startswith(name, argLead)
-      end)
-      :totable()
 end
 
 return composer

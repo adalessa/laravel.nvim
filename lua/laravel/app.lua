@@ -124,30 +124,43 @@ function app:singeltonIf(abstract, factory, opts)
 end
 
 function app:boot()
-  local providers = self:make("options"):get().providers
-  local user_providers = self:make("options"):get().user_providers
+  local options = self:make("options"):get()
+  local providers = options.providers
+  local user_providers = options.user_providers
 
-  for _, provider in pairs(providers) do
+  local register = function(provider)
     if provider.register then
       provider:register(self)
     end
   end
 
-  for _, provider in pairs(user_providers) do
-    if provider.register then
-      provider:register(self)
-    end
-  end
-
-  for _, provider in pairs(providers) do
+  local boot = function(provider)
     if provider.boot then
       provider:boot(self)
     end
   end
 
-  for _, provider in pairs(user_providers) do
-    if provider.boot then
-      provider:boot(self)
+  vim.tbl_map(register, providers)
+  vim.tbl_map(register, user_providers)
+
+  for extension, extension_options in pairs(options.extensions) do
+    if extension_options.enable then
+      local extension_provider = require("laravel.extensions." .. extension)
+      if extension_provider.register then
+        extension_provider:register(self, extension_options)
+      end
+    end
+  end
+
+  vim.tbl_map(boot, providers)
+  vim.tbl_map(boot, user_providers)
+
+  for extension, extension_options in pairs(options.extensions) do
+    if extension_options.enable then
+      local extension_provider = require("laravel.extensions." .. extension)
+      if extension_provider.boot then
+        extension_provider:boot(self, extension_options)
+      end
     end
   end
 

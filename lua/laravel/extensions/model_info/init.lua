@@ -2,8 +2,8 @@
 local model_info_provider = {}
 
 function model_info_provider:register(app)
-  app:bindIf("model_info", "laravel.services.model_info")
-  app:bindIf("model_info_view", "laravel.services.model_info_view")
+  app:bindIf("model_info", "laravel.extensions.model_info.service")
+  app:bindIf("model_info_view", "laravel.extensions.model_info.view")
 end
 
 function model_info_provider:boot(app)
@@ -12,7 +12,7 @@ function model_info_provider:boot(app)
     pattern = "*.php",
     group = group,
     callback = function(ev)
-      if not app("env"):is_active() or not app('options'):get().features.model_info.enable then
+      if not app("env"):is_active() then
         return
       end
       -- check that is not from the vendor folder

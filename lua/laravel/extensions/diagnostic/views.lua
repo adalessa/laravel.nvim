@@ -44,43 +44,46 @@ function views_diagnostic:handle(bufnr)
     end
   end
 
-  return self.views_repository:all():thenCall(function(views)
-    views = vim
+  return self.views_repository
+    :all()
+    :thenCall(function(views)
+      views = vim
         .iter(views)
         :map(function(view)
           return view.name
         end)
         :totable()
 
-    vim.diagnostic.set(
-      namespace,
-      bufnr,
-      vim
-      .iter(matches)
-      :filter(function(match)
-        if match.view == "" then
-          return true
-        end
+      vim.diagnostic.set(
+        namespace,
+        bufnr,
+        vim
+          .iter(matches)
+          :filter(function(match)
+            if match.view == "" then
+              return true
+            end
 
-        if vim.tbl_contains(views, match.view) then
-          return false
-        end
+            if vim.tbl_contains(views, match.view) then
+              return false
+            end
 
-        return true
-      end)
-      :map(function(match)
-        return {
-          lnum = match.row,
-          col = match.start_col,
-          end_col = match.end_col,
-          source = "laravel.nvim",
-          message = "view does not exists",
-          severity = vim.diagnostic.severity.ERROR,
-        }
-      end)
-      :totable()
-    )
-  end):catch(function() end)
+            return true
+          end)
+          :map(function(match)
+            return {
+              lnum = match.row,
+              col = match.start_col,
+              end_col = match.end_col,
+              source = "laravel.nvim",
+              message = "view does not exists",
+              severity = vim.diagnostic.severity.ERROR,
+            }
+          end)
+          :totable()
+      )
+    end)
+    :catch(function() end)
 end
 
 return views_diagnostic

@@ -3,6 +3,7 @@ local history = {}
 function history:new(pickers)
   local instance = {
     pickers = pickers,
+    command = "history",
   }
   setmetatable(instance, self)
   self.__index = self
@@ -10,16 +11,8 @@ function history:new(pickers)
   return instance
 end
 
-function history:commands()
-  return { "history" }
-end
-
 function history:handle()
-    if self.pickers:exists('history') then
-      self.pickers:run('history')
-      return
-    end
-  vim.notify("No picker defined", vim.log.levels.ERROR)
+  self.pickers:run("history")
 end
 
 return history

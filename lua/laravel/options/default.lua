@@ -47,6 +47,7 @@ return {
     require("laravel.providers.snacks_provider"),
     require("laravel.providers.user_command_provider"),
     require("laravel.providers.status_provider"),
+    require("laravel.providers.actions_provider"),
   },
   user_providers = {},
 }

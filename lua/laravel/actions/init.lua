@@ -1,3 +1,4 @@
 return {
-    "laravel.actions.model_to_migration",
+    "laravel.actions.go_to_migration",
+    "laravel.actions.open_env",
 }

@@ -43,9 +43,28 @@ function environment:boot()
   local opts = self.options:get().environments
 
   if opts.env_variable then
-    local env_opts = find_env_by_name(get_env(opts.env_variable), opts.definitions)
-    if env_opts then
-      self.environment = Environment:new(env_opts)
+    local environment_name = get_env(opts.env_variable)
+    if environment_name then
+      local env_opts = find_env_by_name(environment_name, opts.definitions)
+      if env_opts then
+        self.environment = Environment:new(env_opts)
+        return
+      end
+      vim.notify(
+        string.format(
+          "Laravel environment '%s' not found availables are %s",
+          environment_name,
+          vim
+            .iter(opts.definitions)
+            :map(function(item)
+              return item.name
+            end)
+            :join(", ")
+        ),
+        vim.log.levels.WARN,
+        { title = "Laravel" }
+      )
+      self.environment = nil
       return
     end
   end

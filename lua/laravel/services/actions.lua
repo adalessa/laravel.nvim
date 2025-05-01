@@ -29,11 +29,12 @@ function service:run()
       end, results)
 
       if #valid_actions == 0 then
+        vim.notify("No actions available for this buffer", vim.log.levels.INFO)
         return
       end
 
       vim.ui.select(valid_actions, {
-        prompt = "Select an action",
+        prompt = "Select a Laravel action",
         format_item = function(item)
           return item:format(bufnr)
         end,

@@ -8,18 +8,13 @@ function actions_provider:register(app)
 
   app:bindIf("actions_service", "laravel.services.actions", {})
 
-  app:bindIf("model_to_mgiration_action", "laravel.actions.model_to_migration", { tags = { "action" } })
+  vim.tbl_map(function(action)
+    app:bindIf(action, action, { tags = { "action" } })
+  end, require("laravel.actions"))
 
-  app:bindIf("actions_command", function()
-    local command = {
-      command = "actions",
-    }
-    function command:handle()
-      app("actions_service"):run()
-    end
-
-    return command
-  end, { tags = { "command" } })
+  app:command("actions", function()
+    app("actions_service"):run()
+  end)
 end
 
 return actions_provider

@@ -1,3 +1,4 @@
+---@class LaravelStatusprovider: LaravelProvider
 local status_provider = {}
 
 ---@param app LaravelApp

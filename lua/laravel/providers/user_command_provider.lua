@@ -2,16 +2,9 @@ local user_command_provider = {}
 
 ---@param app LaravelApp
 function user_command_provider:register(app)
-  app:bindIf("composer_command", "laravel.services.commands.composer", { tags = { "command" } })
-  app:bindIf("artisan_command", "laravel.services.commands.artisan", { tags = { "command" } })
-  app:bindIf("routes_command", "laravel.services.commands.routes", { tags = { "command" } })
-  app:bindIf("make_command", "laravel.services.commands.make", { tags = { "command" } })
-  app:bindIf("related_command", "laravel.services.commands.related", { tags = { "command" } })
-  app:bindIf("commands_command", "laravel.services.commands.commands", { tags = { "command" } })
-  app:bindIf("resources_command", "laravel.services.commands.resources", { tags = { "command" } })
-  app:bindIf("view_finder_command", "laravel.services.commands.view_finder", { tags = { "command" } })
-  app:bindIf("flush_cache_command", "laravel.services.commands.flush_cache", { tags = { "command" } })
-  app:bindIf("gf_command", "laravel.services.commands.gf", { tags = { "command" } })
+  vim.tbl_map(function(command)
+    app:bindIf(command, command, { tags = { "command" } })
+  end, require("laravel.commands"))
 
   app:bindIf("user_commands", function()
     return app:makeByTag("command")

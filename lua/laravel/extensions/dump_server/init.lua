@@ -8,7 +8,6 @@ function dump_server_provider:register(app)
 end
 
 function dump_server_provider:boot(app)
-  -- app:make("dump_server")
   local group = vim.api.nvim_create_augroup("laravel.dump_server", {})
 
   vim.api.nvim_create_autocmd({ "User" }, {

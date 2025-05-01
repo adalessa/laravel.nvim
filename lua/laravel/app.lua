@@ -212,6 +212,19 @@ function app:down()
   return self
 end
 
+function app:command(name, callback)
+  self:bindIf(name .. "_command", function()
+    local command = {
+      command = name,
+    }
+    function command:handle(...)
+      callback(...)
+    end
+
+    return command
+  end, { tags = { "command" } })
+end
+
 --- PRIVATE FUNCTIONS
 
 --- private usage not recomended

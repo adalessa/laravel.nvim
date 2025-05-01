@@ -13,8 +13,22 @@ function options:new(opts)
   return instance
 end
 
-function options:get()
-  return self.opts
+---@param key string|nil key with dot format
+---@return any
+function options:get(key)
+  if not key then
+    return self.opts
+  end
+
+  local value = self.opts
+  for _, seg in ipairs(vim.split(key, "%.")) do
+    if type(value) ~= "table" then
+      return nil
+    end
+    value = value[seg]
+  end
+
+  return value
 end
 
 return options

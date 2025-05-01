@@ -40,7 +40,11 @@ function environment:boot()
     return
   end
 
-  local opts = self.options:get().environments
+  local opts = self.options:get('environments')
+  if not opts then
+    self.environment = nil
+    return
+  end
 
   if opts.env_variable then
     local environment_name = get_env(opts.env_variable)

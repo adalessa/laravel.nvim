@@ -14,7 +14,7 @@ end
 
 function resources_picker:run(opts)
   local resources = {}
-  for name, path in pairs(self.options:get().resources) do
+  for name, path in pairs(self.options:get("resources")) do
     if vim.fn.isdirectory(path) == 1 then
       table.insert(resources, {
         name = name,

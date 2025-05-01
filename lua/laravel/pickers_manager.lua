@@ -22,7 +22,7 @@ local pickers_manager = {}
 function pickers_manager:new(options)
   local providerName = options:get().features.pickers.provider
   local instance = {
-    _enable = options:get().features.pickers.enable,
+    _enable = options:get("features.pickers.enable"),
     provider = app("pickers." .. providerName),
   }
 

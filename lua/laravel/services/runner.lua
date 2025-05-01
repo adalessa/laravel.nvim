@@ -32,7 +32,7 @@ function runner:run(cmd, args, opts)
     return
   end
 
-  opts = vim.tbl_extend("force", self.options:get().commands_options[args[1]] or {}, opts or {})
+  opts = vim.tbl_extend("force", self.options:get("commands_options")[args[1]] or {}, opts or {})
 
   local command = combine_tables(executable, args)
 
@@ -40,7 +40,7 @@ function runner:run(cmd, args, opts)
 
   instance:mount()
 
-  local job_id = vim.fn.termopen(table.concat(command, " "))
+  local job_id = vim.fn.jobstart(table.concat(command, " "), { term = true })
 
   instance:on("TermClose", function()
     if is_make_command(args[1]) then

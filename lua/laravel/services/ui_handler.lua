@@ -1,10 +1,9 @@
 local Popup = require("nui.popup")
 local Split = require("nui.split")
 
-
 ---@class LaravelUIHandler
 ---@field builders table<string, function>
----@field options LaravelOptionsProvider
+---@field options LaravelOptionsService
 local ui_handler = {}
 
 function ui_handler:new(options)
@@ -24,12 +23,9 @@ end
 
 ---@param opts table
 function ui_handler:handle(opts)
-  local type = opts.ui or self.options:get().ui.default
+  local type = opts.ui or self.options:get("ui.default")
 
-
-  local instance = self.builders[type](
-    opts.nui_opts or self.options:get().ui.nui_opts[type]
-  )
+  local instance = self.builders[type](opts.nui_opts or self.options:get().ui.nui_opts[type])
 
   return instance
 end

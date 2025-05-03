@@ -18,6 +18,9 @@ function app:new(opts)
   }
   setmetatable(instance, self)
   self.__index = self
+  -- self.__index = function(t, k)
+  --   return rawget(self, k) or instance:make(k)
+  -- end
   self.__call = function(cls, abstract, args)
     return cls:make(abstract, args)
   end
@@ -26,6 +29,18 @@ function app:new(opts)
   instance:instance("options", require("laravel.services.options"):new(opts))
 
   return instance
+end
+
+function app:isActive()
+  return self:make("env"):isActive()
+end
+
+function app:whenActive(callback)
+  return function(...)
+    if self:isActive() then
+      callback(...)
+    end
+  end
 end
 
 function app:has(abstract)

@@ -39,7 +39,7 @@ function related:new(model)
 end
 
 function related:get(bufnr)
-  return self.model:parse(bufnr):thenCall(function(info)
+  return self.model:getByBuffer(bufnr):thenCall(function(info)
     local relations = {}
     for _, relation_type in ipairs(types) do
       if info[relation_type] and #info[relation_type] > 0 then

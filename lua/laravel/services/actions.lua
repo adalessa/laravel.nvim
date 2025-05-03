@@ -33,6 +33,7 @@ function service:run()
         return
       end
 
+      -- want to use snacks or telescope or picker
       vim.ui.select(valid_actions, {
         prompt = "Select a Laravel action",
         format_item = function(item)

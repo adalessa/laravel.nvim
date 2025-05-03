@@ -25,7 +25,7 @@ end
 ---Return whether this source is available in the current context or not (optional).
 ---@return boolean
 function source:is_available()
-  return self.env:is_active()
+  return self.env:isActive()
 end
 
 ---Return the debug name of this source (optional).

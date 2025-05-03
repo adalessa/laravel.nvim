@@ -44,6 +44,10 @@ function cache:put(key, value, seconds)
   }
   if seconds then
     local timer = vim.uv.new_timer()
+    if not timer then
+      error("Failed to create timer")
+    end
+
     timer:start(seconds * 1000, 0, function()
       self.store[key] = nil
       timer:stop()

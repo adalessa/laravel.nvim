@@ -8,7 +8,7 @@ function gf:new()
   return instance
 end
 
-function gf:cursor_on_resource()
+function gf:cursorOnResource()
     local node = vim.treesitter.get_node()
     if not node then
         return false

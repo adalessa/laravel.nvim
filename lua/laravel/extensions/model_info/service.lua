@@ -20,7 +20,7 @@ function model_info:new(class, tinker, api, model, model_info_view)
 end
 
 function model_info:handle(bufnr)
-  return self.model:parse(bufnr):thenCall(function(model)
+  return self.model:getByBuffer(bufnr):thenCall(function(model)
     vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
     vim.api.nvim_buf_set_extmark(bufnr, self.namespace, model.start - 1, 0, self.view:get(model))
   end, function()

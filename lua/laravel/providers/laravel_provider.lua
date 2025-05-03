@@ -9,7 +9,6 @@ function laravel_provider:register(app)
   app:bindIf("pickers", "laravel.pickers_manager")
 
   -- SERVICES
-  app:bindIf("artisan", "laravel.services.artisan")
   app:bindIf("class", "laravel.services.class")
   app:bindIf("env_vars", "laravel.services.env")
   app:bindIf("model", "laravel.services.model")

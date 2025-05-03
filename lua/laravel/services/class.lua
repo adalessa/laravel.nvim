@@ -17,6 +17,11 @@ local class = {}
 function class:get(bufnr)
   return promise:new(function(resolve, reject)
     local php_parser = vim.treesitter.get_parser(bufnr, "php")
+    if php_parser == nil then
+      reject("Could not get the parser")
+      return
+    end
+
     local tree = php_parser:parse()[1]
     if tree == nil then
       reject("Could not retrieve syntx tree")
@@ -45,6 +50,7 @@ function class:get(bufnr)
       if query.captures[id] == "class" then
         response.class = get_node_text(node, bufnr)
         response.line = node:start()
+        response.end_ = node:parent():end_()
       elseif query.captures[id] == "namespace" then
         response.namespace = get_node_text(node, bufnr)
       elseif query.captures[id] == "method_name" then
@@ -80,37 +86,6 @@ function class:get(bufnr)
     end
 
     resolve(response)
-  end)
-end
-
----@return Promise
-function class:views(bufnr)
-  return promise:new(function(resolve, reject)
-    local php_parser = vim.treesitter.get_parser(bufnr, "php")
-    local tree = php_parser:parse()[1]
-    if tree == nil then
-      reject("Could not retrive syntax tree")
-      return
-    end
-
-    local query = vim.treesitter.query.get("php", "laravel_views")
-
-    if not query then
-      reject("Could not get treesitter query")
-      return
-    end
-
-    local founds = {}
-    for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
-      if query.captures[id] == "view" then
-        local view = vim.treesitter.get_node_text(node, bufnr):gsub("'", "")
-        founds[view] = true
-      end
-    end
-
-    founds = vim.tbl_keys(founds)
-
-    resolve(founds)
   end)
 end
 

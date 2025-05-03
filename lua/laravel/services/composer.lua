@@ -38,6 +38,10 @@ end
 function composer:dependencies(bufnr)
   return promise:new(function(resolve, reject)
     local parser = vim.treesitter.get_parser(bufnr, "json")
+    if not parser then
+      reject("Could not get treesitter parser")
+      return
+    end
     local tree = parser:parse()[1]
     if tree == nil then
       reject("Could not retrieve syntx tree")

@@ -10,12 +10,9 @@ function composer_provider:boot(app)
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = "composer.json",
     group = group,
-    callback = function (ev)
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function(ev)
       app("composer_info"):handle(ev.buf)
-    end
+    end),
   })
 end
 

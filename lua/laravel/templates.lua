@@ -9,6 +9,13 @@ local templates = {
   ["config_label"] = "%s (config)",
   ["view_label"] = "%s (view)",
   ["env_var"] = "%s (env)",
+  ["relation"] = [[
+
+    public function %s(): %s
+    {
+        return $this->%s;
+    }
+  ]]
 }
 
 function templates:build(name, ...)

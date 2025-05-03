@@ -4,7 +4,7 @@ function decorator:new(inner)
   local instance = {
     inner = inner,
     cache = nil,
-    timeout = 60 * 1000
+    timeout = 60 * 1000,
   }
   setmetatable(instance, self)
   self.__index = self
@@ -27,6 +27,9 @@ function decorator:get(callback)
   }
 
   local timer = vim.uv.new_timer()
+  if not timer then
+    error("Failed to create timer")
+  end
   timer:start(self.timeout, 0, function()
     timer:stop()
     timer:close()

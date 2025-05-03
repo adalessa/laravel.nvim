@@ -11,14 +11,11 @@ function diagnostics_provider:boot(app)
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = { "*.php" },
     group = group,
-    callback = function(ev)
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function(ev)
       for _, diagnostic in ipairs(app:makeByTag("diagnostics")) do
         diagnostic:handle(ev.buf)
       end
-    end,
+    end),
   })
 end
 

@@ -16,7 +16,7 @@ function gf_command:new(views, gf, cache_routes_repository)
 end
 
 function gf_command:handle()
-  local node, resource_type = self.gf:cursor_on_resource()
+  local node, resource_type = self.gf:cursorOnResource()
   if not node then
     return
   end

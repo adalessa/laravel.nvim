@@ -23,12 +23,13 @@ function user_command_provider:boot(app)
   end
 
   vim.api.nvim_create_user_command("Laravel", function(args)
-    if not app("env"):is_active() then
+    if not app:isActive() then
       vim.notify("Laravel is not active", vim.log.levels.ERROR)
       return
     end
 
     if not args.fargs[1] then
+      -- TODO maybe use snacks
       vim.ui.select(
         vim.iter(app("user_commands")):map(get_command_names):flatten():totable(),
         { prompt = "Laravel command: " },
@@ -77,11 +78,7 @@ function user_command_provider:boot(app)
     end
   end, {
     nargs = "*",
-    complete = function(argLead, cmdLine)
-      if not app("env"):is_active() then
-        return {}
-      end
-
+    complete = app:whenActive(function(argLead, cmdLine)
       local fCmdLine = vim.split(cmdLine, " ")
       if #fCmdLine <= 2 then
         return vim
@@ -113,7 +110,7 @@ function user_command_provider:boot(app)
       end
 
       return {}
-    end,
+    end),
   })
 end
 

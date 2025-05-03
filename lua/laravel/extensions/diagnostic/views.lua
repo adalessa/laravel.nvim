@@ -16,6 +16,10 @@ function views_diagnostic:handle(bufnr)
   vim.diagnostic.reset(namespace, bufnr)
 
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
+  if not php_parser then
+    -- error("Could not get treesitter parser", vim.log.levels.ERROR)
+    return
+  end
   local tree = php_parser:parse()[1]
   if tree == nil then
     -- error("Could not retrive syntax tree", vim.log.levels.ERROR)

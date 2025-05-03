@@ -12,7 +12,7 @@ end
 
 ---@param app LaravelApp
 function status_provider:boot(app)
-  if not app("env"):is_active() then
+  if not app:isActive() then
     return
   end
 

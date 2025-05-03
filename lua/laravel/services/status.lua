@@ -1,19 +1,22 @@
 ---@class LaravelStatusService
----@field artisan LaravelArtisanService
+---@field api LaravelApi
 ---@field values table
 ---@field frequency number
 local status = {}
 
 local function setInterval(interval, callback)
   local timer = vim.uv.new_timer()
+  if not timer then
+    error("Failed to create timer")
+  end
   timer:start(interval, interval, vim.schedule_wrap(callback))
 
   return timer
 end
 
-function status:new(artisan, frequency)
+function status:new(api, frequency)
   local instance = {
-    artisan = artisan,
+    api = api,
     frequency = frequency or 120,
     values = {
       php = nil,
@@ -35,13 +38,19 @@ end
 
 function status:start()
   local refresh = function()
-    self.artisan:info():thenCall(function(info)
-      if not info then
-        return
-      end
-      self.values.laravel = info.environment.laravel_version
-      self.values.php = info.environment.php_version
-    end):catch(function() end)
+    self.api
+      :send("artisan", { "about", "--json" })
+      :thenCall(function(response)
+        return response:json()
+      end)
+      :thenCall(function(info)
+        if not info then
+          return
+        end
+        self.values.laravel = info.environment.laravel_version
+        self.values.php = info.environment.php_version
+      end)
+      :catch(function() end)
   end
 
   self.refresh = refresh

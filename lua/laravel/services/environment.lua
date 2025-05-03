@@ -99,7 +99,7 @@ end
 
 ---@param name string
 ---@return string[]|nil
-function environment:get_executable(name)
+function environment:getExecutable(name)
   if not self.environment then
     return nil
   end
@@ -116,7 +116,7 @@ function environment:get_executable(name)
   return self.environment:executable(name)
 end
 
-function environment:is_active()
+function environment:isActive()
   return self.environment ~= nil
 end
 

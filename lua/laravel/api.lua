@@ -16,7 +16,7 @@ end
 
 ---@return string[]
 function api:generate_command(name, args)
-  local executable = self.env:get_executable(name)
+  local executable = self.env:getExecutable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
   end

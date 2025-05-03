@@ -38,34 +38,25 @@ function repositories_provider:boot(app)
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,
     pattern = "*/app/Console/Commands/*.php",
-    callback = function()
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function()
       app("cache_commands_repository"):clear()
-    end,
+    end),
   })
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,
     pattern = "*/routes/*.php",
-    callback = function()
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function()
       app("cache_routes_repository"):clear()
-    end,
+    end),
   })
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,
     pattern = "*.blade.php",
-    callback = function()
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function()
       app("cache_views_repository"):clear()
-    end,
+    end),
   })
 
   vim.api.nvim_create_autocmd({ "User" }, {
@@ -90,12 +81,9 @@ function repositories_provider:boot(app)
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,
     pattern = "*/configs/*.php",
-    callback = function()
-      if not app("env"):is_active() then
-        return
-      end
+    callback = app:whenActive(function()
       app("cache_configs_repository"):clear()
-    end,
+    end),
   })
 end
 

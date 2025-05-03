@@ -26,7 +26,7 @@ end
 ---@param args string[]
 ---@param opts table|nil
 function runner:run(cmd, args, opts)
-  local executable = self.env:get_executable(cmd)
+  local executable = self.env:getExecutable(cmd)
   if not executable then
     error(string.format("Executable %s not found", cmd), vim.log.levels.ERROR)
     return

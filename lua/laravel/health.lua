@@ -67,7 +67,7 @@ M.check = function()
 
   report_start("Environment")
 
-  if not app("env"):is_active() then
+  if not app:isActive() then
     report_error(
       "Environment not configure for this directory, no more checks",
       { "Check project is laravel, current directory `:pwd` is the root of laravel project" }
@@ -97,7 +97,7 @@ M.check = function()
 
   report_start("Composer")
 
-  if not app("env"):get_executable("composer") then
+  if not app("env"):getExecutable("composer") then
     report_error("Composer executable not found can't check dependencies")
   else
     report_ok("Composer executable found")

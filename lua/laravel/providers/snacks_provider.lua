@@ -1,4 +1,4 @@
----@class LaravelSnacksProvider : LaravelProvider
+---@class LaravelSnacksProvider : laravel.providers.provider
 local snacks_provider = {}
 
 function snacks_provider:register(app)

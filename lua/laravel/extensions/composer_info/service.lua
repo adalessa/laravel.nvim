@@ -1,9 +1,10 @@
 local promise = require("promise")
 
----@class ComposerInfo
----@field composer LaravelComposerService
+---@class laravel.extensions.composer_info.service
+---@field composer laravel.services.composer
 local composer_info = {}
 
+---@param composer laravel.services.composer
 function composer_info:new(composer)
   local instance = {
     composer = composer,

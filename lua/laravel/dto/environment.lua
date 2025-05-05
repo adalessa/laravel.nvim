@@ -1,7 +1,7 @@
 local get_env = require("laravel.utils").get_env
 local combine_tables = require("laravel.utils").combine_tables
 
----@class Environment
+---@class laravel.dto.environment
 ---@field name string
 ---@field condition table|nil
 ---@field commands table
@@ -10,18 +10,18 @@ local Environment = {}
 local cache = {}
 
 ---@param env table
----@return Environment
+---@return laravel.dto.environment
 function Environment:new(env)
-  local obj = {
+  local instance = {
     name = env.name,
     condition = env.condition or nil,
     commands = env.commands or {},
   }
 
-  setmetatable(obj, self)
+  setmetatable(instance, self)
   self.__index = self
 
-  return obj
+  return instance
 end
 
 ---@return boolean

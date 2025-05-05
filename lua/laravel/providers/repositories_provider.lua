@@ -1,4 +1,4 @@
----@class LaravelRepositoriesProvider : LaravelProvider
+---@class LaravelRepositoriesProvider : laravel.providers.provider
 local repositories_provider = {}
 
 function repositories_provider:register(app)

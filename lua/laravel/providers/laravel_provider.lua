@@ -1,7 +1,7 @@
----@class LaravelProvider
+---@class laravel.providers.provider
 local laravel_provider = {}
 
----@param app LaravelApp
+---@param app laravel.app
 function laravel_provider:register(app)
   app:bindIf("api", "laravel.api")
   app:bindIf("tinker", "laravel.tinker")
@@ -15,16 +15,18 @@ function laravel_provider:register(app)
   app:bindIf("related", "laravel.services.related")
   app:bindIf("composer", "laravel.services.composer")
   app:bindIf("runner", "laravel.services.runner")
-  app:bindIf("ui_handler", "laravel.services.ui_handler")
   app:bindIf("view_finder", "laravel.services.view_finder")
   app:bindIf("views", "laravel.services.views")
   app:bindIf("gf", "laravel.services.gf")
 
-  app:singeltonIf("cache", "laravel.services.cache")
-  app:singeltonIf("env", "laravel.services.environment")
+  app:singeltonIf("laravel.services.cache")
+  app:facade("cache", "laravel.services.cache")
+
+  app:singeltonIf("laravel.services.environment")
+  app:facade("env", "laravel.services.environment")
 end
 
----@param app LaravelApp
+---@param app laravel.app
 function laravel_provider:boot(app)
   app("env"):boot()
 

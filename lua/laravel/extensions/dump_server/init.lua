@@ -1,4 +1,4 @@
----@class LaravelDumpServerProvider : LaravelProvider
+---@class LaravelDumpServerProvider : laravel.providers.provider
 local dump_server_provider = {}
 
 function dump_server_provider:register(app)

@@ -1,4 +1,4 @@
----@class LaravelModelInfoProvider : LaravelProvider
+---@class LaravelModelInfoProvider : laravel.providers.provider
 local model_info_provider = {}
 
 function model_info_provider:register(app)

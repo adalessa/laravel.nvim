@@ -6,7 +6,7 @@ function tinker:register(app)
   app:bindIf("tinker_ui", "laravel.extensions.tinker.ui")
 end
 
----@param app LaravelApp
+---@param app laravel.app
 function tinker:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 

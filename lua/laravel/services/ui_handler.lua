@@ -3,7 +3,7 @@ local Split = require("nui.split")
 
 ---@class LaravelUIHandler
 ---@field builders table<string, function>
----@field options LaravelOptionsService
+---@field options laravel.services.options
 local ui_handler = {}
 
 function ui_handler:new(options)

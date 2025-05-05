@@ -3,7 +3,7 @@ local promise = require("promise")
 ---@class LaravelModelService
 ---@field class LaravelClassService
 ---@field tinker Tinker
----@field api LaravelApi
+---@field api laravel.api
 local model = {}
 
 function model:new(tinker, class, api)
@@ -16,21 +16,6 @@ function model:new(tinker, class, api)
   self.__index = self
 
   return instance
-end
-
-function model:all()
-  return self.tinker:json([[
-    use Illuminate\Support\Collection;
-    use Symfony\Component\Finder\Finder;
-
-    $modelPath = is_dir(app_path('Models')) ? app_path('Models') : app_path();
-
-    echo json_encode((new Collection(Finder::create()->files()->depth(0)->in($modelPath)))
-        ->map(fn ($file) => [ 'name' => $file->getBasename('.php'), 'path' => $file->getRealPath()])
-        ->sort()
-        ->values()
-        ->all());
-  ]])
 end
 
 function model:getByBuffer(bufnr)

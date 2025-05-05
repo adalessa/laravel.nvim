@@ -1,6 +1,7 @@
----@class LaravelApp
----@field container LaravelContainer
+---@class laravel.app
+---@field container laravel.container
 ---@field associations table
+---@field facades table
 local app = {}
 
 local function get_args(func)
@@ -15,6 +16,7 @@ function app:new(opts)
   local instance = {
     container = require("laravel.container"):new(),
     associations = {},
+    facades = {},
   }
   setmetatable(instance, self)
   self.__index = self
@@ -26,7 +28,9 @@ function app:new(opts)
   end
 
   opts = vim.tbl_deep_extend("force", require("laravel.options.default"), opts or {})
-  instance:instance("options", require("laravel.services.options"):new(opts))
+  local opts_instance = require("laravel.services.options"):new(opts)
+  instance:instance("options", opts_instance)
+  instance:instance("laravel.services.options", opts_instance)
 
   return instance
 end
@@ -44,10 +48,12 @@ function app:whenActive(callback)
 end
 
 function app:has(abstract)
+  abstract = self.facades[abstract] or abstract
   return self.container:has(abstract)
 end
 
 function app:make(abstract, arguments)
+  abstract = self.facades[abstract] or abstract
   if not self.container:has(abstract) then
     local ok, _ = pcall(require, abstract)
     if ok then
@@ -70,6 +76,12 @@ function app:associate(abstract, associations)
   self.associations[abstract] = vim.tbl_extend("force", self.associations[abstract] or {}, associations)
 end
 
+---@param alias string
+---@param real string
+function app:facade(alias, real)
+  self.facades[alias] = real
+end
+
 ---@param abstract string
 ---@param factory string|function
 ---@param opts table|nil
@@ -86,7 +98,7 @@ function app:bind(abstract, factory, opts)
 end
 
 ---@param abstract string
----@param factory string|fun(app: LaravelApp): any
+---@param factory string|fun(app: laravel.app): any
 ---@param opts table|nil
 function app:bindIf(abstract, factory, opts)
   if not self.container:has(abstract) then
@@ -108,9 +120,10 @@ function app:instance(abstract, instance, opts)
 end
 
 ---@param abstract string
----@param factory string|function
+---@param factory string|function|nil
 ---@param opts table|nil
 function app:singelton(abstract, factory, opts)
+  factory = factory or abstract
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
@@ -128,7 +141,7 @@ function app:singelton(abstract, factory, opts)
 end
 
 ---@param abstract string
----@param factory string|function
+---@param factory string|function|nil
 ---@param opts table|nil
 function app:singeltonIf(abstract, factory, opts)
   if not self.container:has(abstract) then
@@ -256,9 +269,15 @@ function app:_createFactory(abstract, moduleName)
       return module
     end
 
+    local injects = module._inject or {}
+
     local args = get_args(constructor)
 
-    local params = vim.tbl_extend("force", self.associations[abstract] or {}, arguments or {})
+    local params = vim.tbl_extend(
+      "force",
+      self.associations[abstract] or {},
+      arguments or {}
+    )
 
     if #args > 1 then
       table.remove(args, 1)
@@ -266,6 +285,8 @@ function app:_createFactory(abstract, moduleName)
       for k, v in pairs(args) do
         if params[v] then
           module_args[k] = params[v]
+        elseif injects[v] then
+          module_args[k] = self:make(injects[v])
         else
           if not self:has(v) then
             error(string.format("could not find %s for %s", v, abstract))

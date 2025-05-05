@@ -1,16 +1,17 @@
----@class LaravelStatusprovider: LaravelProvider
+---@class LaravelStatusprovider: laravel.providers.provider
 local status_provider = {}
 
----@param app LaravelApp
+---@param app laravel.app
 function status_provider:register(app)
-  app:singeltonIf("status", "laravel.services.status")
+  app:singeltonIf("laravel.services.status")
+  app:facade("status", "laravel.services.status")
 
   app:associate("status", {
     frequency = 120,
   })
 end
 
----@param app LaravelApp
+---@param app laravel.app
 function status_provider:boot(app)
   if not app:isActive() then
     return

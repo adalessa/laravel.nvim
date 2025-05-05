@@ -1,7 +1,7 @@
 local promise = require("promise")
 
----@class LaravelComposerService
----@field api LaravelApi
+---@class laravel.services.composer
+---@field api laravel.api
 local composer = {}
 
 function composer:new(api)
@@ -17,7 +17,7 @@ end
 ---@return Promise
 function composer:info()
   return self.api:send("composer", { "info", "-f", "json" }):thenCall(
-  ---@param response ApiResponse
+    ---@param response laravel.dto.apiResponse
     function(response)
       return response:json().installed
     end
@@ -27,7 +27,7 @@ end
 ---@return Promise
 function composer:outdated()
   return self.api:send("composer", { "outdated", "-f", "json" }):thenCall(
-  ---@param response ApiResponse
+    ---@param response laravel.dto.apiResponse
     function(response)
       return response:json().installed
     end

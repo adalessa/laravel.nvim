@@ -1,4 +1,4 @@
----@class LaravelFzfLuaProvider: LaravelProvider
+---@class LaravelFzfLuaProvider: laravel.providers.provider
 local fzf_lua_provider = {}
 
 function fzf_lua_provider:register(app)

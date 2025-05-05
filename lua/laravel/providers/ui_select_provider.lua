@@ -1,4 +1,4 @@
----@class LaravelUISelectProvider: LaravelProvider
+---@class LaravelUISelectProvider: laravel.providers.provider
 local ui_select_provider = {}
 
 function ui_select_provider:register(app)

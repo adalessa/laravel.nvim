@@ -18,9 +18,9 @@ local function find_env_by_name(name, envs)
   return nil
 end
 
----@class LaravelEnvironment
----@field environment Environment|nil
----@field options LaravelOptionsService
+---@class laravel.services.environment
+---@field environment laravel.dto.environment|nil
+---@field options laravel.services.options
 local environment = {}
 
 function environment:new(options)

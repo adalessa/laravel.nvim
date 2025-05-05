@@ -6,7 +6,7 @@ local actions = require("laravel.pickers.telescope.actions")
 
 ---@class LaravelRelatedPicker
 ---@field class LaravelClassService
----@field api LaravelApi
+---@field api laravel.api
 local related_picker = {}
 
 local build_relation = function(info, relation_type)

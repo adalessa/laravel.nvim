@@ -1,7 +1,7 @@
 local split = require("laravel.utils").split
 
 ---@class RoutesRepository
----@field api LaravelApi
+---@field api laravel.api
 local routes_repository = {}
 
 function routes_repository:new(api)
@@ -16,7 +16,7 @@ end
 ---@return Promise
 function routes_repository:all()
   return self.api:send("artisan", { "route:list", "--json" }):thenCall(
-  ---@param result ApiResponse
+  ---@param result laravel.dto.apiResponse
     function(result)
       return vim
           .iter(result:json() or {})

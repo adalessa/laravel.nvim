@@ -1,5 +1,5 @@
 ---@class CommandsRepository
----@field api LaravelApi
+---@field api laravel.api
 local commands_repository = {}
 
 function commands_repository:new(api)
@@ -14,7 +14,7 @@ end
 ---@return Promise
 function commands_repository:all()
   return self.api:send("artisan", { "list", "--format=json" }):thenCall(
-    ---@param result ApiResponse
+    ---@param result laravel.dto.apiResponse
     function(result)
       return vim
           .iter(result:json().commands or {})

@@ -3,19 +3,25 @@ local ApiResponse = require("laravel.dto.api_response")
 
 local combine_tables = require("laravel.utils").combine_tables
 
----@class LaravelApi
----@field env LaravelEnvironment
+---@class laravel.api
+---@field env laravel.services.environment
 local api = {}
 
----@return LaravelApi
+---@param env laravel.services.environment
+---@return laravel.api
 function api:new(env)
-  local instance = setmetatable({}, { __index = api })
-  instance.env = env
+  local instance = {
+    env = env,
+  }
+
+  setmetatable(instance, self)
+  self.__index = self
+
   return instance
 end
 
 ---@return string[]
-function api:generate_command(name, args)
+function api:generateCommand(name, args)
   local executable = self.env:getExecutable(name)
   if not executable then
     error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
@@ -26,13 +32,13 @@ end
 
 ---@param program string
 ---@param args string[]
----@param callback fun(response: ApiResponse)
+---@param callback fun(response: laravel.dto.apiResponse)
 ---@param opts table|nil
 ---@return vim.SystemObj
 function api:async(program, args, callback, opts)
   opts = opts or {}
 
-  local cmd = self:generate_command(program, args)
+  local cmd = self:generateCommand(program, args)
 
   local cb = function(out)
     callback(ApiResponse:new({ out.stdout }, out.code, { out.stderr }))

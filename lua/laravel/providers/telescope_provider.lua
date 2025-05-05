@@ -1,4 +1,4 @@
----@class LaravelTelescopeProvider : LaravelProvider
+---@class LaravelTelescopeProvider : laravel.providers.provider
 local telescope_provider = {}
 
 function telescope_provider:register(app)

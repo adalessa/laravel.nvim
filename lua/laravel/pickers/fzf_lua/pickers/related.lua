@@ -4,7 +4,7 @@ local fzf_exec = require("fzf-lua").fzf_exec
 
 ---@class LaravelFzfLuaRelatedPicker
 ---@field class LaravelClassService
----@field api LaravelApi
+---@field api laravel.api
 local related_picker = {}
 
 local build_relation = function(info, relation_type)

@@ -1,4 +1,4 @@
----@class LaravelContainer
+---@class laravel.container
 ---@field registry table<string, function|table>
 ---@field tags table<string, string[]>
 local Container = {}
@@ -15,6 +15,9 @@ function Container:new()
   return instance
 end
 
+---@param name string
+---@param item function|table
+---@param opts table|nil
 function Container:set(name, item, opts)
   self.registry[name] = item
   opts = opts or {}
@@ -28,12 +31,14 @@ function Container:set(name, item, opts)
   end
 end
 
+---@param tag string
+---@return string[]
 function Container:byTag(tag)
   return self.tags[tag] or {}
 end
 
 ---@param name string
----@return object
+---@return any
 function Container:get(name)
   if not self.registry[name] then
     error("Unknown service '" .. name .. "'")

@@ -1,14 +1,12 @@
 ---@class LaravelStatusService
----@field api LaravelApi
+---@field api laravel.api
 ---@field values table
 ---@field frequency number
 local status = {}
 
 local function setInterval(interval, callback)
   local timer = vim.uv.new_timer()
-  if not timer then
-    error("Failed to create timer")
-  end
+  assert(timer, "Failed to create timer")
   timer:start(interval, interval, vim.schedule_wrap(callback))
 
   return timer

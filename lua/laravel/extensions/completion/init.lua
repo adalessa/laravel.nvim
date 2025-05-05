@@ -1,4 +1,4 @@
----@class LaravelCompletionProvider : LaravelProvider
+---@class LaravelCompletionProvider : laravel.providers.provider
 local completion_provider = {}
 
 function completion_provider:register(app)

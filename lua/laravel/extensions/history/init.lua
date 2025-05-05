@@ -1,12 +1,12 @@
 local history_provider = {}
 
----@param app LaravelApp
+---@param app laravel.app
 function history_provider:register(app)
   app:singeltonIf("history", "laravel.extensions.history.service")
   app:bindIf("history_command", "laravel.extensions.history.command", { tags = { "command" } })
 end
 
----@param app LaravelApp
+---@param app laravel.app
 function history_provider:boot(app)
   local group = vim.api.nvim_create_augroup("laravel", {})
   vim.api.nvim_create_autocmd({ "User" }, {

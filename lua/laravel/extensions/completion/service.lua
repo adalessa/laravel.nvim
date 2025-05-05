@@ -1,9 +1,9 @@
 ---@class LaravelCompletionSource
----@field env LaravelEnvironment
+---@field env laravel.services.environment
 ---@field views_repository ViewsRepository
 ---@field routes_repository RoutesRepository
 ---@field configs_repository ConfigsRespository
----@field templates LaravelTemplates
+---@field templates laravel.templates
 local source = {}
 
 function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, env_vars, templates)

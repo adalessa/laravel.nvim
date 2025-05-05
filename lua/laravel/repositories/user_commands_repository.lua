@@ -1,7 +1,7 @@
 local promise = require("promise")
 
 ---@class UserCommandsRepository
----@field options LaravelOptionsService
+---@field options laravel.services.options
 local user_commands_repository = {}
 
 function user_commands_repository:new(options)

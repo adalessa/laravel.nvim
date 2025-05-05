@@ -18,10 +18,10 @@ end
 
 function action:check(bufnr)
   return self.model
-    :parse(bufnr)
+    :getByBuffer(bufnr)
     :thenCall(function(info)
       self.info = info
-      return self
+      return true
     end)
     :catch(function()
       return promise.resolve(false)

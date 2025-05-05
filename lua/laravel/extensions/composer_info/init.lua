@@ -1,4 +1,4 @@
----@class ComposerProvider : LaravelProvider
+---@class ComposerProvider : laravel.providers.provider
 local composer_provider = {}
 
 function composer_provider:register(app)

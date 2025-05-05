@@ -1,4 +1,4 @@
----@class LaravelOptionsService
+---@class laravel.services.options
 ---@field opts LaravelOptions
 local options = {}
 

@@ -1,7 +1,7 @@
 local promise = require("promise")
 
 ---@class Tinker
----@field api LaravelApi
+---@field api laravel.api
 local tinker = {}
 
 function tinker:new(api)
@@ -14,7 +14,7 @@ end
 
 function tinker:raw(code)
   return self.api:send("artisan", { "tinker", "--execute", code }):thenCall(
-  ---@param response ApiResponse
+  ---@param response laravel.dto.apiResponse
     function(response)
       local pattern = "\n%s+Error"
       if response:content():find(pattern) then

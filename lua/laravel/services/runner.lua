@@ -3,13 +3,19 @@ local is_make_command = require("laravel.utils").is_make_command
 local find_class = require("laravel.utils").find_class_from_make_output
 
 ---@class LaravelRunner
----@field env LaravelEnvironment
----@field options LaravelOptionsService
+---@field env laravel.services.environment
+---@field options laravel.services.options
 ---@field ui_handler LaravelUIHandler
-local runner = {}
+local runner = {
+  _inject = {
+    env = "laravel.services.environment",
+    options = "laravel.services.options",
+    ui_handler = "laravel.services.ui_handler",
+  }
+}
 
----@param env LaravelEnvironment
----@param options LaravelOptionsService
+---@param env laravel.services.environment
+---@param options laravel.services.options
 function runner:new(env, options, ui_handler)
   local instance = {
     env = env,

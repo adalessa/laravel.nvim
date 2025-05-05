@@ -1,4 +1,4 @@
----@class LaravelTemplates
+---@class laravel.templates
 local templates = {
   ["route_documentation"] = [[ # Route: %s
   - methods: %s

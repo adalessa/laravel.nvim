@@ -1,4 +1,4 @@
----@class LaravelRouteInfoProvider : LaravelProvider
+---@class LaravelRouteInfoProvider : laravel.providers.provider
 local route_info = {}
 
 function route_info:register(app, opts)

@@ -1,7 +1,14 @@
 local promise = require("promise")
 
-local service = {}
+---@class laravel.services.actions
+---@field actions laravel.actions.action[]
+local service = {
+  _inject = {
+    actions = "laravel.actions"
+  }
+}
 
+---@param actions laravel.actions.action[]
 function service:new(actions)
   local instance = {
     actions = actions or {},
@@ -20,13 +27,20 @@ function service:run()
     .all(vim
       .iter(self.actions)
       :map(function(action)
-        return action:check(bufnr)
+        return action:check(bufnr):thenCall(function(res)
+          if res then
+            return action
+          end
+          return nil
+        end, function()
+          return nil
+        end)
       end)
       :totable())
-    :thenCall(function(results)
-      local valid_actions = vim.tbl_filter(function(result)
-        return result
-      end, results)
+    :thenCall(function(actions_results)
+      local valid_actions = vim.tbl_filter(function(action_result)
+        return action_result ~= nil
+      end, actions_results)
 
       if #valid_actions == 0 then
         vim.notify("No actions available for this buffer", vim.log.levels.INFO)

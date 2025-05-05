@@ -1,4 +1,4 @@
----@class LaravelStatusService
+---@class laravel.services.status
 ---@field api laravel.api
 ---@field values table
 ---@field frequency number
@@ -12,10 +12,10 @@ local function setInterval(interval, callback)
   return timer
 end
 
-function status:new(api, frequency)
+function status:new(api)
   local instance = {
     api = api,
-    frequency = frequency or 120,
+    frequency = 120,
     values = {
       php = nil,
       laravel = nil,

@@ -4,15 +4,22 @@
 ---@field routes_repository RoutesRepository
 ---@field configs_repository ConfigsRespository
 ---@field templates laravel.templates
-local source = {}
+---@field env_vars_repository laravel.repositories.environment_variables_repository
+local source = {
+  _inject = {
+    env = "laravel.services.environment",
+    templates = "laravel.templates",
+    env_vars_repository = "laravel.repositories.environment_variables_repository"
+  }
+}
 
-function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, env_vars, templates)
+function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, env_vars_repository, templates)
   local instance = {
     env = env,
     views_repository = cache_views_repository,
     configs_repository = cache_configs_repository,
     routes_repository = cache_routes_repository,
-    env_vars = env_vars,
+    env_vars_repository = env_vars_repository,
     templates = templates,
   }
 
@@ -119,7 +126,7 @@ function source:complete(params, callback)
   end
 
   if text:match("env%([%'|%\"]") then
-    self.env_vars:get():thenCall(function(variables)
+    self.env_vars_repository:all():thenCall(function(variables)
       callback({
         items = vim
           .iter(variables)

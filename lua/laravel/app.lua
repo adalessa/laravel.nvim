@@ -1,7 +1,7 @@
 ---@class laravel.app
 ---@field container laravel.container
 ---@field associations table
----@field facades table
+---@field aliases table
 local app = {}
 
 local function get_args(func)
@@ -16,7 +16,7 @@ function app:new(opts)
   local instance = {
     container = require("laravel.container"):new(),
     associations = {},
-    facades = {},
+    aliases = {},
   }
   setmetatable(instance, self)
   self.__index = self
@@ -29,7 +29,6 @@ function app:new(opts)
 
   opts = vim.tbl_deep_extend("force", require("laravel.options.default"), opts or {})
   local opts_instance = require("laravel.services.options"):new(opts)
-  instance:instance("options", opts_instance)
   instance:instance("laravel.services.options", opts_instance)
 
   return instance
@@ -48,12 +47,12 @@ function app:whenActive(callback)
 end
 
 function app:has(abstract)
-  abstract = self.facades[abstract] or abstract
+  abstract = self.aliases[abstract] or abstract
   return self.container:has(abstract)
 end
 
 function app:make(abstract, arguments)
-  abstract = self.facades[abstract] or abstract
+  abstract = self.aliases[abstract] or abstract
   if not self.container:has(abstract) then
     local ok, _ = pcall(require, abstract)
     if ok then
@@ -78,14 +77,15 @@ end
 
 ---@param alias string
 ---@param real string
-function app:facade(alias, real)
-  self.facades[alias] = real
+function app:alias(alias, real)
+  self.aliases[alias] = real
 end
 
 ---@param abstract string
 ---@param factory string|function
 ---@param opts table|nil
 function app:bind(abstract, factory, opts)
+  abstract = self.aliases[abstract] or abstract
   assert(type(factory) == "string" or type(factory) == "function", "Factory should be a string or a function")
 
   if type(factory) == "string" then
@@ -101,7 +101,7 @@ end
 ---@param factory string|fun(app: laravel.app): any
 ---@param opts table|nil
 function app:bindIf(abstract, factory, opts)
-  if not self.container:has(abstract) then
+  if not self:has(abstract) then
     self:bind(abstract, factory, opts)
   end
 
@@ -144,7 +144,7 @@ end
 ---@param factory string|function|nil
 ---@param opts table|nil
 function app:singeltonIf(abstract, factory, opts)
-  if not self.container:has(abstract) then
+  if not self:has(abstract) then
     self:singelton(abstract, factory, opts)
   end
 
@@ -152,7 +152,7 @@ function app:singeltonIf(abstract, factory, opts)
 end
 
 function app:boot()
-  local options = self:make("options"):get()
+  local options = self:make("laravel.services.options"):get()
   local providers = options.providers
   local user_providers = options.user_providers
 
@@ -162,9 +162,14 @@ function app:boot()
     end
   end
 
-  local boot = function(provider)
+  local boot = function(provider, name)
     if provider.boot then
-      provider:boot(self)
+      local ok, res = pcall(function()
+        provider:boot(self)
+      end)
+      if not ok then
+        vim.notify("Error booting provider " .. name .. "\n" .. res, vim.log.levels.ERROR)
+      end
     end
   end
 
@@ -187,7 +192,12 @@ function app:boot()
     if extension_options.enable then
       local extension_provider = require("laravel.extensions." .. extension)
       if extension_provider.boot then
-        extension_provider:boot(self, extension_options)
+        local ok, res = pcall(function()
+          extension_provider:boot(self, extension_options)
+        end)
+        if not ok then
+          vim.notify("Error booting extension " .. extension .. "\n" .. res, vim.log.levels.ERROR)
+        end
       end
     end
   end
@@ -273,11 +283,7 @@ function app:_createFactory(abstract, moduleName)
 
     local args = get_args(constructor)
 
-    local params = vim.tbl_extend(
-      "force",
-      self.associations[abstract] or {},
-      arguments or {}
-    )
+    local params = vim.tbl_extend("force", self.associations[abstract] or {}, arguments or {})
 
     if #args > 1 then
       table.remove(args, 1)
@@ -288,9 +294,6 @@ function app:_createFactory(abstract, moduleName)
         elseif injects[v] then
           module_args[k] = self:make(injects[v])
         else
-          if not self:has(v) then
-            error(string.format("could not find %s for %s", v, abstract))
-          end
           module_args[k] = self:make(v)
         end
       end

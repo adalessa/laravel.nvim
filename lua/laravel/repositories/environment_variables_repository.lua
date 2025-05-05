@@ -2,7 +2,8 @@ local promise = require("promise")
 local split = require("laravel.utils").split
 local a = require("plenary.async")
 
-local env = {}
+---@class laravel.repositories.environment_variables_repository
+local repository = {}
 
 local read_file = function(path)
   local err, fd = a.uv.fs_open(path, "r", 438)
@@ -20,7 +21,8 @@ local read_file = function(path)
   return data
 end
 
-function env:get()
+-- TODO move to a repository since read content of the project
+function repository:all()
   return promise:new(function(resolve, reject)
     a.run(function()
       local data = read_file(".env")
@@ -45,4 +47,16 @@ function env:get()
   end)
 end
 
-return env
+function repository:get(key)
+  return self:all():thenCall(function(envs)
+    for _, env in ipairs(envs) do
+      if env.key == key then
+        return env.value
+      end
+    end
+
+    return nil
+  end)
+end
+
+return repository

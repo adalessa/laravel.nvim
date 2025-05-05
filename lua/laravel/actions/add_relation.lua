@@ -1,11 +1,16 @@
 local promise = require("promise")
-local templates = require("laravel.templates")
 
-local action = {}
+local action = {
+  _inject = {
+    model = "laravel.services.model",
+    templates = "laravel.templates",
+  }
+}
 
-function action:new(model)
+function action:new(model, templates)
   local instance = {
     model = model,
+    templates = templates,
     info = nil,
   }
 
@@ -44,7 +49,7 @@ function action:run(bufnr)
         start = { line = self.info.class_info.end_, character = 0 },
         ["end"] = { line = self.info.class_info.end_, character = 0 },
       },
-      newText = templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
+      newText = self.templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
     },
   }, bufnr, "utf-8")
 end

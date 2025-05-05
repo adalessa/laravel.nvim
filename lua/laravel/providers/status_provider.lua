@@ -4,11 +4,7 @@ local status_provider = {}
 ---@param app laravel.app
 function status_provider:register(app)
   app:singeltonIf("laravel.services.status")
-  app:facade("status", "laravel.services.status")
-
-  app:associate("status", {
-    frequency = 120,
-  })
+  app:alias("status", "laravel.services.status")
 end
 
 ---@param app laravel.app

@@ -4,6 +4,7 @@ local promise = require("promise")
 ---@field api laravel.api
 local composer = {}
 
+---@param api laravel.api
 function composer:new(api)
   local instance = {
     api = api,

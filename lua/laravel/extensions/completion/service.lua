@@ -1,5 +1,5 @@
 ---@class LaravelCompletionSource
----@field env laravel.services.environment
+---@field env laravel.env
 ---@field views_repository ViewsRepository
 ---@field routes_repository RoutesRepository
 ---@field configs_repository ConfigsRespository
@@ -7,7 +7,7 @@
 ---@field env_vars_repository laravel.repositories.environment_variables_repository
 local source = {
   _inject = {
-    env = "laravel.services.environment",
+    env = "laravel.env",
     templates = "laravel.templates",
     env_vars_repository = "laravel.repositories.environment_variables_repository"
   }

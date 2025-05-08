@@ -4,7 +4,7 @@ local ApiResponse = require("laravel.dto.api_response")
 local combine_tables = require("laravel.utils").combine_tables
 
 ---@class laravel.api
----@field env laravel.services.environment
+---@field env laravel.env
 local api = {}
 
 ---@param env laravel.services.environment

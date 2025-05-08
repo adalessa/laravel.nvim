@@ -22,8 +22,17 @@ function laravel_provider:register(app)
   app:singeltonIf("laravel.services.cache")
   app:alias("cache", "laravel.services.cache")
 
-  app:singeltonIf("laravel.services.environment")
-  app:alias("env", "laravel.services.environment")
+  app:singeltonIf("laravel.env")
+  app:alias("env", "laravel.env")
+
+  app:singeltonIf("laravel.config", function()
+    return require("laravel.config"):new(
+      vim.fn.stdpath("data") .. "/laravel/config.json"
+    )
+  end)
+  app:command("configure", function()
+    app("laravel.env"):configure()
+  end)
 end
 
 ---@param app laravel.app

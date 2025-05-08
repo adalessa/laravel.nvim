@@ -35,7 +35,7 @@ function app:new(opts)
 end
 
 function app:isActive()
-  return self:make("env"):isActive()
+  return self:make("laravel.env"):isActive()
 end
 
 function app:whenActive(callback)
@@ -162,13 +162,13 @@ function app:boot()
     end
   end
 
-  local boot = function(provider, name)
+  local boot = function(provider )
     if provider.boot then
       local ok, res = pcall(function()
         provider:boot(self)
       end)
       if not ok then
-        vim.notify("Error booting provider " .. name .. "\n" .. res, vim.log.levels.ERROR)
+        vim.notify("Error booting provider \n" .. res, vim.log.levels.ERROR)
       end
     end
   end
@@ -207,6 +207,7 @@ end
 
 function app:start()
   self:validate_instalation()
+
   return self:boot()
 end
 

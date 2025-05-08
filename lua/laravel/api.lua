@@ -7,7 +7,7 @@ local combine_tables = require("laravel.utils").combine_tables
 ---@field env laravel.env
 local api = {}
 
----@param env laravel.services.environment
+---@param env laravel.env
 ---@return laravel.api
 function api:new(env)
   local instance = {

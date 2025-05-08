@@ -27,7 +27,7 @@ function command:start()
     return
   end
 
-  local cmd = self.api:generate_command("composer", { "dev" })
+  local cmd = self.api:generateCommand("composer", { "dev" })
 
   self.task:run(cmd)
   self.configs_repository:get("app.url"):thenCall(function(value)

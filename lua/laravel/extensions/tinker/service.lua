@@ -73,7 +73,7 @@ function tinker:open(filename)
 
     local lines = get_lines(bufnr)
 
-    local cmd = self.api:generate_command("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
+    local cmd = self.api:generateCommand("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
 
     local channelId = self.ui:createTerm()
     vim.fn.jobstart(cmd, {

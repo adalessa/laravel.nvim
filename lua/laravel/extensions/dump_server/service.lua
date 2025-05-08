@@ -63,7 +63,7 @@ function dump_server:_start()
   self.in_header = false
   self.current_index = nil
 
-  local cmd = self.api:generate_command("artisan", { "dump-server" })
+  local cmd = self.api:generateCommand("artisan", { "dump-server" })
   self.task:run(
     cmd,
     vim.schedule_wrap(function(data)

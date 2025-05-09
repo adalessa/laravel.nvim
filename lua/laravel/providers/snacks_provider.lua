@@ -18,6 +18,7 @@ function snacks_provider:register(app)
         related = "laravel.pickers.snacks.pickers.related",
         resources = "laravel.pickers.snacks.pickers.resources",
         routes = "laravel.pickers.snacks.pickers.routes",
+        laravel = "laravel.pickers.snacks.pickers.laravel",
       },
     }
   end)

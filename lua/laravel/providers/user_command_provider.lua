@@ -29,17 +29,20 @@ function user_command_provider:boot(app)
     end
 
     if not args.fargs[1] then
-      -- TODO maybe use snacks
-      vim.ui.select(
-        vim.iter(app("user_commands")):map(get_command_names):flatten():totable(),
-        { prompt = "Laravel command: " },
-        function(selected)
-          if not selected then
-            return
+      if app("pickers"):exists("laravel") then
+        app("pickers"):run("laravel")
+      else
+        vim.ui.select(
+          vim.iter(app("user_commands")):map(get_command_names):flatten():totable(),
+          { prompt = "Laravel command: " },
+          function(selected)
+            if not selected then
+              return
+            end
+            vim.api.nvim_command("Laravel " .. selected)
           end
-          vim.api.nvim_command("Laravel " .. selected)
-        end
-      )
+        )
+      end
       return
     end
 

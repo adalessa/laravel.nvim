@@ -37,6 +37,7 @@ return {
     override = { enable = true },
     route_info = { enable = true, view = "top" },
     tinker = { enable = true },
+    mcp = { enable = true },
   },
   providers = {
     require("laravel.providers.laravel_provider"),

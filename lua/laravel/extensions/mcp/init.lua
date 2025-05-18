@@ -1,7 +1,10 @@
 local mcp = {}
 
 function mcp:boot(app)
-  local mcphub = require("mcphub")
+  local status, mcphub = pcall(require, "mcphub")
+  if not status then
+    return
+  end
 
   mcphub.add_tool("laravel", {
     name = "artisan",

@@ -1,10 +1,14 @@
 local Task = require("laravel.task")
 
-local command = {}
+local command = {
+  _inject = {
+    command_generator = "laravel.services.command_generator",
+  }
+}
 
-function command:new(api, configs_repository)
+function command:new(command_generator, configs_repository)
   local instance = {
-    api = api,
+    command_generator = command_generator,
     configs_repository = configs_repository,
     task = Task:new(),
     command = "dev",
@@ -27,7 +31,11 @@ function command:start()
     return
   end
 
-  local cmd = self.api:generateCommand("composer", { "dev" })
+  local cmd = self.command_generator:generate("composer dev")
+  if not cmd then
+    vim.notify("Composer not found", vim.log.levels.ERROR, {})
+    return
+  end
 
   self.task:run(cmd)
   self.configs_repository:get("app.url"):thenCall(function(value)

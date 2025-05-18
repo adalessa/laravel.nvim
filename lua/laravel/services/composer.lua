@@ -1,19 +1,9 @@
 local promise = require("promise")
+local Class = require("laravel.class")
 
 ---@class laravel.services.composer
 ---@field api laravel.api
-local composer = {}
-
----@param api laravel.api
-function composer:new(api)
-  local instance = {
-    api = api,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local composer = Class({api = "laravel.api"})
 
 ---@return Promise
 function composer:info()

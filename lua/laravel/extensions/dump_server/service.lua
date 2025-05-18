@@ -1,11 +1,15 @@
 local Task = require("laravel.task")
 
 local promise = require("promise")
-local dump_server = {}
+local dump_server = {
+  _inject = {
+    command_generator = "laravel.services.command_generator",
+  }
+}
 
-function dump_server:new(api, cache_commands_repository, runner)
+function dump_server:new(command_generator, cache_commands_repository, runner)
   local instance = {
-    api = api,
+    command_generator = command_generator,
     commands_repository = cache_commands_repository,
     runner = runner,
     task = Task:new(),
@@ -63,7 +67,12 @@ function dump_server:_start()
   self.in_header = false
   self.current_index = nil
 
-  local cmd = self.api:generateCommand("artisan", { "dump-server" })
+  local cmd = self.command_generator:generate("artisan dump-server")
+  if not cmd then
+    vim.notify("Dump server not found", vim.log.levels.ERROR, {})
+    return
+  end
+
   self.task:run(
     cmd,
     vim.schedule_wrap(function(data)

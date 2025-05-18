@@ -1,22 +1,15 @@
 local promise = require("promise")
+local Class = require("laravel.class")
 
----@class LaravelModelService
+---@class laravel.services.model
 ---@field class LaravelClassService
 ---@field tinker Tinker
 ---@field api laravel.api
-local model = {}
-
-function model:new(tinker, class, api)
-  local instance = {
-    tinker = tinker,
-    class = class,
-    api = api,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local model = Class({
+  class = "laravel.services.class",
+  tinker = "laravel.tinker",
+  api = "laravel.api",
+})
 
 function model:getByBuffer(bufnr)
   return self.class:get(bufnr):thenCall(function(class)

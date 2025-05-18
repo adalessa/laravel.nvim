@@ -1,6 +1,6 @@
 ---@class LaravelViewsService
 ---@field resources_repository ResourcesRepository
----@field runner LaravelRunner
+---@field runner laravel.services.runner
 local views = {}
 
 function views:new(cache_resources_repository, runner)

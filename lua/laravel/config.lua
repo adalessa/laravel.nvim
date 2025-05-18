@@ -7,6 +7,9 @@ This will take care of storing configuration per project persistent
 ---@field commands table
 ---@field condition table|nil
 
+---@class laravel.config
+---@field path string
+---@field data table<string, laravel.config.project>
 local config = {}
 
 ---@param filePath string

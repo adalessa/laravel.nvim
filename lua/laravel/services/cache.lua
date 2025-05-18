@@ -1,23 +1,14 @@
----@class LaravelCache
-local cache = {}
+local Class = require("laravel.class")
 
-function cache:new()
-  local instance = {
-    store = {},
-  }
+---@class laravel.service.cache
+---@field store table<string, any>
+local cache = Class(nil, {store = {}})
 
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
+---@param key string
+---@param default any
+---@return any
 function cache:get(key, default)
-  if not self:has(key) then
-    return default
-  end
-
-  return self.store[key].value
+  return self:has(key) and self.store[key].value or default
 end
 
 ---@param key string

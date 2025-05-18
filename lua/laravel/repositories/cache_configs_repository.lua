@@ -2,7 +2,7 @@ local promise = require("promise")
 
 ---@class CacheConfigsRepository : ConfigsRespository
 ---@field configs_repository ConfigsRespository
----@field cache LaravelCache
+---@field cache laravel.service.cache
 ---@field prefix string key to store the configs
 ---@field key string tag to store the configs
 ---@field timeout number seconds for the cache

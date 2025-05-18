@@ -1,33 +1,25 @@
 local promise = require("promise")
 local ApiResponse = require("laravel.dto.api_response")
 
-local combine_tables = require("laravel.utils").combine_tables
-
 ---@class laravel.api
----@field env laravel.env
-local api = {}
+---@field command_generator laravel.services.command_generator
+local api = {
+  _inject = {
+    command_generator = "laravel.services.command_generator",
+  }
+}
 
----@param env laravel.env
+---@param command_generator laravel.services.command_generator
 ---@return laravel.api
-function api:new(env)
+function api:new(command_generator)
   local instance = {
-    env = env,
+    command_generator = command_generator,
   }
 
   setmetatable(instance, self)
   self.__index = self
 
   return instance
-end
-
----@return string[]
-function api:generateCommand(name, args)
-  local executable = self.env:getExecutable(name)
-  if not executable then
-    error(string.format("Executable %s not found", name), vim.log.levels.ERROR)
-  end
-
-  return combine_tables(executable, args)
 end
 
 ---@param program string
@@ -38,7 +30,10 @@ end
 function api:async(program, args, callback, opts)
   opts = opts or {}
 
-  local cmd = self:generateCommand(program, args)
+  local cmd = self.command_generator:generate(program, args)
+  if not cmd then
+    error(string.format("Command %s not found", program), vim.log.levels.ERROR)
+  end
 
   local cb = function(out)
     callback(ApiResponse:new({ out.stdout }, out.code, { out.stderr }))

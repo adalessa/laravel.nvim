@@ -1,17 +1,10 @@
 local utils = require("laravel.utils")
+local Class = require("laravel.class")
 
-local view_finder = {}
-
-function view_finder:new(views, class)
-  local instance = {
-    views_service = views,
-    class_service = class,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local view_finder = Class({
+    views_service = "laravel.services.views",
+    class_service = "laravel.services.class",
+})
 
 ---@param view string
 function view_finder:usage(view)

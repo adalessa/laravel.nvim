@@ -1,11 +1,15 @@
 local scan = require("plenary.scandir")
 
-local tinker = {}
+local tinker = {
+  _inject = {
+    command_generator = "laravel.services.command_generator",
+  }
+}
 
-function tinker:new(tinker_ui, api)
+function tinker:new(tinker_ui, command_generator)
   local instance = {
     ui = tinker_ui,
-    api = api,
+    command_generator = command_generator,
     data = {},
   }
   setmetatable(instance, self)
@@ -73,7 +77,11 @@ function tinker:open(filename)
 
     local lines = get_lines(bufnr)
 
-    local cmd = self.api:generateCommand("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
+    local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
+    if not cmd then
+      vim.notify("Tinker command not found", vim.log.levels.ERROR, {})
+      return
+    end
 
     local channelId = self.ui:createTerm()
     vim.fn.jobstart(cmd, {

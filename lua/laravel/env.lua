@@ -1,26 +1,9 @@
 local combine_tables = require("laravel.utils").combine_tables
 local Environment = require("laravel.dto.environment")
 
---[[
-Improvements for the configuration.
-Could be configure in the store and ask for the first time.
-Should store by the cwd. This should allow to easily fix and cutomize it.
-Should try or ask for the first time.
-
-Can store a simple json for the configurations in the future per project
-not a file per project a single file.
-
-need to have one to read and write, in single operations.
-
-Not sure if this logic will handle everything, or how to split it.
-
-or if should still be call environment.
-
-main reason is to check if active that can be done in app.
-
-and get excecutable as well.
---]]
 ---@class laravel.env
+---@field config laravel.config
+---@field options laravel.services.options
 local env = {
   _inject = {
     config = "laravel.config",
@@ -42,6 +25,7 @@ end
 
 function env:boot()
   local cwd = vim.uv.cwd()
+  assert(cwd, "cwd is nil")
 
   local config = self.config:get(cwd)
 

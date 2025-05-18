@@ -1,5 +1,5 @@
 ---@class LaravelModelInfo
----@field model LaravelModelService
+---@field model laravel.services.model
 ---@field view LaravelModelInfoView
 ---@field namespace integer
 local model_info = {}

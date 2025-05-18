@@ -1,12 +1,6 @@
-local gf = {}
+local Class = require("laravel.class")
 
-function gf:new()
-  local instance = {
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+local gf = Class()
 
 function gf:cursorOnResource()
     local node = vim.treesitter.get_node()

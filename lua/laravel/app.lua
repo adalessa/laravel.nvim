@@ -300,6 +300,17 @@ function app:_createFactory(abstract, moduleName)
       end
 
       return module:new(unpack(module_args))
+    elseif not vim.tbl_isempty(injects) then
+      local module_args = {}
+      for _, v in pairs(injects) do
+        if params[v] then
+          table.insert(module_args, params[v])
+        else
+          table.insert(module_args, self:make(v))
+        end
+      end
+
+      return module:new(unpack(module_args))
     end
 
     return module:new()

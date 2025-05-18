@@ -1,24 +1,9 @@
 local promise = require("promise")
+local Class = require("laravel.class")
 
 ---@class laravel.services.actions
 ---@field actions laravel.actions.action[]
-local service = {
-  _inject = {
-    actions = "laravel.actions"
-  }
-}
-
----@param actions laravel.actions.action[]
-function service:new(actions)
-  local instance = {
-    actions = actions or {},
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local service = Class({ actions = "laravel.actions" })
 
 function service:run()
   local bufnr = vim.api.nvim_get_current_buf()

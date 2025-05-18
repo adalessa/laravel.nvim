@@ -1,4 +1,7 @@
-local related = {}
+local Class = require("laravel.class")
+---@class laravel.services.related
+---@field model laravel.services.model
+local related = Class({model = "laravel.services.model"})
 
 local types = { "observers", "relations", "policy" }
 
@@ -26,16 +29,6 @@ local build_relation = function(info, relation_type)
     }
   end
   return nil
-end
-
-function related:new(model)
-  local instance = {
-    model = model,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
 end
 
 function related:get(bufnr)

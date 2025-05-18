@@ -1,32 +1,17 @@
+local Class = require("laravel.class")
 local combine_tables = require("laravel.utils").combine_tables
 local is_make_command = require("laravel.utils").is_make_command
 local find_class = require("laravel.utils").find_class_from_make_output
 
----@class LaravelRunner
+---@class laravel.services.runner
 ---@field env laravel.env
 ---@field options laravel.services.options
 ---@field ui_handler LaravelUIHandler
-local runner = {
-  _inject = {
-    env = "laravel.env",
-    options = "laravel.services.options",
-    ui_handler = "laravel.services.ui_handler",
-  }
-}
-
----@param env laravel.env
----@param options laravel.services.options
-function runner:new(env, options, ui_handler)
-  local instance = {
-    env = env,
-    ui_handler = ui_handler,
-    options = options,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local runner = Class({
+  env = "laravel.env",
+  options = "laravel.services.options",
+  ui_handler = "laravel.services.ui_handler",
+})
 
 ---@param cmd string
 ---@param args string[]

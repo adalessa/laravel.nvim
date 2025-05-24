@@ -3,7 +3,7 @@ local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_re
 local fzf_exec = require("fzf-lua").fzf_exec
 
 ---@class LaravelFzfLuaRelatedPicker
----@field class LaravelClassService
+---@field class laravel.services.class
 ---@field api laravel.api
 local related_picker = {}
 

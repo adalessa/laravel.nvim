@@ -2,7 +2,7 @@ local promise = require("promise")
 local Class = require("laravel.class")
 
 ---@class laravel.services.model
----@field class LaravelClassService
+---@field class laravel.services.class
 ---@field tinker Tinker
 ---@field api laravel.api
 local model = Class({

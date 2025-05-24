@@ -1,4 +1,4 @@
----@class CommandsRepository
+---@class laravel.repositories.artisan_commands
 ---@field api laravel.api
 local commands_repository = {}
 

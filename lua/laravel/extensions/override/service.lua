@@ -1,6 +1,6 @@
 ---@class LarvelOverrideService
 ---@field tinker Tinker
----@field class LaravelClassService
+---@field class laravel.services.class
 ---@field sign_name string
 local override = {}
 

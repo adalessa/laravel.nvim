@@ -2,7 +2,7 @@ local promise = require("promise")
 
 ---@class CacheViewsRepository : ViewsRepository
 ---@field views_repository ViewsRepository
----@field cache laravel.service.cache
+---@field cache laravel.services.cache
 ---@field key string key to store the commands
 ---@field timeout number seconds for the cache
 local cache_views_repository = {}

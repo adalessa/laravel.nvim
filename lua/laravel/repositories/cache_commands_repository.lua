@@ -1,8 +1,8 @@
 local promise = require("promise")
 
----@class CacheCommandsRepository : CommandsRepository
----@field commands_repository CommandsRepository
----@field cache laravel.service.cache
+---@class CacheCommandsRepository : laravel.repositories.artisan_commands
+---@field commands_repository laravel.repositories.artisan_commands
+---@field cache laravel.services.cache
 ---@field key string key to store the commands
 ---@field timeout number seconds for the cache
 local cache_commands_repository = {}

@@ -5,7 +5,7 @@ local conf = require("telescope.config").values
 local actions = require("laravel.pickers.telescope.actions")
 
 ---@class LaravelRelatedPicker
----@field class LaravelClassService
+---@field class laravel.services.class
 ---@field api laravel.api
 local related_picker = {}
 

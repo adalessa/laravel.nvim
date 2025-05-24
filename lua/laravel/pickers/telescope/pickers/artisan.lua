@@ -6,7 +6,7 @@ local preview = require("laravel.pickers.common.preview")
 local actions = require("laravel.pickers.telescope.actions")
 
 ---@class LaravelArtisanPicker
----@field commands_repository CommandsRepository
+---@field commands_repository laravel.repositories.artisan_commands
 local artisan_picker = {}
 
 function artisan_picker:new(cache_commands_repository)

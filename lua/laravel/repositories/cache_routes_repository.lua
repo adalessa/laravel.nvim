@@ -2,7 +2,7 @@ local promise = require("promise")
 
 ---@class CacheRoutesRepository : RoutesRepository
 ---@field routes_repository RoutesRepository
----@field cache laravel.service.cache
+---@field cache laravel.services.cache
 ---@field key string key to store the commands
 ---@field timeout number seconds for the cache
 local cache_routes_repository = {}

@@ -14,8 +14,9 @@ function options:new(opts)
 end
 
 ---@param key string|nil key with dot format
+---@param default any default value if key is not found
 ---@return any
-function options:get(key)
+function options:get(key, default)
   if not key then
     return self.opts
   end
@@ -23,12 +24,12 @@ function options:get(key)
   local value = self.opts
   for _, seg in ipairs(vim.split(key, "%.")) do
     if type(value) ~= "table" then
-      return nil
+      return default
     end
     value = value[seg]
   end
 
-  return value
+  return value or default
 end
 
 return options

@@ -5,7 +5,7 @@ local fzf_exec = require("fzf-lua").fzf_exec
 local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").CommandPreviewer
 
 ---@class LaravelFzfLuaMakePicker
----@field commands_repository CommandsRepository
+---@field commands_repository laravel.repositories.artisan_commands
 local make_picker = {}
 
 function make_picker:new(cache_commands_repository)

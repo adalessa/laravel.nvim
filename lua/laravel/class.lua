@@ -1,4 +1,6 @@
-return function(deps, callback)
+---@param deps table<string, string>|nil
+---@param default table|function|nil
+return function(deps, default)
   deps = deps or {}
   local m = {
     _inject = deps,
@@ -13,13 +15,13 @@ return function(deps, callback)
       setmetatable(instance, self)
       self.__index = self
 
-      if callback then
-        if type(callback) == "table" then
-          for k, v in pairs(callback) do
+      if default then
+        if type(default) == "table" then
+          for k, v in pairs(default) do
             instance[k] = v
           end
-        elseif type(callback) == "function" then
-          callback(instance, ...)
+        elseif type(default) == "function" then
+          default(instance, ...)
         end
       end
 

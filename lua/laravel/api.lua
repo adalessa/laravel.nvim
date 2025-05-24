@@ -1,26 +1,12 @@
 local promise = require("promise")
 local ApiResponse = require("laravel.dto.api_response")
+local Class = require("laravel.class")
 
 ---@class laravel.api
 ---@field command_generator laravel.services.command_generator
-local api = {
-  _inject = {
-    command_generator = "laravel.services.command_generator",
-  }
-}
-
----@param command_generator laravel.services.command_generator
----@return laravel.api
-function api:new(command_generator)
-  local instance = {
-    command_generator = command_generator,
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local api = Class({
+  command_generator = "laravel.services.command_generator",
+})
 
 ---@param program string
 ---@param args string[]
@@ -50,7 +36,7 @@ end
 
 ---@param program string
 ---@param args string[]
----@return Promise
+---@return Promise<laravel.dto.apiResponse>
 function api:send(program, args)
   return promise:new(function(resolve, reject)
     self:async(program, args, function(result)

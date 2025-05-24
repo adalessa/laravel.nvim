@@ -4,7 +4,7 @@ local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
 
 ---@class LaravelPickersSnacksArtisan
----@field commands_repository CommandsRepository
+---@field commands_repository laravel.repositories.artisan_commands
 local artisan_picker = {}
 
 function artisan_picker:new(cache_commands_repository)

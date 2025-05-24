@@ -41,7 +41,7 @@ end
 function app:whenActive(callback)
   return function(...)
     if self:isActive() then
-      callback(...)
+      return callback(...)
     end
   end
 end

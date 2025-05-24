@@ -7,7 +7,7 @@ local actions = require("laravel.pickers.telescope.actions")
 local is_make_command = require("laravel.utils").is_make_command
 
 ---@class LaravelMakePicker
----@field commands_repository CommandsRepository
+---@field commands_repository laravel.repositories.artisan_commands
 local make_picker = {}
 
 function make_picker:new(cache_commands_repository)

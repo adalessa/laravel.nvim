@@ -1,9 +1,5 @@
 local actions = require("laravel.pickers.common.actions")
-
----@class LaravelUISelectRelatedPicker
----@field class LaravelClassService
----@field api laravel.api
-local related_picker = {}
+local Class = require("laravel.class")
 
 local build_relation = function(info, relation_type)
   if next(info) == nil then
@@ -33,16 +29,13 @@ end
 
 local types = { "observers", "relations", "policy" }
 
-function related_picker:new(class, api)
-  local instance = {
-    class = class,
-    api = api,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.ui.related
+---@field class laravel.services.class
+---@field api laravel.api
+local related_picker = Class({
+  class = "laravel.services.class",
+  api = "laravel.api",
+})
 
 function related_picker:run(opts)
   opts = opts or {}

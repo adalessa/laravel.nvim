@@ -9,7 +9,7 @@ local get_node_text = vim.treesitter.get_node_text
 ---@field methods table[]
 ---@field properties table[]
 
----@class LaravelClassService
+---@class laravel.services.class
 local class = {}
 
 ---@param bufnr number

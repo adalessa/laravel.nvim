@@ -1,6 +1,6 @@
 local Class = require("laravel.class")
 
----@class laravel.service.cache
+---@class laravel.services.cache
 ---@field store table<string, any>
 local cache = Class(nil, {store = {}})
 

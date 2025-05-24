@@ -1,7 +1,7 @@
 local promise = require("promise")
 
 ---@class LaravelRouteInfo
----@field class LaravelClassService
+---@field class laravel.services.class
 ---@field routes_repository RoutesRepository
 ---@field route_info_view table
 ---@field display_status table

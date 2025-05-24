@@ -1,23 +1,14 @@
 local actions = require("laravel.pickers.common.actions")
 local is_make_command = require("laravel.utils").is_make_command
+local Class = require("laravel.class")
 
----@class LaravelUISelectMakePicker
----@field commands_repository CommandsRepository
-local make_picker = {}
+---@class laravel.pickers.ui.make
+---@field commands_repository laravel.repositories.artisan_commands
+local make_picker = Class({
+  commands_repository = "laravel.repositories.cache_commands_repository",
+})
 
-function make_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
-function make_picker:run(opts)
-  opts = opts or {}
-
+function make_picker:run()
   self.commands_repository:all():thenCall(function(commands)
     vim.ui.select(
       vim

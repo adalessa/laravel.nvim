@@ -38,6 +38,7 @@ return {
     route_info = { enable = true, view = "top" },
     tinker = { enable = true },
     mcp = { enable = true },
+    command_center = { enable = true },
   },
   providers = {
     require("laravel.providers.laravel_provider"),

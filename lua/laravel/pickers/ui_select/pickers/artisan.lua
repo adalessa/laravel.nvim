@@ -1,20 +1,13 @@
 local actions = require("laravel.pickers.common.actions")
+local Class = require("laravel.class")
 
----@class LaravelUISelectArtisanPicker
----@field commands_repository CommandsRepository
-local ui_artisan_picker = {}
+---@class laravel.pickers.ui.artisan
+---@field commands_repository laravel.repositories.artisan_commands
+local picker = Class({
+  commands_repository = "laravel.repositories.cache_commands_repository",
+})
 
-function ui_artisan_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
-function ui_artisan_picker:run(opts)
+function picker:run(opts)
   opts = opts or {}
 
   return self.commands_repository:all():thenCall(function(commands)
@@ -30,8 +23,8 @@ function ui_artisan_picker:run(opts)
       end
     end)
   end, function(error)
-    vim.api.nvim_err_writeln(error)
+    error(error)
   end)
 end
 
-return ui_artisan_picker
+return picker

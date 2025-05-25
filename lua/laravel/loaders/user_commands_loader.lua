@@ -1,4 +1,3 @@
-local promise = require("promise")
 local Class = require("laravel.class")
 
 ---@class laravel.dto.user_command
@@ -10,28 +9,30 @@ local Class = require("laravel.class")
 ---@field opts table<string, any>
 
 ---@class laravel.loaders.user_commands_loader
----@field options laravel.services.options
+---@field config laravel.services.config
+---@field new fun(self: laravel.loaders.user_commands_loader, options: laravel.services.options): laravel.loaders.user_commands_loader
 local user_commands_loader = Class({
-  options = "laravel.services.options",
+  config = "laravel.services.config",
 })
 
----@return Promise<laravel.dto.user_command[]>
+---@return laravel.dto.user_command[]
 function user_commands_loader:load()
-  return promise.resolve(vim
-    .iter(self.options:get("user_commands", {}))
-    :map(function(command, definitons)
-      return vim.iter(definitons):map(function(name, details)
-        return {
-          executable = command,
-          name = name,
-          display = string.format("[%s] %s", command, name),
-          cmd = details.cmd,
-          desc = details.desc,
-          opts = details.opts or {},
-        }
-      end)
-    end)
-    :totable())
+  local commands = {}
+
+  for command_name, group_commands in pairs(self.config.get("user_commands", {})) do
+    for name, details in pairs(group_commands) do
+      table.insert(commands, {
+        executable = command_name,
+        name = name,
+        display = string.format("[%s] %s", command_name, name),
+        cmd = details.cmd,
+        desc = details.desc,
+        opts = details.opts or {},
+      })
+    end
+  end
+
+  return commands
 end
 
 return user_commands_loader

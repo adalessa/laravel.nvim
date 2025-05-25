@@ -28,6 +28,9 @@ function app:new(opts)
   end
 
   opts = vim.tbl_deep_extend("force", require("laravel.options.default"), opts or {})
+
+  require("laravel.services.config").set(opts)
+
   local opts_instance = require("laravel.services.options"):new(opts)
   instance:instance("laravel.services.options", opts_instance)
 
@@ -185,6 +188,12 @@ function app:boot()
     end
   end
 
+  -- ALL register set the global it self
+  _G.Laravel = {
+    app = self,
+    extensions = {},
+  }
+
   vim.tbl_map(boot, providers)
   vim.tbl_map(boot, user_providers)
 
@@ -262,6 +271,10 @@ function app:command(name, callback)
 
     return command
   end, { tags = { "command" } })
+end
+
+function app:extension(name, value)
+  Laravel.extensions[name] = value
 end
 
 --- PRIVATE FUNCTIONS

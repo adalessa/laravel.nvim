@@ -35,15 +35,18 @@ end
 
 ---@class laravel.loaders.routes_loader
 ---@field api laravel.api
+---@field new fun(self: laravel.loaders.routes_loader, api: laravel.api): laravel.loaders.routes_loader
 local RoutesLoader = Class({ api = "laravel.api" })
 
+---@return laravel.dto.artisan_routes[], string?
 function RoutesLoader:load()
-  return self.api:send("artisan", { "route:list", "--format=json" }):thenCall(
-    ---@param result laravel.dto.apiResponse
-    function(result)
-      return vim.iter(result:json() or {}):map(map_route):totable()
-    end
-  )
+  local result = self.api:run("artisan route:list --json")
+
+  if result:failed() then
+    return {}, "Failed to load routes: " .. result:prettyErrors()
+  end
+
+  return vim.tbl_map(map_route, result:json() or {})
 end
 
 return RoutesLoader

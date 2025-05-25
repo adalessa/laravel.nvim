@@ -69,8 +69,10 @@ function cache:remember(key, seconds, callback)
     return self:get(key)
   end
 
-  local value = callback()
-  self:put(key, value, seconds)
+  local value, err = callback()
+  if not err then
+    self:put(key, value, seconds)
+  end
 
   return value
 end

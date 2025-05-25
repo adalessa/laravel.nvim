@@ -18,7 +18,9 @@ return function(deps, default)
       if default then
         if type(default) == "table" then
           for k, v in pairs(default) do
-            instance[k] = v
+            if not instance[k] then
+              instance[k] = v
+            end
           end
         elseif type(default) == "function" then
           default(instance, ...)

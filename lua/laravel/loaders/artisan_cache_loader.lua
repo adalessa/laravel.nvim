@@ -10,7 +10,7 @@ local ArtisanCacheLoader = Class({
   artisan_loader = "laravel.loaders.artisan_loader",
 }, { key = "laravel-commands", timeout = 60 })
 
----@return Promise<laravel.dto.artisan_command[]>
+---@return laravel.dto.artisan_command[], string?
 function ArtisanCacheLoader:load()
   return self.cache:remember(self.key, self.timeout, function()
     return self.artisan_loader:load()

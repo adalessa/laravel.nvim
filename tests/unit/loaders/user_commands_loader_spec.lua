@@ -1,40 +1,32 @@
-describe("user commands loader", function()
-  it("convert from configuration to commands", function()
-    local optionsMock = {}
-    function optionsMock:get(key, default)
-      assert.equals("user_commands", key)
-      assert.same({}, default)
+local nio = require("nio")
+local a = nio.tests
 
-      return {
-        artisan = {
-          ["db:fresh"] = {
-            cmd = { "migrate:fresh", "--seed" },
-            desc = "Re-creates the db and seed's it",
-          },
-        },
-        npm = {
-          build = {
-            cmd = { "run", "build" },
-            desc = "Builds the javascript assets",
-          },
-          dev = {
-            cmd = { "run", "dev" },
-            desc = "Builds the javascript assets",
-          },
-        },
-        composer = {
-          autoload = {
-            cmd = { "dump-autoload" },
-            desc = "Dumps the composer autoload",
-          },
-        },
+describe("user commands loader test", function()
+  a.it("it parses the commands", function()
+    local cut = require("laravel.loaders.user_commands_loader"):new(
+      {
+        get = function(_, key, default)
+          if key == "user_commands" then
+            return {
+              artisan = {
+                list = {
+                  cmd = "artisan list",
+                  desc = "List all artisan commands",
+                },
+                migrate = {
+                  cmd = "artisan migrate",
+                  desc = "Run the database migrations",
+                },
+              },
+            }
+          end
+          return default
+        end,
       }
-    end
+    )
 
-    local cut = require("laravel.loaders.user_commands_loader"):new(optionsMock)
-
-    cut:load(function(commands)
-      assert.equals(4, #commands)
-    end)
+    local commands = cut:load()
+    assert.is_table(commands)
+    assert.equals(2, #commands)
   end)
 end)

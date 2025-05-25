@@ -28,6 +28,23 @@ function tinker:boot(app)
       end
     end,
   })
+
+  local ext = setmetatable({}, {
+    __call = function()
+      app("tinker_service"):open()
+    end,
+  })
+  function ext.open()
+    app("tinker_service"):open()
+  end
+  function ext.select()
+    app("tinker_service"):select()
+  end
+  function ext.create()
+    app("tinker_service"):create()
+  end
+
+  Laravel.extensions.tinker = ext
 end
 
 return tinker

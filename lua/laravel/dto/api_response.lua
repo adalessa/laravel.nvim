@@ -6,7 +6,7 @@
 local ApiResponse = {}
 
 ---@param stdout string[]
----@param exit_code number
+---@param exit_code number|nil
 ---@param stderror string[]
 ---@return laravel.dto.apiResponse
 function ApiResponse:new(stdout, exit_code, stderror)
@@ -24,6 +24,9 @@ end
 
 ---@return boolean
 function ApiResponse:successful()
+  if self.exit_code == nil then
+    return vim.tbl_isempty(self.stderror)
+  end
   return self.exit_code == 0
 end
 

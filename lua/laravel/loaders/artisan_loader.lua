@@ -5,20 +5,23 @@ local Class = require("laravel.class")
 
 ---@class laravel.loaders.artisan_loader
 ---@field api laravel.api
+---@field new fun(self: laravel.loaders.artisan_loader, api: laravel.api): laravel.loaders.artisan_loader
 local ArtisanLoader = Class({ api = "laravel.api" })
 
----@return Promise<laravel.dto.artisan_command[]>
+---@return laravel.dto.artisan_command[], string?
 function ArtisanLoader:load()
-  return self.api:send("artisan", { "list", "--format=json" }):thenCall(
-    function(result)
-      return vim
-        .iter(result:json().commands or {})
-        :filter(function(command)
-          return not command.hidden
-        end)
-        :totable()
-    end
-  )
+  local result = self.api:run("artisan list --format=json")
+
+  if result:failed() then
+    return {}, "Failed to load artisan commands: " .. result:prettyErrors()
+  end
+
+  return vim
+    .iter(result:json().commands or {})
+    :filter(function(command)
+      return not command.hidden
+    end)
+    :totable()
 end
 
 return ArtisanLoader

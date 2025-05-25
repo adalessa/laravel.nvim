@@ -1,3 +1,4 @@
+local nio = require("nio")
 local promise = require("promise")
 local ApiResponse = require("laravel.dto.api_response")
 local Class = require("laravel.class")
@@ -7,6 +8,28 @@ local Class = require("laravel.class")
 local api = Class({
   command_generator = "laravel.services.command_generator",
 })
+
+function api:run(program, args)
+  local command = self.command_generator:generate(program, args)
+  if not command then
+    error(string.format("Command %s not found", program), vim.log.levels.ERROR)
+  end
+  local cmd = table.remove(command, 1)
+
+  local process = nio.process.run({ cmd = cmd, args = command })
+  if not process then
+    error(string.format("Failed to run command %s", program), vim.log.levels.ERROR)
+  end
+  local output = process.stdout.read()
+  local errors = process.stderr.read()
+  local errs = {}
+  if errors ~= "" then
+    errs = vim.split(errors, "\n")
+  end
+  process.close()
+
+  return ApiResponse:new(vim.split(output or "", "\n"), nil, errs)
+end
 
 ---@param program string
 ---@param args string[]

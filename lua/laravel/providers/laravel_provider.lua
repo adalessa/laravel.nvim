@@ -49,6 +49,26 @@ function laravel_provider:boot(app)
       app("env"):boot()
     end,
   })
+
+  -- Set Property in Global
+  Laravel.pickers = setmetatable({
+      list = function()
+        return vim.tbl_keys(app("pickers"):get_pickers())
+      end,
+    }, {
+      __index = function(_, key)
+        local pickers = app("pickers")
+        if not pickers:exists(key) then
+          error("Picker not found: " .. key .. " in provider " .. pickers.name)
+        end
+
+        return setmetatable({}, {
+          __call = function(_, ...)
+            return pickers:run(key, ...)
+          end,
+        })
+      end,
+    })
 end
 
 return laravel_provider

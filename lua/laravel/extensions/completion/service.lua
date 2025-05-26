@@ -1,33 +1,21 @@
----@class LaravelCompletionSource
----@field env laravel.env
----@field views_repository ViewsRepository
----@field routes_repository RoutesRepository
----@field configs_repository ConfigsRespository
----@field templates laravel.templates
----@field env_vars_repository laravel.repositories.environment_variables_repository
-local source = {
-  _inject = {
-    env = "laravel.env",
-    templates = "laravel.templates",
-    env_vars_repository = "laravel.repositories.environment_variables_repository"
-  }
-}
+local nio = require("nio")
+local Class = require("laravel.utils.class")
 
-function source:new(env, cache_views_repository, cache_configs_repository, cache_routes_repository, env_vars_repository, templates)
-  local instance = {
-    env = env,
-    views_repository = cache_views_repository,
-    configs_repository = cache_configs_repository,
-    routes_repository = cache_routes_repository,
-    env_vars_repository = env_vars_repository,
-    templates = templates,
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.extensions.completion.service
+---@field env laravel.core.env
+---@field templates laravel.utils.templates
+---@field environment_vars_loader laravel.loaders.environment_variables_loader
+---@field views_loader laravel.loaders.views_cache_loader
+---@field routes_loader laravel.loaders.routes_cache_loader
+---@field configs_loader laravel.loaders.configs_cache_loader
+local source = Class({
+  env = "laravel.core.env",
+  templates = "laravel.utils.templates",
+  environment_vars_loader = "laravel.loaders.environment_variables_cache_loader",
+  views_loader = "laravel.loaders.views_cache_loader",
+  routes_loader = "laravel.loaders.routes_cache_loader",
+  configs_loader = "laravel.loaders.configs_cache_loader",
+})
 
 ---Return whether this source is available in the current context or not (optional).
 ---@return boolean
@@ -53,98 +41,27 @@ end
 function source:complete(params, callback)
   local text = params.context.cursor_before_line
 
-  if text:match("view%([%'|%\"]") or text:match("View::make%([%'|%\"]") then
-    self.views_repository:all():thenCall(function(views)
-      callback({
-        items = vim
-          .iter(views)
-          :map(function(view)
-            return {
-              label = self.templates:build("view_label", view.name),
-              insertText = view.name,
-              kind = vim.lsp.protocol.CompletionItemKind["Value"],
-              documentation = view.path,
-            }
-          end)
-          :totable(),
-        isIncomplete = false,
-      })
-    end)
+  nio.run(function()
+    local views_completion = require("laravel.extensions.completion.views_completion")
+    if views_completion.shouldComplete(text) then
+      return views_completion.complete(self.views_loader, self.templates, params, callback)
+    end
 
-    return
-  end
+    local configs_completion = require("laravel.extensions.completion.configs_completion")
+    if configs_completion.shouldComplete(text) then
+      return configs_completion.complete(self.configs_loader, self.templates, params, callback)
+    end
 
-  if text:match("config%([%'|%\"]") then
-    self.configs_repository:all():thenCall(function(configs)
-      callback({
-        items = vim
-          .iter(configs)
-          :map(function(config)
-            return {
-              label = self.templates:build("config_label", config),
-              insertText = config,
-              kind = vim.lsp.protocol.CompletionItemKind["Value"],
-              documentation = config,
-            }
-          end)
-          :totable(),
-        isIncomplete = false,
-      })
-    end)
+    local routes_completion = require("laravel.extensions.completion.routes_completion")
+    if routes_completion.shouldComplete(text) then
+      return routes_completion.complete(self.routes_loader, self.templates, params, callback)
+    end
 
-    return
-  end
-
-  if text:match("route%([%'|%\"]") then
-    self.routes_repository:all():thenCall(function(routes)
-      callback({
-        items = vim
-          .iter(routes)
-          :filter(function(route)
-            return route.name ~= nil
-          end)
-          :map(function(route)
-            return {
-              label = self.templates:build("route_label", route.name),
-              insertText = route.name,
-              kind = vim.lsp.protocol.CompletionItemKind["Value"],
-              documentation = self.templates:build(
-                "route_documentation",
-                route.name,
-                table.concat(route.methods, " | "),
-                route.uri,
-                table.concat(route.middlewares or { "None" }, " | ")
-              ),
-            }
-          end)
-          :totable(),
-        isIncomplete = false,
-      })
-    end)
-
-    return
-  end
-
-  if text:match("env%([%'|%\"]") then
-    self.env_vars_repository:all():thenCall(function(variables)
-      callback({
-        items = vim
-          .iter(variables)
-          :map(function(variable)
-            return {
-              label = self.templates:build("env_var", variable.key),
-              insertText = variable.key,
-              kind = vim.lsp.protocol.CompletionItemKind["Value"],
-              documentation = string.format("%s = %s", variable.key, variable.value),
-            }
-          end)
-          :totable(),
-        isIncomplete = false,
-      })
-    end)
-
-    return
-  end
+    local env_completion = require("laravel.extensions.completion.env_vars_completion")
+    if env_completion.shouldComplete(text) then
+      return env_completion.complete(self.environment_vars_loader, self.templates, params, callback)
+    end
+  end)
 
   callback({ items = {} })
 end

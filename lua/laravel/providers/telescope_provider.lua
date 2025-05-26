@@ -1,8 +1,8 @@
----@class LaravelTelescopeProvider : laravel.providers.provider
-local telescope_provider = {}
+---@class laravel.providers.telescope_provider : laravel.providers.provider
+local telescope_provider = { name = "laravel.providers.telescope_provider" }
 
 function telescope_provider:register(app)
-  app:singeltonIf("pickers.telescope", function()
+  app:singletonIf("pickers.telescope", function()
     return {
       check = function()
         local ok, _ = pcall(require, "telescope")

@@ -1,5 +1,5 @@
-local split = require("laravel.utils").split
-local Class = require("laravel.class")
+local split = require("laravel.utils.init").split
+local Class = require("laravel.utils.class")
 
 ---@class laravel.dto.artisan_routes
 ---@field uri string
@@ -34,9 +34,9 @@ local function map_route(route)
 end
 
 ---@class laravel.loaders.routes_loader
----@field api laravel.api
----@field new fun(self: laravel.loaders.routes_loader, api: laravel.api): laravel.loaders.routes_loader
-local RoutesLoader = Class({ api = "laravel.api" })
+---@field api laravel.services.api
+---@field new fun(self: laravel.loaders.routes_loader, api: laravel.services.api): laravel.loaders.routes_loader
+local RoutesLoader = Class({ api = "laravel.services.api" })
 
 ---@return laravel.dto.artisan_routes[], string?
 function RoutesLoader:load()

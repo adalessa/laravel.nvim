@@ -1,8 +1,8 @@
----@class LaravelSnacksProvider : laravel.providers.provider
-local snacks_provider = {}
+---@class laravel.providers.snacks_provider : laravel.providers.provider
+local snacks_provider = { name = "laravel.providers.snacks_provider" }
 
 function snacks_provider:register(app)
-  app:singeltonIf("pickers.snacks", function()
+  app:singletonIf("pickers.snacks", function()
     return {
       check = function()
         local ok, _ = pcall(require, "snacks")

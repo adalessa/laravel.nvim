@@ -1,6 +1,6 @@
 local actions = require("laravel.pickers.common.actions")
-local is_make_command = require("laravel.utils").is_make_command
-local Class = require("laravel.class")
+local is_make_command = require("laravel.utils.init").is_make_command
+local Class = require("laravel.utils.class")
 
 ---@class laravel.pickers.ui.make
 ---@field commands_repository laravel.repositories.artisan_commands

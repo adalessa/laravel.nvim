@@ -2,7 +2,7 @@
 local route_info = {}
 
 function route_info:register(app, opts)
-  app:singeltonIf("route_info", "laravel.extensions.route_info.service")
+  app:singletonIf("route_info", "laravel.extensions.route_info.service")
   app:bindIf("route_info_view", function()
     return require("laravel.extensions.route_info.view_factory"):new(opts, {
       top = require("laravel.extensions.route_info.view_top"),

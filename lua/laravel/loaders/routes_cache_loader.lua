@@ -1,4 +1,4 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.loaders.routes_cache_loader
 ---@field cache laravel.services.cache

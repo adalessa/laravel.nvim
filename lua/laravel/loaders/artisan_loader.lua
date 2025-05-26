@@ -1,12 +1,12 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.dto.artisan_command
 ---@field name string
 
 ---@class laravel.loaders.artisan_loader
----@field api laravel.api
----@field new fun(self: laravel.loaders.artisan_loader, api: laravel.api): laravel.loaders.artisan_loader
-local ArtisanLoader = Class({ api = "laravel.api" })
+---@field api laravel.services.api
+---@field new fun(self: laravel.loaders.artisan_loader, api: laravel.services.api): laravel.loaders.artisan_loader
+local ArtisanLoader = Class({ api = "laravel.services.api" })
 
 ---@return laravel.dto.artisan_command[], string?
 function ArtisanLoader:load()

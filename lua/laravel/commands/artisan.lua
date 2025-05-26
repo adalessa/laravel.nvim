@@ -1,6 +1,6 @@
 ---@class ArtisanCommand
 ---@field runner laravel.services.runner
----@field api laravel.api
+---@field api laravel.services.api
 ---@field cache laravel.services.cache
 ---@field pickers LaravelPickersManager
 local artisan = {}

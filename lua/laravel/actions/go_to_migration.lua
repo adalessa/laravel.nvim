@@ -1,5 +1,5 @@
 local promise = require("promise")
-local utils = require("laravel.utils")
+local utils = require("laravel.utils.init")
 
 local action = {}
 

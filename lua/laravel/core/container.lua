@@ -1,4 +1,4 @@
----@class laravel.container
+---@class laravel.core.container
 ---@field registry table<string, function|table>
 ---@field tags table<string, string[]>
 local Container = {}
@@ -40,11 +40,11 @@ end
 ---@param name string
 ---@return any
 function Container:get(name)
-  if not self.registry[name] then
-    error("Unknown service '" .. name .. "'")
+  if self.registry[name] then
+    return self.registry[name]
   end
 
-  return self.registry[name]
+  return nil
 end
 
 ---@param name string

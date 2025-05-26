@@ -1,25 +1,25 @@
----@class LaravelRepositoriesProvider : laravel.providers.provider
-local repositories_provider = {}
+---@class laravel.providers.repositories_provider : laravel.providers.provider
+local repositories_provider = { name = "laravel.providers.repositories_provider" }
 
 function repositories_provider:register(app)
-  app:bindIf('commands_repository', 'laravel.repositories.commands_repository')
-  app:bindIf('cache_commands_repository', 'laravel.repositories.cache_commands_repository')
+  app:bindIf("commands_repository", "laravel.repositories.commands_repository")
+  app:bindIf("cache_commands_repository", "laravel.repositories.cache_commands_repository")
 
-  app:bindIf('routes_repository', 'laravel.repositories.routes_repository')
-  app:bindIf('cache_routes_repository', 'laravel.repositories.cache_routes_repository')
+  app:bindIf("routes_repository", "laravel.repositories.routes_repository")
+  app:bindIf("cache_routes_repository", "laravel.repositories.cache_routes_repository")
 
-  app:bindIf('resources_repository', 'laravel.repositories.resources_repository')
-  app:bindIf('cache_resources_repository', 'laravel.repositories.cache_resources_repository')
+  app:bindIf("resources_repository", "laravel.repositories.resources_repository")
+  app:bindIf("cache_resources_repository", "laravel.repositories.cache_resources_repository")
 
-  app:bindIf('views_repository', 'laravel.repositories.views_repository')
-  app:bindIf('cache_views_repository', 'laravel.repositories.cache_views_repository')
+  app:bindIf("views_repository", "laravel.repositories.views_repository")
+  app:bindIf("cache_views_repository", "laravel.repositories.cache_views_repository")
 
-  app:bindIf('configs_repository', 'laravel.repositories.configs_repository')
-  app:bindIf('cache_configs_repository', 'laravel.repositories.cache_configs_repository')
+  app:bindIf("configs_repository", "laravel.repositories.configs_repository")
+  app:bindIf("cache_configs_repository", "laravel.repositories.cache_configs_repository")
 
-  app:bindIf('composer_repository', 'laravel.repositories.composer_repository')
+  app:bindIf("composer_repository", "laravel.repositories.composer_repository")
 
-  app:bindIf('user_commands_repository', 'laravel.repositories.user_commands_repository')
+  app:bindIf("user_commands_repository", "laravel.repositories.user_commands_repository")
 end
 
 function repositories_provider:boot(app)
@@ -65,15 +65,9 @@ function repositories_provider:boot(app)
     callback = function(ev)
       if
         ev.data.cmd == "artisan"
-        and (
-          ev.data.args[1] == "make:view"
-          or
-          ev.data.args[1] == "livewire:make"
-          or
-          ev.data.args[1] == "make:livewire"
-        )
+        and (ev.data.args[1] == "make:view" or ev.data.args[1] == "livewire:make" or ev.data.args[1] == "make:livewire")
       then
-      app("cache_views_repository"):clear()
+        app("cache_views_repository"):clear()
       end
     end,
   })

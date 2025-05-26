@@ -2,7 +2,7 @@ local history_provider = {}
 
 ---@param app laravel.app
 function history_provider:register(app)
-  app:singeltonIf("history", "laravel.extensions.history.service")
+  app:singletonIf("history", "laravel.extensions.history.service")
   app:bindIf("history_command", "laravel.extensions.history.command", { tags = { "command" } })
 end
 

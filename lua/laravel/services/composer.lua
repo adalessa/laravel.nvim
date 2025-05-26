@@ -1,9 +1,9 @@
 local promise = require("promise")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.services.composer
----@field api laravel.api
-local composer = Class({api = "laravel.api"})
+---@field api laravel.services.api
+local composer = Class({api = "laravel.services.api"})
 
 ---@return Promise
 function composer:info()

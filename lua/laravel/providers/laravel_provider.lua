@@ -1,12 +1,14 @@
 ---@class laravel.providers.provider
-local laravel_provider = {}
+---@field register fun(app: laravel.core.app): nil
+---@field boot fun(app: laravel.core.app): nil
 
----@param app laravel.app
+---@class laravel.providers.laravel_provider: laravel.providers.provider
+local laravel_provider = { name = "laravel.providers.laravel_provider" }
+
 function laravel_provider:register(app)
-  app:alias("api", "laravel.api")
-  app:alias("tinker", "laravel.tinker")
-  app:alias("pickers", "laravel.pickers_manager")
-  app:alias("options", "laravel.services.options")
+  app:alias("api", "laravel.services.api")
+  app:alias("tinker", "laravel.services.tinker")
+  app:alias("pickers", "laravel.pickers.pickers_manager")
 
   -- SERVICES
   app:alias("class", "laravel.services.class")
@@ -19,56 +21,53 @@ function laravel_provider:register(app)
   app:alias("views", "laravel.services.views")
   app:alias("gf", "laravel.services.gf")
 
-  app:singeltonIf("laravel.services.cache")
+  app:singletonIf("laravel.services.cache")
   app:alias("cache", "laravel.services.cache")
 
-  app:singeltonIf("laravel.env")
-  app:alias("env", "laravel.env")
+  app:singletonIf("laravel.core.env")
+  app:alias("env", "laravel.core.env")
 
-  app:singeltonIf("laravel.config", function()
-    return require("laravel.config"):new(
-      vim.fn.stdpath("data") .. "/laravel/config.json"
-    )
+  app:singletonIf("laravel.core.config", function()
+    return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
   end)
   app:command("configure", function()
-    app("laravel.env"):configure()
+    app("laravel.core.env"):configure()
   end)
 end
 
----@param app laravel.app
 function laravel_provider:boot(app)
-  app("env"):boot()
+  app:make("env"):boot()
 
-  require("laravel.treesitter_queries")
+  require("laravel.utils.treesitter_queries")
 
   local group = vim.api.nvim_create_augroup("laravel", {})
 
   vim.api.nvim_create_autocmd({ "DirChanged" }, {
     group = group,
     callback = function()
-      app("env"):boot()
+      app:make("env"):boot()
     end,
   })
 
   -- Set Property in Global
   Laravel.pickers = setmetatable({
-      list = function()
-        return vim.tbl_keys(app("pickers"):get_pickers())
-      end,
-    }, {
-      __index = function(_, key)
-        local pickers = app("pickers")
-        if not pickers:exists(key) then
-          error("Picker not found: " .. key .. " in provider " .. pickers.name)
-        end
+    list = function()
+      return vim.tbl_keys(app:make("pickers"):get_pickers())
+    end,
+  }, {
+    __index = function(_, key)
+      local pickers = app:make("pickers")
+      if not pickers:exists(key) then
+        error("Picker not found: " .. key .. " in provider " .. pickers.name)
+      end
 
-        return setmetatable({}, {
-          __call = function(_, ...)
-            return pickers:run(key, ...)
-          end,
-        })
-      end,
-    })
+      return setmetatable({}, {
+        __call = function(_, ...)
+          return pickers:run(key, ...)
+        end,
+      })
+    end,
+  })
 end
 
 return laravel_provider

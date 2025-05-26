@@ -1,14 +1,14 @@
 local promise = require("promise")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.services.model
 ---@field class laravel.services.class
 ---@field tinker Tinker
----@field api laravel.api
+---@field api laravel.services.api
 local model = Class({
   class = "laravel.services.class",
-  tinker = "laravel.tinker",
-  api = "laravel.api",
+  tinker = "laravel.services.tinker",
+  api = "laravel.services.api",
 })
 
 function model:getByBuffer(bufnr)

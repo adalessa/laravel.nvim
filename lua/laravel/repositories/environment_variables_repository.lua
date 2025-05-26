@@ -1,5 +1,5 @@
 local promise = require("promise")
-local split = require("laravel.utils").split
+local split = require("laravel.utils.init").split
 local a = require("plenary.async")
 
 ---@class laravel.repositories.environment_variables_repository

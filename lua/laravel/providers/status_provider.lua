@@ -1,13 +1,12 @@
----@class LaravelStatusprovider: laravel.providers.provider
-local status_provider = {}
+---@class laravel.providers.status_provider: laravel.providers.provider
+local status_provider = { name = "laravel.providers.status_provider" }
 
----@param app laravel.app
 function status_provider:register(app)
-  app:singeltonIf("laravel.services.status")
+  app:singletonIf("laravel.services.status")
   app:alias("status", "laravel.services.status")
 end
 
----@param app laravel.app
+---@param app laravel.core.app
 function status_provider:boot(app)
   if not app:isActive() then
     return

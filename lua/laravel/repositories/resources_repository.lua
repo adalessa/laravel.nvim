@@ -4,7 +4,7 @@ local promise = require("promise")
 ---@field tinker Tinker
 local resources_repository = {
   _inject = {
-    tinker = "laravel.tinker",
+    tinker = "laravel.services.tinker",
   },
 }
 

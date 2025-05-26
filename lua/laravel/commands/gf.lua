@@ -1,4 +1,4 @@
-local split = require("laravel.utils").split
+local split = require("laravel.utils.init").split
 local actions = require("laravel.pickers.common.actions")
 
 local gf_command = {}

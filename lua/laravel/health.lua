@@ -84,7 +84,7 @@ M.check = function()
   report_info(vim.inspect(app("env").environment.commands))
 
   -- check if the environment variable is set and if the environment matches
-  local get_env = require("laravel.utils").get_env
+  local get_env = require("laravel.utils.init").get_env
   local environmentEnvVariable = get_env(app('options'):get().environments.env_variable)
   if environmentEnvVariable then
     report_info("Environment variable set to: " .. environmentEnvVariable)

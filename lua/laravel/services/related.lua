@@ -1,4 +1,4 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 ---@class laravel.services.related
 ---@field model laravel.services.model
 local related = Class({model = "laravel.services.model"})

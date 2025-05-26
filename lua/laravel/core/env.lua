@@ -1,27 +1,16 @@
-local combine_tables = require("laravel.utils").combine_tables
+local combine_tables = require("laravel.utils.init").combine_tables
 local Environment = require("laravel.dto.environment")
+local Class = require("laravel.utils.class")
 
----@class laravel.env
----@field config laravel.config
----@field options laravel.services.options
-local env = {
-  _inject = {
-    config = "laravel.config",
-    options = "laravel.services.options",
-  },
-}
-
-function env:new(config, options)
-  local instance = {
-    config = config,
-    options = options,
-    environment = nil,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.core.env
+---@field config laravel.core.config
+---@field options laravel.services.config
+local env = Class({
+  config = "laravel.core.config",
+  options = "laravel.services.config",
+}, {
+  environment = nil,
+})
 
 function env:boot()
   local cwd = vim.uv.cwd()
@@ -46,7 +35,7 @@ function env:configure()
   --- TODO: ask if want auto configure
   --- TODO: ask for custom
 
-  vim.ui.select(self.options:get("environments.definitions"), {
+  vim.ui.select(self.options.get("environments.definitions"), {
     prompt = "[Laravel.nvim] Select the type of environment to use",
     format_item = function(item)
       return item.name

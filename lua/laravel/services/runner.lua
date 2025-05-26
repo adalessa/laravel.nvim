@@ -1,15 +1,15 @@
-local Class = require("laravel.class")
-local combine_tables = require("laravel.utils").combine_tables
-local is_make_command = require("laravel.utils").is_make_command
-local find_class = require("laravel.utils").find_class_from_make_output
+local Class = require("laravel.utils.class")
+local combine_tables = require("laravel.utils.init").combine_tables
+local is_make_command = require("laravel.utils.init").is_make_command
+local find_class = require("laravel.utils.init").find_class_from_make_output
 
 ---@class laravel.services.runner
----@field env laravel.env
----@field options laravel.services.options
+---@field env laravel.core.env
+---@field config laravel.services.config
 ---@field ui_handler LaravelUIHandler
 local runner = Class({
-  env = "laravel.env",
-  options = "laravel.services.options",
+  env = "laravel.core.env",
+  config = "laravel.services.config",
   ui_handler = "laravel.services.ui_handler",
 })
 
@@ -23,7 +23,7 @@ function runner:run(cmd, args, opts)
     return
   end
 
-  opts = vim.tbl_extend("force", self.options:get("commands_options")[args[1]] or {}, opts or {})
+  opts = vim.tbl_extend("force", self.config("commands_options")[args[1]] or {}, opts or {})
 
   local command = combine_tables(executable, args)
 

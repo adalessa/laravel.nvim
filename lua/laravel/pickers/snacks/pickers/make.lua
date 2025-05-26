@@ -2,7 +2,7 @@ local snacks = require("snacks").picker
 local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
-local is_make_command = require("laravel.utils").is_make_command
+local is_make_command = require("laravel.utils.init").is_make_command
 
 local make_picker = {}
 

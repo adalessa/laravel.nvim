@@ -1,5 +1,5 @@
-local utils = require("laravel.utils")
-local Class = require("laravel.class")
+local utils = require("laravel.utils.init")
+local Class = require("laravel.utils.class")
 
 local view_finder = Class({
     views_service = "laravel.services.views",

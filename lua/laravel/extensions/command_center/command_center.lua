@@ -1,4 +1,4 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 local Layout = require("laravel.extensions.command_center.layout")
 
 local command_center = Class({})

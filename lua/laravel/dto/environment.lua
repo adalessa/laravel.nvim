@@ -1,5 +1,5 @@
-local get_env = require("laravel.utils").get_env
-local combine_tables = require("laravel.utils").combine_tables
+local get_env = require("laravel.utils.init").get_env
+local combine_tables = require("laravel.utils.init").combine_tables
 
 ---@class laravel.dto.environment
 ---@field name string

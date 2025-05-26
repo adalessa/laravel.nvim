@@ -1,4 +1,4 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.dto.user_command
 ---@field executable string
@@ -10,7 +10,7 @@ local Class = require("laravel.class")
 
 ---@class laravel.loaders.user_commands_loader
 ---@field config laravel.services.config
----@field new fun(self: laravel.loaders.user_commands_loader, options: laravel.services.options): laravel.loaders.user_commands_loader
+---@field new fun(self: laravel.loaders.user_commands_loader, config: laravel.services.config): laravel.loaders.user_commands_loader
 local user_commands_loader = Class({
   config = "laravel.services.config",
 })

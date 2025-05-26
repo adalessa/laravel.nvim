@@ -1,4 +1,4 @@
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 local nio = require("nio")
 
 local format_entry = require("laravel.pickers.snacks.format_entry")

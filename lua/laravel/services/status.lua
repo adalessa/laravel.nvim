@@ -1,5 +1,6 @@
+local nio = require("nio")
 ---@class laravel.services.status
----@field api laravel.api
+---@field api laravel.services.api
 ---@field values table
 ---@field frequency number
 local status = {}
@@ -36,19 +37,18 @@ end
 
 function status:start()
   local refresh = function()
-    self.api
-      :send("artisan", { "about", "--json" })
-      :thenCall(function(response)
-        return response:json()
-      end)
-      :thenCall(function(info)
-        if not info then
-          return
-        end
-        self.values.laravel = info.environment.laravel_version
-        self.values.php = info.environment.php_version
-      end)
-      :catch(function() end)
+    nio.run(function()
+      local response = self.api:run("artisan about --json")
+      if response:failed() then
+        return
+      end
+      local info = response:json()
+      if not info then
+        return
+      end
+      self.values.laravel = info.environment.laravel_version
+      self.values.php = info.environment.php_version
+    end)
   end
 
   self.refresh = refresh

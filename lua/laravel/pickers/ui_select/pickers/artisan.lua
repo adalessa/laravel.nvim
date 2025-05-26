@@ -1,5 +1,5 @@
 local actions = require("laravel.pickers.common.actions")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.pickers.ui.artisan
 ---@field commands_repository laravel.repositories.artisan_commands

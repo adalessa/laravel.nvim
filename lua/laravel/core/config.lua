@@ -1,15 +1,15 @@
 --[[
 This will take care of storing configuration per project persistent
 --]]
----@class laravel.config.project
+---@class laravel.dto.config
 ---@field path string
 ---@field name string
 ---@field commands table
 ---@field condition table|nil
 
----@class laravel.config
+---@class laravel.core.config
 ---@field path string
----@field data table<string, laravel.config.project>
+---@field data table<string, laravel.dto.config>
 local config = {}
 
 ---@param filePath string
@@ -72,7 +72,7 @@ function config:save()
 end
 
 ---@param path string
----@return laravel.config.project|nil
+---@return laravel.dto.config|nil
 function config:get(path)
   if not path then
     return nil
@@ -81,7 +81,7 @@ function config:get(path)
   return self.data[path]
 end
 
----@param cfg laravel.config.project
+---@param cfg laravel.dto.config
 function config:set(cfg)
   if not cfg.path or not cfg.name then
     return false

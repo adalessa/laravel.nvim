@@ -1,5 +1,5 @@
 ---@class ComposerRepository
----@field api laravel.api
+---@field api laravel.services.api
 local composer_repository = {}
 
 function composer_repository:new(api)

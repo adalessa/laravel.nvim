@@ -1,8 +1,8 @@
----@class LaravelFzfLuaProvider: laravel.providers.provider
-local fzf_lua_provider = {}
+---@class laravel.providers.fzf_lua_provider: laravel.providers.provider
+local fzf_lua_provider = {name = "laravel.providers.fzf_lua_provider"}
 
 function fzf_lua_provider:register(app)
-  app:singeltonIf("pickers.fzf-lua", function()
+  app:singletonIf("pickers.fzf-lua", function()
     return {
       check = function()
         local ok, _ = pcall(require, "fzf-lua")

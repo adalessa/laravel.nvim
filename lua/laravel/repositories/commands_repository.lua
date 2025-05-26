@@ -1,5 +1,5 @@
 ---@class laravel.repositories.artisan_commands
----@field api laravel.api
+---@field api laravel.services.api
 local commands_repository = {}
 
 function commands_repository:new(api)

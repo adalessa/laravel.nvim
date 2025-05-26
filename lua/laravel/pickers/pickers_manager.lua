@@ -1,4 +1,4 @@
-local app = require("laravel").app
+local app = require("laravel.core.app")
 
 -- Resolve how multiples pickers will interact
 -- app('pickers'):run('artisan', {})
@@ -17,12 +17,16 @@ local app = require("laravel").app
 ---@class LaravelPickersManager
 ---@field _enable boolean
 ---@field provider {}
-local pickers_manager = {}
+local pickers_manager = {
+  _inject = {
+    config = "laravel.services.config",
+  }
+}
 
-function pickers_manager:new(options)
-  local providerName = options:get().features.pickers.provider
+function pickers_manager:new(config)
+  local providerName = config("features.pickers.provider")
   local instance = {
-    _enable = options:get("features.pickers.enable"),
+    _enable = config("features.pickers.enable"),
     name = providerName,
     provider = app("pickers." .. providerName),
   }

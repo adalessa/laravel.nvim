@@ -1,10 +1,10 @@
-local combine_tables = require("laravel.utils").combine_tables
-local Class = require("laravel.class")
+local combine_tables = require("laravel.utils.init").combine_tables
+local Class = require("laravel.utils.class")
 
 ---@class laravel.services.command_generator
----@field new fun(self: laravel.services.command_generator, env: laravel.env): laravel.services.command_generator
----@field env laravel.env
-local generator = Class({ env = "laravel.env" })
+---@field new fun(self: laravel.services.command_generator, env: laravel.core.env): laravel.services.command_generator
+---@field env laravel.core.env
+local generator = Class({ env = "laravel.core.env" })
 
 ---@param name string
 ---@param args string[]|nil

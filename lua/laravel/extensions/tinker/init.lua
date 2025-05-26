@@ -2,8 +2,25 @@ local tinker = {}
 
 function tinker:register(app)
   app:bindIf("tinker_command", "laravel.extensions.tinker.command", { tags = { "command" } })
-  app:singeltonIf("tinker_service", "laravel.extensions.tinker.service")
+  app:singletonIf("tinker_service", "laravel.extensions.tinker.service")
   app:bindIf("tinker_ui", "laravel.extensions.tinker.ui")
+
+  -- local ext = setmetatable({}, {
+  --   __call = function()
+  --     app("tinker_service"):open()
+  --   end,
+  -- })
+  -- function ext.open()
+  --   app("tinker_service"):open()
+  -- end
+  -- function ext.select()
+  --   app("tinker_service"):select()
+  -- end
+  -- function ext.create()
+  --   app("tinker_service"):create()
+  -- end
+
+  -- app:extension("tinker", ext)
 end
 
 ---@param app laravel.app
@@ -29,22 +46,6 @@ function tinker:boot(app)
     end,
   })
 
-  local ext = setmetatable({}, {
-    __call = function()
-      app("tinker_service"):open()
-    end,
-  })
-  function ext.open()
-    app("tinker_service"):open()
-  end
-  function ext.select()
-    app("tinker_service"):select()
-  end
-  function ext.create()
-    app("tinker_service"):create()
-  end
-
-  Laravel.extensions.tinker = ext
 end
 
 return tinker

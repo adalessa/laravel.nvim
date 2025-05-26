@@ -1,5 +1,5 @@
 local actions = require("laravel.pickers.common.actions")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 local build_relation = function(info, relation_type)
   if next(info) == nil then
@@ -31,10 +31,10 @@ local types = { "observers", "relations", "policy" }
 
 ---@class laravel.pickers.ui.related
 ---@field class laravel.services.class
----@field api laravel.api
+---@field api laravel.services.api
 local related_picker = Class({
   class = "laravel.services.class",
-  api = "laravel.api",
+  api = "laravel.services.api",
 })
 
 function related_picker:run(opts)

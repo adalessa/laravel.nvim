@@ -1,4 +1,4 @@
-local get_line_indent = require("laravel.utils").get_line_indent
+local get_line_indent = require("laravel.utils.init").get_line_indent
 
 local view_right = {}
 

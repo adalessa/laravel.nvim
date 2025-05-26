@@ -4,7 +4,7 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local preview = require("laravel.pickers.common.preview")
 local actions = require("laravel.pickers.telescope.actions")
-local is_make_command = require("laravel.utils").is_make_command
+local is_make_command = require("laravel.utils.init").is_make_command
 
 ---@class LaravelMakePicker
 ---@field commands_repository laravel.repositories.artisan_commands

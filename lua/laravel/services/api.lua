@@ -1,9 +1,8 @@
 local nio = require("nio")
-local promise = require("promise")
 local ApiResponse = require("laravel.dto.api_response")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
----@class laravel.api
+---@class laravel.services.api
 ---@field command_generator laravel.services.command_generator
 local api = Class({
   command_generator = "laravel.services.command_generator",
@@ -55,21 +54,6 @@ function api:async(program, args, callback, opts)
   local sysObj = vim.system(cmd, {}, cb)
 
   return sysObj
-end
-
----@param program string
----@param args string[]
----@return Promise<laravel.dto.apiResponse>
-function api:send(program, args)
-  return promise:new(function(resolve, reject)
-    self:async(program, args, function(result)
-      if result:failed() then
-        reject(result:prettyErrors())
-        return
-      end
-      resolve(result)
-    end)
-  end)
 end
 
 return api

@@ -1,14 +1,9 @@
-local views_diagnostic = {}
+local nio = require("nio")
+local Class = require("laravel.utils.class")
 
-function views_diagnostic:new(cache_views_repository)
-  local instance = {
-    views_repository = cache_views_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local views_diagnostic = Class({
+  views_loader = "laravel.loaders.views_cache_loader",
+})
 
 function views_diagnostic:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.views")
@@ -17,18 +12,30 @@ function views_diagnostic:handle(bufnr)
 
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if not php_parser then
-    -- error("Could not get treesitter parser", vim.log.levels.ERROR)
+    vim.notify(
+      "Could not get treesitter parser for PHP. Make sure you have the PHP parser installed.",
+      vim.log.levels.ERROR,
+      { title = "Laravel.nvim" }
+    )
     return
   end
   local tree = php_parser:parse()[1]
   if tree == nil then
-    -- error("Could not retrive syntax tree", vim.log.levels.ERROR)
+    vim.notify(
+      "Could not retrieve syntax tree. Make sure the file is a valid PHP file.",
+      vim.log.levels.ERROR,
+      { title = "Laravel.nvim" }
+    )
     return
   end
   local query = vim.treesitter.query.get("php", "laravel_views")
 
   if not query then
-    -- error("Could not get treesitter query", vim.log.levels.ERROR)
+    vim.notify(
+      "Could not get treesitter query for Laravel views. Make sure you have the Laravel views query installed.",
+      vim.log.levels.ERROR,
+      { title = "Laravel.nvim" }
+    )
     return
   end
 
@@ -48,16 +55,17 @@ function views_diagnostic:handle(bufnr)
     end
   end
 
-  return self.views_repository
-    :all()
-    :thenCall(function(views)
-      views = vim
-        .iter(views)
-        :map(function(view)
-          return view.name
-        end)
-        :totable()
+  nio.run(function()
+    local views = self.views_loader:load()
 
+    views = vim
+      .iter(views)
+      :map(function(view)
+        return view.name
+      end)
+      :totable()
+
+    vim.schedule(function()
       vim.diagnostic.set(
         namespace,
         bufnr,
@@ -87,7 +95,7 @@ function views_diagnostic:handle(bufnr)
           :totable()
       )
     end)
-    :catch(function() end)
+  end)
 end
 
 return views_diagnostic

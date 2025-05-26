@@ -1,5 +1,5 @@
 local promise = require("promise")
-local Class = require("laravel.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.services.actions
 ---@field actions laravel.actions.action[]

@@ -1,6 +1,7 @@
-local user_command_provider = {}
+---@class laravel.providers.user_command_provider : laravel.providers.provider
+local user_command_provider = { name = "laravel.providers.user_command_provider" }
 
----@param app laravel.app
+---@param app laravel.core.app
 function user_command_provider:register(app)
   vim.tbl_map(function(command)
     app:bindIf(command, command, { tags = { "command" } })
@@ -11,7 +12,7 @@ function user_command_provider:register(app)
   end)
 end
 
----@param app laravel.app
+---@param app laravel.core.app
 function user_command_provider:boot(app)
   local function get_command_names(command)
     if type(command.command) == "string" then

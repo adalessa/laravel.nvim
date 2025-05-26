@@ -1,5 +1,5 @@
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_artisan
-local is_make_command = require("laravel.utils").is_make_command
+local is_make_command = require("laravel.utils.init").is_make_command
 local actions = require("laravel.pickers.common.actions")
 local fzf_exec = require("fzf-lua").fzf_exec
 local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").CommandPreviewer

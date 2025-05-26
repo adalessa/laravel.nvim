@@ -1,7 +1,7 @@
-local split = require("laravel.utils").split
+local split = require("laravel.utils.init").split
 
 ---@class RoutesRepository
----@field api laravel.api
+---@field api laravel.services.api
 local routes_repository = {}
 
 function routes_repository:new(api)

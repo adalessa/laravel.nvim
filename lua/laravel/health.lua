@@ -30,13 +30,13 @@ M.check = function()
     )
   end
 
-  local ok_promise, _ = pcall(require, "promise")
-  if ok_promise then
-    report_ok("Promise-async is installed")
+  local ok_nio, _ = pcall(require, "nio")
+  if ok_nio then
+    report_ok("Nio is Installed")
   else
     report_error(
-      "Promise Async is not installed, this is use to handle async functionalities",
-      { "Install it from `https://github.com/kevinhwang91/promise-async`" }
+      "NIO is not installed, this is use to handle async functionalities",
+      { "Install it from `https://github.com/nvim-neotest/nvim-nio`" }
     )
   end
 

@@ -64,6 +64,19 @@ return {
       },
     },
     {
+      name = "symfony",
+      condition = {
+        executable = { "symfony" },
+      },
+      commands = {
+        symfony = { "symfony" },
+        {
+          commands = { "php", "composer" },
+          prefix = { "symfony" },
+        },
+      },
+    },
+    {
       name = "local",
       condition = {
         executable = { "php" },

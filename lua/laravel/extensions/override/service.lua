@@ -1,36 +1,34 @@
----@class LarvelOverrideService
----@field tinker Tinker
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
+local nio = require("nio")
+
+---@class laravel.extensions.override.service
+---@field tinker laravel.services.tinker
 ---@field class laravel.services.class
 ---@field sign_name string
-local override = {}
-
-function override:new(tinker, class)
-  local instance = {
-    tinker = tinker,
-    class = class,
-    sign_name = "LaravelOverride",
-  }
+local override = Class({
+  tinker = "laravel.services.tinker",
+  class = "laravel.services.class",
+}, function(instance)
+  instance.sign_name = "LaravelOverride"
 
   if vim.tbl_isempty(vim.fn.sign_getdefined(instance.sign_name)) then
     vim.fn.sign_define(instance.sign_name, { text = " ", texthl = "String" })
   end
+end)
 
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
----@return Promise
 function override:handle(bufnr)
   local group = "laravel_overwrite"
   vim.fn.sign_unplace(group, { buffer = bufnr })
 
-  return self.class
-      :get(bufnr)
-      :thenCall(function(class)
-        return self.tinker:json(string.format(
-          [[
+  nio.run(function()
+    local class, err = self.class:get(bufnr)
+    if err then
+      return
+    end
+
+    local methods, err = self.tinker:json(string.format(
+      [[
           $r = new ReflectionClass('%s');
           echo collect($r->getMethods())
             ->filter(fn (ReflectionMethod $method) => $method->hasPrototype() && $method->getFileName() == $r->getFileName())
@@ -42,23 +40,27 @@ function override:handle(bufnr)
             ->values()
             ->toJson();
         ]],
-          class.fqn
-        ))
-      end)
-      :thenCall(function(methods)
-        vim.fn.sign_placelist(vim
-          .iter(methods)
-          :map(function(method)
-            return {
-              group = group,
-              lnum = method.line,
-              name = self.sign_name,
-              buffer = bufnr,
-            }
-          end)
-          :totable())
-      end)
-      :catch(function() end)
+      class.fqn
+    ))
+
+    if err then
+      return notify.error("Error getting methods: " .. err)
+    end
+
+    vim.schedule(function()
+      vim.fn.sign_placelist(vim
+        .iter(methods)
+        :map(function(method)
+          return {
+            group = group,
+            lnum = method.line,
+            name = self.sign_name,
+            buffer = bufnr,
+          }
+        end)
+        :totable())
+    end)
+  end)
 end
 
 return override

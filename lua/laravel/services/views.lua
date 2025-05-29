@@ -1,40 +1,30 @@
----@class LaravelViewsService
----@field resources_repository ResourcesRepository
+local Class = require("laravel.utils.class")
+
+---@class laravel.services.views
+---@field resources_loader laravel.loaders.resources_loader
 ---@field runner laravel.services.runner
-local views = {}
+local views = Class({
+  resources_loader = "laravel.loaders.resources_loader",
+  runner = "laravel.services.runner",
+})
 
-function views:new(cache_resources_repository, runner)
-  local instance = {
-    resources_repository = cache_resources_repository,
-    runner = runner,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+---@async
+function views:pathFromName(name)
+  local views_directory, err = self.resources_loader:get("views")
+  if err then
+    return "", "Failed to get views directory: " .. err
+  end
 
-  return instance
+  return string.format("%s/%s.blade.php", views_directory, name:gsub("%.", "/"))
 end
 
-function views:open(name)
-  return self.resources_repository:get("views"):thenCall(function(views_directory)
-    local view_path = string.format("%s/%s.blade.php", views_directory, name:gsub("%.", "/"))
-
-    if vim.fn.filewritable(view_path) == 1 then
-      vim.cmd("edit " .. view_path)
-      return
-    end
-    -- It creates the view if does not exists and user want it
-    if vim.fn.confirm("View " .. name .. " does not exists, Should create it?", "&Yes\n&No") == 1 then
-      self.runner:run("artisan", { "make:view", name })
-    end
-  end)
-end
-
-function views:name(fname, callback)
-  return self.resources_repository:get("views"):thenCall(function(views_directory)
-    views_directory = views_directory .. "/"
-    local view = fname:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", ".")
-    callback(view)
-  end)
+---@async
+function views:nameFromPath(path)
+  local views_directory, err = self.resources_loader:get("views")
+  if err then
+    return "", "Failed to get views directory: " .. err
+  end
+  return path:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", ".")
 end
 
 return views

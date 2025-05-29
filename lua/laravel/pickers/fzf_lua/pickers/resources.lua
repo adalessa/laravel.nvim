@@ -1,5 +1,6 @@
 local fzf_exec = require("fzf-lua").fzf_exec
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_artisan
+local notify       = require("laravel.utils.notify")
 
 local resources_picker = {}
 function resources_picker:new(options)
@@ -26,7 +27,7 @@ function resources_picker:run(opts)
   end
 
   if vim.tbl_isempty(resources) then
-    vim.notify("No resources defined in the config", vim.log.levels.WARN, {})
+    notify.warn("No resources defined in the config")
     return
   end
 

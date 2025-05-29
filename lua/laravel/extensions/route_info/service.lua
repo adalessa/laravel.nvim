@@ -1,24 +1,19 @@
-local promise = require("promise")
+local Class = require("laravel.utils.class")
+local nio = require("nio")
+local notify = require("laravel.utils.notify")
 
----@class LaravelRouteInfo
+---@class laravel.extensions.route_info.service
 ---@field class laravel.services.class
----@field routes_repository RoutesRepository
+---@field routes_loader laravel.loaders.routes_cache_loader
 ---@field route_info_view table
 ---@field display_status table
-local route_info = {}
-
-function route_info:new(class, cache_routes_repository, route_info_view)
-  local instance = {
-    class = class,
-    routes_repository = cache_routes_repository,
-    route_info_view = route_info_view,
-    display_status = {},
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local route_info = Class({
+  class = "laravel.services.class",
+  routes_loader = "laravel.loaders.routes_cache_loader",
+  route_info_view = "route_info_view",
+}, {
+  display_status = {},
+})
 
 function route_info:toggle(bufnr)
   self.display_status[bufnr] = not self.display_status[bufnr]
@@ -45,59 +40,66 @@ function route_info:refresh(bufnr)
   end
 end
 
----@return Promise
+local clean = vim.schedule_wrap(function(bufnr, namespace)
+  vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+  vim.diagnostic.reset(namespace, bufnr)
+end)
+
 function route_info:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.routes")
+  nio.run(function()
+    local class, err = self.class:get(bufnr)
+    if err then
+      clean(bufnr, namespace)
+      notify.error("Could not get class for buffer: " .. err)
+      return
+    end
+    local routes, err = self.routes_loader:load()
+    if err then
+      clean(bufnr, namespace)
+      notify.error("Could not load routes: " .. err)
+      return
+    end
 
-  return promise
-    .all({
-      self.class:get(bufnr),
-      self.routes_repository:all(),
-    })
-    :thenCall(function(results)
-      local class, routes = unpack(results)
+    ---
+    local missing_routes = {}
+    local route_methods = {}
 
-      local missing_routes = {}
-      local route_methods = {}
-
-      vim
-        .iter(routes)
-        :filter(function(route)
-          return vim.startswith(route.action, class.fqn)
+    vim
+      .iter(routes)
+      :filter(function(route)
+        return vim.startswith(route.action, class.fqn)
+      end)
+      :each(function(route)
+        local class_method = vim.iter(class.methods):find(function(method)
+          return route.action == method.fqn or (method.name == "__invoke" and route.action == class.fqn)
         end)
-        :each(function(route)
-          local class_method = vim.iter(class.methods):find(function(method)
-            return route.action == method.fqn or (method.name == "__invoke" and route.action == class.fqn)
-          end)
 
-          if not class_method then
-            table.insert(missing_routes, route)
-          else
-            table.insert(route_methods, { route = route, method = class_method })
-          end
-        end)
-      return { class, missing_routes, route_methods }
-    end)
-    :thenCall(function(results)
-      local class, missing_routes, route_methods = unpack(results)
-      -- set the virtual text
-      if self.display_status[bufnr] == nil then
-        self.display_status[bufnr] = true
-      end
-      if self.display_status[bufnr] then
-        vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-        vim.iter(route_methods):each(function(route_method)
-          vim.api.nvim_buf_set_extmark(
-            bufnr,
-            namespace,
-            route_method.method.pos,
-            0,
-            self.route_info_view:get(route_method.route, route_method.method)
-          )
-        end)
-      end
+        if not class_method then
+          table.insert(missing_routes, route)
+        else
+          table.insert(route_methods, { route = route, method = class_method })
+        end
+      end)
 
-      -- set the errors
+    if self.display_status[bufnr] == nil then
+      self.display_status[bufnr] = true
+    end
+
+    if self.display_status[bufnr] then
+      clean(bufnr, namespace)
+      vim.iter(route_methods):each(vim.schedule_wrap(function(route_method)
+        vim.api.nvim_buf_set_extmark(
+          bufnr,
+          namespace,
+          route_method.method.pos,
+          0,
+          self.route_info_view:get(route_method.route, route_method.method)
+        )
+      end))
+    end
+
+    vim.schedule(function()
       vim.diagnostic.set(
         namespace,
         bufnr,
@@ -118,10 +120,7 @@ function route_info:handle(bufnr)
           :totable()
       )
     end)
-    :catch(function()
-      vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-      vim.diagnostic.reset(namespace, bufnr)
-    end)
+  end)
 end
 
 return route_info

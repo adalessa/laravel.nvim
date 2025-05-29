@@ -4,17 +4,17 @@ local Class = require("laravel.utils.class")
 ---@field tinker laravel.services.tinker
 local ResourcesLoader = Class({ tinker = "laravel.services.tinker" })
 
----@return string|nil, string?
+---@return string, string?
 function ResourcesLoader:get(resource)
   resource = string.format("'%s'", resource) or ""
 
   local basePath, err = self.tinker:text("echo base_path();")
   if err then
-    return nil, "Failed to get base path: " .. err
+    return "", "Failed to get base path: " .. err
   end
   local resourcePath, err = self.tinker:text(string.format("echo resource_path(%s);", resource))
   if err then
-    return nil, "Failed to get resource path: " .. err
+    return "", "Failed to get resource path: " .. err
   end
 
   basePath = vim.trim(basePath or "")

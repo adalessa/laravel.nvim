@@ -1,64 +1,65 @@
 local Task = require("laravel.task")
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
-local promise = require("promise")
-local dump_server = {
-  _inject = {
-    command_generator = "laravel.services.command_generator",
-  }
-}
+local dump_server = Class({
+  command_generator = "laravel.services.command_generator",
+  commands_loader = "laravel.loaders.artisan_cache_loader",
+  runner = "laravel.services.runner",
+}, {
+  task = Task:new(),
+  in_header = false,
+  current_index = nil,
+  records = {},
+})
 
-function dump_server:new(command_generator, cache_commands_repository, runner)
-  local instance = {
-    command_generator = command_generator,
-    commands_repository = cache_commands_repository,
-    runner = runner,
-    task = Task:new(),
-    in_header = false,
-    current_index = nil,
-    records = {},
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
----@return Promise
+---@async
 function dump_server:isInstalled()
-  return self.commands_repository:all():thenCall(function(commands)
-    return vim.iter(commands):any(function(command)
-      return command.name == "dump-server"
-    end)
+  local commands, err = self.commands_loader:load()
+  if err then
+    return false, "Could not load artisan commands: " .. err
+  end
+
+  return vim.iter(commands):any(function(command)
+    return command.name == "dump-server"
   end)
 end
 
+---@async
 function dump_server:install()
-  self:isInstalled():thenCall(function(isInstalled)
-    if isInstalled then
-      vim.notify("Dump server already installed", vim.log.levels.INFO, {})
-      return promise.resolve()
-    end
+  local isInstalled, err = self:isInstalled()
+  if err then
+    notify.error("Could not check if dump server is installed: " .. err)
+    return
+  end
 
-    return self.runner:run("composer", { "require", "--dev", "beyondcode/laravel-dump-server" })
-  end)
+  if isInstalled then
+    notify.info("Dump server already installed")
+    return
+  end
+
+  return self.runner:run("composer", { "require", "--dev", "beyondcode/laravel-dump-server" })
 end
 
 function dump_server:start()
   if self.task:running() then
-    vim.notify("Server already running", vim.log.levels.INFO, {})
+    notify.info("Server already running")
 
-    return promise.resolve()
+    return true
   end
 
-  return self:isInstalled():thenCall(function(isInstalled)
-    if not isInstalled then
-      vim.notify("Dump server not installed", vim.log.levels.ERROR, {})
-      return promise.reject("Dump server not installed")
-    end
+  local isInstalled, err = self:isInstalled()
+  if err then
+    notify.error("Could not check if dump server is installed: " .. err)
+    return
+  end
 
-    self:_start()
-    return promise.resolve()
-  end)
+  if not isInstalled then
+    notify.error("Dump server not installed")
+    return
+  end
+
+  self:_start()
 end
 
 function dump_server:_start()
@@ -69,7 +70,7 @@ function dump_server:_start()
 
   local cmd = self.command_generator:generate("artisan dump-server")
   if not cmd then
-    vim.notify("Dump server not found", vim.log.levels.ERROR, {})
+    notify.error("Dump server not found")
     return
   end
 

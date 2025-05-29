@@ -1,13 +1,18 @@
 local split = require("laravel.utils.init").split
 local actions = require("laravel.pickers.common.actions")
+local notify  = require("laravel.utils.notify")
 
-local gf_command = {}
+local gf_command = {
+  _inject = {
+    routes_loader = "laravel.loaders.routes_cache_loader",
+  },
+}
 
-function gf_command:new(views, gf, cache_routes_repository)
+function gf_command:new(views, gf, routes_loader)
   local instance = {
     views = views,
     gf = gf,
-    routes = cache_routes_repository,
+    routes = routes_loader,
     command = "gf",
   }
   setmetatable(instance, self)
@@ -54,7 +59,7 @@ function gf_command:handle()
           return
         end
       end
-      vim.notify("Route not found", vim.log.levels.WARN)
+      notify.warn("Route not found")
     end)
   end
 end

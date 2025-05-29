@@ -42,7 +42,7 @@ return {
   },
   providers = {
     require("laravel.providers.laravel_provider"),
-    require("laravel.providers.repositories_provider"),
+    require("laravel.providers.pickers_provider"),
     require("laravel.providers.telescope_provider"),
     require("laravel.providers.fzf_lua_provider"),
     require("laravel.providers.ui_select_provider"),

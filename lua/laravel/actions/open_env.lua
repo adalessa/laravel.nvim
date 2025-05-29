@@ -1,13 +1,13 @@
-local promise = require("promise")
-
 return {
   check = function()
-    return promise.resolve(true)
+    return true
   end,
   format = function()
     return "Open env file"
   end,
   run = function()
-    vim.cmd("edit .env")
+    vim.schedule(function()
+      vim.cmd("edit .env")
+    end)
   end,
 }

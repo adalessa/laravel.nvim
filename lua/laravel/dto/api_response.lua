@@ -49,7 +49,7 @@ end
 function ApiResponse:json()
   local ok, res = pcall(vim.json.decode, self:content(), { luanil = { object = true } })
   if not ok then
-    return nil
+    return {}
   end
 
   return res

@@ -8,7 +8,6 @@ local laravel_provider = { name = "laravel.providers.laravel_provider" }
 function laravel_provider:register(app)
   app:alias("api", "laravel.services.api")
   app:alias("tinker", "laravel.services.tinker")
-  app:alias("pickers", "laravel.pickers.pickers_manager")
 
   -- SERVICES
   app:alias("class", "laravel.services.class")
@@ -46,26 +45,6 @@ function laravel_provider:boot(app)
     group = group,
     callback = function()
       app:make("env"):boot()
-    end,
-  })
-
-  -- Set Property in Global
-  Laravel.pickers = setmetatable({
-    list = function()
-      return vim.tbl_keys(app:make("pickers"):get_pickers())
-    end,
-  }, {
-    __index = function(_, key)
-      local pickers = app:make("pickers")
-      if not pickers:exists(key) then
-        error("Picker not found: " .. key .. " in provider " .. pickers.name)
-      end
-
-      return setmetatable({}, {
-        __call = function(_, ...)
-          return pickers:run(key, ...)
-        end,
-      })
     end,
   })
 end

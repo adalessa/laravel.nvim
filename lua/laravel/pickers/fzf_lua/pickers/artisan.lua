@@ -2,23 +2,23 @@ local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_ar
 local actions = require("laravel.pickers.common.actions")
 local fzf_exec = require("fzf-lua").fzf_exec
 local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").CommandPreviewer
+local Class = require("laravel.services.class")
+local nio = require("nio")
+local notify = require("laravel.utils.notify")
 
----@class LaravelFzfLuaArtisanPicker
----@field commands_repository laravel.repositories.artisan_commands
-local ui_artisan_picker = {}
+---@class laravel.pickers.fzf_lua.pickers.artisan
+---@field artisan_loader laravel.loaders.artisan_cache_loader
+local artisan_picker = Class({
+  artisan_loader = "laravel.loaders.artisan_cache_loader",
+})
 
-function ui_artisan_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+function artisan_picker:run(opts)
+  nio.run(function()
+    local commands, err = self.artisan_loader:load()
+    if err then
+      return notify.error("Error loading artisan commands: " .. err)
+    end
 
-  return instance
-end
-
-function ui_artisan_picker:run(opts)
-  return self.commands_repository:all():thenCall(function(commands)
     local command_names, command_table = format_entry(commands)
 
     fzf_exec(
@@ -37,9 +37,7 @@ function ui_artisan_picker:run(opts)
         },
       }, opts or {})
     )
-  end, function(error)
-    vim.api.nvim_err_writeln(error)
   end)
 end
 
-return ui_artisan_picker
+return artisan_picker

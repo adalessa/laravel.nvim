@@ -1,4 +1,5 @@
 local app = require("laravel.core.app")
+local notify = require("laravel.utils.notify")
 
 -- Resolve how multiples pickers will interact
 -- app('pickers'):run('artisan', {})
@@ -48,7 +49,7 @@ function pickers_manager:run(name, ...)
   end
   local picker_name = self:get_pickers()[name]
   if not picker_name then
-    vim.notify("Picker not found: " .. name, vim.log.levels.ERROR)
+    notify.error("Picker not found: " .. name)
     return
   end
 

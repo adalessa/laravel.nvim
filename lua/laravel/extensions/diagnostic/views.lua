@@ -1,5 +1,6 @@
 local nio = require("nio")
 local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
 local views_diagnostic = Class({
   views_loader = "laravel.loaders.views_cache_loader",
@@ -12,29 +13,19 @@ function views_diagnostic:handle(bufnr)
 
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if not php_parser then
-    vim.notify(
-      "Could not get treesitter parser for PHP. Make sure you have the PHP parser installed.",
-      vim.log.levels.ERROR,
-      { title = "Laravel.nvim" }
-    )
+    notify.error("Could not get treesitter parser for PHP. Make sure you have the PHP parser installed.")
     return
   end
   local tree = php_parser:parse()[1]
   if tree == nil then
-    vim.notify(
-      "Could not retrieve syntax tree. Make sure the file is a valid PHP file.",
-      vim.log.levels.ERROR,
-      { title = "Laravel.nvim" }
-    )
+    notify.error("Could not parse the PHP file. Make sure the file is a valid PHP file.")
     return
   end
   local query = vim.treesitter.query.get("php", "laravel_views")
 
   if not query then
-    vim.notify(
-      "Could not get treesitter query for Laravel views. Make sure you have the Laravel views query installed.",
-      vim.log.levels.ERROR,
-      { title = "Laravel.nvim" }
+    notify.error(
+      "Could not get treesitter query for Laravel views. Make sure you have the Laravel views query installed."
     )
     return
   end

@@ -32,12 +32,12 @@ function tinker:text(code)
   return response:content()
 end
 
----@return table?, string?
+---@return table, string?
 function tinker:json(code)
   local response, err = self:raw(code)
 
   if err or not response then
-    return nil, err
+    return {}, err
   end
 
   return response:json()

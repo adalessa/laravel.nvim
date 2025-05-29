@@ -1,6 +1,7 @@
 local combine_tables = require("laravel.utils.init").combine_tables
 local Environment = require("laravel.dto.environment")
 local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
 ---@class laravel.core.env
 ---@field config laravel.core.config
@@ -51,10 +52,7 @@ function env:configure()
     value.path = cwd
     local res = self.config:set(value)
     if not res then
-      vim.notify("Error saving config", vim.log.levels.ERROR, {
-        title = "Laravel.nvim",
-      })
-      vim.print(value)
+      notify.error("Error saving config")
     end
   end)
 end

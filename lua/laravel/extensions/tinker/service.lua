@@ -1,4 +1,5 @@
 local scan = require("plenary.scandir")
+local notify = require("laravel.utils.notify")
 
 local tinker = {
   _inject = {
@@ -79,7 +80,7 @@ function tinker:open(filename)
 
     local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
     if not cmd then
-      vim.notify("Tinker command not found", vim.log.levels.ERROR, {})
+      notify.error("Tinker command not found")
       return
     end
 

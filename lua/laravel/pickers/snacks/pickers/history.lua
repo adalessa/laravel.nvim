@@ -1,23 +1,16 @@
-local snacks = require("snacks").picker
 local format_entry = require("laravel.pickers.snacks.format_entry")
+local Class = require("laravel.utils.class")
 
-local history_picker = {}
-
-function history_picker:new(history, runner)
-  local instance = {
-    history_provider = history,
-    runner = runner,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+local history_picker = Class({
+  history_service = "laravel.services.history",
+  runner = "laravel.services.runner",
+})
 
 function history_picker:run(opts)
-  snacks.pick(vim.tbl_extend("force", {
+  Snacks.picker.pick(vim.tbl_extend("force", {
     title = "Laravel Commands History",
     items = vim
-      .iter(self.history_provider:get())
+      .iter(self.history_service:get())
       :map(function(history_entry)
         return {
           value = history_entry,

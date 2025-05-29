@@ -1,5 +1,6 @@
 local utils = require("laravel.utils.init")
 local Class = require("laravel.utils.class")
+local notify= require("laravel.utils.notify")
 
 local view_finder = Class({
     views_service = "laravel.services.views",
@@ -10,7 +11,7 @@ local view_finder = Class({
 function view_finder:usage(view)
   local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
   if #matches == 0 then
-    vim.notify("No usage of this view found", vim.log.levels.WARN)
+    notify.warn("No usage of this view found")
   elseif #matches == 1 then
     vim.cmd("edit " .. matches[1].file)
   else
@@ -45,7 +46,7 @@ function view_finder:handle(bufnr)
   if ft == "php" then
     return self.class_service:views(bufnr):thenCall(function(views)
       if #views == 0 then
-        vim.notify("No views found", vim.log.levels.WARN)
+        notify.warn("No views found")
         return
       end
       if #views == 1 then

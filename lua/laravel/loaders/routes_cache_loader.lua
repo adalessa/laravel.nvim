@@ -10,7 +10,7 @@ local RoutesCacheLoader = Class({
   rotues_loader = "laravel.loaders.routes_loader",
 }, { key = "laravel-routes", timeout = 60 })
 
----@return laravel.dto.artisan_routes[]
+---@return laravel.dto.artisan_routes[], string?
 function RoutesCacheLoader:load()
   return self.cache:remember(self.key, self.timeout, function()
     return self.rotues_loader:load()

@@ -1,3 +1,4 @@
+local notify = require "laravel.utils.notify"
 ---@class laravel.providers.user_command_provider : laravel.providers.provider
 local user_command_provider = { name = "laravel.providers.user_command_provider" }
 
@@ -25,7 +26,7 @@ function user_command_provider:boot(app)
 
   vim.api.nvim_create_user_command("Laravel", function(args)
     if not app:isActive() then
-      vim.notify("Laravel is not active", vim.log.levels.ERROR)
+      notify.error("Laravel is not active")
       return
     end
 
@@ -64,7 +65,7 @@ function user_command_provider:boot(app)
       local subcommand = args.fargs[1]
       if subcommand == "" or subcommand == "" or subcommand == nil then
         if not command.default then
-          vim.notify("Sub command not provided and there is no default option set", vim.log.levels.ERROR)
+          notify.error("Sub command not provided and there is no default option set")
           return
         end
         subcommand = command.default
@@ -74,7 +75,7 @@ function user_command_provider:boot(app)
       end
 
       if not command[subcommand] then
-        vim.notify("Command " .. subcommand .. " not found", vim.log.levels.ERROR)
+        notify.error("Command " .. subcommand .. " not found")
         return
       end
 

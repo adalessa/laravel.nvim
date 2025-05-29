@@ -1,57 +1,43 @@
-local promise = require("promise")
+local Class = require("laravel.utils.class")
 
-local action = {
-  _inject = {
-    model = "laravel.services.model",
-    templates = "laravel.templates",
-  }
-}
+local action = Class({
+  model = "laravel.services.model",
+  templates = "laravel.utils.templates",
+}, { info = nil })
 
-function action:new(model, templates)
-  local instance = {
-    model = model,
-    templates = templates,
-    info = nil,
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
+---@async
 function action:check(bufnr)
-  return self.model
-    :getByBuffer(bufnr)
-    :thenCall(function(info)
-      self.info = info
-      return true
-    end)
-    :catch(function()
-      return promise.resolve(false)
-    end)
+  local info, err = self.model:getByBuffer(bufnr)
+  if err then
+    return false
+  end
+  self.info = info
+
+  return true
 end
 
 function action:format()
   return "Add relation"
 end
 
+---@async
 function action:run(bufnr)
   -- TODO
   -- ask type of relation
   -- ask Model
   -- check if Model in same namespace
   -- check if type of relation already there
-
-  vim.lsp.util.apply_text_edits({
-    {
-      range = {
-        start = { line = self.info.class_info.end_, character = 0 },
-        ["end"] = { line = self.info.class_info.end_, character = 0 },
+  vim.schedule(function()
+    vim.lsp.util.apply_text_edits({
+      {
+        range = {
+          start = { line = self.info.class_info.end_, character = 0 },
+          ["end"] = { line = self.info.class_info.end_, character = 0 },
+        },
+        newText = self.templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
       },
-      newText = self.templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
-    },
-  }, bufnr, "utf-8")
+    }, bufnr, "utf-8")
+  end)
 end
 
 return action

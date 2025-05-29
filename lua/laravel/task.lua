@@ -1,3 +1,4 @@
+local notify = require "laravel.utils.notify"
 local task = {}
 
 function task:new()
@@ -47,7 +48,7 @@ function task:run(command, stdCallback, errCallback)
 
   vim.uv.read_start(self.stdout, function(err, data)
     if err then
-      vim.notify("Error reading stdout: " .. err, vim.log.levels.ERROR)
+      notify.error("Error reading stdout: " .. err)
       return
     end
     if data then
@@ -60,7 +61,7 @@ function task:run(command, stdCallback, errCallback)
 
   vim.uv.read_start(self.stderr, function(err, data)
     if err then
-      vim.notify("Error reading stderr: " .. err, vim.log.levels.ERROR)
+      notify.error("Error reading stderr: " .. err)
       return
     end
     if data then

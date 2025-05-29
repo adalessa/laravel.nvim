@@ -1,23 +1,21 @@
-local snacks = require("snacks").picker
 local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
+local Class = require("laravel.utils.class")
+local notify= require("laravel.utils.notify")
 
-local composer_picker = {}
-
-function composer_picker:new(composer_repository)
-  local instance = {
-    composer_repository = composer_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local composer_picker = Class({
+  composer_loader = "laravel.loaders.composer_cache_loader",
+})
 
 function composer_picker:run(opts)
-  return self.composer_repository:all():thenCall(function(commands)
-    snacks.pick(vim.tbl_extend("force", {
+  local commands, err = self.composer_loader:load()
+  if err then
+    return notify.error("Failed to load composer commands: " .. err)
+  end
+
+  vim.schedule(function()
+    Snacks.picker.pick(vim.tbl_extend("force", {
       title = "Composer Commands",
       items = vim
         .iter(commands)

@@ -1,48 +1,44 @@
 local Task = require("laravel.task")
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
+local nio = require("nio")
 
-local command = {
-  _inject = {
-    command_generator = "laravel.services.command_generator",
-  }
-}
-
-function command:new(command_generator, configs_repository)
-  local instance = {
-    command_generator = command_generator,
-    configs_repository = configs_repository,
-    task = Task:new(),
-    command = "dev",
-    host = "",
-    subCommands = {
-      "start",
-      "stop",
-    },
-    default = "start",
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local command = Class({
+  command_generator = "laravel.services.command_generator",
+  configs_loader = "laravel.loaders.configs_cache_loader",
+}, {
+  task = Task:new(),
+  command = "dev",
+  host = "",
+  subCommands = {
+    "start",
+    "stop",
+  },
+  default = "start",
+})
 
 function command:start()
   if self.task:running() then
-    vim.notify("Server already running", vim.log.levels.INFO, {})
+    notify.info("Server already running")
     return
   end
 
   local cmd = self.command_generator:generate("composer dev")
   if not cmd then
-    vim.notify("Composer not found", vim.log.levels.ERROR, {})
+    notify.error("Composer not found")
     return
   end
 
   self.task:run(cmd)
-  self.configs_repository:get("app.url"):thenCall(function(value)
-    self.host = value
+  nio.run(function()
+    local url, err = self.configs_loader:get("app:url")
+    if err then
+      notify.error("Could not load app.url: " .. err)
+      return
+    end
+    self.host = url
+    notify.info("Composer Dev Started at " .. self.host)
   end)
-
-  vim.notify("Composer Dev Started", vim.log.levels.INFO, {})
 end
 
 function command:stop()

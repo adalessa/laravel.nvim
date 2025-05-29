@@ -1,20 +1,14 @@
 local snacks = require("snacks").picker
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
 
-local resources_picker = {}
-
-function resources_picker:new(options)
-  local instance = {
-    options = options,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local resources_picker = Class({
+  config = "laravel.services.config",
+})
 
 function resources_picker:run(opts)
   local resources = {}
-  for name, path in pairs(self.options:get("resources")) do
+  for name, path in pairs(self.config.get("resources", {})) do
     if vim.fn.isdirectory(path) == 1 then
       table.insert(resources, {
         name = name,
@@ -24,7 +18,7 @@ function resources_picker:run(opts)
   end
 
   if vim.tbl_isempty(resources) then
-    vim.notify("No resources defined in the config", vim.log.levels.WARN, {})
+    notify.warn("No resources defined in the config")
     return
   end
 

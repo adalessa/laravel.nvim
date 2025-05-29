@@ -1,60 +1,56 @@
-local promise = require("promise")
 local utils = require("laravel.utils.init")
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
+local nio = require("nio")
 
-local action = {}
+local action = Class({
+  model = "laravel.services.model",
+  tinker = "laravel.services.tinker",
+}, { info = nil })
 
-function action:new(model, tinker)
-  local instance = {
-    tinker = tinker,
-    model = model,
-    info = nil,
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
+---@async
 function action:check(bufnr)
-  return self.model
-    :getByBuffer(bufnr)
-    :thenCall(function(info)
-      self.info = info
-      return true
-    end)
-    :catch(function()
-      return promise.resolve(false)
-    end)
+  local info, err = self.model:getByBuffer(bufnr)
+  if err then
+    return false
+  end
+  self.info = info
+
+  return true
 end
 
 function action:format()
   return "Go To Migration of " .. self.info.class
 end
 
+---@async
 function action:run()
-  return self.tinker:text(string.format([[echo (new %s())->getTable();]], self.info.class)):thenCall(function(res)
-    local table_name = vim.trim(res)
-    local matches = utils.runRipgrep(string.format("Schema::(?:create|table)\\('%s'", table_name))
+  local table_name, err = self.tinker:text(string.format([[echo (new %s())->getTable();]], self.info.class))
+  if err then
+    notify.error("Could not get table name: " .. err)
+    return
+  end
+  table_name = vim.trim(table_name)
+  local matches = utils.runRipgrep(string.format("Schema::(?:create|table)\\('%s'", table_name))
 
-    if #matches == 0 then
-      vim.notify("No migration found", vim.log.levels.WARN)
-    elseif #matches == 1 then
-      vim.cmd("edit " .. matches[1].file)
-    else
-      vim.ui.select(matches, {
-        prompt = "File: ",
-        format_entry = function(item)
-          return item.file
-        end,
-      }, function(item)
-        if not item then
-          return
-        end
-        vim.cmd("edit " .. item.file)
-      end)
-    end
-  end)
+  local selected = nil
+  if #matches == 0 then
+    notify.error("No migration found for table: " .. table_name)
+  elseif #matches == 1 then
+    selected = matches[1].file
+  else
+    selected = nio.ui.select(matches, {
+      prompt = "File: ",
+      format_entry = function(item)
+        return item.file
+      end,
+    })
+  end
+  if selected then
+    vim.schedule(function()
+      vim.cmd("edit " .. selected)
+    end)
+  end
 end
 
 return action

@@ -1,3 +1,4 @@
+local nio = require "nio"
 local M = {}
 
 function M.command(app, name, callback)
@@ -5,7 +6,10 @@ function M.command(app, name, callback)
     return {
       command = name,
       handle = function(_, ...)
-        callback(...)
+        local args = ...
+        nio.run(function()
+          callback(args)
+        end)
       end,
     }
   end, { tags = { "command" } })

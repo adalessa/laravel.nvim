@@ -1,3 +1,4 @@
+local nio = require("nio")
 local mcp = {}
 
 function mcp:boot(app)
@@ -27,24 +28,28 @@ function mcp:boot(app)
       required = { "command", "arguments" },
     },
     handler = function(req, res)
-      local command = req.params.command
-      local arguments = req.params.arguments or {}
+      nio.run(function()
+        local command = req.params.command
+        local arguments = req.params.arguments or {}
 
-      if not app:isActive() then
-        res:error("Laravel is not active"):send()
+        if not app:isActive() then
+          res:error("Laravel is not active"):send()
 
-        return
-      end
+          return
+        end
 
-      app("api"):send("artisan", { command, unpack(arguments) }):thenCall(function(result)
+        local result, err = app("api"):run("artisan", { command, unpack(arguments) })
+        if err then
+          res:error(err):send()
+          return
+        end
+
         if result:failed() then
           res:error(result:prettyErrors()):send()
           return
         end
 
         res:text(result:content()):send()
-      end, function(err)
-        res:error(err):send()
       end)
     end,
   })

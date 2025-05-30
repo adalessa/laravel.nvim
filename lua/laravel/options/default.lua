@@ -32,7 +32,6 @@ return {
     composer_info = { enable = true },
     diagnostic = { enable = true },
     dump_server = { enable = true },
-    history = {enable = true },
     model_info = { enable = true },
     override = { enable = true },
     route_info = { enable = true, view = "simple" },

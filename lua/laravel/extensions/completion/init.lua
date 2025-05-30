@@ -1,8 +1,8 @@
----@class LaravelCompletionProvider : laravel.providers.provider
+---@class laravel.extensions.completion.provider : laravel.providers.provider
 local completion_provider = {}
 
 function completion_provider:register(app)
-  app:bindIf("completion", "laravel.extensions.completion.service")
+  app:bindIf("completion", "laravel.extensions.completion.source")
 end
 
 function completion_provider:boot(app)

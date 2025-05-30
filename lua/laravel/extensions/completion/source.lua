@@ -1,7 +1,7 @@
 local nio = require("nio")
 local Class = require("laravel.utils.class")
 
----@class laravel.extensions.completion.service
+---@class laravel.extensions.completion.source
 ---@field env laravel.core.env
 ---@field templates laravel.utils.templates
 ---@field environment_vars_loader laravel.loaders.environment_variables_loader
@@ -39,6 +39,10 @@ function source:get_trigger_characters()
 end
 
 function source:complete(params, callback)
+  if params.context.filetype ~= "php" then
+    callback({ items = {} })
+  end
+
   local text = params.context.cursor_before_line
 
   nio.run(function()
@@ -60,6 +64,11 @@ function source:complete(params, callback)
     local env_completion = require("laravel.extensions.completion.env_vars_completion")
     if env_completion.shouldComplete(text) then
       return env_completion.complete(self.environment_vars_loader, self.templates, params, callback)
+    end
+
+    local model_completion = require("laravel.extensions.completion.model_completion")
+    if model_completion.shouldComplete(text) then
+      return model_completion.complete(self.templates, params, callback)
     end
   end)
 

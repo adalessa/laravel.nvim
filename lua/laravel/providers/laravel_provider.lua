@@ -20,6 +20,11 @@ function laravel_provider:register(app)
   app:alias("views", "laravel.services.views")
   app:alias("gf", "laravel.services.gf")
 
+  app:singletonIf("history", "laravel.services.history")
+  app:command("history", function()
+    app("pickers"):run("history")
+  end)
+
   app:singletonIf("laravel.services.cache")
   app:alias("cache", "laravel.services.cache")
 
@@ -45,6 +50,14 @@ function laravel_provider:boot(app)
     group = group,
     callback = function()
       app:make("env"):boot()
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "User" }, {
+    group = group,
+    pattern = { "LaravelCommandRun" },
+    callback = function(ev)
+      app("history"):add(ev.data.job_id, ev.data.cmd, ev.data.args, ev.data.options)
     end,
   })
 end

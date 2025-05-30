@@ -14,7 +14,7 @@ function status_provider:boot(app)
 
   app("status"):start()
 
-  local group = vim.api.nvim_create_augroup("laravel", {})
+  local group = vim.api.nvim_create_augroup("laravel.status", {})
 
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,

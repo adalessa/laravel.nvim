@@ -35,7 +35,7 @@ return {
     history = {enable = true },
     model_info = { enable = true },
     override = { enable = true },
-    route_info = { enable = true, view = "top" },
+    route_info = { enable = true, view = "simple" },
     tinker = { enable = true },
     mcp = { enable = true },
     command_center = { enable = true },

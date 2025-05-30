@@ -1,5 +1,6 @@
 local app = require("laravel.core.app")
 local notify = require("laravel.utils.notify")
+local nio = require("nio")
 
 -- Resolve how multiples pickers will interact
 -- app('pickers'):run('artisan', {})
@@ -21,7 +22,7 @@ local notify = require("laravel.utils.notify")
 local pickers_manager = {
   _inject = {
     config = "laravel.services.config",
-  }
+  },
 }
 
 function pickers_manager:new(config)
@@ -53,7 +54,10 @@ function pickers_manager:run(name, ...)
     return
   end
 
-  app(picker_name):run(...)
+  local args = ...
+  nio.run(function()
+    app(picker_name):run(args)
+  end)
 end
 
 ---@param name string

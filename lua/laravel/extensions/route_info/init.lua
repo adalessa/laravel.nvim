@@ -7,6 +7,7 @@ function route_info:register(app, opts)
     return require("laravel.extensions.route_info.view_factory"):new(opts, {
       top = require("laravel.extensions.route_info.view_top"),
       right = require("laravel.extensions.route_info.view_right"),
+      simple = require("laravel.extensions.route_info.view_simple"),
     })
   end)
   app:bindIf("route_info_command", "laravel.extensions.route_info.command", { tags = { "command" } })

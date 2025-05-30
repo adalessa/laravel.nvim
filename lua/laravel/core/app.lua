@@ -11,6 +11,8 @@ local app = setmetatable({
 function app:start(opts)
   self:validateInstalation()
   self:bootstrap(opts)
+
+  return self
 end
 
 function app:bootstrap(opts)

@@ -39,14 +39,9 @@ end
 
 function composer:complete(argLead)
   local commands = self.cache:remember("composer-commands", 60, function()
-    local resp = {}
-    self.api
-      :async("composer", { "list", "--format=json" }, function(result)
-        resp = result
-      end)
-      :wait()
+    local resp, err = self.api:runSync("composer", { "list", "--format=json" })
 
-    if resp:failed() then
+    if err or resp:failed() then
       return {}
     end
 

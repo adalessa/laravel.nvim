@@ -29,12 +29,14 @@ function status:new(api)
   return instance
 end
 
+---@async
 function status:update()
   if self.refresh then
     self.refresh()
   end
 end
 
+---@async
 function status:start()
   local refresh = function()
     nio.run(function()

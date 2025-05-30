@@ -23,7 +23,7 @@ function tinker:register(app)
   -- app:extension("tinker", ext)
 end
 
----@param app laravel.app
+---@param app laravel.core.app
 function tinker:boot(app)
   vim.filetype.add({ extension = { tinker = "php" } })
 
@@ -46,6 +46,15 @@ function tinker:boot(app)
     end,
   })
 
+  Laravel.extensions.tinker = setmetatable({
+    open = function() app("tinker_serivce"):open() end,
+    select = function() app("tinker_serivce"):select() end,
+    create = function() app("tinker_serivce"):create() end,
+  }, {
+    __call = function()
+      app("tinker_service"):open()
+    end,
+  })
 end
 
 return tinker

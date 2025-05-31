@@ -46,9 +46,10 @@ return {
     require("laravel.providers.fzf_lua_provider"),
     require("laravel.providers.ui_select_provider"),
     require("laravel.providers.snacks_provider"),
-    require("laravel.providers.user_command_provider"),
+    require("laravel.providers.commands_provider"),
     require("laravel.providers.status_provider"),
     require("laravel.providers.actions_provider"),
+    require("laravel.providers.extensions_provider"),
   },
   user_providers = {},
 }

@@ -1,23 +1,15 @@
 local scan = require("plenary.scandir")
 local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
 
-local tinker = {
-  _inject = {
-    command_generator = "laravel.services.command_generator",
-  }
-}
-
-function tinker:new(tinker_ui, command_generator)
-  local instance = {
-    ui = tinker_ui,
-    command_generator = command_generator,
-    data = {},
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.extensions.tinker.lib
+---@field command_generator laravel.services.command_generator
+---@field ui laravel.extensions.tinker.ui
+---@field data table<string, string[]>
+local tinker = Class({
+  command_generator = "laravel.services.command_generator",
+  ui = "laravel.extensions.tinker.ui",
+}, { data = {} })
 
 local function cleanResult(data)
   return vim.tbl_map(function(line)

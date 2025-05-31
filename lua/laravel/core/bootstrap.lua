@@ -8,19 +8,16 @@ function M:bootstrap(app, opts)
 
   self:registerProviders(app)
   self:registerUserProviders(app)
-  self:registerExtensions(app)
 
   self:initGlobal(app)
 
   self:bootProviders(app)
   self:bootUserProviders(app)
-  self:bootExtensions(app)
 end
 
 function M:initGlobal(app)
   _G.Laravel = setmetatable({
     app = app,
-    extensions = {},
   }, {
     __call = function(_, ...)
       local a = ...
@@ -78,32 +75,6 @@ function M:bootUserProviders(app)
   vim.tbl_map(function(provider)
     return M:boot(provider, app)
   end, config.get("user_providers", {}))
-end
-
-function M:registerExtensions(app)
-  vim.iter(config.get("extensions", {})):each(function(k, v)
-    local ok, extension_provider = pcall(require, "laravel.extensions." .. k)
-    if not ok then
-      return notify.error(string.format("Error loading extension %s: %s", k, v))
-    end
-    if v.enable then
-      extension_provider.name = k
-      M:register(extension_provider, app, v)
-    end
-  end)
-end
-
-function M:bootExtensions(app)
-  vim.iter(config.get("extensions", {})):each(function(k, v)
-    local ok, extension_provider = pcall(require, "laravel.extensions." .. k)
-    if not ok then
-      return notify.error(string.format("Error loading extension %s: %s", k, v))
-    end
-    if v.enable then
-      extension_provider.name = k
-      M:boot(extension_provider, app, v)
-    end
-  end)
 end
 
 return M

@@ -1,3 +1,4 @@
+local events = require "laravel.events"
 ---@class laravel.providers.status_provider: laravel.providers.provider
 local status_provider = { name = "laravel.providers.status_provider" }
 
@@ -27,7 +28,7 @@ function status_provider:boot(app)
   })
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
-    pattern = { "LaravelFlushCache" },
+    pattern = { events.CACHE_FLUSHED },
     callback = function()
       app("status"):update()
     end,

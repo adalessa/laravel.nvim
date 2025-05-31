@@ -1,18 +1,14 @@
-local related = {}
+local app = require("laravel.core.app")
 
-function related:new(pickers)
-  local instance = {
-    pickers = pickers,
-    command = "related",
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local command = {
+  signature = "picker:related",
+  description = "Open the related picker of the current file",
+}
 
-  return instance
+function command:handle()
+  ---@type laravel.pickers.pickers_manager
+  local pickers = app:make("pickers")
+  pickers:run("related")
 end
 
-function related:handle()
-  self.pickers:run("related")
-end
-
-return related
+return command

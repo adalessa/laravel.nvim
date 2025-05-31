@@ -1,14 +1,14 @@
 local app = require("laravel.core.app")
 
 local command = {
-  signature = "picker:artisan",
-  description = "Open the artisan picker",
+  signature = "picker:commands",
+  description = "Open the user defined commands picker",
 }
 
 function command:handle()
   ---@type laravel.pickers.pickers_manager
   local pickers = app:make("pickers")
-  pickers:run("artisan")
+  pickers:run("commands")
 end
 
 return command

@@ -1,31 +1,33 @@
 local Class = require("laravel.utils.class")
-local combine_tables = require("laravel.utils.init").combine_tables
 local is_make_command = require("laravel.utils.init").is_make_command
 local find_class = require("laravel.utils.init").find_class_from_make_output
 
 ---@class laravel.services.runner
----@field env laravel.core.env
 ---@field config laravel.services.config
 ---@field ui_handler LaravelUIHandler
+---@field command_generator laravel.services.command_generator
 local runner = Class({
-  env = "laravel.core.env",
   config = "laravel.services.config",
   ui_handler = "laravel.services.ui_handler",
+  command_generator = "laravel.services.command_generator",
 })
 
----@param cmd string
+---@param program string
 ---@param args string[]
 ---@param opts table|nil
-function runner:run(cmd, args, opts)
-  local executable = self.env:getExecutable(cmd)
-  if not executable then
-    error(string.format("Executable %s not found", cmd), vim.log.levels.ERROR)
-    return
+function runner:run(program, args, opts)
+  args = args or {}
+  opts = opts or {}
+  local command = self.command_generator:generate(program, args)
+  if not command then
+    return {}, string.format("Command %s not found", program)
   end
 
-  opts = vim.tbl_extend("force", self.config("commands_options")[args[1]] or {}, opts or {})
+  local subCommand = args[1] or vim.split(program, " ")[2] or nil
 
-  local command = combine_tables(executable, args)
+  if subCommand then
+    opts = vim.tbl_extend("force", self.config("commands_options")[subCommand] or {}, opts)
+  end
 
   local instance = self.ui_handler:handle(opts)
 
@@ -47,7 +49,7 @@ function runner:run(cmd, args, opts)
     vim.api.nvim_exec_autocmds("User", {
       pattern = "LaravelCommandRun",
       data = {
-        cmd = cmd,
+        cmd = program,
         args = args,
         options = opts,
         job_id = job_id,

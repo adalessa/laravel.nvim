@@ -10,8 +10,14 @@ function actions_provider:register(app)
     return app:makeByTag("action")
   end)
 
-  app:command("actions", function()
-      app("laravel.services.actions"):run()
+  app:addCommand("laravel.code_actions", function()
+    return {
+      signature = "actions",
+      description = "Run Laravel code actions",
+      handle = function()
+        app("laravel.services.actions"):run()
+      end,
+    }
   end)
 end
 

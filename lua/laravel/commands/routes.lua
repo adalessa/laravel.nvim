@@ -1,22 +1,14 @@
-local routes = {}
+local app = require("laravel.core.app")
 
-function routes:new(pickers)
-  local instance = {
-    pickers = pickers,
-    command = "routes",
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local command = {
+  signature = "picker:routes",
+  description = "Open the routes picker",
+}
 
-  return instance
+function command:handle()
+  ---@type laravel.pickers.pickers_manager
+  local pickers = app:make("pickers")
+  pickers:run("routes")
 end
 
-function routes:handle()
-  self.pickers:run("routes")
-end
-
-function routes:complete()
-  return {}
-end
-
-return routes
+return command

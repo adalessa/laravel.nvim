@@ -1,8 +1,14 @@
-local Task = require("laravel.task")
 local Class = require("laravel.utils.class")
+local events = require("laravel.events")
 local notify = require("laravel.utils.notify")
+local Task = require("laravel.task")
 
-local dump_server = Class({
+---@class laravel.extensions.dump_server.lib
+---@field command_generator laravel.services.command_generator
+---@field commands_loader laravel.loaders.artisan_cache_loader
+---@field runner laravel.services.runner
+---@field task laravel.task
+local lib = Class({
   command_generator = "laravel.services.command_generator",
   commands_loader = "laravel.loaders.artisan_cache_loader",
   runner = "laravel.services.runner",
@@ -14,7 +20,7 @@ local dump_server = Class({
 })
 
 ---@async
-function dump_server:isInstalled()
+function lib:isInstalled()
   local commands, err = self.commands_loader:load()
   if err then
     return false, "Could not load artisan commands: " .. err
@@ -26,7 +32,7 @@ function dump_server:isInstalled()
 end
 
 ---@async
-function dump_server:install()
+function lib:install()
   local isInstalled, err = self:isInstalled()
   if err then
     notify.error("Could not check if dump server is installed: " .. err)
@@ -41,7 +47,8 @@ function dump_server:install()
   return self.runner:run("composer", { "require", "--dev", "beyondcode/laravel-dump-server" })
 end
 
-function dump_server:start()
+---@async
+function lib:start()
   if self.task:running() then
     notify.info("Server already running")
 
@@ -51,18 +58,20 @@ function dump_server:start()
   local isInstalled, err = self:isInstalled()
   if err then
     notify.error("Could not check if dump server is installed: " .. err)
-    return
+    return false
   end
 
   if not isInstalled then
     notify.error("Dump server not installed")
-    return
+    return false
   end
 
   self:_start()
+
+  return true
 end
 
-function dump_server:_start()
+function lib:_start()
   -- reseting
   self.records = {}
   self.in_header = false
@@ -85,19 +94,19 @@ function dump_server:_start()
   )
 end
 
-function dump_server:stop()
+function lib:stop()
   self.task:stop()
 end
 
-function dump_server:isRunning()
+function lib:isRunning()
   return self.task:running()
 end
 
-function dump_server:getRecords()
+function lib:getRecords()
   return self.records
 end
 
-function dump_server:unseenRecords()
+function lib:unseenRecords()
   return vim
     .iter(self.records)
     :filter(function(record)
@@ -106,11 +115,11 @@ function dump_server:unseenRecords()
     :totable()
 end
 
-function dump_server:markRecordAsSeen(index)
+function lib:markRecordAsSeen(index)
   self.records[index].seen = true
 end
 
-function dump_server:_stdout(err, data)
+function lib:_stdout(err, data)
   if err then
     error(err)
   end
@@ -141,7 +150,7 @@ function dump_server:_stdout(err, data)
         else
           table.insert(self.records[self.current_index].body, line)
           vim.api.nvim_exec_autocmds("user", {
-            pattern = "DumpServerRecord",
+            pattern = events.DUMP_SERVER_RECORD_ADDED,
           })
         end
       end
@@ -149,4 +158,4 @@ function dump_server:_stdout(err, data)
   end
 end
 
-return dump_server
+return lib

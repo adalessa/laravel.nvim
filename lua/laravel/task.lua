@@ -1,4 +1,5 @@
-local notify = require "laravel.utils.notify"
+local notify = require("laravel.utils.notify")
+---@class laravel.task
 local task = {}
 
 function task:new()
@@ -28,11 +29,13 @@ function task:run(command, stdCallback, errCallback)
   self.data = ""
   self.error = ""
 
-  self.commandId = vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
-    callback = function()
-      self:stop()
-    end,
-  })
+  vim.schedule(function()
+    self.commandId = vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
+      callback = function()
+        self:stop()
+      end,
+    })
+  end)
 
   local handle, pid = vim.uv.spawn(
     cmd,

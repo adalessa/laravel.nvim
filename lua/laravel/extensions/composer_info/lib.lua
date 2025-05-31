@@ -1,6 +1,7 @@
 local nio = require("nio")
 local notify = require("laravel.utils.notify")
----@class laravel.extensions.composer_info.service
+
+---@class laravel.extensions.composer_info.lib
 ---@field composer laravel.services.composer
 local composer_info = {}
 
@@ -28,20 +29,20 @@ function composer_info:handle(bufnr)
       notify.error("Could not get composer info: " .. err)
       return
     end
-    local outdates, err = self.composer:outdated()()
+    local outdates, err = self.composer:outdated()
     if err then
       clean(bufnr, ns)
       notify.error("Could not get composer outdated: " .. err)
       return
     end
-    local dependencies, err = self.composer:dependencies(bufnr)
-    if err then
-      clean(bufnr, ns)
-      notify.error("Could not get composer dependencies: " .. err)
-      return
-    end
 
     vim.schedule(function()
+      local dependencies, err = self.composer:dependencies(bufnr)
+      if err then
+        clean(bufnr, ns)
+        notify.error("Could not get composer dependencies: " .. err)
+        return
+      end
       for _, dep in ipairs(dependencies) do
         local info = vim.iter(infos):find(function(inst)
           return dep.name == inst.name

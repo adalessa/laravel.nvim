@@ -37,8 +37,8 @@ function app:whenActive(callback)
 end
 
 -- helper
-function app:command(...)
-  require("laravel.utils.command").command(app, ...)
+function app:addCommand(module, concrete)
+  self:bind(module, concrete or module, { tags = { "laravel.command" } })
 end
 
 -- Binding

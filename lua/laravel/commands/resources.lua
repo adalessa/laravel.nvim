@@ -1,18 +1,14 @@
-local resources = {}
+local app = require("laravel.core.app")
 
-function resources:new(pickers)
-  local instance = {
-    pickers = pickers,
-    command = "resources",
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local command = {
+  signature = "picker:resoruces",
+  description = "Open the resoruces picker",
+}
 
-  return instance
+function command:handle()
+  ---@type laravel.pickers.pickers_manager
+  local pickers = app:make("pickers")
+  pickers:run("resoruces")
 end
 
-function resources:handle()
-  self.pickers:run("resources")
-end
-
-return resources
+return command

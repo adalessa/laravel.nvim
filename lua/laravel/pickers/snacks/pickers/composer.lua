@@ -5,7 +5,7 @@ local Class = require("laravel.utils.class")
 local notify= require("laravel.utils.notify")
 
 local composer_picker = Class({
-  composer_loader = "laravel.loaders.composer_cache_loader",
+  composer_loader = "laravel.loaders.composer_commands_cache_loader",
 })
 
 function composer_picker:run(opts)

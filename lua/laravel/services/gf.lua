@@ -1,7 +1,9 @@
 local Class = require("laravel.utils.class")
 
+---@class laravel.services.gf
 local gf = Class()
 
+---@return false|TSNode, string|nil
 function gf:cursorOnResource()
     local node = vim.treesitter.get_node()
     if not node then

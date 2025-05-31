@@ -1,19 +1,17 @@
-local flush_cache = {}
+local app = require("laravel.core.app")
+local events = require("laravel.events")
 
-function flush_cache:new(cache)
-  local instance = {
-    cache = cache,
-    command = "flush_cache",
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+local flush_cache = {
+  signature = "cache:flush",
+  description = "Flush the plugin cache",
+}
 
 function flush_cache:handle()
-  self.cache:flush()
+  ---@type laravel.services.cache
+  local cache = app:make("laravel.services.cache")
+  cache:flush()
   vim.api.nvim_exec_autocmds("User", {
-    pattern = "LaravelFlushCache",
+    pattern = events.CACHE_FLUSHED,
   })
 end
 

@@ -1,18 +1,14 @@
-local view = {}
+local app = require("laravel.core.app")
 
-function view:new(view_finder)
-  local instance = {
-    finder = view_finder,
-    command = "view_finder",
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local command = {
+  signature = "view:finder",
+  description = "Go to view or definition",
+}
 
-  return instance
+function command:handle()
+  ---@type laravel.services.view_finder
+  local finder = app:make("laravel.services.view_finder")
+  finder:handle(vim.api.nvim_get_current_buf())
 end
 
-function view:handle()
-  self.finder:handle(vim.api.nvim_get_current_buf())
-end
-
-return view
+return command

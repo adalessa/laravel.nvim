@@ -1,21 +1,17 @@
 local Popup = require("nui.popup")
 local Layout = require("nui.layout")
+local Class = require("laravel.utils.class")
 
-local ui = {}
-
-function ui:new(dump_server)
-  local instance = {
-    service = dump_server,
-    instance = nil,
-    dump_tree = nil,
-    dump_preview = nil,
-    current_index = nil,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.extensions.dump_server.ui
+---@field service laravel.extensions.dump_server.lib
+local ui = Class({
+  service = "laravel.extensions.dump_server.lib",
+}, {
+  instance = nil,
+  dump_tree = nil,
+  dump_preview = nil,
+  current_index = nil,
+})
 
 function ui:_create_layout()
   self.dump_tree, self.dump_preview =
@@ -129,21 +125,24 @@ function ui:update()
   end)
 end
 
+---@async
 function ui:open()
   if not self.instance then
     if not self.service:isRunning() then
-      self.service
-        :start()
-        :thenCall(function()
+      local res = self.service:start()
+      if res then
+        vim.schedule(function()
           self:_create_layout()
           self:update()
           self.instance:mount()
         end)
-        :catch(function() end)
+      end
     else
-      self:_create_layout()
-      self:update()
-      self.instance:mount()
+      vim.schedule(function()
+        self:_create_layout()
+        self:update()
+        self.instance:mount()
+      end)
     end
   end
 end
@@ -153,6 +152,7 @@ function ui:close()
   self.instance = nil
 end
 
+---@async
 function ui:toggle()
   if self.instance then
     self:close()

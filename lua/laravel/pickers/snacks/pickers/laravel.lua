@@ -1,53 +1,43 @@
-local laravel_picker = {
-  _inject = {
-    commands = "user_commands",
-  },
-}
+local Class = require("laravel.utils.class")
 
-function laravel_picker:new(commands)
-  local instance = {
-    commands = commands,
-  }
-  setmetatable(instance, laravel_picker)
-  laravel_picker.__index = laravel_picker
-  return instance
-end
+local laravel_picker = Class({
+  commands = "laravel.commands",
+})
 
-function laravel_picker:items()
-  return vim
+function laravel_picker:run()
+  local max_text_length = 0
+  for _, command in ipairs(self.commands) do
+    max_text_length = math.max(max_text_length, #command.signature)
+  end
+
+  local items = vim
     .iter(self.commands)
-    :map(function(command)
-      if type(command.command) == "string" then
-        return { command.command }
-      elseif type(command.commands) == "table" then
-        return command.commands
-      end
-      return command:commands()
-    end)
-    :flatten()
     :map(function(command)
       return {
         value = command,
-        text = command,
+        text = command.signature,
       }
     end)
     :totable()
-end
+  table.sort(items, function(a, b)
+    return a.text < b.text
+  end)
 
-function laravel_picker:run()
   Snacks.picker.pick({
     title = "Laravel Commands",
     layout = "vscode",
-    items = self:items(),
+    items = items,
     format = function(item)
+      local padding = string.rep(" ", max_text_length - #item.text + 4) -- 4 spaces for alignment
       return {
-        { item.text, "@string" },
+        { item.text .. padding, "@string" },
+        { item.value.description, "@comment" },
       }
     end,
     confirm = function(picker, item)
       picker:close()
       if item then
-        vim.api.nvim_command("Laravel " .. item.value)
+        item.value:handle()
       end
     end,
   })

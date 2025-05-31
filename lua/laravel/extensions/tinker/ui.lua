@@ -2,22 +2,15 @@ local Popup = require("nui.popup")
 local Layout = require("nui.layout")
 local NuiText = require("nui.text")
 local NuiLine = require("nui.line")
+local Class = require("laravel.utils.class")
 
-local ui = {}
-
--- this as the dump server will take care of the ui interactions
-function ui:new()
-  local instance = {
-    instance = nil,
-    editor = nil,
-    result = nil,
-    callback = nil,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.extensions.tinker.ui
+local ui = Class({}, {
+  instance = nil,
+  editor = nil,
+  result = nil,
+  callback = nil,
+})
 
 function ui:_create_layout(bufnr, name, callback)
   local title = NuiLine()

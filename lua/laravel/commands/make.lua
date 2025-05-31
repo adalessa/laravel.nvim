@@ -1,18 +1,14 @@
-local make = {}
+local app = require("laravel.core.app")
 
-function make:new(pickers)
-  local instance = {
-    pickers = pickers,
-    command = "make",
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local commmand = {
+  signature = "picker:make",
+  description = "Open the make picker (artisan only make ones)",
+}
 
-  return instance
+function commmand:handle()
+  ---@type laravel.pickers.pickers_manager
+  local pickers = app:make("pickers")
+  pickers:run("make")
 end
 
-function make:handle()
-  self.pickers:run("make")
-end
-
-return make
+return commmand

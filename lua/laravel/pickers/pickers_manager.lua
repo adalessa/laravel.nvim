@@ -16,7 +16,7 @@ local nio = require("nio")
 -- check laravel/providers/telescope_providers.lua
 -- for reference
 
----@class LaravelPickersManager
+---@class laravel.pickers.pickers_manager
 ---@field _enable boolean
 ---@field provider {}
 local pickers_manager = {

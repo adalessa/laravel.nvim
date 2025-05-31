@@ -2,7 +2,12 @@ local Class = require("laravel.utils.class")
 local nio = require("nio")
 local notify = require("laravel.utils.notify")
 
----@class laravel.extensions.route_info.service
+local clean = vim.schedule_wrap(function(bufnr, namespace)
+  vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
+  vim.diagnostic.reset(namespace, bufnr)
+end)
+
+---@class laravel.extensions.route_info.lib
 ---@field class laravel.services.class
 ---@field routes_loader laravel.loaders.routes_cache_loader
 ---@field route_info_view table
@@ -10,7 +15,7 @@ local notify = require("laravel.utils.notify")
 local route_info = Class({
   class = "laravel.services.class",
   routes_loader = "laravel.loaders.routes_cache_loader",
-  route_info_view = "route_info_view",
+  route_info_view = "laravel.extensions.route_info.view_factory",
 }, {
   display_status = {},
 })
@@ -35,15 +40,9 @@ function route_info:refresh(bufnr)
     self:handle(bufnr)
   else
     local namespace = vim.api.nvim_create_namespace("laravel.routes")
-    vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-    vim.diagnostic.reset(namespace, bufnr)
+    clean(bufnr, namespace)
   end
 end
-
-local clean = vim.schedule_wrap(function(bufnr, namespace)
-  vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-  vim.diagnostic.reset(namespace, bufnr)
-end)
 
 function route_info:handle(bufnr)
   local namespace = vim.api.nvim_create_namespace("laravel.routes")

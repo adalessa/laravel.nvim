@@ -1,10 +1,12 @@
 ---@class laravel.providers.provider
+---@field name string
 ---@field register fun(app: laravel.core.app): nil
 ---@field boot fun(app: laravel.core.app): nil
 
 ---@class laravel.providers.laravel_provider: laravel.providers.provider
 local laravel_provider = { name = "laravel.providers.laravel_provider" }
 
+---@param app laravel.core.app
 function laravel_provider:register(app)
   app:alias("api", "laravel.services.api")
   app:alias("tinker", "laravel.services.tinker")
@@ -21,8 +23,14 @@ function laravel_provider:register(app)
   app:alias("gf", "laravel.services.gf")
 
   app:singletonIf("history", "laravel.services.history")
-  app:command("history", function()
-    app("pickers"):run("history")
+  app:addCommand("laravel.commands.history", function()
+    return {
+      signature = "pickers:history",
+      description = "Show the command history",
+      handle = function()
+        app:make("pickers"):run("history")
+      end,
+    }
   end)
 
   app:singletonIf("laravel.services.cache")
@@ -34,11 +42,18 @@ function laravel_provider:register(app)
   app:singletonIf("laravel.core.config", function()
     return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
   end)
-  app:command("configure", function()
-    app("laravel.core.env"):configure()
+  app:addCommand("laravel.commands.configure", function()
+    return {
+      signature = "env:configure",
+      description = "Configure Laravel.nvim environment",
+      handle = function()
+        app("laravel.core.env"):configure()
+      end,
+    }
   end)
 end
 
+---@param app laravel.core.app
 function laravel_provider:boot(app)
   app:make("env"):boot()
 
@@ -60,6 +75,11 @@ function laravel_provider:boot(app)
       app("history"):add(ev.data.job_id, ev.data.cmd, ev.data.args, ev.data.options)
     end,
   })
+
+  -- Add the runner to the global
+  Laravel.run = function(...)
+    return app("runner"):run(...)
+  end
 end
 
 return laravel_provider

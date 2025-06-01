@@ -1,3 +1,4 @@
+local nio = require "nio"
 local M = {}
 
 function M.runRipgrep(pattern)
@@ -5,7 +6,7 @@ function M.runRipgrep(pattern)
   local rg_command = string.format('rg --vimgrep "%s"', pattern)
 
   -- Run the command and capture the output
-  local result = vim.fn.systemlist(rg_command)
+  local result = nio.fn.systemlist(rg_command)
 
   -- Process the result
   local matches = {}

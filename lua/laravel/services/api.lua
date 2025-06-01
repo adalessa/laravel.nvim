@@ -34,18 +34,19 @@ function api:run(program, args)
   return ApiResponse:new(vim.split(output or "", "\n"), nil, errs)
 end
 
----@param program string
----@param args string[]
----@return laravel.dto.apiResponse, string?
-function api:runSync(program, args)
-  local cmd = self.command_generator:generate(program, args)
-  if not cmd then
-    return {}, string.format("Command %s not found", program)
-  end
-
-  local out = vim.system(cmd, {}):wait()
-
-  return ApiResponse:new({ out.stdout }, out.code, { out.stderr })
-end
+-- TODO delete
+-- ---@param program string
+-- ---@param args string[]
+-- ---@return laravel.dto.apiResponse, string?
+-- function api:runSync(program, args)
+--   local cmd = self.command_generator:generate(program, args)
+--   if not cmd then
+--     return {}, string.format("Command %s not found", program)
+--   end
+--
+--   local out = vim.system(cmd, {}):wait()
+--
+--   return ApiResponse:new({ out.stdout }, out.code, { out.stderr })
+-- end
 
 return api

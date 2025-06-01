@@ -21,7 +21,9 @@ function model_info_provider:boot(app)
         return
       end
 
-      app("laravel.extensions.model_info.lib"):handle(ev.buf)
+      ---@type laravel.extensions.model_info.lib
+      local lib = app("laravel.extensions.model_info.lib")
+      lib:handle(ev.buf)
     end),
   })
 end

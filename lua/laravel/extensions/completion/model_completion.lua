@@ -24,30 +24,28 @@ function model_completion.complete(templates, params, callback)
       },
     }, params.context.bufnr, {})
     if response and response.uri then
-      vim.schedule(function()
-        local bufnr = vim.uri_to_bufnr(response.uri)
-        vim.fn.bufload(bufnr)
-        nio.run(function()
-          local model, err = Laravel.app("laravel.services.cache"):remember("completion_model_" .. bufnr, 60, function()
-            return Laravel.app("laravel.services.model"):getByBuffer(bufnr)
-          end)
+      local bufnr = vim.uri_to_bufnr(response.uri)
+      nio.fn.bufload(bufnr)
+      local model, err = Laravel.app("laravel.services.cache"):remember("completion_model_" .. bufnr, 60, function()
+        return Laravel.app("laravel.services.model"):getByBuffer(bufnr)
+      end)
 
-          if err then
-            return callback({
-              items = {},
-              isIncomplete = false,
-            })
-          end
+      if err then
+        return callback({
+          items = {},
+          isIncomplete = false,
+        })
+      end
 
-          local items = vim
-            .iter(model.attributes)
-            :map(function(attribute)
-              return {
-                label = attribute.name,
-                insertText = attribute.name,
-                kind = vim.lsp.protocol.CompletionItemKind["Property"],
-                documentation = string.format(
-                  [[
+      local items = vim
+        .iter(model.attributes)
+        :map(function(attribute)
+          return {
+            label = attribute.name,
+            insertText = attribute.name,
+            kind = vim.lsp.protocol.CompletionItemKind["Property"],
+            documentation = string.format(
+              [[
 ### Property: `%s`
 
 - **Type**: `%s`
@@ -58,26 +56,23 @@ function model_completion.complete(templates, params, callback)
 - **Nullable**: `%s`
 - **Unique**: `%s`
 ]],
-                  attribute.name or "N/A",
-                  attribute.type or "N/A",
-                  attribute.cast or "N/A",
-                  tostring(attribute.fillable),
-                  tostring(attribute.hidden),
-                  tostring(attribute.increments),
-                  tostring(attribute.nullable),
-                  tostring(attribute.unique)
-                ),
-              }
-            end)
-            :totable()
-
-          return callback({
-            items = items,
-            isIncomplete = false,
-          })
+              attribute.name or "N/A",
+              attribute.type or "N/A",
+              attribute.cast or "N/A",
+              tostring(attribute.fillable),
+              tostring(attribute.hidden),
+              tostring(attribute.increments),
+              tostring(attribute.nullable),
+              tostring(attribute.unique)
+            ),
+          }
         end)
-      end)
-      return
+        :totable()
+
+      return callback({
+        items = items,
+        isIncomplete = false,
+      })
     end
     return callback({
       items = {},

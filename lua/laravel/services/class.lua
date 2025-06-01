@@ -1,3 +1,4 @@
+local nio = require "nio"
 local get_node_text = vim.treesitter.get_node_text
 
 ---@class laravel.dto.class
@@ -10,6 +11,13 @@ local get_node_text = vim.treesitter.get_node_text
 
 ---@class laravel.services.class
 local class = {}
+
+class.getByBuffer = nio.wrap(function(self, bufnr, cb)
+  vim.schedule(function()
+    local cls, err = self:get(bufnr)
+    cb(cls, err)
+  end)
+end, 3)
 
 ---@async
 ---@param bufnr number

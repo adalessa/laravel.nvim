@@ -32,7 +32,9 @@ return function(on_submit, on_change)
   }, {
     prompt = "> ",
     on_submit = on_submit,
-    on_change = on_change,
+    on_change = function(value)
+      on_change(value, details_popup)
+    end,
   })
 
   local boxes = {
@@ -41,10 +43,13 @@ return function(on_submit, on_change)
   }
 
   local layout = Layout({
-    position = "50%",
+    position = {
+      row = "10%",
+      col = "50%",
+    },
     size = {
       width = "80%",
-      height = "90%",
+      height = "35%",
     },
     relative = "editor",
   }, Layout.Box(boxes, { dir = "col" }))

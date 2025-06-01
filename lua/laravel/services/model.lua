@@ -16,7 +16,7 @@ local model = Class({
 
 ---@async
 function model:getByBuffer(bufnr)
-  local class, err = self.class:get(bufnr)
+  local class, err = self.class:getByBuffer(bufnr)
   if err then
     return {}, "Error getting the class: " .. err
   end

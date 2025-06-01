@@ -1,6 +1,6 @@
 local phpactor = require("laravel._lsp.phpactor")
 local intelephense = require("laravel._lsp.intelephense")
-local app = require("laravel").app
+local app = require("laravel.core.app")
 local notify = require("laravel.utils.notify")
 
 local servers = {
@@ -39,7 +39,7 @@ end
 ---@param full_class string
 ---@param method string
 local go_to = function(full_class, method)
-  local server_name = app("options"):get().lsp_server
+  local server_name = app("laravel.services.config").get('lsp_server')
 
   local server = servers[server_name]
   if server == nil then

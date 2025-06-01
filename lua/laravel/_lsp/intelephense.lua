@@ -34,7 +34,7 @@ local function go_to(client, is_new_instance, full_class, method)
 
   lsp_utils.open_filename(vim.uri_to_fname(class_location.location.uri))
 
-  local params = vim.lsp.util.make_position_params(0)
+  local params = vim.lsp.util.make_position_params(0, 'utf-8')
   if is_new_instance then
     vim.lsp.buf_attach_client(0, client.id)
   end
@@ -48,7 +48,7 @@ local function go_to(client, is_new_instance, full_class, method)
       return
     end
 
-    local method_locations = vim.lsp.util.symbols_to_items(method_server_result or {}, 0) or {}
+    local method_locations = vim.lsp.util.symbols_to_items(method_server_result or {}, 0, 'utf-8') or {}
     if vim.tbl_isempty(method_locations) then
       notify.warn(string.format("empty response looking for method: %s", method or "__invoke"))
       if is_new_instance then

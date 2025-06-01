@@ -47,7 +47,6 @@ function model_completion.complete(templates, params, callback)
             documentation = string.format(
               [[
 ### Property: `%s`
-
 - **Type**: `%s`
 - **Cast**: `%s`
 - **Fillable**: `%s`

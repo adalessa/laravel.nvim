@@ -1,12 +1,59 @@
 local nio = require("nio")
 local model_completion = {}
 
+local function getPosition(params)
+  local beforeLine = params.context.cursor_before_line
+  local cursor = params.context.cursor
+
+  --- Need to support
+  --- Tip::where(
+  --- Tip::query()->where(
+  --- $tip->query()->where(
+
+  --- Handle static method calls like Tip::where(
+  local staticMethodPosition = beforeLine:match(".*()::where%(")
+  if type(staticMethodPosition) == "number" and staticMethodPosition ~= 0 then
+    return {
+      character = staticMethodPosition - 1,
+      line = cursor.line,
+    }
+  end
+
+  --- Handle static method chains like Tip::query()->where(
+  local staticChainPosition = beforeLine:match(".*()::query%(%)%->where%(")
+  if type(staticChainPosition) == "number" and staticChainPosition ~= 0 then
+    return {
+      character = staticChainPosition - 1,
+      line = cursor.line,
+    }
+  end
+
+  --- Handle method chains on objects like $tip->query()->where(
+  local objectChainPosition = beforeLine:match(".*()%->query%(%)%->where%(")
+  if type(objectChainPosition) == "number" and objectChainPosition ~= 0 then
+    return {
+      character = objectChainPosition - 1,
+      line = cursor.line,
+    }
+  end
+
+  --- This auto complete this case should be always the last
+  --- $tip->
+  local lastDashPosition = beforeLine:match(".*()%->")
+  if type(lastDashPosition) == "number" and lastDashPosition ~= 0 then
+    return {
+      character = lastDashPosition - 1,
+      line = cursor.line,
+    }
+  end
+
+  return nil
+end
+
 function model_completion.complete(templates, params, callback)
   nio.run(function()
-    local beforeLine = params.context.cursor_before_line
-    local cursor = params.context.cursor
-    local lastDashPosition = beforeLine:match(".*()-")
-    if type(lastDashPosition) ~= "number" or lastDashPosition == 0 then
+    local position = getPosition(params)
+    if not position then
       return callback({
         items = {},
         isIncomplete = false,
@@ -18,10 +65,7 @@ function model_completion.complete(templates, params, callback)
       textDocument = {
         uri = vim.uri_from_bufnr(params.context.bufnr),
       },
-      position = {
-        character = lastDashPosition - 1,
-        line = cursor.line,
-      },
+      position = position,
     }, params.context.bufnr, {})
     if response and response.uri then
       local bufnr = vim.uri_to_bufnr(response.uri)
@@ -38,12 +82,12 @@ function model_completion.complete(templates, params, callback)
       end
 
       local items = vim
-        .iter(model.attributes)
+        .iter(model.attributes or {})
         :map(function(attribute)
           return {
             label = attribute.name,
             insertText = attribute.name,
-            kind = vim.lsp.protocol.CompletionItemKind["Property"],
+            kind = vim.lsp.protocol.CompletionItemKind["Field"],
             documentation = string.format(
               [[
 ### Property: `%s`

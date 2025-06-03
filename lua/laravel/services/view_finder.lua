@@ -16,7 +16,7 @@ local view_finder = Class({
 function view_finder:usage(view)
   local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
   if #matches == 0 then
-    notify.warn("No usage of this view found")
+    notify.warn("No usage of this view found: " .. view)
   elseif #matches == 1 then
     vim.cmd("edit " .. matches[1].file)
   else
@@ -50,15 +50,15 @@ end
 function view_finder:handle(bufnr)
   local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
   if ft == "blade" then
-    local name, err = self.views_service:nameFromPath(vim.uri_to_fname(vim.uri_from_bufnr(bufnr)))
+    local fname = vim.uri_to_fname(vim.uri_from_bufnr(bufnr))
+    local name, err = self.views_service:nameFromPath(fname)
     if err then
-      notify.error(err)
+      notify.error(string.format("Failed to get view name: %s for %s", err, fname))
       return
     end
 
     self:usage(name)
-  end
-  if ft == "php" then
+  elseif ft == "php" then
     local views, err = self.class_service:views(bufnr)
     if err then
       notify.error(err)

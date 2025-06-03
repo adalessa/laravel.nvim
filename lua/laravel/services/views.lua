@@ -24,7 +24,9 @@ function views:nameFromPath(path)
   if err then
     return "", "Failed to get views directory: " .. err
   end
-  return path:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", ".")
+  local name = path:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", "."):gsub("^%.", "")
+
+  return name
 end
 
 return views

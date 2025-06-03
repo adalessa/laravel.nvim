@@ -37,9 +37,9 @@ function composer_info:handle(bufnr)
     end
 
     vim.schedule(function()
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       local dependencies, err = self.composer:dependencies(bufnr)
       if err then
-        clean(bufnr, ns)
         notify.error("Could not get composer dependencies: " .. err)
         return
       end

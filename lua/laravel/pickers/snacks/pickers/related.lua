@@ -24,7 +24,7 @@ function related_picker:run(opts)
         :map(function(item)
           return {
             value = item,
-            text = string.format("%s %s %s", item.class_name, item.type, item.extra_information),
+            text = string.format("%s %s %s", item.class, item.type, item.extra_information),
           }
         end)
         :totable(),

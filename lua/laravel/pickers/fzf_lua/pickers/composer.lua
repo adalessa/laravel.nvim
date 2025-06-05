@@ -1,26 +1,22 @@
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
+
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_composer
 local actions = require("laravel.pickers.common.actions")
 local fzf_exec = require("fzf-lua").fzf_exec
 local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").ComposerPreviewer
 
----@class LaravelFzfLuaComposerPicker
----@field composer_repository ComposerRepository
-local ui_composer_picker = {}
+local composer_picker = Class({
+  composer_loader = "laravel.loaders.composer_commands_cache_loader",
+})
 
-function ui_composer_picker:new(composer_repository)
-  local instance = {
-    composer_repository = composer_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+function composer_picker:run()
+  local commands, err = self.composer_loader:load()
+  if err then
+    return notify.error("Failed to load composer commands: " .. err)
+  end
 
-  return instance
-end
-
-function ui_composer_picker:run(opts)
-  opts = opts or {}
-
-  return self.composer_repository:all():thenCall(function(commands)
+  vim.schedule(function()
     local command_names, command_table = format_entry(commands)
 
     fzf_exec(command_names, {
@@ -36,9 +32,7 @@ function ui_composer_picker:run(opts)
         ["--preview-window"] = "nohidden,70%",
       },
     })
-  end, function(error)
-    vim.api.nvim_err_writeln(error)
   end)
 end
 
-return ui_composer_picker
+return composer_picker

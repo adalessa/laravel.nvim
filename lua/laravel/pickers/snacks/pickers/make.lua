@@ -3,21 +3,23 @@ local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
 local is_make_command = require("laravel.utils.init").is_make_command
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
-local make_picker = {}
-
-function make_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.snacks.make
+---@field commands_loader laravel.loaders.artisan_cache_loader
+local make_picker = Class({
+  commands_loader = "laravel.loaders.artisan_cache_loader",
+})
 
 function make_picker:run(opts)
-  return self.commands_repository:all():thenCall(function(commands)
+  local commands, err = self.commands_loader:load()
+  if err then
+    notify.error("Failed to load artisan commands: " .. err)
+    return
+  end
+
+  vim.schedule(function()
     snacks.pick(vim.tbl_extend("force", {
       title = "Artisan Commands",
       items = vim

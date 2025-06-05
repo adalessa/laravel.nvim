@@ -4,23 +4,20 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local preview = require("laravel.pickers.common.preview")
 local actions = require("laravel.pickers.telescope.actions")
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
----@class LaravelComposerPicker
----@field composer_repository ComposerRepository
-local composer_picker = {}
-
-function composer_picker:new(composer_repository)
-  local instance = {
-    composer_repository = composer_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local composer_picker = Class({
+  composer_loader = "laravel.loaders.composer_commands_cache_loader",
+})
 
 function composer_picker:run(opts)
-  return self.composer_repository:all():thenCall(function(commands)
+  local commands, err = self.composer_loader:load()
+  if err then
+    return notify.error("Failed to load composer commands: " .. err)
+  end
+
+  vim.schedule(function()
     pickers
       .new(opts or {}, {
         prompt_title = "Composer commands",
@@ -58,8 +55,6 @@ function composer_picker:run(opts)
         end,
       })
       :find()
-  end, function(error)
-    vim.api.nvim_err_writeln(error)
   end)
 end
 

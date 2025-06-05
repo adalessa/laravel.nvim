@@ -1,28 +1,26 @@
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 local fzf_exec = require("fzf-lua").fzf_exec
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_routes
 local actions = require("laravel.pickers.common.actions")
 local RoutePreviewer = require("laravel.pickers.fzf_lua.previewer").RoutePreviewer
 
----@class LaravelFzfLuaRoutesPicker
----@field routes_repository RoutesRepository
-local routes_picker = {}
+---@class laravel.pickers.fzf_lua.routes
+---@field routes_loader laravel.loaders.routes_cache_loader
+local routes_picker = Class({
+  routes_loader = "laravel.loaders.routes_cache_loader",
+})
 
-function routes_picker:new(cache_routes_repository)
-  local instance = {
-    routes_repository = cache_routes_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+function routes_picker:run()
+  local routes, err = self.routes_loader:load()
+  if err then
+    notify.error("Failed to load routes: " .. err)
+    return
+  end
 
-  return instance
-end
+  local route_names, route_table = format_entry(routes)
 
-function routes_picker:run(opts)
-  opts = opts or {}
-
-  self.routes_repository:all():thenCall(function(routes)
-    local route_names, route_table = format_entry(routes)
-
+  vim.schedule(function()
     fzf_exec(route_names, {
       actions = {
         ["default"] = function(selected)

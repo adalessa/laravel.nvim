@@ -5,10 +5,11 @@ local function getPosition(params)
   local beforeLine = params.context.cursor_before_line
   local cursor = params.context.cursor
 
-  --- Need to support
-  --- Tip::where(
-  --- Tip::query()->where(
-  --- $tip->query()->where(
+  --- Need to support the following multiline
+  --- $tip->query()
+  ---     ->where(
+  --- Tip::query()
+  ---     ->where(
 
   --- Handle static method calls like Tip::where(
   local staticMethodPosition = beforeLine:match(".*()::where%(")
@@ -50,46 +51,46 @@ local function getPosition(params)
   return nil
 end
 
+---@async
 function model_completion.complete(templates, params, callback)
-  nio.run(function()
-    local position = getPosition(params)
-    if not position then
+  local position = getPosition(params)
+  if not position then
+    return callback({
+      items = {},
+      isIncomplete = false,
+    })
+  end
+
+  local client = nio.lsp.get_clients({ name = "phpactor" })[1]
+  local err, response = client.request.textDocument_typeDefinition({
+    textDocument = {
+      uri = vim.uri_from_bufnr(params.context.bufnr),
+    },
+    position = position,
+  }, params.context.bufnr, {})
+  if response and response.uri then
+    local bufnr = vim.uri_to_bufnr(response.uri)
+    nio.fn.bufload(bufnr)
+    local model, err = Laravel.app("laravel.services.cache"):remember("completion_model_" .. bufnr, 60, function()
+      return Laravel.app("laravel.services.model"):getByBuffer(bufnr)
+    end)
+
+    if err then
       return callback({
         items = {},
         isIncomplete = false,
       })
     end
 
-    local client = nio.lsp.get_clients({ name = "phpactor" })[1]
-    local err, response = client.request.textDocument_typeDefinition({
-      textDocument = {
-        uri = vim.uri_from_bufnr(params.context.bufnr),
-      },
-      position = position,
-    }, params.context.bufnr, {})
-    if response and response.uri then
-      local bufnr = vim.uri_to_bufnr(response.uri)
-      nio.fn.bufload(bufnr)
-      local model, err = Laravel.app("laravel.services.cache"):remember("completion_model_" .. bufnr, 60, function()
-        return Laravel.app("laravel.services.model"):getByBuffer(bufnr)
-      end)
-
-      if err then
-        return callback({
-          items = {},
-          isIncomplete = false,
-        })
-      end
-
-      local items = vim
-        .iter(model.attributes or {})
-        :map(function(attribute)
-          return {
-            label = attribute.name,
-            insertText = attribute.name,
-            kind = vim.lsp.protocol.CompletionItemKind["Field"],
-            documentation = string.format(
-              [[
+    local items = vim
+      .iter(model.attributes or {})
+      :map(function(attribute)
+        return {
+          label = attribute.name,
+          insertText = attribute.name,
+          kind = vim.lsp.protocol.CompletionItemKind["Field"],
+          documentation = string.format(
+            [[
 ### Property: `%s`
 - **Type**: `%s`
 - **Cast**: `%s`
@@ -99,29 +100,28 @@ function model_completion.complete(templates, params, callback)
 - **Nullable**: `%s`
 - **Unique**: `%s`
 ]],
-              attribute.name or "N/A",
-              attribute.type or "N/A",
-              attribute.cast or "N/A",
-              tostring(attribute.fillable),
-              tostring(attribute.hidden),
-              tostring(attribute.increments),
-              tostring(attribute.nullable),
-              tostring(attribute.unique)
-            ),
-          }
-        end)
-        :totable()
+            attribute.name or "N/A",
+            attribute.type or "N/A",
+            attribute.cast or "N/A",
+            tostring(attribute.fillable),
+            tostring(attribute.hidden),
+            tostring(attribute.increments),
+            tostring(attribute.nullable),
+            tostring(attribute.unique)
+          ),
+        }
+      end)
+      :totable()
 
-      return callback({
-        items = items,
-        isIncomplete = false,
-      })
-    end
     return callback({
-      items = {},
+      items = items,
       isIncomplete = false,
     })
-  end)
+  end
+  return callback({
+    items = {},
+    isIncomplete = false,
+  })
 end
 
 function model_completion.shouldComplete(_)

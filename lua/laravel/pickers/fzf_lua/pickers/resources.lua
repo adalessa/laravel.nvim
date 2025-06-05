@@ -1,21 +1,13 @@
 local fzf_exec = require("fzf-lua").fzf_exec
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_artisan
-local notify       = require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
 
-local resources_picker = {}
-function resources_picker:new(options)
-  local instance = {
-    options = options,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+local resources_picker = Class({
+  config = "laravel.services.config",
+})
 
-  return instance
-end
-
-function resources_picker:run(opts)
-  opts = opts or {}
-
+function resources_picker:run()
   local resources = {}
   for name, path in pairs(self.options:get("resources")) do
     if vim.fn.isdirectory(path) == 1 then

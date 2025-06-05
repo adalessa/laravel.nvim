@@ -4,25 +4,18 @@ local previewers = require("telescope.previewers")
 local conf = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
-local notify       = require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
 
-local resources_picker = {}
-
-function resources_picker:new(options)
-  local instance = {
-    options = options,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+local resources_picker = Class({
+  config = "laravel.services.config",
+})
 
 function resources_picker:run(opts)
   opts = opts or {}
 
   local resources = {}
-  for name, path in pairs(self.options:get("resources")) do
+  for name, path in pairs(self.config.get("resources")) do
     if vim.fn.isdirectory(path) == 1 then
       table.insert(resources, {
         name = name,

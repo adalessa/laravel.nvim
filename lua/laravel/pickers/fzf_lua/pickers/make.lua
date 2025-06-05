@@ -1,36 +1,35 @@
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
+
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_artisan
 local is_make_command = require("laravel.utils.init").is_make_command
 local actions = require("laravel.pickers.common.actions")
 local fzf_exec = require("fzf-lua").fzf_exec
 local CommandPreviewer = require("laravel.pickers.fzf_lua.previewer").CommandPreviewer
 
----@class LaravelFzfLuaMakePicker
----@field commands_repository laravel.repositories.artisan_commands
-local make_picker = {}
+---@class laravel.pickers.fzf_lua.make
+---@field commands_loader laravel.loaders.artisan_cache_loader
+local make_picker = Class({
+  commands_loader = "laravel.loaders.artisan_cache_loader",
+})
 
-function make_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+function make_picker:run()
+  local commands, err = self.commands_loader:load()
+  if err then
+    notify.error("Failed to load artisan commands: " .. err)
+    return
+  end
 
-  return instance
-end
+  local cmds = vim
+    .iter(commands)
+    :filter(function(command)
+      return is_make_command(command.name)
+    end)
+    :totable()
 
-function make_picker:run(opts)
-  opts = opts or {}
+  local command_names, command_table = format_entry(cmds)
 
-  self.commands_repository:all():thenCall(function(commands)
-    local cmds = vim
-      .iter(commands)
-      :filter(function(command)
-        return is_make_command(command.name)
-      end)
-      :totable()
-
-    local command_names, command_table = format_entry(cmds)
-
+  vim.schedule(function()
     fzf_exec(command_names, {
       actions = {
         ["default"] = function(selected)

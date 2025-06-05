@@ -46,8 +46,10 @@ end
 
 M.related = function(item, _)
   return {
-    { item.value.class_name, "@string" },
+    { item.value.class, "@string" },
+    { " ", "@string" },
     { item.value.type, "@keyword" },
+    { " ", "@string" },
     { item.value.extra_information or "", "@string" },
   }
 end

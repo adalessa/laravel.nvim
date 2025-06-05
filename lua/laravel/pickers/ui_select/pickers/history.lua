@@ -1,20 +1,19 @@
-local app = require("laravel").app
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
-local history_picker = {}
+local history_picker = Class({
+  history_service = "laravel.services.history",
+  runner = "laravel.services.runner",
+})
 
-function history_picker:new(history)
-  local instance = {
-    history_provider = history,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+function history_picker:run()
+  local items = self.history_service:get()
+  if #items == 0 then
+    notify.warn("No history available")
+    return
+  end
 
-function history_picker:run(opts)
-  opts = opts or {}
-
-  vim.ui.select(self.history_provider:get(), {
+  vim.ui.select(items, {
     prompt = "History",
     format_item = function(history_entry)
       return string.format("%s %s", history_entry.name, table.concat(history_entry.args, " "))
@@ -22,7 +21,7 @@ function history_picker:run(opts)
     kind = "history",
   }, function(command)
     if command ~= nil then
-      app("runner"):run(command.name, command.args, command.opts)
+      self.runner:run(command.name, command.args, command.opts)
     end
   end)
 end

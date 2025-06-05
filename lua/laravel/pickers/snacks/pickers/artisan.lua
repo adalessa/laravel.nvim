@@ -2,7 +2,7 @@ local Class = require("laravel.utils.class")
 local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
-local notify       = require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.snacks.artisan
 ---@field commands_loader laravel.loaders.artisan_cache_loader

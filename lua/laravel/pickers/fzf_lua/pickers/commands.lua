@@ -1,23 +1,21 @@
+local Class = require("laravel.utils.class")
+
 local format_entry = require("laravel.pickers.fzf_lua.format_entry").gen_from_commands
 local fzf_exec = require("fzf-lua").fzf_exec
 
-local commands_picker = {}
-
-function commands_picker:new(runner, user_commands_repository)
-  local instance = {
-    runner = runner,
-    user_commands_repository = user_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.fzf_lua.commands
+---@field runner laravel.services.runner
+---@field commands_loader laravel.loaders.user_commands_loader
+local commands_picker = Class({
+  runner = "laravel.services.runner",
+  commands_loader = "laravel.loaders.user_commands_loader",
+})
 
 function commands_picker:run(opts)
-  self.user_commands_repository:all():thenCall(function(commands)
-    local command_names, command_table = format_entry(commands)
+  local commands = self.commands_loader:load()
+  local command_names, command_table = format_entry(commands)
 
+  vim.schedule(function()
     fzf_exec(
       command_names,
       vim.tbl_extend("force", {

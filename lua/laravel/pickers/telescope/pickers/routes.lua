@@ -5,25 +5,25 @@ local previewers = require("telescope.previewers")
 local preview = require("laravel.pickers.common.preview")
 local make_entry = require("laravel.pickers.telescope.make_entry")
 local actions = require("laravel.pickers.telescope.actions")
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
----@class LaravelRoutesPicker
----@field routes_repository RoutesRepository
-local routes_picker = {}
-
-function routes_picker:new(cache_routes_repository)
-  local instance = {
-    routes_repository = cache_routes_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.telescope.routes
+---@field routes_loader laravel.loaders.routes_cache_loader
+local routes_picker = Class({
+  routes_loader = "laravel.loaders.routes_cache_loader",
+})
 
 function routes_picker:run(opts)
   opts = opts or {}
 
-  self.routes_repository:all():thenCall(function(routes)
+  local routes, err = self.routes_loader:load()
+  if err then
+    notify.error("Failed to load routes: " .. err)
+    return
+  end
+
+  vim.schedule(function()
     pickers
       .new(opts, {
         prompt_title = "Artisan Routes",

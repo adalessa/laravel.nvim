@@ -1,23 +1,18 @@
 local actions = require("laravel.pickers.common.actions")
+local notify = require("laravel.utils.notify")
+local Class = require("laravel.utils.class")
 
----@class LaravelUISelectComposerPicker
----@field composer_repository ComposerRepository
-local ui_artisan_picker = {}
+local composer_picker = Class({
+  composer_loader = "laravel.loaders.composer_commands_cache_loader",
+})
 
-function ui_artisan_picker:new(composer_repository)
-  local instance = {
-    composer_repository = composer_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+function composer_picker:run()
+  local commands, err = self.composer_loader:load()
+  if err then
+    return notify.error("Failed to load composer commands: " .. err)
+  end
 
-  return instance
-end
-
-function ui_artisan_picker:run(opts)
-  opts = opts or {}
-
-  return self.composer_repository:all():thenCall(function(commands)
+  vim.schedule(function()
     vim.ui.select(commands, {
       prompt_title = "Composer commands",
       format_item = function(command)
@@ -26,12 +21,10 @@ function ui_artisan_picker:run(opts)
       kind = "artisan",
     }, function(command)
       if command ~= nil then
-          actions.composer_run(command)
+        actions.composer_run(command)
       end
     end)
-  end, function(error)
-    vim.api.nvim_err_writeln(error)
   end)
 end
 
-return ui_artisan_picker
+return composer_picker

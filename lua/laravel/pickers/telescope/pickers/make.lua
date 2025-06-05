@@ -5,25 +5,25 @@ local previewers = require("telescope.previewers")
 local preview = require("laravel.pickers.common.preview")
 local actions = require("laravel.pickers.telescope.actions")
 local is_make_command = require("laravel.utils.init").is_make_command
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
----@class LaravelMakePicker
----@field commands_repository laravel.repositories.artisan_commands
-local make_picker = {}
-
-function make_picker:new(cache_commands_repository)
-  local instance = {
-    commands_repository = cache_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.telescope.make
+---@field commands_loader laravel.loaders.artisan_cache_loader
+local make_picker = Class({
+  commands_loader = "laravel.loaders.artisan_cache_loader",
+})
 
 function make_picker:run(opts)
   opts = opts or {}
 
-  self.commands_repository:all():thenCall(function(commands)
+  local commands, err = self.commands_loader:load()
+  if err then
+    notify.error("Failed to load artisan commands: " .. err)
+    return
+  end
+
+  vim.schedule(function()
     pickers
       .new(opts, {
         prompt_title = "Make commands",

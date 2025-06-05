@@ -2,24 +2,19 @@ local conf = require("telescope.config").values
 local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local actions = require("laravel.pickers.telescope.actions")
+local Class = require("laravel.utils.class")
 
-local history_picker = {}
-
-function history_picker:new(history)
-  local instance = {
-    history_provider = history,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+local history_picker = Class({
+  history_service = "laravel.services.history",
+  runner = "laravel.services.runner",
+})
 
 function history_picker:run(opts)
   pickers
     .new(opts or {}, {
       prompt_title = "Laravel Command History",
       finder = finders.new_table({
-        results = self.history_provider:get(),
+        results = self.history_service:get(),
         entry_maker = function(history_entry)
           return {
             value = history_entry,

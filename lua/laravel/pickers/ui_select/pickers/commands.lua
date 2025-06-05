@@ -1,34 +1,30 @@
-local commands_picker = {}
+local Class = require("laravel.utils.class")
 
-function commands_picker:new(runner, user_commands_repository)
-  local instance = {
-    runner = runner,
-    user_commands_repository = user_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.ui_select.commands
+---@field runner laravel.services.runner
+---@field commands_loader laravel.loaders.user_commands_loader
+local commands_picker = Class({
+  runner = "laravel.services.runner",
+  commands_loader = "laravel.loaders.user_commands_loader",
+})
 
 function commands_picker:run(opts)
-  self.user_commands_repository:all():thenCall(function(commands)
-    vim.ui.select(
-      commands,
-      vim.tbl_extend("force", {
-        prompt_title = "User Commands",
-        format_item = function(command)
-          return command.display
-        end,
-        kind = "resources",
-      }, opts or {}),
-      function(command)
-        if command ~= nil then
-          self.runner:run(command.executable, command.cmd, command.opts)
-        end
+  local commands = self.commands_loader:load()
+  vim.ui.select(
+    commands,
+    vim.tbl_extend("force", {
+      prompt_title = "User Commands",
+      format_item = function(command)
+        return command.display
+      end,
+      kind = "resources",
+    }, opts or {}),
+    function(command)
+      if command ~= nil then
+        self.runner:run(command.executable, command.cmd, command.opts)
       end
-    )
-  end)
+    end
+  )
 end
 
 return commands_picker

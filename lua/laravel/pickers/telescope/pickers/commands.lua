@@ -1,3 +1,4 @@
+local Class = require("laravel.utils.class")
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local conf = require("telescope.config").values
@@ -5,21 +6,17 @@ local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 
-local commands_picker = {}
-
-function commands_picker:new(runner, user_commands_repository)
-  local instance = {
-    runner = runner,
-    user_commands_repository = user_commands_repository,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.pickers.telescope.commands
+---@field runner laravel.services.runner
+---@field commands_loader laravel.loaders.user_commands_loader
+local commands_picker = Class({
+  runner = "laravel.services.runner",
+  commands_loader = "laravel.loaders.user_commands_loader",
+})
 
 function commands_picker:run(opts)
-  self.user_commands_repository:all():thenCall(function(commands)
+  local commands = self.commands_loader:load()
+  vim.schedule(function()
     pickers
       .new(opts, {
         prompt_title = "User Commands",

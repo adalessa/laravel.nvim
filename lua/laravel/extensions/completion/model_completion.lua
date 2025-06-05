@@ -1,11 +1,13 @@
 local nio = require("nio")
 local model_completion = {}
+local app = require("laravel.core.app")
 
 local function getPosition(params)
   local beforeLine = params.context.cursor_before_line
   local cursor = params.context.cursor
 
   --- Need to support the following multiline
+  --- was not able to use treesitter since some times was broken due incomplete syntax
   --- $tip->query()
   ---     ->where(
   --- Tip::query()
@@ -61,7 +63,7 @@ function model_completion.complete(templates, params, callback)
     })
   end
 
-  local client = nio.lsp.get_clients({ name = "phpactor" })[1]
+  local client = nio.lsp.get_clients({ name = app("laravel.services.config").get("lsp_server", "phpactor") })[1]
   local err, response = client.request.textDocument_typeDefinition({
     textDocument = {
       uri = vim.uri_from_bufnr(params.context.bufnr),

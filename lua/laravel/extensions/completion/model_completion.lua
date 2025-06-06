@@ -3,51 +3,19 @@ local model_completion = {}
 local app = require("laravel.core.app")
 
 local function getPosition(params)
-  local beforeLine = params.context.cursor_before_line
-  local cursor = params.context.cursor
+  vim.treesitter.get_parser(params.context.bufnr):parse()
 
-  --- Need to support the following multiline
-  --- was not able to use treesitter since some times was broken due incomplete syntax
-  --- $tip->query()
-  ---     ->where(
-  --- Tip::query()
-  ---     ->where(
+  local node = vim.treesitter.get_node()
 
-  --- Handle static method calls like Tip::where(
-  local staticMethodPosition = beforeLine:match(".*()::where%(")
-  if type(staticMethodPosition) == "number" and staticMethodPosition ~= 0 then
-    return {
-      character = staticMethodPosition - 1,
-      line = cursor.line,
-    }
-  end
-
-  --- Handle static method chains like Tip::query()->where(
-  local staticChainPosition = beforeLine:match(".*()::query%(%)%->where%(")
-  if type(staticChainPosition) == "number" and staticChainPosition ~= 0 then
-    return {
-      character = staticChainPosition - 1,
-      line = cursor.line,
-    }
-  end
-
-  --- Handle method chains on objects like $tip->query()->where(
-  local objectChainPosition = beforeLine:match(".*()%->query%(%)%->where%(")
-  if type(objectChainPosition) == "number" and objectChainPosition ~= 0 then
-    return {
-      character = objectChainPosition - 1,
-      line = cursor.line,
-    }
-  end
-
-  --- This auto complete this case should be always the last
-  --- $tip->
-  local lastDashPosition = beforeLine:match(".*()%->")
-  if type(lastDashPosition) == "number" and lastDashPosition ~= 0 then
-    return {
-      character = lastDashPosition - 1,
-      line = cursor.line,
-    }
+  while node do
+    if node:type() == "scoped_call_expression" or node:type() == "member_call_expression" then
+      local start_row, start_col, end_row, end_col = node:range()
+      return {
+        character = start_col,
+        line = start_row,
+      }
+    end
+    node = node:parent()
   end
 
   return nil

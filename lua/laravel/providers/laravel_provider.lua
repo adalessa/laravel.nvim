@@ -51,6 +51,15 @@ function laravel_provider:register(app)
       end,
     }
   end)
+  app:addCommand("laravel.commands.configure.open", function()
+    return {
+      signature = "env:configure:open",
+      description = "Open Laravel.nvim configuration for environments",
+      handle = function()
+        vim.cmd("edit " .. app("laravel.core.config").path)
+      end,
+    }
+  end)
 end
 
 ---@param app laravel.core.app

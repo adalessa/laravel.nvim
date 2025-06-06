@@ -9,20 +9,20 @@ function mcp:boot(app)
 
   mcphub.add_tool("laravel", {
     name = "artisan",
-    description = "run artisan commands",
+    description = "run php artisan commands for a laravel application",
     inputSchema = {
       type = "object",
       properties = {
         command = {
           type = "string",
-          desdcription = "artisan command to run",
+          description = "artisan command to run",
         },
         arguments = {
           type = "array",
           items = {
             type = "string",
           },
-          desdcription = "arguments for the command use the help to check what is requried",
+          description = "arguments for the command use the help to check what is requried",
         },
       },
       required = { "command", "arguments" },

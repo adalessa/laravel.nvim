@@ -58,16 +58,16 @@ function env:configure()
 end
 
 ---@param name string
----@return string[]|nil
+---@return string[], string?
 function env:getExecutable(name)
   if not self.environment then
-    return nil
+    return {}, "Environment is not configured"
   end
 
   if name == "artisan" then
-    local exec = self.environment:executable("php")
-    if not exec then
-      return nil
+    local exec, err = self.environment:executable("php")
+    if err then
+      return {}, "Executable 'php' not found needed for artisan. " .. err
     end
 
     return combine_tables(exec, { "artisan" })

@@ -1,73 +1,42 @@
----@class EnvironmentCondition
----@field file_exists string[]|nil
----@field executable string[]|nil
-
 ---@class LaravelEnvironmentConfig
 ---@field name string
----@field condition EnvironmentCondition
----@field commands table|nil
+---@field map table<string, string[]>
 
 ---@class LaravelOptionsEnvironments
 ---@field env_variable string
----@field auto_discover boolean
 ---@field default string
 ---@field definitions LaravelEnvironmentConfig[]
 return {
   env_variable = "NVIM_LARAVEL_ENV",
-  auto_discover = true,
   default = "local",
   definitions = {
     {
       name = "sail",
-      condition = {
-        file_exists = { "vendor/bin/sail", "docker-compose.yml" },
-      },
-      commands = {
-        sail = { "vendor/bin/sail" },
-        {
-          commands = { "php", "composer", "npm", "yarn" },
-          prefix = { "vendor/bin/sail" },
-        },
+      map = {
+        php = { "vendor/bin/sail", "php" },
+        composer = { "vendor/bin/sail", "composer" },
+        npm = { "vendor/bin/sail", "npm" },
+        yarn = { "vendor/bin/sail", "yarn" },
       },
     },
     {
       name = "docker-compose",
-      condition = {
-        file_exists = { "docker-compose.yml" },
-        executable = { "docker" },
-      },
-      commands = {
-        compose = { "docker", "compose" },
-        {
-          commands = { "php", "composer", "npm" },
-          docker = {
-            container = {
-              env = "APP_SERVICE",
-              default = "app",
-            },
-            exec = { "docker", "compose", "exec", "-it" },
-          },
-        },
+      map = {
+        php = { "docker", "compose", "exec", "-it", "app", "php" },
+        composer = { "docker", "compose", "exec", "-it", "app", "composer" },
+        npm = { "docker", "compose", "exec", "-it", "app", "npm" },
+        yarn = { "docker", "compose", "exec", "-it", "app", "yarn" },
       },
     },
     {
       name = "herd",
-      condition = {
-        executable = { "herd" },
-      },
-      commands = {
-        herd = { "herd" },
-        {
-          commands = { "php", "composer" },
-          prefix = { "herd" },
-        },
+      map = {
+        php = { "herd", "php" },
+        composer = { "herd", "composer" },
       },
     },
     {
       name = "local",
-      condition = {
-        executable = { "php" },
-      },
     },
   },
 }

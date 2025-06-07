@@ -85,6 +85,16 @@ function laravel_provider:boot(app)
     end,
   })
 
+  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = group,
+    pattern = { "web.php", "api.php" },
+    callback = function()
+      app("laravel.services.cache"):forget("laravel-routes")
+    end,
+  })
+
+  -- TODO add autocommand for flushing rotues cache when saving web.php
+
   -- Add the runner to the global
   Laravel.run = function(...)
     return app("runner"):run(...)

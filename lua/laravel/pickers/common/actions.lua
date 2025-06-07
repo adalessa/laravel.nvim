@@ -83,25 +83,23 @@ function M.open_browser(route)
     end
     local uri = route.uri
     for capturedString in uri:gmatch("{(.-)}") do
-      local val = vim.fn.input(capturedString .. ": ")
+      local val = nio.fn.input({ prompt = capturedString .. ": " })
       uri = uri:gsub("{" .. capturedString .. "}", val)
     end
 
     local url = string.format("%s/%s", app_url, uri)
     local command = nil
 
-    if vim.fn.executable("xdg-open") == 1 then
+    if nio.fn.executable("xdg-open") == 1 then
       command = "xdg-open"
-    elseif vim.fn.executable("open") == 1 then
+    elseif nio.fn.executable("open") == 1 then
       command = "open"
     end
     if not command then
       return
     end
 
-    vim.schedule(function()
-      vim.fn.system({ command, url })
-    end)
+    nio.fn.system({ command, url })
   end)
 end
 

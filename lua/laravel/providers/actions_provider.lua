@@ -15,7 +15,7 @@ function actions_provider:register(app)
       signature = "actions",
       description = "Run Laravel code actions",
       handle = function()
-        app("laravel.services.actions"):run()
+        app("laravel.managers.actions_manager"):run()
       end,
     }
   end)

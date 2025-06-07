@@ -6,8 +6,8 @@ local commmand = {
 }
 
 function commmand:handle()
-  ---@type laravel.pickers.pickers_manager
-  local pickers = app:make("pickers")
+  ---@type laravel.managers.pickers_manager
+  local pickers = app:make("pickers_manager")
   pickers:run("make")
 end
 

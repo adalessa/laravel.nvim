@@ -6,7 +6,7 @@ local pickers_provider = {
 }
 
 function pickers_provider:register(app)
-  app:alias("pickers", "laravel.pickers.pickers_manager")
+  app:alias("pickers_managers", "laravel.managers.pickers_manager")
 end
 
 function pickers_provider:boot(app)
@@ -17,9 +17,9 @@ function pickers_provider:boot(app)
     end,
   }, {
     __index = function(_, key)
-      local pickers = app:make("pickers")
-      if not pickers:exists(key) then
-        error("Picker not found: " .. key .. " in provider " .. pickers.name)
+      local pickers_manager = app:make("laravel.managers.pickers_manager")
+      if not pickers_manager:exists(key) then
+        error("Picker not found: " .. key .. " in provider " .. pickers_manager.name)
       end
 
       return setmetatable({}, {
@@ -29,7 +29,7 @@ function pickers_provider:boot(app)
             if not app:isActive() then
               return notify.warn(string.format("Picker %s can not run since Laravel is not active", key))
             end
-            return pickers:run(key, unpack(a or {}))
+            return pickers_manager:run(key, unpack(a or {}))
           end)
         end,
       })

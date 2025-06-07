@@ -2,21 +2,7 @@ local app = require("laravel.core.app")
 local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
--- Resolve how multiples pickers will interact
--- app('pickers'):run('artisan', {})
--- let say we have native and telescope and fzf
--- these are multiples
--- should pickers be an option on features.
--- add option for 'provider'
--- telescope
--- ui.select
--- fzf
---
--- define in the container an element like telescope.pickers base on the name
--- check laravel/providers/telescope_providers.lua
--- for reference
-
----@class laravel.pickers.pickers_manager
+---@class laravel.managers.pickers_manager
 ---@field _enable boolean
 ---@field provider {}
 local pickers_manager = {

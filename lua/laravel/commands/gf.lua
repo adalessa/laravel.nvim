@@ -38,7 +38,6 @@ function gf_command:handle()
     end
 
     if resource_type == "config" then
-      -- app.name
       local config_name = vim.treesitter.get_node_text(node, 0, {})
       local s = split(config_name, ".")
 

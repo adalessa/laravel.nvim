@@ -2,8 +2,7 @@ local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
---TODO should not be a service
----@class laravel.services.actions
+---@class laravel.managers.actions_manager
 ---@field actions laravel.actions.action[]
 local service = Class({ actions = "laravel.actions" })
 

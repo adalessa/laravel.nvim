@@ -33,9 +33,6 @@ function env:configure()
     return
   end
 
-  --- TODO: ask if want auto configure
-  --- TODO: ask for custom
-
   vim.ui.select(self.options.get("environments.definitions"), {
     prompt = "[Laravel.nvim] Select the type of environment to use",
     format_item = function(item)

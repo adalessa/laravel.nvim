@@ -5,7 +5,7 @@ describe("user commands loader test", function()
   a.it("it parses the commands", function()
     local cut = require("laravel.loaders.user_commands_loader"):new(
       {
-        get = function(_, key, default)
+        get = function(key, default)
           if key == "user_commands" then
             return {
               artisan = {

@@ -50,7 +50,7 @@ function extension_provider:boot(app)
   Laravel.extensions = {}
 
   iterateExtensions(app("laravel.services.config").get("extensions", {}), function(provider, opts)
-    if provider.register then
+    if provider.boot then
       local ok, res = pcall(function()
         provider:boot(app, opts)
       end)

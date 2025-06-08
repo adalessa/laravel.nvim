@@ -1,5 +1,5 @@
 local events = require "laravel.events"
----@class laravel.providers.status_provider: laravel.providers.provider
+
 local status_provider = { name = "laravel.providers.status_provider" }
 
 function status_provider:register(app)

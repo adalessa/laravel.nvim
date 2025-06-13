@@ -28,23 +28,30 @@ mcphub.add_tool("laravel", {
       local arguments = req.params.arguments or {}
 
       if not app:isActive() then
-        res:error("Laravel plugin is not active"):send()
-
+        vim.schedule(function()
+          res:error("Laravel plugin is not active"):send()
+        end)
         return
       end
 
       local result, err = app("api"):run("composer", { command, unpack(arguments) })
       if err then
-        res:error(err):send()
+        vim.schedule(function()
+          res:error(err):send()
+        end)
         return
       end
 
       if result:failed() then
-        res:error(result:prettyErrors()):send()
+        vim.schedule(function()
+          res:error(result:prettyErrors()):send()
+        end)
         return
       end
 
-      res:text(result:content()):send()
+      vim.schedule(function()
+        res:text(result:content()):send()
+      end)
     end)
   end,
 })

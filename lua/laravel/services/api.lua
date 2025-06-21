@@ -29,9 +29,10 @@ function api:run(program, args)
   if errors ~= "" then
     errs = vim.split(errors, "\n")
   end
-  process.close()
 
-  return ApiResponse:new(vim.split(output or "", "\n"), nil, errs)
+  local exit_code = process.result(true)
+
+  return ApiResponse:new(vim.split(output or "", "\n"), exit_code, errs)
 end
 
 return api

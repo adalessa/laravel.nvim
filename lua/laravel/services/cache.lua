@@ -74,7 +74,7 @@ function cache:remember(key, seconds, callback)
     self:put(key, value, seconds)
   end
 
-  return value
+  return value, err
 end
 
 function cache:rememberForever(key, callback)

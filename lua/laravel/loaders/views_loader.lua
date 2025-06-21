@@ -1,4 +1,5 @@
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 local fs = require("laravel.utils.fs")
 
 ---@class laravel.dto.artisan_views
@@ -11,11 +12,11 @@ local ViewsLoader = Class({
   resources_loader = "laravel.loaders.resources_loader",
 })
 
----@return laravel.dto.artisan_views[], string?
+---@return laravel.dto.artisan_views[], laravel.error
 function ViewsLoader:load()
   local directory, err = self.resources_loader:get("views")
   if err then
-    return {}, "Failed to load views: " .. err
+    return {}, Error:new("Failed to load views"):wrap(err)
   end
 
   local rule = string.format("^%s/(.*).blade.php$", directory:gsub("-", "%%-"))

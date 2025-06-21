@@ -11,7 +11,7 @@ local ComposerCommandsCacheLoader = Class({
 }, {key = "laravel-composer-commands", timeout = 60})
 
 ---@async
----@return laravel.dto.composer_command[], string?
+---@return laravel.dto.composer_command[], laravel.error
 function ComposerCommandsCacheLoader:load()
   return self.cache:remember(self.key, self.timeout, function()
     return self.commands_loader:load()

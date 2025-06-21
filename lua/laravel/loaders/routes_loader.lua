@@ -1,5 +1,6 @@
 local split = require("laravel.utils.init").split
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.dto.artisan_routes
 ---@field uri string
@@ -38,12 +39,16 @@ end
 ---@field new fun(self: laravel.loaders.routes_loader, api: laravel.services.api): laravel.loaders.routes_loader
 local RoutesLoader = Class({ api = "laravel.services.api" })
 
----@return laravel.dto.artisan_routes[], string?
+---@return laravel.dto.artisan_routes[], laravel.error
 function RoutesLoader:load()
-  local result = self.api:run("artisan route:list --json")
+  local result, err = self.api:run("artisan route:list --json")
+
+  if err then
+    return {}, Error:new("Failed to load routes"):wrap(err)
+  end
 
   if result:failed() then
-    return {}, "Failed to load routes: " .. result:prettyErrors()
+    return {}, Error:new("Failed to load routes " .. result:prettyErrors())
   end
 
   return vim.tbl_map(map_route, result:json() or {})

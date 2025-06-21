@@ -10,7 +10,7 @@ local ViewsCacheLoader = Class({
   views_loader = "laravel.loaders.views_loader",
 }, { key = "laravel-views", timeout = 60 })
 
----@return laravel.dto.artisan_views[], string?
+---@return laravel.dto.artisan_views[], laravel.error
 function ViewsCacheLoader:load()
   return self.cache:remember(self.key, self.timeout, function()
     return self.views_loader:load()

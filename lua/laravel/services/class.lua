@@ -1,5 +1,6 @@
-local nio = require "nio"
+local nio = require("nio")
 local get_node_text = vim.treesitter.get_node_text
+local Error = require("laravel.utils.error")
 
 ---@class laravel.dto.class
 ---@field fqn string
@@ -21,21 +22,21 @@ end, 3)
 
 ---@async
 ---@param bufnr number
----@return laravel.dto.class, string?
+---@return laravel.dto.class, laravel.error
 function class:get(bufnr)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if php_parser == nil then
-    return {}, "Could not get the parser"
+    return {}, Error:new("Could not get the parser")
   end
 
   local tree = php_parser:parse()[1]
   if tree == nil then
-    return {}, "Could not retrieve syntx tree"
+    return {}, Error:new("Could not retrieve syntx tree")
   end
 
   local query = vim.treesitter.query.get("php", "php_class")
   if not query then
-    return {}, "Could not get treesitter query"
+    return {}, Error:new("Could not get treesitter query")
   end
 
   local response = {
@@ -85,28 +86,28 @@ function class:get(bufnr)
   end
 
   if response.class == "" then
-    return {}, "Buffer is not a class"
+    return {}, Error:new("Buffer is not a class")
   end
 
   return response
 end
 
----@return string[], string?
+---@return string[], laravel.error
 function class:views(bufnr)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if php_parser == nil then
-    return {}, "Could not get the parser"
+    return {}, Error:new("Could not get the parser")
   end
 
   local tree = php_parser:parse()[1]
   if tree == nil then
-    return {}, "Could not retrive syntax tree"
+    return {}, Error:new("Could not retrive syntax tree")
   end
 
   local query = vim.treesitter.query.get("php", "laravel_views")
 
   if not query then
-    return {}, "Could not get treesitter query"
+    return {}, Error:new("Could not get treesitter query")
   end
 
   local founds = {}

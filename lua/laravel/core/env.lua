@@ -1,6 +1,7 @@
 local combine_tables = require("laravel.utils.init").combine_tables
 local Environment = require("laravel.dto.environment")
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 local notify = require("laravel.utils.notify")
 
 ---@class laravel.core.env
@@ -55,16 +56,16 @@ function env:configure()
 end
 
 ---@param name string
----@return string[], string?
+---@return string[], laravel.error
 function env:getExecutable(name)
   if not self.environment then
-    return {}, "Environment is not configured"
+    return {}, Error:new("Environment is not configured")
   end
 
   if name == "artisan" then
     local exec, err = self.environment:executable("php")
     if err then
-      return {}, "Executable 'php' not found needed for artisan. " .. err
+      return {}, Error:new("Executable 'php' not found needed for artisan"):wrap(err)
     end
 
     return combine_tables(exec, { "artisan" })

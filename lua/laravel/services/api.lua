@@ -1,6 +1,7 @@
 local nio = require("nio")
 local ApiResponse = require("laravel.dto.api_response")
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.services.api
 ---@field command_generator laravel.services.command_generator
@@ -11,11 +12,11 @@ local api = Class({
 ---@async
 ---@param program string
 ---@param args string[]|nil
----@return laravel.dto.apiResponse, string?
+---@return laravel.dto.apiResponse, laravel.error
 function api:run(program, args)
   local command = self.command_generator:generate(program, args)
   if not command then
-    return {}, string.format("Command %s not found", program)
+    return {}, Error:new(string.format("Command %s not found", program))
   end
   local cmd = table.remove(command, 1)
 

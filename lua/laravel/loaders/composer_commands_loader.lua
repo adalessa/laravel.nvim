@@ -1,4 +1,5 @@
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.dto.composer_command
 ---@field name string
@@ -8,16 +9,16 @@ local Class = require("laravel.utils.class")
 local ComposerCommandsLoader = Class({ api = "laravel.services.api" })
 
 ---@async
----@return laravel.dto.composer_command[], string?
+---@return laravel.dto.composer_command[], laravel.error
 function ComposerCommandsLoader:load()
   local result, err = self.api:run("composer list --format=json")
 
   if err then
-    return {}, "Failed to load composer commands: " .. err
+    return {}, Error:new("Failed to load composer commands"):wrap(err)
   end
 
   if result:failed() then
-    return {}, "Failed to load composer commands: " .. result:prettyErrors()
+    return {}, Error:new("Failed to load composer commands: " .. result:prettyErrors())
   end
 
   return vim

@@ -1,4 +1,5 @@
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.dto.composer_package
 
@@ -6,39 +7,48 @@ local Class = require("laravel.utils.class")
 ---@field api laravel.services.api
 local composer = Class({ api = "laravel.services.api" })
 
----@return laravel.dto.composer_package, string?
+---@return laravel.dto.composer_package, laravel.error
 function composer:info()
   local res, err = self.api:run("composer info -f json")
   if err then
-    return {}, "Error running composer info: " .. err
+    return {}, Error:new("Error running composer info"):wrap(err)
+  end
+
+  if res:failed() then
+    return {}, Error:new("Error running composer info" .. res:prettyErrors())
   end
 
   return res:json().installed
 end
 
----@return laravel.dto.composer_package, string?
+---@return laravel.dto.composer_package, laravel.error
 function composer:outdated()
   local res, err = self.api:run("composer outdated -f json")
   if err then
-    return {}, "Error running composer outdated: " .. err
+    return {}, Error:new("Error running composer outdated"):wrap(err)
+  end
+
+  if res:failed() then
+    return {}, Error:new("Error running composer outdated" .. res:prettyErrors())
   end
 
   return res:json().installed
 end
 
+---@return laravel.dto.composer_package, laravel.error
 function composer:dependencies(bufnr)
   local parser = vim.treesitter.get_parser(bufnr, "json")
   if not parser then
-    return {}, "Could not get treesitter parser"
+    return {}, Error:new("Could not get treesitter parser")
   end
   local tree = parser:parse()[1]
   if tree == nil then
-    return {}, "Could not retrieve syntx tree"
+    return {}, Error:new("Could not retrieve syntx tree")
   end
 
   local query = vim.treesitter.query.get("json", "composer_dependencies")
   if not query then
-    return {}, "Could not get treesitter query"
+    return {}, Error:new("Could not get treesitter query")
   end
 
   local dependencies = {}

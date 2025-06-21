@@ -64,6 +64,10 @@ function cache:add(key, value, seconds)
   return true
 end
 
+---@param key string
+---@param seconds number|nil
+---@param callback fun(): (any, laravel.error)
+---@return any, laravel.error
 function cache:remember(key, seconds, callback)
   if self:has(key) then
     return self:get(key)

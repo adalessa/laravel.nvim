@@ -1,3 +1,5 @@
+local Error = require("laravel.utils.error")
+
 ---@class laravel.dto.environment
 ---@field name string
 ---@field map table<string, string[]>
@@ -20,7 +22,7 @@ function Environment:new(env)
 end
 
 ---@param name string
----@return string[], string?
+---@return string[], laravel.error
 function Environment:executable(name)
   if cache[name] then
     return cache[name]
@@ -32,7 +34,7 @@ function Environment:executable(name)
   end
 
   if vim.fn.executable(cmd[1]) == 0 then
-    return {}, string.format("Executable '%s' not found needed for %s", cmd[1], table.concat(cmd, " "))
+    return {}, Error:new(string.format("Executable '%s' not found needed for %s", cmd[1], table.concat(cmd, " ")))
   end
 
   cache[name] = cmd

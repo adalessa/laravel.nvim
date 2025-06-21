@@ -1,4 +1,5 @@
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.dto.artisan_command
 ---@field name string
@@ -8,12 +9,16 @@ local Class = require("laravel.utils.class")
 ---@field new fun(self: laravel.loaders.artisan_loader, api: laravel.services.api): laravel.loaders.artisan_loader
 local ArtisanLoader = Class({ api = "laravel.services.api" })
 
----@return laravel.dto.artisan_command[], string?
+---@return laravel.dto.artisan_command[], laravel.error
 function ArtisanLoader:load()
-  local result = self.api:run("artisan list --format=json")
+  local result, err = self.api:run("artisan list --format=json")
+
+  if err then
+    return {}, Error:new("Failed to get command list"):wrap(err)
+  end
 
   if result:failed() then
-    return {}, "Failed to load artisan commands: " .. result:prettyErrors()
+    return {}, Error:new("Failed to load artisan commands: " .. result:prettyErrors())
   end
 
   return vim

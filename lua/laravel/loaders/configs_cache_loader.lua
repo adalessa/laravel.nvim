@@ -10,7 +10,7 @@ local ConfigsCacheLoader = Class({
   configs_loader = "laravel.loaders.configs_loader",
 }, {key = "laravel-configs", timeout = 60})
 
----@return string[], string?
+---@return string[], laravel.error
 function ConfigsCacheLoader:load()
   return self.cache:remember(self.key, self.timeout, function()
     return self.configs_loader:load()

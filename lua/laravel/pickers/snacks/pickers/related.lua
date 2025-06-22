@@ -6,14 +6,18 @@ local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.snacks.related
 ---@field related laravel.services.related
+---@field log laravel.utils.log
 local related_picker = Class({
   related = "laravel.services.related",
+  log = "laravel.utils.log",
 })
 
 function related_picker:run(opts)
   local relations, err = self.related:get(vim.api.nvim_get_current_buf())
   if err then
-    return notify.error("Error loading related items: " .. err)
+    notify.error("Error loading related items")
+    self.log:error(err)
+    return
   end
 
   vim.schedule(function()

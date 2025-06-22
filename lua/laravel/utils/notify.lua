@@ -4,25 +4,25 @@ local opts = {
 
 local M = {}
 
-function M.info(message)
+local notify = function(message, level)
   if type(message) ~= "string" then
     message = vim.inspect(message)
   end
-  vim.notify(message, vim.log.levels.INFO, opts)
+  vim.schedule(function()
+    vim.notify(message, level, opts)
+  end)
+end
+
+function M.info(message)
+  notify(message, vim.log.levels.INFO)
 end
 
 function M.warn(message)
-  if type(message) ~= "string" then
-    message = vim.inspect(message)
-  end
-  vim.notify(message, vim.log.levels.WARN, opts)
+  notify(message, vim.log.levels.WARN)
 end
 
 function M.error(message)
-  if type(message) ~= "string" then
-    message = vim.inspect(message)
-  end
-  vim.notify(message, vim.log.levels.ERROR, opts)
+  notify(message, vim.log.levels.ERROR)
 end
 
 return M

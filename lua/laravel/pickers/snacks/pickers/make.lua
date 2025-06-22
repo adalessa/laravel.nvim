@@ -8,14 +8,17 @@ local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.snacks.make
 ---@field commands_loader laravel.loaders.artisan_cache_loader
+---@field log laravel.utils.log
 local make_picker = Class({
   commands_loader = "laravel.loaders.artisan_cache_loader",
+  log = "laravel.utils.log",
 })
 
 function make_picker:run(opts)
   local commands, err = self.commands_loader:load()
   if err then
-    notify.error("Failed to load artisan commands: " .. err)
+    notify.error("Failed to load artisan commands")
+    self.log:error(err)
     return
   end
 

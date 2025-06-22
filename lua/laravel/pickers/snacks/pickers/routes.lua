@@ -6,14 +6,17 @@ local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.snacks.routes
 ---@field routes_loader laravel.loaders.routes_cache_loader
+---@field log laravel.utils.log
 local routes_picker = Class({
   routes_loader = "laravel.loaders.routes_cache_loader",
+  log = "laravel.utils.log",
 })
 
 function routes_picker:run(opts)
   local routes, err = self.routes_loader:load()
   if err then
-    notify.error("Failed to load routes: " .. err)
+    notify.error("Failed to load routes")
+    self.log:error(err)
     return
   end
 

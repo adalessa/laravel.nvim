@@ -2,16 +2,19 @@ local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.snacks.preview")
 local format_entry = require("laravel.pickers.snacks.format_entry")
 local Class = require("laravel.utils.class")
-local notify= require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
 
 local composer_picker = Class({
   composer_loader = "laravel.loaders.composer_commands_cache_loader",
+  log = "laravel.utils.log",
 })
 
 function composer_picker:run(opts)
   local commands, err = self.composer_loader:load()
   if err then
-    return notify.error("Failed to load composer commands: " .. err)
+    notify.error("Failed to load composer commands")
+    self.log:error(err)
+    return
   end
 
   vim.schedule(function()

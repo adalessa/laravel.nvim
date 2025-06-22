@@ -23,24 +23,26 @@ function laravel_picker:run()
     return a.text < b.text
   end)
 
-  Snacks.picker.pick({
-    title = "Laravel Commands",
-    layout = "vscode",
-    items = items,
-    format = function(item)
-      local padding = string.rep(" ", max_text_length - #item.text + 4) -- 4 spaces for alignment
-      return {
-        { item.text .. padding, "@string" },
-        { item.value.description, "@comment" },
-      }
-    end,
-    confirm = function(picker, item)
-      picker:close()
-      if item then
-        item.value:handle()
-      end
-    end,
-  })
+  vim.schedule(function()
+    Snacks.picker.pick({
+      title = "Laravel Commands",
+      layout = "vscode",
+      items = items,
+      format = function(item)
+        local padding = string.rep(" ", max_text_length - #item.text + 4) -- 4 spaces for alignment
+        return {
+          { item.text .. padding, "@string" },
+          { item.value.description, "@comment" },
+        }
+      end,
+      confirm = function(picker, item)
+        picker:close()
+        if item then
+          item.value:handle()
+        end
+      end,
+    })
+  end)
 end
 
 return laravel_picker

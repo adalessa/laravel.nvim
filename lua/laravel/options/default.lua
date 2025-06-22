@@ -15,6 +15,7 @@
 ---@field resources table
 return {
   lsp_server = "phpactor",
+  debug_level = vim.log.levels.DEBUG,
   features = {
     pickers = {
       enable = true,

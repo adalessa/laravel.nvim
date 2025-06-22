@@ -60,6 +60,23 @@ function laravel_provider:register(app)
       end,
     }
   end)
+
+  app:singletonIf("laravel.utils.log", function()
+    return require("laravel.utils.log"):new(
+      vim.fn.stdpath("data") .. "/laravel/logs",
+      app("laravel.services.config")("debug_level")
+    )
+  end)
+  app:alias("log", "laravel.utils.log")
+  app:addCommand("laravel.commands.logs.open", function()
+    return {
+      signature = "logs:open",
+      description = "Open Laravel.nvim logs",
+      handle = function()
+        vim.cmd("edit " .. app("laravel.utils.log").path)
+      end,
+    }
+  end)
 end
 
 ---@param app laravel.core.app

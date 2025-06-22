@@ -6,16 +6,19 @@ local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.snacks.artisan
 ---@field commands_loader laravel.loaders.artisan_cache_loader
+---@field log laravel.utils.log
 local artisan_picker = Class({
   commands_loader = "laravel.loaders.artisan_cache_loader",
+  log = "laravel.utils.log"
 })
 
 function artisan_picker:run(opts)
   local commands, err = self.commands_loader:load()
-  if err then
-    notify.error("Failed to load artisan commands: " .. err)
-    return
-  end
+    if err then
+      notify.error("Failed to load artisan commands")
+      self.log:error(err)
+      return
+    end
 
   vim.schedule(function()
     Snacks.picker.pick(vim.tbl_extend("force", {

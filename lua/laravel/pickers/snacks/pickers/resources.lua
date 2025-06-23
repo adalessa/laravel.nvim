@@ -22,26 +22,28 @@ function resources_picker:run(opts)
     return
   end
 
-  snacks.pick(vim.tbl_extend("force", {
-    title = "Resources",
-    items = vim
-      .iter(resources)
-      :map(function(resource)
-        return {
-          value = resource,
-          text = resource.name,
-          file = resource.path,
-        }
-      end)
-      :totable(),
-    preview = "directory",
-    confirm = function(picker, item)
-      picker:close()
-      if item then
-        snacks.files({ cwd = item.value.path })
-      end
-    end,
-  }, opts or {}))
+  vim.schedule(function()
+    snacks.pick(vim.tbl_extend("force", {
+      title = "Resources",
+      items = vim
+        .iter(resources)
+        :map(function(resource)
+          return {
+            value = resource,
+            text = resource.name,
+            file = resource.path,
+          }
+        end)
+        :totable(),
+      preview = "directory",
+      confirm = function(picker, item)
+        picker:close()
+        if item then
+          snacks.files({ cwd = item.value.path })
+        end
+      end,
+    }, opts or {}))
+  end)
 end
 
 return resources_picker

@@ -2,7 +2,7 @@ local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
----@class laravel.extensions.override.service
+---@class laravel.extensions.override.lib
 ---@field tinker laravel.services.tinker
 ---@field class laravel.services.class
 ---@field sign_name string

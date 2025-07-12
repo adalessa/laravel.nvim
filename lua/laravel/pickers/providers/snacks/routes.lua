@@ -1,10 +1,16 @@
 local common_actions = require("laravel.pickers.common.actions")
 local preview = require("laravel.pickers.providers.snacks.preview")
-local format_entry = require("laravel.pickers.providers.snacks.format_entry")
 
 local routes_picker = {}
 
 function routes_picker.run(opts, routes)
+  local nameLenght, uriLenght = 0, 0
+
+  vim.iter(routes):each(function(route)
+    nameLenght = math.max(nameLenght, route.name and #route.name or 0)
+    uriLenght = math.max(uriLenght, #route.uri)
+  end)
+
   Snacks.picker.pick(vim.tbl_extend("force", {
     title = "Routes",
     items = vim
@@ -16,7 +22,17 @@ function routes_picker.run(opts, routes)
         }
       end)
       :totable(),
-    format = format_entry.route,
+    format = function(item, _)
+      local uriPadding = string.rep(" ", uriLenght - #item.value.uri)
+      local namePadding = string.rep(" ", nameLenght - string.len(item.value.name or ""))
+      return {
+        { item.value.uri .. uriPadding, "@enum" },
+        { " ", "@string" },
+        { (item.value.name or "") .. namePadding, "@keyword" },
+        { " ", "@string" },
+        { vim.iter(item.value.methods):join("|"), "@string" },
+      }
+    end,
     preview = preview.route,
     confirm = function(picker, item)
       picker:close()

@@ -3,7 +3,7 @@ local override_provider = {}
 
 ---@param app laravel.core.app
 function override_provider:register(app)
-  app:bindIf("override", "laravel.extensions.override.service")
+  app:bindIf("override", "laravel.extensions.override.lib")
 end
 
 ---@param app laravel.core.app

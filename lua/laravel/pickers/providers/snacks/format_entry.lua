@@ -1,18 +1,12 @@
-local function split_string(input)
-  local group, command = input:match("([^:]+):([^:]+)")
-  if not group then
-    command = input
-  end
-  return group, command
-end
-
 local M = {}
 
 local function format_command_text(command)
-  local group, cmd = split_string(command)
+  local parts = vim.split(command, ":")
+  local cmd = table.remove(parts, #parts)
+
   local out = {}
-  if group then
-    table.insert(out, { group, "@string" })
+  for _, part in ipairs(parts) do
+    table.insert(out, { part, "@enum" })
     table.insert(out, { ":", "@string" })
   end
   table.insert(out, { cmd, "@keyword" })

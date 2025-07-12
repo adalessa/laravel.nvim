@@ -6,8 +6,6 @@ return {
     return "Open env file"
   end,
   run = function()
-    vim.schedule(function()
-      vim.cmd("edit .env")
-    end)
+    vim.cmd("edit .env")
   end,
 }

@@ -20,24 +20,21 @@ function action:format()
   return "Add relation"
 end
 
----@async
 function action:run(bufnr)
   -- TODO
   -- ask type of relation
   -- ask Model
   -- check if Model in same namespace
   -- check if type of relation already there
-  vim.schedule(function()
-    vim.lsp.util.apply_text_edits({
-      {
-        range = {
-          start = { line = self.info.class_info.end_, character = 0 },
-          ["end"] = { line = self.info.class_info.end_, character = 0 },
-        },
-        newText = self.templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
+  vim.lsp.util.apply_text_edits({
+    {
+      range = {
+        start = { line = self.info.class_info.end_, character = 0 },
+        ["end"] = { line = self.info.class_info.end_, character = 0 },
       },
-    }, bufnr, "utf-8")
-  end)
+      newText = self.templates:build("relation", "user", "BelongsTo", "belongsTo(User::class)"),
+    },
+  }, bufnr, "utf-8")
 end
 
 return action

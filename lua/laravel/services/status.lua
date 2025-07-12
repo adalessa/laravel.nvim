@@ -38,20 +38,18 @@ end
 
 ---@async
 function status:start()
-  local refresh = function()
-    nio.run(function()
-      local response = self.api:run("artisan about --json")
-      if response:failed() then
-        return
-      end
-      local info = response:json()
-      if not info then
-        return
-      end
-      self.values.laravel = info.environment.laravel_version
-      self.values.php = info.environment.php_version
-    end)
-  end
+  local refresh = nio.create(function()
+    local response = self.api:run("artisan about --json")
+    if response:failed() then
+      return
+    end
+    local info = response:json()
+    if not info then
+      return
+    end
+    self.values.laravel = info.environment.laravel_version
+    self.values.php = info.environment.php_version
+  end, 0)
 
   self.refresh = refresh
 

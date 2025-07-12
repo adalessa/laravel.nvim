@@ -60,8 +60,3 @@ return function(on_submit, on_change)
 
   return layout
 end
--- layout:mount()
---
--- vim.defer_fn(function()
---   vim.api.nvim_command("startinsert!")
--- end, 20)

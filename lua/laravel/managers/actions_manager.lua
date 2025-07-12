@@ -38,9 +38,7 @@ function service:run()
         end,
       }, function(action)
         if action then
-          nio.run(function()
-            action:run(bufnr)
-          end)
+          action:run(bufnr)
         end
       end)
     end)

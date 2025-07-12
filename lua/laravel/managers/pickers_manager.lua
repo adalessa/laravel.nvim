@@ -29,21 +29,22 @@ function pickers_manager:new(config)
   return instance
 end
 
+---@async
 ---@param name string
-function pickers_manager:run(name, ...)
+function pickers_manager:run(name, opts)
   if not self:enable() then
     return
   end
+
+  local picker = app(("laravel.pickers.%s"):format(name))
+
   local picker_name = self:get_pickers()[name]
   if not picker_name then
     notify.error("Picker not found: " .. name)
     return
   end
 
-  local args = ...
-  nio.run(function()
-    app(picker_name):run(args)
-  end)
+  picker:run(app(picker_name), opts)
 end
 
 ---@param name string

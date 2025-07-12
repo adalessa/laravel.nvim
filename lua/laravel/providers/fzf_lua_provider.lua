@@ -10,14 +10,14 @@ function fzf_lua_provider:register(app)
         return ok
       end,
       pickers = {
-        artisan = "laravel.pickers.fzf_lua.pickers.artisan",
-        composer = "laravel.pickers.fzf_lua.pickers.composer",
-        routes = "laravel.pickers.fzf_lua.pickers.routes",
-        make = "laravel.pickers.fzf_lua.pickers.make",
-        related = "laravel.pickers.fzf_lua.pickers.related",
-        resources = "laravel.pickers.fzf_lua.pickers.resources",
-        commands = "laravel.pickers.fzf_lua.pickers.commands",
-        history = "laravel.pickers.fzf_lua.pickers.history",
+        artisan = "laravel.pickers.providers.fzf_lua.artisan",
+        composer = "laravel.pickers.providers.fzf_lua.composer",
+        routes = "laravel.pickers.providers.fzf_lua.routes",
+        make = "laravel.pickers.providers.fzf_lua.make",
+        related = "laravel.pickers.providers.fzf_lua.related",
+        resources = "laravel.pickers.providers.fzf_lua.resources",
+        commands = "laravel.pickers.providers.fzf_lua.commands",
+        history = "laravel.pickers.providers.fzf_lua.history",
       },
     }
   end)

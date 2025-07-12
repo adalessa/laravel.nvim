@@ -12,6 +12,7 @@ function M:create(app, moduleName)
   return function(arguments)
     local ok, module = pcall(require, moduleName)
     if not ok then
+      app:make("log"):error(("Could not load module %s. \n%s"):format(moduleName, module))
       error("Could not load module " .. moduleName)
     end
 
@@ -70,7 +71,7 @@ function M:createConcrete(app, concrete)
   elseif concreteType == "function" then
     return concrete
   else
-    Snacks.debug.backtrace()
+    app:make("log"):error(("Concrete should be a string, table or function %s given"):format(type(concrete)))
     error("Concrete should be a string, table or function " .. type(concrete) .. " given")
   end
 end

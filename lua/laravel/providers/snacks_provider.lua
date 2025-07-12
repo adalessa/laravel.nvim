@@ -10,15 +10,15 @@ function snacks_provider:register(app)
         return ok
       end,
       pickers = {
-        artisan = "laravel.pickers.snacks.pickers.artisan",
-        commands = "laravel.pickers.snacks.pickers.commands",
-        composer = "laravel.pickers.snacks.pickers.composer",
-        history = "laravel.pickers.snacks.pickers.history",
-        make = "laravel.pickers.snacks.pickers.make",
-        related = "laravel.pickers.snacks.pickers.related",
-        resources = "laravel.pickers.snacks.pickers.resources",
-        routes = "laravel.pickers.snacks.pickers.routes",
-        laravel = "laravel.pickers.snacks.pickers.laravel",
+        artisan = "laravel.pickers.providers.snacks.artisan",
+        commands = "laravel.pickers.providers.snacks.commands",
+        composer = "laravel.pickers.providers.snacks.composer",
+        history = "laravel.pickers.providers.snacks.history",
+        make = "laravel.pickers.providers.snacks.make",
+        related = "laravel.pickers.providers.snacks.related",
+        resources = "laravel.pickers.providers.snacks.resources",
+        routes = "laravel.pickers.providers.snacks.routes",
+        laravel = "laravel.pickers.providers.snacks.laravel",
       },
     }
   end)

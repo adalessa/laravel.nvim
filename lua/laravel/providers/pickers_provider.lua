@@ -5,7 +5,7 @@ local pickers_provider = { name = "laravel.providers.pickers_provider" }
 
 ---@param app laravel.core.app
 function pickers_provider:register(app)
-  app:alias("pickers_managers", "laravel.managers.pickers_manager")
+  app:alias("pickers_manager", "laravel.managers.pickers_manager")
 end
 
 ---@param app laravel.core.app
@@ -22,13 +22,12 @@ function pickers_provider:boot(app)
       end
 
       return setmetatable({}, {
-        __call = function(_, ...)
-          local a = ...
+        __call = function(_, opts)
           nio.run(function()
             if not app:isActive() then
               return notify.warn(string.format("Picker %s can not run since Laravel is not active", key))
             end
-            return pickers_manager:run(key, unpack(a or {}))
+            return pickers_manager:run(key, opts)
           end)
         end,
       })

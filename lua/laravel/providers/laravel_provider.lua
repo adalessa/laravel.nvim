@@ -22,17 +22,6 @@ function laravel_provider:register(app)
   app:alias("views", "laravel.services.views")
   app:alias("gf", "laravel.services.gf")
 
-  app:singletonIf("history", "laravel.services.history")
-  app:addCommand("laravel.commands.history", function()
-    return {
-      signature = "pickers:history",
-      description = "Show the command history",
-      handle = function()
-        app:make("pickers"):run("history")
-      end,
-    }
-  end)
-
   app:singletonIf("laravel.services.cache")
   app:alias("cache", "laravel.services.cache")
 
@@ -94,14 +83,6 @@ function laravel_provider:boot(app)
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "User" }, {
-    group = group,
-    pattern = { "LaravelCommandRun" },
-    callback = function(ev)
-      app("history"):add(ev.data.job_id, ev.data.cmd, ev.data.args, ev.data.options)
-    end,
-  })
-
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,
     pattern = { "web.php", "api.php" },
@@ -110,7 +91,15 @@ function laravel_provider:boot(app)
     end,
   })
 
-  -- TODO add autocommand for flushing rotues cache when saving web.php
+  vim.api.nvim_create_autocmd({ "User" }, {
+    group = group,
+    pattern = { "LaravelCommandRun" },
+    callback = function(ev)
+      if ev.data.cmd == "composer" then
+        app("laravel.services.cache"):forget("laravel-composer-commands")
+      end
+    end,
+  })
 
   -- Add the runner to the global
   Laravel.run = function(...)

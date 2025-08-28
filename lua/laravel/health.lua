@@ -9,8 +9,6 @@ local report_warn = vim.health.warn
 local report_error = vim.health.error
 
 M.check = function()
-  report_start("Laravel")
-
   report_start("External Dependencies")
   if vim.fn.executable("rg") == 1 then
     report_ok("rg installed")
@@ -51,10 +49,12 @@ M.check = function()
   end
 
   report_start("Pickers")
-  report_info("Enabled: " .. (app("options"):get().features.pickers.enable and "Yes" or "No"))
-  if app("options"):get().features.pickers.enable then
-    report_info("Selected Picker: " .. app("options"):get().features.pickers.provider)
-    local provider = app("pickers." .. app("options"):get().features.pickers.provider)
+  local enable = app("laravel.services.config").get("features.pickers.enable")
+  report_info("Enabled: " .. (enable and "Yes" or "No"))
+  if enable then
+    local picker = app("laravel.services.config").get("features.pickers.provider")
+    report_info("Selected Picker: " .. picker)
+    local provider = app("pickers." .. picker)
     if provider.check() then
       report_ok("Picker check successfull")
     else
@@ -85,11 +85,11 @@ M.check = function()
 
   -- check if the environment variable is set and if the environment matches
   local get_env = require("laravel.utils.init").get_env
-  local environmentEnvVariable = get_env(app('options'):get().environments.env_variable)
+  local environmentEnvVariable = get_env(app("laravel.services.config").get("environments.env_variable"))
   if environmentEnvVariable then
     report_info("Environment variable set to: " .. environmentEnvVariable)
     if environmentEnvVariable ~= app("env").environment.name then
-      report_warn( "Environment variable does not match the current environment", {})
+      report_warn("Environment variable does not match the current environment", {})
     else
       report_ok("Environment variable matches the current environment")
     end

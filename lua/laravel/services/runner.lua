@@ -46,6 +46,7 @@ function runner:run(program, args, opts)
         end)
       end
     end
+
     vim.api.nvim_exec_autocmds("User", {
       pattern = "LaravelCommandRun",
       data = {

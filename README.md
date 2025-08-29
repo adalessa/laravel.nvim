@@ -1,4 +1,4 @@
-![logo](img/logo.png)
+![logo](imgs/logo.png)
 # Laravel.nvim
 Plugin for Neovim to enhance the development experience of Laravel projects
 

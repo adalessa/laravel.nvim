@@ -4,8 +4,34 @@ Plugin for Neovim to enhance the development experience of Laravel projects
 
 # ✨ Features
 
-Quick executing of artisan commands, list and navigate to routes. Information about the routes.
-Robust API to allow you to run any command in the way that you need.
+## Environment
+The plugin supports different types of environment, like local, sail, docker compose and heard, and can be extended for your own need
+
+## Pickers
+- Artisan commands
+- Routes
+- User Commands, allow you to define your own quick actions
+- Makes
+- Resources, picker sort by common laravel resources like controlles migrations, etc.
+- Related, on a model quickly go to relations of it.
+- Composer
+- History, the plugin stores the previously run commands to quicly re-run them.
+
+## Virtual Information
+- Model Info: Get the model information like database, table and fields, directly on the model
+- Route Info: Get the URI, method and middlewares right on top of your controller function
+- Composer Info: Get the exact version of the installed packages and if an update is available.
+
+## Actions
+The plugin provides an action system like the lsp action, but only for laravel.
+
+## Tinker
+Tinker it's a great tool, the plugins provides a new way to interact with it.
+Using files .tinker on your project and a dedicated UI makes interact with Tinker
+a lot easier and fun.
+
+## Dump Server
+Integration with [laravel dump server](https://github.com/beyondcode/laravel-dump-server)
 
 # 📦 Installation
 
@@ -61,6 +87,8 @@ Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
 }
 ```
 
+## Configuration
+The configuration is extense and recommend look [here](lua/laravel/options/default.lua)
 
 # Self promotion
 I am Ariel I am a developer and also content creator (mostly in Spanish)

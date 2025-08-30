@@ -38,6 +38,7 @@ a lot easier and fun.
 
 ## Dump Server
 Integration with [laravel dump server](https://github.com/beyondcode/laravel-dump-server)
+![dump-server](imgs/dump-server.png)
 
 # 📦 Installation
 

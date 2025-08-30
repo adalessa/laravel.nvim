@@ -1,5 +1,4 @@
 ![logo](imgs/logo.png)
-# Laravel.nvim
 Plugin for Neovim to enhance the development experience of Laravel projects
 
 
@@ -18,10 +17,15 @@ The plugin supports different types of environment, like local, sail, docker com
 - Composer
 - History, the plugin stores the previously run commands to quicly re-run them.
 
+![artisan-picker](imgs/artisan-picker.png)
+
 ## Virtual Information
 - Model Info: Get the model information like database, table and fields, directly on the model
 - Route Info: Get the URI, method and middlewares right on top of your controller function
 - Composer Info: Get the exact version of the installed packages and if an update is available.
+![model-info](imgs/model-info.png)
+![model-info](imgs/route-info.png)
+![model-info](imgs/composer-info.png)
 
 ## Actions
 The plugin provides an action system like the lsp action, but only for laravel.
@@ -30,6 +34,7 @@ The plugin provides an action system like the lsp action, but only for laravel.
 Tinker it's a great tool, the plugins provides a new way to interact with it.
 Using files .tinker on your project and a dedicated UI makes interact with Tinker
 a lot easier and fun.
+![tinker-ui](imgs/tinker-ui.png)
 
 ## Dump Server
 Integration with [laravel dump server](https://github.com/beyondcode/laravel-dump-server)

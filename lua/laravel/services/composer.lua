@@ -1,68 +1,68 @@
-local promise = require("promise")
+local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
----@class LaravelComposerService
----@field api LaravelApi
-local composer = {}
+---@class laravel.dto.composer_package
 
-function composer:new(api)
-  local instance = {
-    api = api,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+---@class laravel.services.composer
+---@field api laravel.services.api
+local composer = Class({ api = "laravel.services.api" })
 
-  return instance
-end
-
----@return Promise
+---@return laravel.dto.composer_package, laravel.error
 function composer:info()
-  return self.api:send("composer", { "info", "-f", "json" }):thenCall(
-  ---@param response ApiResponse
-    function(response)
-      return response:json().installed
-    end
-  )
+  local res, err = self.api:run("composer info -f json")
+  if err then
+    return {}, Error:new("Error running composer info"):wrap(err)
+  end
+
+  if res:failed() then
+    return {}, Error:new("Error running composer info" .. res:prettyErrors())
+  end
+
+  return res:json().installed
 end
 
----@return Promise
+---@return laravel.dto.composer_package, laravel.error
 function composer:outdated()
-  return self.api:send("composer", { "outdated", "-f", "json" }):thenCall(
-  ---@param response ApiResponse
-    function(response)
-      return response:json().installed
-    end
-  )
+  local res, err = self.api:run("composer outdated -f json")
+  if err then
+    return {}, Error:new("Error running composer outdated"):wrap(err)
+  end
+
+  if res:failed() then
+    return {}, Error:new("Error running composer outdated" .. res:prettyErrors())
+  end
+
+  return res:json().installed
 end
 
----@return Promise
+---@return laravel.dto.composer_package, laravel.error
 function composer:dependencies(bufnr)
-  return promise:new(function(resolve, reject)
-    local parser = vim.treesitter.get_parser(bufnr, "json")
-    local tree = parser:parse()[1]
-    if tree == nil then
-      reject("Could not retrieve syntx tree")
-      return
+  local parser = vim.treesitter.get_parser(bufnr, "json")
+  if not parser then
+    return {}, Error:new("Could not get treesitter parser")
+  end
+  local tree = parser:parse()[1]
+  if tree == nil then
+    return {}, Error:new("Could not retrieve syntx tree")
+  end
+
+  local query = vim.treesitter.query.get("json", "composer_dependencies")
+  if not query then
+    return {}, Error:new("Could not get treesitter query")
+  end
+
+  local dependencies = {}
+
+  for id, node in query:iter_captures(tree:root(), bufnr) do
+    if query.captures[id] == "depen" then
+      table.insert(dependencies, {
+        name = vim.treesitter.get_node_text(node, bufnr),
+        line = node:start(),
+      })
     end
+  end
 
-    local query = vim.treesitter.query.get("json", "composer_dependencies")
-    if not query then
-      reject("Could not get treesitter query")
-      return
-    end
-
-    local dependencies = {}
-
-    for id, node in query:iter_captures(tree:root(), bufnr) do
-      if query.captures[id] == "depen" then
-        table.insert(dependencies, {
-          name = vim.treesitter.get_node_text(node, bufnr),
-          line = node:start(),
-        })
-      end
-    end
-
-    resolve(dependencies)
-  end)
+  return dependencies
 end
 
 return composer

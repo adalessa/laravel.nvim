@@ -1,21 +1,29 @@
-local history_provider = {}
+local provider = { name = "laravel.providers.history_provider" }
 
----@param app LaravelApp
-function history_provider:register(app)
-  app:singeltonIf("history", "laravel.services.history")
-  app:bindIf("history_command", "laravel.services.commands.history", { tags = { "command" } })
+function provider:register(app)
+  app:singletonIf("history", "laravel.services.history")
+
+  app:addCommand("laravel.commands.history", function()
+    return {
+      signature = "pickers:history",
+      description = "Show the command history",
+      handle = function()
+        app:make("pickers_manager"):run("history")
+      end,
+    }
+  end)
 end
 
----@param app LaravelApp
-function history_provider:boot(app)
-  local group = vim.api.nvim_create_augroup("laravel", {})
+function provider:boot(app)
+  local group = vim.api.nvim_create_augroup("laravel.history", {})
+
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
-    pattern = "LaravelCommandRun",
+    pattern = { "LaravelCommandRun" },
     callback = function(ev)
       app("history"):add(ev.data.job_id, ev.data.cmd, ev.data.args, ev.data.options)
     end,
   })
 end
 
-return history_provider
+return provider

@@ -1,7 +1,9 @@
 local lsp = require("laravel._lsp")
-local app = require("laravel").app
+local app = require("laravel.core.app")
 local ui_run = require("laravel.pickers.common.ui_run")
 local preview = require("laravel.pickers.common.preview")
+local nio = require("nio")
+local notify = require("laravel.utils.notify")
 
 local M = {}
 
@@ -13,17 +15,17 @@ local function go(route)
     elseif vim.tbl_contains(route.middlewares, "web") then
       vim.cmd("edit routes/web.php")
       -- TODO: use the get or post to find the right route or view
-            -- get or view can be for GET
-            -- post if not we need the resources
-            -- can improce this with a treesitter query ?
-            -- should be able to look for specif methods
+      -- get or view can be for GET
+      -- post if not we need the resources
+      -- can improce this with a treesitter query ?
+      -- should be able to look for specif methods
       if route.uri == "/" then
         vim.fn.search("['\"]/['\"]")
       else
         vim.fn.search("/" .. route.uri)
       end
     else
-      vim.notify("Could not open the route location", vim.log.levels.WARN)
+      notify.warn("Could not open the route location")
       return
     end
 
@@ -74,26 +76,30 @@ function M.open_route(route)
 end
 
 function M.open_browser(route)
-  app("configs_repository"):get("app.url"):thenCall(function(app_url)
+  nio.run(function()
+    local app_url, err = app("laravel.loaders.configs_loader"):get("app.url")
+    if err then
+      return notify.error("Could not load app.url: " .. err)
+    end
     local uri = route.uri
     for capturedString in uri:gmatch("{(.-)}") do
-      local val = vim.fn.input(capturedString .. ": ")
+      local val = nio.fn.input({ prompt = capturedString .. ": " })
       uri = uri:gsub("{" .. capturedString .. "}", val)
     end
 
     local url = string.format("%s/%s", app_url, uri)
     local command = nil
 
-    if vim.fn.executable("xdg-open") == 1 then
+    if nio.fn.executable("xdg-open") == 1 then
       command = "xdg-open"
-    elseif vim.fn.executable("open") == 1 then
+    elseif nio.fn.executable("open") == 1 then
       command = "open"
     end
     if not command then
       return
     end
 
-    vim.fn.system({ command, url })
+    nio.fn.system({ command, url })
   end)
 end
 
@@ -114,7 +120,7 @@ function M.open_resource(resource)
   local command = "ls -1 -A " .. resource.path
   local handle = io.popen(command)
   if not handle then
-    vim.notify("Could not open the resource", vim.log.levels.WARN)
+    notify.warn("Could not open the resource")
     return
   end
 
@@ -122,7 +128,7 @@ function M.open_resource(resource)
   handle:close()
 
   if not output then
-    vim.notify("Could not read the resource", vim.log.levels.WARN)
+    notify.warn("Could not read the resource")
     return
   end
 

@@ -1,21 +1,8 @@
----@class RouteInfoFeature
----@field enable boolean
----@field view string|table|function module to load or to use
-
----@class ModelInfoFeature
----@field enable boolean
-
----@class OverrideFeature
----@field enable boolean
-
 ---@class PickersFeature
 ---@field enable boolean
 ---@field provider 'telescope'|'ui.select'|'fzf-lua'|'snacks'
 
 ---@class LaravelFeatures
----@field route_info RouteInfoFeature
----@field model_info ModelInfoFeature
----@field override OverrideFeature
 ---@field pickers PickersFeature
 
 ---@class LaravelOptions
@@ -28,20 +15,11 @@
 ---@field resources table
 return {
   lsp_server = "phpactor",
+  debug_level = vim.log.levels.DEBUG,
   features = {
-    route_info = {
-      enable = true,
-      view = "top",
-    },
-    model_info = {
-      enable = true,
-    },
-    override = {
-      enable = true,
-    },
     pickers = {
       enable = true,
-      provider = 'telescope',
+      provider = "telescope",
     },
   },
   ui = require("laravel.options.ui"),
@@ -49,23 +27,31 @@ return {
   environments = require("laravel.options.environments"),
   user_commands = require("laravel.options.user_commands"),
   resources = require("laravel.options.resources"),
+  extensions = {
+    completion = { enable = true },
+    composer_dev = { enable = true },
+    composer_info = { enable = true },
+    diagnostic = { enable = true },
+    dump_server = { enable = true },
+    model_info = { enable = true },
+    override = { enable = true },
+    route_info = { enable = true, view = "simple" },
+    tinker = { enable = true },
+    mcp = { enable = true },
+    command_center = { enable = true },
+  },
   providers = {
     require("laravel.providers.laravel_provider"),
-    require("laravel.providers.repositories_provider"),
-    require("laravel.providers.override_provider"),
-    require("laravel.providers.completion_provider"),
-    require("laravel.providers.route_info_provider"),
-    require("laravel.providers.tinker_provider"),
+    require("laravel.providers.history_provider"),
+    require("laravel.providers.pickers_provider"),
     require("laravel.providers.telescope_provider"),
     require("laravel.providers.fzf_lua_provider"),
     require("laravel.providers.ui_select_provider"),
     require("laravel.providers.snacks_provider"),
-    require("laravel.providers.user_command_provider"),
+    require("laravel.providers.commands_provider"),
     require("laravel.providers.status_provider"),
-    require("laravel.providers.diagnostics_provider"),
-    require("laravel.providers.model_info_provider"),
-    require("laravel.providers.composer_info_provider"),
-    require("laravel.providers.history_provider"),
+    require("laravel.providers.actions_provider"),
+    require("laravel.providers.extensions_provider"),
   },
   user_providers = {},
 }

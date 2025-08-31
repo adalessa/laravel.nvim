@@ -1,40 +1,35 @@
----@class LaravelViewsService
----@field resources_repository ResourcesRepository
----@field runner LaravelRunner
-local views = {}
+local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
-function views:new(cache_resources_repository, runner)
-  local instance = {
-    resources_repository = cache_resources_repository,
-    runner = runner,
-  }
-  setmetatable(instance, self)
-  self.__index = self
+---@class laravel.services.views
+---@field resources_loader laravel.loaders.resources_loader
+---@field runner laravel.services.runner
+local views = Class({
+  resources_loader = "laravel.loaders.resources_loader",
+  runner = "laravel.services.runner",
+})
 
-  return instance
+---@async
+---@return string, laravel.error
+function views:pathFromName(name)
+  local views_directory, err = self.resources_loader:get("views")
+  if err then
+    return "", Error:new("Failed to get views directory"):wrap(err)
+  end
+
+  return string.format("%s/%s.blade.php", views_directory, name:gsub("%.", "/"))
 end
 
-function views:open(name)
-  return self.resources_repository:get("views"):thenCall(function(views_directory)
-    local view_path = string.format("%s/%s.blade.php", views_directory, name:gsub("%.", "/"))
+---@async
+---@return string, laravel.error
+function views:nameFromPath(path)
+  local views_directory, err = self.resources_loader:get("views")
+  if err then
+    return "", Error:new("Failed to get views directory"):wrap(err)
+  end
+  local name = path:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", "."):gsub("^%.", "")
 
-    if vim.fn.filewritable(view_path) == 1 then
-      vim.cmd("edit " .. view_path)
-      return
-    end
-    -- It creates the view if does not exists and user want it
-    if vim.fn.confirm("View " .. name .. " does not exists, Should create it?", "&Yes\n&No") == 1 then
-      self.runner:run("artisan", { "make:view", name })
-    end
-  end)
-end
-
-function views:name(fname, callback)
-  return self.resources_repository:get("views"):thenCall(function(views_directory)
-    views_directory = views_directory .. "/"
-    local view = fname:gsub(views_directory:gsub("-", "%%-"), ""):gsub("%.blade%.php", ""):gsub("/", ".")
-    callback(view)
-  end)
+  return name
 end
 
 return views

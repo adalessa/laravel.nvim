@@ -1,23 +1,14 @@
----@class LaravelCache
-local cache = {}
+local Class = require("laravel.utils.class")
 
-function cache:new()
-  local instance = {
-    store = {},
-  }
+---@class laravel.services.cache
+---@field store table<string, any>
+local cache = Class(nil, {store = {}})
 
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
+---@param key string
+---@param default any
+---@return any
 function cache:get(key, default)
-  if not self:has(key) then
-    return default
-  end
-
-  return self.store[key].value
+  return self:has(key) and self.store[key].value or default
 end
 
 ---@param key string
@@ -44,6 +35,10 @@ function cache:put(key, value, seconds)
   }
   if seconds then
     local timer = vim.uv.new_timer()
+    if not timer then
+      error("Failed to create timer")
+    end
+
     timer:start(seconds * 1000, 0, function()
       self.store[key] = nil
       timer:stop()
@@ -69,15 +64,21 @@ function cache:add(key, value, seconds)
   return true
 end
 
+---@param key string
+---@param seconds number|nil
+---@param callback fun(): (any, laravel.error)
+---@return any, laravel.error
 function cache:remember(key, seconds, callback)
   if self:has(key) then
     return self:get(key)
   end
 
-  local value = callback()
-  self:put(key, value, seconds)
+  local value, err = callback()
+  if not err then
+    self:put(key, value, seconds)
+  end
 
-  return value
+  return value, err
 end
 
 function cache:rememberForever(key, callback)

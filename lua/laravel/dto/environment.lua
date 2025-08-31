@@ -1,109 +1,45 @@
-local get_env = require("laravel.utils").get_env
-local combine_tables = require("laravel.utils").combine_tables
+local Error = require("laravel.utils.error")
 
----@class Environment
+---@class laravel.dto.environment
 ---@field name string
----@field condition table|nil
----@field commands table
+---@field map table<string, string[]>
 local Environment = {}
 
 local cache = {}
 
 ---@param env table
----@return Environment
+---@return laravel.dto.environment
 function Environment:new(env)
-  local obj = {
+  local instance = {
     name = env.name,
-    condition = env.condition or nil,
-    commands = env.commands or {},
+    map = env.map or {},
   }
 
-  setmetatable(obj, self)
+  setmetatable(instance, self)
   self.__index = self
 
-  return obj
-end
-
----@return boolean
-function Environment:check()
-  if not self.condition then
-    return true
-  end
-
-  for _, file in pairs(self.condition.file_exists or {}) do
-    if vim.fn.filereadable(file) ~= 1 then
-      return false
-    end
-  end
-
-  for _, exec in pairs(self.condition.executable or {}) do
-    if vim.fn.executable(exec) == 0 then
-      return false
-    end
-  end
-
-  return true
+  return instance
 end
 
 ---@param name string
----@return table|nil
+---@return string[], laravel.error
 function Environment:executable(name)
   if cache[name] then
     return cache[name]
   end
 
-  -- check commands directly by name
-  if self.commands[name] then
-    cache[name] = self.commands[name]
-    return cache[name]
+  local cmd = { name }
+  if self.map[name] then
+    cmd = self.map[name]
   end
 
-  for _, value in pairs(self.commands) do
-    if vim.tbl_contains(value.commands or {}, name) then
-      -- is on the list have to process it
-      if value.docker then
-        -- is set to run from docker
-        if not value.docker.container then
-          error(
-            "Configuration indicates docker but there is no container information, check the configuration",
-            vim.log.levels.ERROR
-          )
-        end
-
-        local container = value.docker.container.default
-        if value.docker.container.env and get_env(value.docker.container.env) then
-          container = get_env(value.docker.container.env)
-        end
-
-        if not container then
-          error("Could not resolve container name check the configuration", vim.log.levels.ERROR)
-        end
-
-        if not value.docker.exec then
-          error("Need to define a docker exec command", vim.log.levels.ERROR)
-        end
-
-        cache[name] = combine_tables(value.docker.exec, { container, name })
-
-        return cache[name]
-      end
-
-      if value.prefix then
-        cache[name] = combine_tables(value.prefix, { name })
-
-        return cache[name]
-      end
-    end
+  if vim.fn.executable(cmd[1]) == 0 then
+    return {}, Error:new(string.format("Executable '%s' not found needed for %s", cmd[1], table.concat(cmd, " ")))
   end
 
-  -- if is not define look for the executable in the system
-  if vim.fn.executable(name) == 1 then
-    cache[name] = { name }
+  cache[name] = cmd
 
-    return { name }
-  end
-
-  return nil
+  return cmd
 end
 
 return Environment

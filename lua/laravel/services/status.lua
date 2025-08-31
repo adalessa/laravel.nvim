@@ -1,20 +1,22 @@
----@class LaravelStatusService
----@field artisan LaravelArtisanService
+local nio = require("nio")
+---@class laravel.services.status
+---@field api laravel.services.api
 ---@field values table
 ---@field frequency number
 local status = {}
 
 local function setInterval(interval, callback)
   local timer = vim.uv.new_timer()
+  assert(timer, "Failed to create timer")
   timer:start(interval, interval, vim.schedule_wrap(callback))
 
   return timer
 end
 
-function status:new(artisan, frequency)
+function status:new(api)
   local instance = {
-    artisan = artisan,
-    frequency = frequency or 120,
+    api = api,
+    frequency = 120,
     values = {
       php = nil,
       laravel = nil,
@@ -27,22 +29,27 @@ function status:new(artisan, frequency)
   return instance
 end
 
+---@async
 function status:update()
   if self.refresh then
     self.refresh()
   end
 end
 
+---@async
 function status:start()
-  local refresh = function()
-    self.artisan:info():thenCall(function(info)
-      if not info then
-        return
-      end
-      self.values.laravel = info.environment.laravel_version
-      self.values.php = info.environment.php_version
-    end):catch(function() end)
-  end
+  local refresh = nio.create(function()
+    local response = self.api:run("artisan about --json")
+    if response:failed() then
+      return
+    end
+    local info = response:json()
+    if not info then
+      return
+    end
+    self.values.laravel = info.environment.laravel_version
+    self.values.php = info.environment.php_version
+  end, 0)
 
   self.refresh = refresh
 

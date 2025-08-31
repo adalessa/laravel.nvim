@@ -1,14 +1,14 @@
 --- ApiResponse class represents the result of a command execution.
----@class ApiResponse
+---@class laravel.dto.apiResponse
 ---@field stdout string[] The standard output of the command execution.
 ---@field exit_code number The exit code indicating how the command ended (0 for success, non-zero for failure).
 ---@field stderror string[] The standard error output in case of errors during command execution.
 local ApiResponse = {}
 
 ---@param stdout string[]
----@param exit_code number
+---@param exit_code number|nil
 ---@param stderror string[]
----@return ApiResponse
+---@return laravel.dto.apiResponse
 function ApiResponse:new(stdout, exit_code, stderror)
   local obj = {
     stdout = stdout,
@@ -24,6 +24,9 @@ end
 
 ---@return boolean
 function ApiResponse:successful()
+  if self.exit_code == nil then
+    return vim.tbl_isempty(self.stderror)
+  end
   return self.exit_code == 0
 end
 
@@ -46,7 +49,7 @@ end
 function ApiResponse:json()
   local ok, res = pcall(vim.json.decode, self:content(), { luanil = { object = true } })
   if not ok then
-    return nil
+    return {}
   end
 
   return res

@@ -14,6 +14,6 @@ describe("api response", function()
       [[not a json]],
     }, 0, {})
 
-    assert.equals(nil, resp:json())
+    assert.same({}, resp:json())
   end)
 end)

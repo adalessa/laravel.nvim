@@ -1,46 +1,39 @@
-local combine_tables = require("laravel.utils").combine_tables
-local is_make_command = require("laravel.utils").is_make_command
-local find_class = require("laravel.utils").find_class_from_make_output
+local Class = require("laravel.utils.class")
+local is_make_command = require("laravel.utils.init").is_make_command
+local find_class = require("laravel.utils.init").find_class_from_make_output
 
----@class LaravelRunner
----@field env LaravelEnvironment
----@field options LaravelOptionsService
+---@class laravel.services.runner
+---@field config laravel.services.config
 ---@field ui_handler LaravelUIHandler
-local runner = {}
+---@field command_generator laravel.services.command_generator
+local runner = Class({
+  config = "laravel.services.config",
+  ui_handler = "laravel.services.ui_handler",
+  command_generator = "laravel.services.command_generator",
+})
 
----@param env LaravelEnvironment
----@param options LaravelOptionsService
-function runner:new(env, options, ui_handler)
-  local instance = {
-    env = env,
-    ui_handler = ui_handler,
-    options = options,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
----@param cmd string
+---@param program string
 ---@param args string[]
 ---@param opts table|nil
-function runner:run(cmd, args, opts)
-  local executable = self.env:get_executable(cmd)
-  if not executable then
-    error(string.format("Executable %s not found", cmd), vim.log.levels.ERROR)
-    return
+function runner:run(program, args, opts)
+  args = args or {}
+  opts = opts or {}
+  local command = self.command_generator:generate(program, args)
+  if not command then
+    return {}, string.format("Command %s not found", program)
   end
 
-  opts = vim.tbl_extend("force", self.options:get().commands_options[args[1]] or {}, opts or {})
+  local subCommand = args[1] or vim.split(program, " ")[2] or nil
 
-  local command = combine_tables(executable, args)
+  if subCommand then
+    opts = vim.tbl_extend("force", self.config("commands_options")[subCommand] or {}, opts)
+  end
 
   local instance = self.ui_handler:handle(opts)
 
   instance:mount()
 
-  local job_id = vim.fn.termopen(table.concat(command, " "))
+  local job_id = vim.fn.jobstart(table.concat(command, " "), { term = true })
 
   instance:on("TermClose", function()
     if is_make_command(args[1]) then
@@ -53,10 +46,11 @@ function runner:run(cmd, args, opts)
         end)
       end
     end
+
     vim.api.nvim_exec_autocmds("User", {
       pattern = "LaravelCommandRun",
       data = {
-        cmd = cmd,
+        cmd = program,
         args = args,
         options = opts,
         job_id = job_id,

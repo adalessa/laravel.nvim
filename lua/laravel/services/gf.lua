@@ -1,14 +1,10 @@
-local gf = {}
+local Class = require("laravel.utils.class")
 
-function gf:new()
-  local instance = {
-  }
-  setmetatable(instance, self)
-  self.__index = self
-  return instance
-end
+---@class laravel.services.gf
+local gf = Class()
 
-function gf:cursor_on_resource()
+---@return false|TSNode, string|nil
+function gf:cursorOnResource()
     local node = vim.treesitter.get_node()
     if not node then
         return false

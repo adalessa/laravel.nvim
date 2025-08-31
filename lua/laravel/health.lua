@@ -9,8 +9,6 @@ local report_warn = vim.health.warn
 local report_error = vim.health.error
 
 M.check = function()
-  report_start("Laravel")
-
   report_start("External Dependencies")
   if vim.fn.executable("rg") == 1 then
     report_ok("rg installed")
@@ -30,13 +28,13 @@ M.check = function()
     )
   end
 
-  local ok_promise, _ = pcall(require, "promise")
-  if ok_promise then
-    report_ok("Promise-async is installed")
+  local ok_nio, _ = pcall(require, "nio")
+  if ok_nio then
+    report_ok("Nio is Installed")
   else
     report_error(
-      "Promise Async is not installed, this is use to handle async functionalities",
-      { "Install it from `https://github.com/kevinhwang91/promise-async`" }
+      "NIO is not installed, this is use to handle async functionalities",
+      { "Install it from `https://github.com/nvim-neotest/nvim-nio`" }
     )
   end
 
@@ -51,10 +49,12 @@ M.check = function()
   end
 
   report_start("Pickers")
-  report_info("Enabled: " .. (app("options"):get().features.pickers.enable and "Yes" or "No"))
-  if app("options"):get().features.pickers.enable then
-    report_info("Selected Picker: " .. app("options"):get().features.pickers.provider)
-    local provider = app("pickers." .. app("options"):get().features.pickers.provider)
+  local enable = app("laravel.services.config").get("features.pickers.enable")
+  report_info("Enabled: " .. (enable and "Yes" or "No"))
+  if enable then
+    local picker = app("laravel.services.config").get("features.pickers.provider")
+    report_info("Selected Picker: " .. picker)
+    local provider = app("pickers." .. picker)
     if provider.check() then
       report_ok("Picker check successfull")
     else
@@ -67,7 +67,7 @@ M.check = function()
 
   report_start("Environment")
 
-  if not app("env"):is_active() then
+  if not app:isActive() then
     report_error(
       "Environment not configure for this directory, no more checks",
       { "Check project is laravel, current directory `:pwd` is the root of laravel project" }
@@ -83,10 +83,24 @@ M.check = function()
   report_info("Commands: ")
   report_info(vim.inspect(app("env").environment.commands))
 
-  report_start("Composer Dependencies")
+  -- check if the environment variable is set and if the environment matches
+  local get_env = require("laravel.utils.init").get_env
+  local environmentEnvVariable = get_env(app("laravel.services.config").get("environments.env_variable"))
+  if environmentEnvVariable then
+    report_info("Environment variable set to: " .. environmentEnvVariable)
+    if environmentEnvVariable ~= app("env").environment.name then
+      report_warn("Environment variable does not match the current environment", {})
+    else
+      report_ok("Environment variable matches the current environment")
+    end
+  end
 
-  if not app("env"):get_executable("composer") then
+  report_start("Composer")
+
+  if not app("env"):getExecutable("composer") then
     report_error("Composer executable not found can't check dependencies")
+  else
+    report_ok("Composer executable found")
   end
 end
 

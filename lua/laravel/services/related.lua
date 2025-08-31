@@ -1,4 +1,7 @@
-local related = {}
+local Class = require("laravel.utils.class")
+---@class laravel.services.related
+---@field model laravel.services.model
+local related = Class({ model = "laravel.services.model" })
 
 local types = { "observers", "relations", "policy" }
 
@@ -28,39 +31,33 @@ local build_relation = function(info, relation_type)
   return nil
 end
 
-function related:new(model)
-  local instance = {
-    model = model,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
-
+---@async
 function related:get(bufnr)
-  return self.model:parse(bufnr):thenCall(function(info)
-    local relations = {}
-    for _, relation_type in ipairs(types) do
-      if info[relation_type] and #info[relation_type] > 0 then
-        if type(info[relation_type]) == "table" and info[relation_type][1] then
-          for _, inf in ipairs(info[relation_type]) do
-            local relation = build_relation(inf, relation_type)
-            if relation ~= nil then
-              table.insert(relations, relation)
-            end
-          end
-        else
-          local relation = build_relation({ info[relation_type] }, relation_type)
+  local info, err = self.model:getByBuffer(bufnr)
+  if err then
+    return {}, "Error getting model: " .. err
+  end
+
+  local relations = {}
+  for _, relation_type in ipairs(types) do
+    if info[relation_type] and #info[relation_type] > 0 then
+      if type(info[relation_type]) == "table" and info[relation_type][1] then
+        for _, inf in ipairs(info[relation_type]) do
+          local relation = build_relation(inf, relation_type)
           if relation ~= nil then
             table.insert(relations, relation)
           end
         end
+      else
+        local relation = build_relation({ info[relation_type] }, relation_type)
+        if relation ~= nil then
+          table.insert(relations, relation)
+        end
       end
     end
+  end
 
-    return relations
-  end)
+  return relations
 end
 
 return related

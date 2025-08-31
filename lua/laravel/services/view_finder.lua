@@ -1,23 +1,22 @@
-local utils = require("laravel.utils")
+local utils = require("laravel.utils.init")
+local Class = require("laravel.utils.class")
+local notify = require("laravel.utils.notify")
 
-local view_finder = {}
+-- FIX: should not have logic of opening and more in a service or notification
 
-function view_finder:new(views, class)
-  local instance = {
-    views_service = views,
-    class_service = class,
-  }
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+---@class laravel.services.view_finder
+---@field views_service laravel.services.views
+---@field class_service laravel.services.class
+local view_finder = Class({
+  views_service = "laravel.services.views",
+  class_service = "laravel.services.class",
+})
 
 ---@param view string
 function view_finder:usage(view)
   local matches = utils.runRipgrep(string.format("view\\(['\\\"]%s['\\\"]", view))
   if #matches == 0 then
-    vim.notify("No usage of this view found", vim.log.levels.WARN)
+    notify.warn("No usage of this view found: " .. view)
   elseif #matches == 1 then
     vim.cmd("edit " .. matches[1].file)
   else
@@ -34,37 +33,50 @@ function view_finder:usage(view)
   end
 end
 
+---@async
 ---@param view string
 function view_finder:definition(view)
-  self.views_service:open(view)
+  local path, err = self.views_service:pathFromName(view)
+  if err then
+    notify.error(err)
+    return
+  end
+  vim.schedule(function()
+    vim.cmd("edit " .. path)
+  end)
 end
 
+---@async
 function view_finder:handle(bufnr)
   local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
   if ft == "blade" then
-    return self.views_service:name(
-      vim.uri_to_fname(vim.uri_from_bufnr(bufnr)),
-      vim.schedule_wrap(function(view)
-        self:usage(view)
-      end)
-    )
-  end
-  if ft == "php" then
-    return self.class_service:views(bufnr):thenCall(function(views)
-      if #views == 0 then
-        vim.notify("No views found", vim.log.levels.WARN)
+    local fname = vim.uri_to_fname(vim.uri_from_bufnr(bufnr))
+    local name, err = self.views_service:nameFromPath(fname)
+    if err then
+      notify.error(string.format("Failed to get view name: %s for %s", err, fname))
+      return
+    end
+
+    self:usage(name)
+  elseif ft == "php" then
+    local views, err = self.class_service:views(bufnr)
+    if err then
+      notify.error(err)
+      return
+    end
+    if #views == 0 then
+      notify.warn("No views found")
+      return
+    end
+    if #views == 1 then
+      self:definition(views[1])
+      return
+    end
+    vim.ui.select(views, { prompt = "View: " }, function(view)
+      if not view then
         return
       end
-      if #views == 1 then
-        self:definition(views[1])
-        return
-      end
-      vim.ui.select(views, { prompt = "View: " }, function(view)
-        if not view then
-          return
-        end
-        self:definition(view)
-      end)
+      self:definition(view)
     end)
   end
 end

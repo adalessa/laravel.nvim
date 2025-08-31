@@ -1,23 +1,21 @@
-local status_provider = {}
+local events = require "laravel.events"
 
----@param app LaravelApp
+local status_provider = { name = "laravel.providers.status_provider" }
+
 function status_provider:register(app)
-  app:singeltonIf("status", "laravel.services.status")
-
-  app:associate("status", {
-    frequency = 120,
-  })
+  app:singletonIf("laravel.services.status")
+  app:alias("status", "laravel.services.status")
 end
 
----@param app LaravelApp
+---@param app laravel.core.app
 function status_provider:boot(app)
-  if not app("env"):is_active() then
+  if not app:isActive() then
     return
   end
 
   app("status"):start()
 
-  local group = vim.api.nvim_create_augroup("laravel", {})
+  local group = vim.api.nvim_create_augroup("laravel.status", {})
 
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
@@ -30,7 +28,7 @@ function status_provider:boot(app)
   })
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
-    pattern = { "LaravelFlushCache" },
+    pattern = { events.CACHE_FLUSHED },
     callback = function()
       app("status"):update()
     end,

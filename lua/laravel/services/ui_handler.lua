@@ -1,19 +1,22 @@
 local Popup = require("nui.popup")
 local Split = require("nui.split")
 
-
 ---@class LaravelUIHandler
 ---@field builders table<string, function>
----@field options LaravelOptionsProvider
-local ui_handler = {}
+---@field config laravel.services.config
+local ui_handler = {
+  _inject = {
+    config = "laravel.services.config",
+  }
+}
 
-function ui_handler:new(options)
+function ui_handler:new(config)
   local instance = {
     builders = {
       split = Split,
       popup = Popup,
     },
-    options = options,
+    config = config,
   }
 
   setmetatable(instance, self)
@@ -24,12 +27,9 @@ end
 
 ---@param opts table
 function ui_handler:handle(opts)
-  local type = opts.ui or self.options:get().ui.default
+  local type = opts.ui or self.config("ui.default")
 
-
-  local instance = self.builders[type](
-    opts.nui_opts or self.options:get().ui.nui_opts[type]
-  )
+  local instance = self.builders[type](opts.nui_opts or self.config("ui.nui_opts")[type])
 
   return instance
 end

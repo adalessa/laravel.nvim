@@ -27,6 +27,26 @@ The plugin supports different types of environment, like local, sail, docker com
 ![model-info](imgs/route-info.png)
 ![model-info](imgs/composer-info.png)
 
+## Completion
+The plugin offers completion for several elements of the code like
+- routes
+- views (blade)
+- config keys
+- environment variables (from .env)
+- model columns
+
+The completion is written for cmp, and is register with the name `laravel` so it can be added
+to your config.
+
+For blink you can use [compat](https://github.com/Saghen/blink.compat)
+```lua
+laravel = {
+    name = "laravel",
+    module = "blink.compat.source",
+    score_offset = 95, -- show at a higher priority than lsp
+},
+```
+
 ## Actions
 The plugin provides an action system like the lsp action, but only for laravel.
 

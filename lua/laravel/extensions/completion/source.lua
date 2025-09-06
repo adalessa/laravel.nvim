@@ -39,7 +39,7 @@ function source:get_trigger_characters()
 end
 
 function source:complete(params, callback)
-  if params.context.filetype ~= "php" then
+  if vim.tbl_contains({"php", "blade", "tinker"}, params.context.filetype, {}) then
     callback({ items = {} })
   end
 

@@ -91,12 +91,24 @@ function laravel_provider:boot(app)
     end,
   })
 
+  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    group = group,
+    pattern = { "*.blade.php" },
+    callback = function()
+      app("laravel.services.cache"):forget("laravel-views")
+    end,
+  })
+
+
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
     pattern = { "LaravelCommandRun" },
     callback = function(ev)
       if ev.data.cmd == "composer" then
         app("laravel.services.cache"):forget("laravel-composer-commands")
+      elseif require("laravel.utils").is_make_command(ev.data.args[1]) then
+        app("laravel.services.cache"):forget("laravel-views")
+        app("laravel.services.cache"):forget("laravel-commands")
       end
     end,
   })

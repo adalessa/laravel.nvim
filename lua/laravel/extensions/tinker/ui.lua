@@ -57,6 +57,7 @@ function ui:_create_layout(bufnr, name, callback)
         width = "80%",
         height = "80%",
       },
+      relative = "editor",
     },
     Layout.Box({
       Layout.Box(self.editor, { size = "60%" }),

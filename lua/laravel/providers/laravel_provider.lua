@@ -59,7 +59,7 @@ function laravel_provider:register(app)
   app:alias("log", "laravel.utils.log")
   app:addCommand("laravel.commands.logs.open", function()
     return {
-      signature = "logs:open",
+      signature = "plugin-logs:open",
       description = "Open Laravel.nvim logs",
       handle = function()
         vim.cmd("edit " .. app("laravel.utils.log").path)

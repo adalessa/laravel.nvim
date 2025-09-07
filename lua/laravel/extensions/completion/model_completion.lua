@@ -10,6 +10,12 @@ local function getPosition(params)
   while node do
     if node:type() == "scoped_call_expression" or node:type() == "member_call_expression" then
       local start_row, start_col, end_row, end_col = node:range()
+      if
+        vim.startswith(vim.treesitter.get_node_text(node, params.context.bufnr), "test")
+        or vim.startswith(vim.treesitter.get_node_text(node, params.context.bufnr), "it")
+      then
+        return nil
+      end
       return {
         character = start_col,
         line = start_row,

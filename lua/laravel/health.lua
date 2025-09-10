@@ -16,6 +16,15 @@ M.check = function()
     report_error("ripgrep is missing, is required for finding view usage", { "Installed from your package manager" })
   end
 
+  if vim.fn.executable("jq") == 1 then
+    report_ok("jq installed")
+  else
+    report_warn(
+      "jq is missing, although it is not required, is a nice tool to have",
+      { "Install it from your package manager or from `https://jqlang.org/download/`" }
+    )
+  end
+
   report_start("Plugin Dependencies")
 
   local ok_nui, _ = pcall(require, "nui.popup")

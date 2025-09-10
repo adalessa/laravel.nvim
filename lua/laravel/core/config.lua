@@ -65,8 +65,8 @@ function config:save()
   end
 
   local json = vim.json.encode(self.data)
-  if vim.fn.executable("jq") then
-    local out = vim.system({"jq"}, {stdin = json}):wait()
+  if vim.fn.executable("jq") == 1 then
+    local out = vim.system({ "jq" }, { stdin = json }):wait()
     json = out.stdout
   end
   file:write(json)

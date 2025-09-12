@@ -9,8 +9,9 @@ local preview = require("laravel.pickers.common.preview")
 local routes_picker = {}
 
 function routes_picker.run(opts, routes)
+  opts = opts or {}
   pickers
-    .new(opts or {}, {
+    .new(opts, {
       prompt_title = "Artisan Routes",
       finder = finders.new_table({
         results = routes,

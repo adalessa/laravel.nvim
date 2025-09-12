@@ -18,6 +18,7 @@ function telescope_provider:register(app)
         resources = "laravel.pickers.providers.telescope.resources",
         commands = "laravel.pickers.providers.telescope.commands",
         history = "laravel.pickers.providers.telescope.history",
+        laravel = "laravel.pickers.providers.telescope.laravel"
       },
     }
   end)

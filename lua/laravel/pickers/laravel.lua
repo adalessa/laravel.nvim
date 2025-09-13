@@ -11,6 +11,16 @@ function laravel_picker:run(picker, opts)
     return a.signature < b.signature
   end)
 
+  vim.iter(items):each(function(item)
+    local fn = item.handle
+    item.handle = function(...)
+      local args = ...
+      require("nio").run(function()
+        fn(args)
+      end)
+    end
+  end)
+
   vim.schedule(function()
     picker.run(opts, items)
   end)

@@ -1,9 +1,12 @@
 local nio = require "nio"
 local M = {}
 
-function M.runRipgrep(pattern)
+function M.runRipgrep(pattern, dir)
   -- Build the ripgrep command
   local rg_command = string.format('rg --vimgrep "%s"', pattern)
+  if dir then
+    rg_command = rg_command .. " " .. dir
+  end
 
   -- Run the command and capture the output
   local result = nio.fn.systemlist(rg_command)

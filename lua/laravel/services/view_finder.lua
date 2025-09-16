@@ -14,7 +14,7 @@ local view_finder = Class({
 
 ---@param view string
 function view_finder:usage(view)
-  local matches = utils.runRipgrep(view)
+  local matches = utils.runRipgrep(view, "app")
   if #matches == 0 then
     notify.warn("No usage of this view found: " .. view)
   elseif #matches == 1 then

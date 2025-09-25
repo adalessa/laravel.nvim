@@ -63,13 +63,15 @@ function tinker:open(filename)
   end
 
   local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(file))
-  vim.cmd("write")
+  pcall(function()
+    vim.cmd("write")
+  end)
   vim.fn.bufload(bufnr)
 
   self.ui:open(bufnr, filename, function()
     self.data.file = {}
 
-    if Laravel.app('laravel.extensions.dump_server.lib'):isRunning() then
+    if Laravel.app("laravel.extensions.dump_server.lib"):isRunning() then
       notify.warn("Dump server is running, please stop it before using tinker")
 
       return

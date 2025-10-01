@@ -8,46 +8,12 @@ local laravel_provider = { name = "laravel.providers.laravel_provider" }
 
 ---@param app laravel.core.app
 function laravel_provider:register(app)
-  app:alias("api", "laravel.services.api")
-  app:alias("tinker", "laravel.services.tinker")
-
-  -- SERVICES
-  app:alias("class", "laravel.services.class")
-  app:alias("env_vars", "laravel.services.env")
-  app:alias("model", "laravel.services.model")
-  app:alias("related", "laravel.services.related")
-  app:alias("composer", "laravel.services.composer")
-  app:alias("runner", "laravel.services.runner")
-  app:alias("view_finder", "laravel.services.view_finder")
-  app:alias("views", "laravel.services.views")
-  app:alias("gf", "laravel.services.gf")
-
   app:singletonIf("laravel.services.cache")
-  app:alias("cache", "laravel.services.cache")
 
   app:singletonIf("laravel.core.env")
-  app:alias("env", "laravel.core.env")
 
   app:singletonIf("laravel.core.config", function()
     return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
-  end)
-  app:addCommand("laravel.commands.configure", function()
-    return {
-      signature = "env:configure",
-      description = "Configure Laravel.nvim environment",
-      handle = function()
-        app("laravel.core.env"):configure()
-      end,
-    }
-  end)
-  app:addCommand("laravel.commands.configure.open", function()
-    return {
-      signature = "env:configure:open",
-      description = "Open Laravel.nvim configuration for environments",
-      handle = function()
-        vim.cmd("edit " .. app("laravel.core.config").path)
-      end,
-    }
   end)
 
   app:singletonIf("laravel.utils.log", function()
@@ -55,16 +21,6 @@ function laravel_provider:register(app)
       vim.fn.stdpath("data") .. "/laravel/logs",
       app("laravel.services.config")("debug_level")
     )
-  end)
-  app:alias("log", "laravel.utils.log")
-  app:addCommand("laravel.commands.logs.open", function()
-    return {
-      signature = "plugin-logs:open",
-      description = "Open Laravel.nvim logs",
-      handle = function()
-        vim.cmd("edit " .. app("laravel.utils.log").path)
-      end,
-    }
   end)
 end
 
@@ -96,20 +52,6 @@ function laravel_provider:boot(app)
     pattern = { "*.blade.php" },
     callback = function()
       app("laravel.services.cache"):forget("laravel-views")
-    end,
-  })
-
-
-  vim.api.nvim_create_autocmd({ "User" }, {
-    group = group,
-    pattern = { "LaravelCommandRun" },
-    callback = function(ev)
-      if ev.data.cmd == "composer" then
-        app("laravel.services.cache"):forget("laravel-composer-commands")
-      elseif require("laravel.utils").is_make_command(ev.data.args[1]) then
-        app("laravel.services.cache"):forget("laravel-views")
-        app("laravel.services.cache"):forget("laravel-commands")
-      end
     end,
   })
 

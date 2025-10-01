@@ -1,7 +1,7 @@
 local Class = require("laravel.utils.class")
-local events = require("laravel.events")
 local notify = require("laravel.utils.notify")
 local Task = require("laravel.task")
+local record_added = require("laravel.extensions.dump_server.record_added_event")
 
 ---@class laravel.extensions.dump_server.lib
 ---@field command_generator laravel.services.command_generator
@@ -149,9 +149,7 @@ function lib:_stdout(err, data)
           table.insert(self.records[self.current_index].headers, { key = key, value = vim.trim(value) })
         else
           table.insert(self.records[self.current_index].body, line)
-          vim.api.nvim_exec_autocmds("user", {
-            pattern = events.DUMP_SERVER_RECORD_ADDED,
-          })
+          record_added.dispatch()
         end
       end
     end

@@ -1,5 +1,5 @@
 local app = require("laravel.core.app")
-local split = require("laravel.utils.init").split
+local split = require("laravel.utils").split
 local actions = require("laravel.pickers.common.actions")
 local notify = require("laravel.utils.notify")
 local nio    = require("nio")

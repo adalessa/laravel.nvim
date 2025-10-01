@@ -1,5 +1,4 @@
-local events = require("laravel.events")
-local nio    = require("nio")
+local nio = require("nio")
 
 ---@class LaravelDumpServerProvider : laravel.providers.provider
 local dump_server_provider = {}
@@ -10,19 +9,18 @@ function dump_server_provider:register(app)
   vim.tbl_map(function(command)
     app:addCommand("laravel.extensions.dump_server." .. command.signature, command)
   end, require("laravel.extensions.dump_server.commands"))
+
+  app:bind("laravel.extensions.dump_server.ui_update_listener", function()
+    return {
+      event = require("laravel.extensions.dump_server.record_added_event"),
+      hanle = function()
+        app("laravel.extensions.dump_server.ui"):update()
+      end,
+    }
+  end, { tags = { "listener" } })
 end
 
 function dump_server_provider:boot(app)
-  local group = vim.api.nvim_create_augroup("laravel.extensions.dump_server", {})
-
-  vim.api.nvim_create_autocmd({ "User" }, {
-    group = group,
-    pattern = events.DUMP_SERVER_RECORD_ADDED,
-    callback = function()
-      app("laravel.extensions.dump_server.ui"):update()
-    end,
-  })
-
   ---@type laravel.extensions.dump_server.lib
   local lib = app:make("laravel.extensions.dump_server.lib")
   Laravel.extensions.dump_server = {

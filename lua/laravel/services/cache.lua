@@ -1,8 +1,9 @@
 local Class = require("laravel.utils.class")
+local cache_flushed_event = require("laravel.events.cache_flushed_event")
 
 ---@class laravel.services.cache
 ---@field store table<string, any>
-local cache = Class(nil, {store = {}})
+local cache = Class(nil, { store = {} })
 
 ---@param key string
 ---@param default any
@@ -96,6 +97,13 @@ function cache:pull(key, default)
 end
 
 function cache:forget(key)
+  if type(key) == table then
+    for _, k in ipairs(key) do
+      self:forget(k)
+    end
+    return
+  end
+
   self.store[key] = nil
 end
 
@@ -109,6 +117,7 @@ end
 
 function cache:flush()
   self.store = {}
+  cache_flushed_event.dispatch()
 end
 
 return cache

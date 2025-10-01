@@ -1,4 +1,4 @@
-local nio = require "nio"
+local nio = require("nio")
 local M = {}
 
 function M.runRipgrep(pattern, dir)
@@ -93,6 +93,24 @@ function M.get_line_indent(line)
   local line_content = vim.fn.getline(line)
 
   return string.match(line_content, "^%s*")
+end
+
+---@param patterns string[]
+---@return string[]
+function M.get_modules(patterns)
+  return vim
+    .iter(patterns)
+    :map(function(pattern)
+      return vim.api.nvim_get_runtime_file(pattern, true)
+    end)
+    :flatten()
+    :map(function(file)
+      return file:match("lua/(.+)%.lua$")
+    end)
+    :filter(function(rel)
+      return rel ~= nil
+    end)
+    :totable()
 end
 
 return M

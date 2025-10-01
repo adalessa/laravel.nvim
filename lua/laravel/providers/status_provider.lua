@@ -1,10 +1,17 @@
-local events = require "laravel.events"
-
 local status_provider = { name = "laravel.providers.status_provider" }
 
 function status_provider:register(app)
   app:singletonIf("laravel.services.status")
   app:alias("status", "laravel.services.status")
+
+  app:bind("laravel.listeners.status_update_listener", function()
+    return {
+      event = require("laravel.events.cache_flushed_event"),
+      hanle = function()
+        app("status"):update()
+      end,
+    }
+  end, { tags = { "listener" } })
 end
 
 ---@param app laravel.core.app
@@ -14,25 +21,6 @@ function status_provider:boot(app)
   end
 
   app("status"):start()
-
-  local group = vim.api.nvim_create_augroup("laravel.status", {})
-
-  vim.api.nvim_create_autocmd({ "User" }, {
-    group = group,
-    pattern = { "LaravelCommandRun" },
-    callback = function(ev)
-      if ev.data.cmd == "composer" then
-        app("status"):update()
-      end
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "User" }, {
-    group = group,
-    pattern = { events.CACHE_FLUSHED },
-    callback = function()
-      app("status"):update()
-    end,
-  })
 end
 
 return status_provider

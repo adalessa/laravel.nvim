@@ -42,6 +42,7 @@ return {
   },
   providers = {
     require("laravel.providers.laravel_provider"),
+    require("laravel.providers.facades_provider"),
     require("laravel.providers.history_provider"),
     require("laravel.providers.pickers_provider"),
     require("laravel.providers.telescope_provider"),
@@ -52,6 +53,7 @@ return {
     require("laravel.providers.status_provider"),
     require("laravel.providers.actions_provider"),
     require("laravel.providers.extensions_provider"),
+    require("laravel.providers.listeners_provider"),
   },
   user_providers = {},
 }

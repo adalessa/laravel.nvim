@@ -1,14 +1,12 @@
 local app = require("laravel.core.app")
+local nio = require("nio")
 
-local command = {
+return {
   signature = "picker:related",
   description = "Open the related picker of the current file",
+  handle = nio.create(function()
+    ---@type laravel.managers.pickers_manager
+    local pickers = app:make("pickers_manager")
+    pickers:run("related")
+  end, 1),
 }
-
-function command:handle()
-  ---@type laravel.managers.pickers_manager
-  local pickers = app:make("pickers_manager")
-  pickers:run("related")
-end
-
-return command

@@ -38,7 +38,7 @@ end
 
 -- helper
 function app:addCommand(module, concrete)
-  self:bind(module, concrete or module, { tags = { "laravel.command" } })
+  self:bind(module, concrete or module, { tags = { "command" } })
 end
 
 -- Binding

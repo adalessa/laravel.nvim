@@ -63,13 +63,13 @@ function tinker:open(filename)
   end
 
   local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(file))
-  pcall(function()
-    vim.cmd("write")
-  end)
   vim.fn.bufload(bufnr)
 
-  self.ui:open(bufnr, filename, function()
-    self.data.file = {}
+  self.ui:open(bufnr, filename, function(_, info_callback)
+    pcall(function()
+      vim.cmd("write")
+    end)
+    self.data[filename] = {}
 
     if Laravel.app("laravel.extensions.dump_server.lib"):isRunning() then
       notify.warn("Dump server is running, please stop it before using tinker")
@@ -78,6 +78,13 @@ function tinker:open(filename)
     end
 
     local lines = get_lines(bufnr)
+
+    table.insert(lines, 1, "$_timer = microtime(true);")
+    table.insert(lines, "$_total =  (microtime(true) - $_timer) * 1000;")
+    table.insert(
+      lines,
+      "echo 'tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
+    )
 
     local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
     if not cmd then
@@ -90,6 +97,23 @@ function tinker:open(filename)
       stdeout_buffered = true,
       on_stdout = function(_, data)
         data = cleanResult(data)
+
+        local last = data[#data] or ""
+        if last:match("^tinker_info:") then
+          local info = last:gsub("^tinker_info:", "")
+          local ok, decoded = pcall(vim.fn.json_decode, info)
+          if ok and decoded then
+            table.remove(data, #data)
+            if info_callback then
+              info_callback(decoded.time, decoded.memory)
+            end
+            -- table.insert(
+            --   data,
+            --   ("--- (Time: %.2fms | Memory: %.2fMB) ---"):format(decoded.time or 0, decoded.memory or 0)
+            -- )
+          end
+        end
+
         vim.fn.chansend(channelId, data)
         for _, line in ipairs(data) do
           table.insert(self.data[filename], line)

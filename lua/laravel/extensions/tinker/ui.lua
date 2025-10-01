@@ -70,7 +70,14 @@ function ui:_create_layout(bufnr, name, callback)
   end)
 
   self.editor:map("n", "<cr>", function()
-    callback(self.editor.bufnr)
+    callback(self.editor.bufnr, function(time, memory)
+      -- self.result.border.text.bottom = NuiText(string.format("Execution time: %s, Memory: %s", time, memory), "comment")
+      self.result.border:set_text(
+        "bottom",
+        NuiText(string.format("[Time: %.2f ms - Memory: %.2f MB]", time, memory), "@string"),
+        "center"
+      )
+    end)
   end)
 
   self.result:map("n", "q", function()

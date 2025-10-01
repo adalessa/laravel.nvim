@@ -1,6 +1,6 @@
 local Class = require("laravel.utils.class")
-local is_make_command = require("laravel.utils.init").is_make_command
-local find_class = require("laravel.utils.init").find_class_from_make_output
+local is_make_command = require("laravel.utils").is_make_command
+local find_class = require("laravel.utils").find_class_from_make_output
 local command_run_event = require("laravel.events.command_run_event")
 local entity_created_event = require("laravel.events.entity_created_event")
 

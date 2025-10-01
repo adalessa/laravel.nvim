@@ -26,18 +26,7 @@ end
 
 ---@param app laravel.core.app
 function laravel_provider:boot(app)
-  app:make("env"):boot()
-
-  require("laravel.utils.treesitter_queries")
-
-  local group = vim.api.nvim_create_augroup("laravel", {})
-
-  vim.api.nvim_create_autocmd({ "DirChanged" }, {
-    group = group,
-    callback = function()
-      app:make("env"):boot()
-    end,
-  })
+  local group = vim.api.nvim_create_augroup("laravel_provider", {})
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     group = group,

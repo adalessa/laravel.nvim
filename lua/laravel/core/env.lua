@@ -1,4 +1,4 @@
-local combine_tables = require("laravel.utils.init").combine_tables
+local combine_tables = require("laravel.utils").combine_tables
 local Environment = require("laravel.dto.environment")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")

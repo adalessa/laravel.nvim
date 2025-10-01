@@ -2,7 +2,6 @@ local Layout = require("nui.layout")
 local Popup = require("nui.popup")
 local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
-local preview = require("laravel.pickers.common.preview")
 
 local function scroll_fn(popup, direction)
   return function()
@@ -39,7 +38,7 @@ return function(command, opts)
       },
     },
     win_options = {
-      winhighlight = "Normal:LaravelPrompt",
+      winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder",
     },
   }, {
     prompt = prompt,
@@ -55,7 +54,7 @@ return function(command, opts)
       },
     },
     win_options = {
-      winhighlight = "Normal:LaravelHelp",
+      winhighlight = "Normal:LaravelHelp,FloatBorder:LaravelHelpBorder",
     },
   })
 

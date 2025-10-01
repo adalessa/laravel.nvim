@@ -46,6 +46,7 @@ return {
       win_options = {
         number = false,
         relativenumber = false,
+        winhighlight = "Normal:LaravelPopUpNormal,FloatBorder:LaravelPopUpFloatBorder",
       },
     },
   },

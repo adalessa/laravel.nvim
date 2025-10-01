@@ -10,6 +10,7 @@ function M:bootstrap(app, opts)
   self:registerUserProviders(app)
 
   self:initGlobal(app)
+  self:coreBoot(app)
 
   self:bootProviders(app)
   self:bootUserProviders(app)
@@ -26,6 +27,18 @@ function M:initGlobal(app)
       end
 
       return app:make(...)
+    end,
+  })
+end
+
+function M:coreBoot(app)
+  app:make("env"):boot()
+
+  local group = vim.api.nvim_create_augroup("laravel.core", {})
+  vim.api.nvim_create_autocmd({ "DirChanged" }, {
+    group = group,
+    callback = function()
+      app:make("env"):boot()
     end,
   })
 end

@@ -4,6 +4,7 @@ local Class = require("laravel.utils.class")
 
 ---@class laravel.extensions.dump_server.ui
 ---@field service laravel.extensions.dump_server.lib
+---@field config table
 local ui = Class({
   service = "laravel.extensions.dump_server.lib",
 }, {
@@ -11,45 +12,18 @@ local ui = Class({
   dump_tree = nil,
   dump_preview = nil,
   current_index = nil,
+  config = nil,
 })
 
+function ui:setConfig(config)
+  self.config = config
+end
+
 function ui:_create_layout()
-  self.dump_tree, self.dump_preview =
-    Popup({
-      enter = true,
-      border = {
-        style = "rounded",
-        text = {
-          top = "Dump Server",
-        },
-      },
-      buf_options = {
-        modifiable = false,
-      },
-      win_options = {},
-    }), Popup({
-      border = {
-        style = "rounded",
-        text = {
-          top = "Preview",
-          bottom = "Press <Tab> to switch between windows",
-        },
-      },
-      buf_options = {
-        modifiable = false,
-        filetype = "bash",
-      },
-      win_options = {},
-    })
+  self.dump_tree, self.dump_preview = Popup(self.config.ui.tree), Popup(self.config.ui.preview)
 
   local layout = Layout(
-    {
-      position = "50%",
-      size = {
-        width = "80%",
-        height = "60%",
-      },
-    },
+    self.config.ui.layout,
     Layout.Box({
       Layout.Box(self.dump_tree, { size = "30%" }),
       Layout.Box(self.dump_preview, { size = "70%" }),

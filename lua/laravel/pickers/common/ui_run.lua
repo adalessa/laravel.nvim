@@ -2,6 +2,7 @@ local Layout = require("nui.layout")
 local Popup = require("nui.popup")
 local Input = require("nui.input")
 local event = require("nui.utils.autocmd").event
+local app = require("laravel.core.app")
 
 local function scroll_fn(popup, direction)
   return function()
@@ -18,7 +19,7 @@ return function(command, opts)
     prompt = "$",
     on_submit = function(input)
       vim.print(vim.inspect(input))
-    end
+    end,
   }, opts)
 
   local prompt = ""
@@ -27,36 +28,15 @@ return function(command, opts)
   else
     prompt = opts.prompt
   end
+  local entry_opts = app("config").get("ui.runner.entry")
+  entry_opts.border.text.top = opts.title or entry_opts.border.text.top
 
-  local entry_popup = Input({
-    focusable = true,
-    border = {
-      style = "rounded",
-      text = {
-        top = opts.title,
-        top_align = "center",
-      },
-    },
-    win_options = {
-      winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder",
-    },
-  }, {
+  local entry_popup = Input(entry_opts, {
     prompt = prompt,
     on_submit = opts.on_submit,
   })
 
-  local help_popup = Popup({
-    border = {
-      style = "rounded",
-      text = {
-        top = "Help (<c-c> to cancel)",
-        top_align = "center",
-      },
-    },
-    win_options = {
-      winhighlight = "Normal:LaravelHelp,FloatBorder:LaravelHelpBorder",
-    },
-  })
+  local help_popup = Popup(app("config").get("ui.runner.help"))
 
   local command_preview = {
     lines = {},
@@ -85,14 +65,7 @@ return function(command, opts)
     Layout.Box(help_popup, { grow = 1 }),
   }
 
-  local layout = Layout({
-    position = "50%",
-    size = {
-      width = "80%",
-      height = "90%",
-    },
-    relative = "editor",
-  }, Layout.Box(boxes, { dir = "col" }))
+  local layout = Layout(app("config").get("ui.runner.layout"), Layout.Box(boxes, { dir = "col" }))
 
   entry_popup:map("i", "<c-c>", function()
     layout:unmount()

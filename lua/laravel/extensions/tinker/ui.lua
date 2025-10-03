@@ -5,60 +5,46 @@ local NuiLine = require("nui.line")
 local Class = require("laravel.utils.class")
 
 ---@class laravel.extensions.tinker.ui
-local ui = Class({}, {
+local ui = Class({
+}, {
   instance = nil,
   editor = nil,
   result = nil,
   callback = nil,
+  config = {}
 })
+
+function ui:setConfig(config)
+  self.config = config
+end
 
 function ui:_create_layout(bufnr, name, callback)
   local title = NuiLine()
   title:append("Tinkering: ", "@attribute")
   title:append(name, "@character")
 
-  self.editor, self.result =
-    Popup({
-      enter = true,
-      border = {
-        style = "rounded",
-        text = {
-          top = title,
-          bottom = NuiText("Press <Tab> to switch between windows", "comment"),
-        },
+  local editor_opts = vim.tbl_deep_extend("force", self.config.ui.editor, {
+    border = {
+      text = {
+        top = title,
+        bottom = NuiText("Press <Tab> to switch between windows", "comment"),
       },
-      bufnr = bufnr,
-      buf_options = {},
-      win_options = {
-        number = true,
-        relativenumber = true,
-        signcolumn = "yes",
+    },
+    bufnr = bufnr,
+  })
+
+  local result_opts = vim.tbl_deep_extend("force", self.config.ui.result, {
+    border = {
+      text = {
+        top = NuiText("Result", "@string"),
       },
-    }), Popup({
-      border = {
-        style = "rounded",
-        text = {
-          top = NuiText("Result", "@string"),
-        },
-      },
-      buf_options = {
-        modifiable = false,
-      },
-      win_options = {
-        number = false,
-        relativenumber = false,
-      },
-    })
+    },
+  })
+
+  self.editor, self.result = Popup(editor_opts), Popup(result_opts)
 
   local layout = Layout(
-    {
-      position = "50%",
-      size = {
-        width = "80%",
-        height = "80%",
-      },
-      relative = "editor",
-    },
+    self.config.ui.layout,
     Layout.Box({
       Layout.Box(self.editor, { size = "60%" }),
       Layout.Box(self.result, { size = "40%" }),

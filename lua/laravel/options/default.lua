@@ -31,11 +31,91 @@ return {
     composer_dev = { enable = true },
     composer_info = { enable = true },
     diagnostic = { enable = true },
-    dump_server = { enable = true },
+    dump_server = {
+      enable = true,
+      ui = {
+        tree = {
+          enter = true,
+          border = {
+            style = "rounded",
+            text = {
+              top = "Dump Server",
+            },
+          },
+          buf_options = {
+            modifiable = false,
+          },
+          win_options = {
+            winhighlight = "Normal:LaravelDumpTree,FloatBorder:LaravelDumpTreeBorder",
+          },
+        },
+        preview = {
+          border = {
+            style = "rounded",
+            text = {
+              top = "Preview",
+              bottom = "Press <Tab> to switch between windows",
+            },
+          },
+          buf_options = {
+            modifiable = false,
+            filetype = "bash",
+          },
+          win_options = {
+            winhighlight = "Normal:LaravelDumpResult,FloatBorder:LaravelDumpResultBorder",
+          },
+        },
+        layout = {
+          position = "50%",
+          size = {
+            width = "80%",
+            height = "60%",
+          },
+        },
+      },
+    },
     model_info = { enable = true },
     override = { enable = true },
     route_info = { enable = true, view = "simple" },
-    tinker = { enable = true },
+    tinker = {
+      enable = true,
+      ui = {
+        editor = {
+          enter = true,
+          border = {
+            style = "rounded",
+          },
+          buf_options = {},
+          win_options = {
+            number = true,
+            relativenumber = true,
+            signcolumn = "yes",
+            winhighlight = "Normal:LaravelTinkerCode,FloatBorder:LaravelTinkerCodeBorder",
+          },
+        },
+        result = {
+          border = {
+            style = "rounded",
+          },
+          buf_options = {
+            modifiable = false,
+          },
+          win_options = {
+            number = false,
+            relativenumber = false,
+            winhighlight = "Normal:LaravelTinkerResult,FloatBorder:LaravelTinkerResultBorder",
+          },
+        },
+        layout = {
+          position = "50%",
+          size = {
+            width = "80%",
+            height = "80%",
+          },
+          relative = "editor",
+        },
+      },
+    },
     mcp = { enable = true },
     command_center = { enable = true },
   },

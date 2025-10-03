@@ -50,4 +50,38 @@ return {
       },
     },
   },
+  runner = {
+    entry = {
+      focusable = true,
+      border = {
+        style = "rounded",
+        text = {
+          top_align = "center",
+        },
+      },
+      win_options = {
+        winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder",
+      },
+    },
+    help = {
+      border = {
+        style = "rounded",
+        text = {
+          top = "Help (<c-c> to cancel)",
+          top_align = "center",
+        },
+      },
+      win_options = {
+        winhighlight = "Normal:LaravelHelp,FloatBorder:LaravelHelpBorder",
+      },
+    },
+    layout = {
+      position = "50%",
+      size = {
+        width = "80%",
+        height = "90%",
+      },
+      relative = "editor",
+    },
+  },
 }

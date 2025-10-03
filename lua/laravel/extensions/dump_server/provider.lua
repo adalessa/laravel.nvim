@@ -20,8 +20,10 @@ function dump_server_provider:register(app)
   end, { tags = { "listener" } })
 end
 
-function dump_server_provider:boot(app)
+function dump_server_provider:boot(app, opts)
   ---@type laravel.extensions.dump_server.lib
+  app("laravel.extensions.dump_server.ui"):setConfig(opts)
+
   local lib = app:make("laravel.extensions.dump_server.lib")
   Laravel.extensions.dump_server = {
     start = nio.create(function()

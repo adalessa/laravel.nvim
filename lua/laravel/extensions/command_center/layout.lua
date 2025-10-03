@@ -13,7 +13,7 @@ return function(on_submit, on_change)
       },
     },
     win_options = {
-      winhighlight = "Normal:LaravelHelp",
+      winhighlight = "Normal:LaravelHelp,Floatborder:LaravelHelpBorder",
     },
   })
 
@@ -27,7 +27,7 @@ return function(on_submit, on_change)
       },
     },
     win_options = {
-      winhighlight = "Normal:LaravelPrompt",
+      winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder"
     },
   }, {
     prompt = "> ",

@@ -9,8 +9,10 @@ function provider:register(app)
 end
 
 ---@param app laravel.core.app
-function provider:boot(app)
+function provider:boot(app, opts)
   vim.filetype.add({ extension = { tinker = "php" } })
+
+  app("laravel.extensions.tinker.lib").ui:setConfig(opts)
 
   local group = vim.api.nvim_create_augroup("tinker", {})
   vim.api.nvim_create_autocmd({ "BufEnter" }, {

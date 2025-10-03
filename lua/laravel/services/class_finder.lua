@@ -3,6 +3,7 @@ local Error = require("laravel.utils.error")
 
 local class_finder = Class({
   tinker = "laravel.services.tinker",
+  path = "laravel.services.path",
 })
 
 ---@param text string
@@ -12,7 +13,8 @@ function class_finder:find(text)
     return {}, Error:new("No class name provided")
   end
 
-  local result, err = self.tinker:json(string.format([[
+  local result, err = self.tinker:json(string.format(
+    [[
     $text = "%s";
     if (str_contains($text, '@')) {
         [$class, $method] = explode('@', $text);
@@ -28,10 +30,15 @@ function class_finder:find(text)
             'line' => $reflectionClass->getStartLine(),
         ]);
     }
-  ]], text))
+  ]],
+    text
+  ))
 
   if err then
     return {}, err
+  end
+  if result.file then
+    result.file = self.path:handle(vim.trim(result.file))
   end
 
   return result or {}, nil

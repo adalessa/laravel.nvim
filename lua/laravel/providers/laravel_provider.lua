@@ -12,6 +12,8 @@ function laravel_provider:register(app)
 
   app:singletonIf("laravel.core.env")
 
+  app:singletonIf("laravel.services.path")
+
   app:singletonIf("laravel.core.config", function()
     return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
   end)

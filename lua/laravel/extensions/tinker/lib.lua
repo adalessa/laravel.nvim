@@ -83,7 +83,7 @@ function tinker:open(filename)
     table.insert(lines, "$_total =  (microtime(true) - $_timer) * 1000;")
     table.insert(
       lines,
-      "echo 'tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
+      "echo '__tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
     )
 
     local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
@@ -98,19 +98,21 @@ function tinker:open(filename)
       on_stdout = function(_, data)
         data = cleanResult(data)
 
+        for i = #data, 1, -1 do
+          if data[i] == "" then
+            table.remove(data, i)
+          end
+        end
+
         local last = data[#data] or ""
-        if last:match("^tinker_info:") then
-          local info = last:gsub("^tinker_info:", "")
+        if last:match("^__tinker_info:") then
+          local info = last:gsub("^__tinker_info:", "")
           local ok, decoded = pcall(vim.fn.json_decode, info)
           if ok and decoded then
             table.remove(data, #data)
             if info_callback then
               info_callback(decoded.time, decoded.memory)
             end
-            -- table.insert(
-            --   data,
-            --   ("--- (Time: %.2fms | Memory: %.2fMB) ---"):format(decoded.time or 0, decoded.memory or 0)
-            -- )
           end
         end
 

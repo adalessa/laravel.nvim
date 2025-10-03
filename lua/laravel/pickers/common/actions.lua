@@ -1,4 +1,3 @@
-local lsp = require("laravel._lsp")
 local app = require("laravel.core.app")
 local ui_run = require("laravel.pickers.common.ui_run")
 local preview = require("laravel.pickers.common.preview")
@@ -14,15 +13,26 @@ local function go(route)
       vim.fn.search(route.uri:gsub("api", "") .. "")
     elseif vim.tbl_contains(route.middlewares, "web") then
       vim.cmd("edit routes/web.php")
-      -- TODO: use the get or post to find the right route or view
-      -- get or view can be for GET
-      -- post if not we need the resources
-      -- can improce this with a treesitter query ?
-      -- should be able to look for specif methods
-      if route.uri == "/" then
-        vim.fn.search("['\"]/['\"]")
+      if route.action == "Illuminate\\Routing\\ViewController" then
+        vim.fn.search(string.format("Rotue::view(['\"]%s['\"])", route.uri))
       else
-        vim.fn.search("/" .. route.uri)
+        if route.methods[1] == "GET" then
+          vim.fn.search(string.format("Route::get(['\"]%s['\"])", route.uri))
+        elseif route.methods[1] == "POST" then
+          vim.fn.search(string.format("Route::post(['\"]%s['\"])", route.uri))
+        elseif route.methods[1] == "PUT" then
+          vim.fn.search(string.format("Route::put(['\"]%s['\"])", route.uri))
+        elseif route.methods[1] == "DELETE" then
+          vim.fn.search(string.format("Route::delete(['\"]%s['\"])", route.uri))
+        elseif route.methods[1] == "PATCH" then
+          vim.fn.search(string.format("Route::patch(['\"]%s['\"])", route.uri))
+        else
+          if route.uri == "/" then
+            vim.fn.search("['\"]/['\"]")
+          else
+            vim.fn.search("/" .. route.uri)
+          end
+        end
       end
     else
       notify.warn("Could not open the route location")
@@ -33,8 +43,18 @@ local function go(route)
     return
   end
 
-  local action = vim.fn.split(route.action, "@")
-  lsp.go_to(action[1], action[2])
+  nio.run(function()
+    local res, err = app("laravel.services.class_finder"):find(route.action)
+    if not err then
+      local file, line = res.file, res.line
+      vim.schedule(function()
+        if pcall(vim.cmd.edit, file) then
+          pcall(vim.api.nvim_win_set_cursor, 0, { line, 0 })
+          pcall(vim.cmd.normal, "zt")
+        end
+      end)
+    end
+  end)
 end
 
 function M.artisan_run(command)

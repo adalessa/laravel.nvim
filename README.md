@@ -194,7 +194,6 @@ Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
   },
   event = { "VeryLazy" },
   opts = {
-    lsp_server = "phpactor", -- "phpactor | intelephense"
     features = {
       pickers = {
         provider = "snacks", -- "snacks | telescope | fzf-lua | ui-select"

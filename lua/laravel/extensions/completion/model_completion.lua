@@ -1,25 +1,31 @@
 local nio = require("nio")
 local model_completion = {}
-local app = require("laravel.core.app")
+
+local function getPositionFromNode(node)
+  local start_row, start_col, end_row, end_col = node:range()
+
+  return {
+    character = start_col,
+    line = start_row,
+  }
+end
 
 local function getPosition(params)
   vim.treesitter.get_parser(params.context.bufnr):parse()
 
   local node = vim.treesitter.get_node()
-
   while node do
     if node:type() == "scoped_call_expression" or node:type() == "member_call_expression" then
-      local start_row, start_col, end_row, end_col = node:range()
       if
         vim.startswith(vim.treesitter.get_node_text(node, params.context.bufnr), "test")
         or vim.startswith(vim.treesitter.get_node_text(node, params.context.bufnr), "it")
       then
         return nil
       end
-      return {
-        character = start_col,
-        line = start_row,
-      }
+
+      return getPositionFromNode(node)
+    elseif node:type() == "member_access_expression" then
+      return getPositionFromNode(node:child(1))
     end
     node = node:parent()
   end
@@ -28,7 +34,7 @@ local function getPosition(params)
 end
 
 ---@async
-function model_completion.complete(templates, params, callback)
+function model_completion.complete(_, params, callback)
   local position = getPosition(params)
   if not position then
     return callback({
@@ -37,13 +43,41 @@ function model_completion.complete(templates, params, callback)
     })
   end
 
-  local client = nio.lsp.get_clients({ name = app("laravel.services.config").get("lsp_server", "phpactor") })[1]
+  local clients = vim.lsp.get_clients({
+    bufnr = params.context.bufnr,
+  })
+
+  local client = vim.tbl_filter(function(client)
+    return vim.tbl_contains({
+      "intelephense",
+      "phpactor",
+      "phptools",
+    }, client.name, {})
+  end, clients)[1]
+
+  if not client then
+    return callback({
+      items = {},
+      isIncomplete = false,
+    })
+  end
+
+  client = nio.lsp.convert_client(client)
+
   local err, response = client.request.textDocument_typeDefinition({
     textDocument = {
       uri = vim.uri_from_bufnr(params.context.bufnr),
     },
     position = position,
   }, params.context.bufnr, {})
+
+  if err then
+    return callback({
+      items = {},
+      isIncomplete = false,
+    })
+  end
+
   if response and response.uri then
     local bufnr = vim.uri_to_bufnr(response.uri)
     nio.fn.bufload(bufnr)

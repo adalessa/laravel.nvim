@@ -83,7 +83,7 @@ function tinker:open(filename)
     table.insert(lines, "$_total =  (microtime(true) - $_timer) * 1000;")
     table.insert(
       lines,
-      "echo '__tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
+      "echo PHP_EOL . '__tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
     )
 
     local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })

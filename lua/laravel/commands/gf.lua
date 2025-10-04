@@ -27,7 +27,7 @@ function gf_command:handle()
     if resource_type == "view" then
       local path, err = views:pathFromName(vim.treesitter.get_node_text(node, 0, {}))
       if err then
-        notify.error("Could not find view: " .. err)
+        notify.error("Could not find view: " .. err:toString())
         return
       end
 
@@ -59,7 +59,7 @@ function gf_command:handle()
       local route_name = vim.treesitter.get_node_text(node, 0, {})
       local routes, err = routes_loader:load()
       if err then
-        notify.error("Could not load routes: " .. err)
+        notify.error("Could not load routes: " .. err:toString())
         return
       end
       for _, route in ipairs(routes) do

@@ -26,13 +26,13 @@ function composer_info:handle(bufnr)
     local infos, err = self.composer:info()
     if err then
       clean(bufnr, ns)
-      notify.error("Could not get composer info: " .. err)
+      notify.error("Could not get composer info: " .. err:toString())
       return
     end
     local outdates, err = self.composer:outdated()
     if err then
       clean(bufnr, ns)
-      notify.error("Could not get composer outdated: " .. err)
+      notify.error("Could not get composer outdated: " .. err:toString())
       return
     end
 
@@ -40,7 +40,7 @@ function composer_info:handle(bufnr)
       vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       local dependencies, err = self.composer:dependencies(bufnr)
       if err then
-        notify.error("Could not get composer dependencies: " .. err)
+        notify.error("Could not get composer dependencies: " .. err:toString())
         return
       end
       for _, dep in ipairs(dependencies) do

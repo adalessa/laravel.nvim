@@ -50,13 +50,13 @@ function route_info:handle(bufnr)
     local class, err = self.class:get(bufnr)
     if err then
       clean(bufnr, namespace)
-      notify.error("Could not get class for buffer: " .. err)
+      notify.error("Could not get class for buffer: " .. err:toString())
       return
     end
     local routes, err = self.routes_loader:load()
     if err then
       clean(bufnr, namespace)
-      notify.error("Could not load routes: " .. err)
+      notify.error("Could not load routes: " .. err:toString())
       return
     end
 

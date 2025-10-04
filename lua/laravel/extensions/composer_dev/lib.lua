@@ -23,7 +23,7 @@ function lib:start()
   self.task:run(cmd)
   local url, err = self.configs_loader:get("app.url")
   if err then
-    return "Could not load app.url: " .. err
+    return "Could not load app.url: " .. err:toString()
   end
   if not url or type(url) ~= "string" or url == "" then
     return "app.url is not set or invalid"

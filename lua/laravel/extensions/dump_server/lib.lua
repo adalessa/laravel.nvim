@@ -2,6 +2,7 @@ local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 local Task = require("laravel.task")
 local record_added = require("laravel.extensions.dump_server.record_added_event")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.extensions.dump_server.lib
 ---@field command_generator laravel.services.command_generator
@@ -23,7 +24,7 @@ local lib = Class({
 function lib:isInstalled()
   local commands, err = self.commands_loader:load()
   if err then
-    return false, "Could not load artisan commands: " .. err
+    return false, Error:new("Could not load artisan commands"):wrap(err)
   end
 
   return vim.iter(commands):any(function(command)
@@ -35,7 +36,7 @@ end
 function lib:install()
   local isInstalled, err = self:isInstalled()
   if err then
-    notify.error("Could not check if dump server is installed: " .. err)
+    notify.error("Could not check if dump server is installed: " .. err:toString())
     return
   end
 
@@ -57,7 +58,7 @@ function lib:start()
 
   local isInstalled, err = self:isInstalled()
   if err then
-    notify.error("Could not check if dump server is installed: " .. err)
+    notify.error("Could not check if dump server is installed: " .. err:toString())
     return false
   end
 

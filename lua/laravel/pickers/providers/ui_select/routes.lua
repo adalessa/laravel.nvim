@@ -12,8 +12,8 @@ local routes_picker = Class({
 function routes_picker:run()
   nio.run(function()
     local routes, err = self.routes_loader:load()
-    if not err then
-      return notify.error("Error loading routes: " .. err)
+    if err then
+      return notify.error("Error loading routes: " .. err:toString())
     end
     vim.schedule(function()
       vim.ui.select(routes, {

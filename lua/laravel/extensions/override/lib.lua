@@ -44,7 +44,7 @@ function override:handle(bufnr)
     ))
 
     if err then
-      return notify.error("Error getting methods: " .. err)
+      return notify.error("Error getting methods: " .. err:toString())
     end
 
     vim.schedule(function()

@@ -39,8 +39,13 @@ Log.write = nio.create(function(self, level, message)
 
   ---@diagnostic disable-next-line: param-type-mismatch
   local file, err = nio.file.open(self.path, "a")
+
+  if err then
+    error("Error opening file" .. err)
+  end
+
   if not file then
-    error("Failed to open log file: " .. err)
+    error("Could not open the file")
   end
 
   file.write(entry)

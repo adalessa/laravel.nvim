@@ -1,4 +1,6 @@
+local Error = require("laravel.utils.error")
 local Class = require("laravel.utils.class")
+
 ---@class laravel.services.related
 ---@field model laravel.services.model
 local related = Class({ model = "laravel.services.model" })
@@ -35,7 +37,7 @@ end
 function related:get(bufnr)
   local info, err = self.model:getByBuffer(bufnr)
   if err then
-    return {}, "Error getting model: " .. err
+    return {}, Error:new("Error getting model"):wrap(err)
   end
 
   local relations = {}

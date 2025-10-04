@@ -21,7 +21,7 @@ function command:handle()
       if not err then
         notify.info("Server started at " .. lib:hostname())
       else
-        notify.error("Failed to start server: " .. err)
+        notify.error("Failed to start server: " .. err:toString())
       end
     end)
   end)

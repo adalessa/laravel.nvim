@@ -27,7 +27,7 @@ function action:run()
   nio.run(function()
     local table_name, err = self.tinker:text(string.format([[echo (new %s())->getTable();]], self.info.class))
     if err then
-      notify.error("Could not get table name: " .. err)
+      notify.error("Could not get table name: " .. err:toString())
       return
     end
     table_name = vim.trim(table_name)

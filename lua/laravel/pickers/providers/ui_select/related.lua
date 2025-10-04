@@ -11,7 +11,7 @@ local related_picker = Class({
 function related_picker:run()
   local relations, err = self.related:get(vim.api.nvim_get_current_buf())
   if err then
-    return notify.error("Error loading related items: " .. err)
+    return notify.error("Error loading related items: " .. err:toString())
   end
 
   vim.schedule(function()

@@ -14,7 +14,7 @@ function make_picker:run()
   nio.run(function()
     local commands, err = self.artisan_loader:load()
     if err then
-      return notify.error("Error loading make commands: " .. err)
+      return notify.error("Error loading make commands: " .. err:toString())
     end
 
     vim.schedule(function()

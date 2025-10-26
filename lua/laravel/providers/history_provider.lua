@@ -19,7 +19,7 @@ function provider:boot(app)
 
   vim.api.nvim_create_autocmd({ "User" }, {
     group = group,
-    pattern = { "LaravelCommandRun" },
+    pattern = { require("laravel.events.command_run_event").name },
     callback = function(ev)
       app("history"):add(ev.data.job_id, ev.data.cmd, ev.data.args, ev.data.options)
     end,

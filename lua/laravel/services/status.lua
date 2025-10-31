@@ -44,11 +44,10 @@ function status:start()
       return
     end
     local info = response:json()
-    if not info then
-      return
+    if info and info.environment then
+      self.values.laravel = info.environment.laravel_version
+      self.values.php = info.environment.php_version
     end
-    self.values.laravel = info.environment.laravel_version
-    self.values.php = info.environment.php_version
   end, 0)
 
   self.refresh = refresh

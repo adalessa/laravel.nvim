@@ -14,8 +14,6 @@ function provider:register(app)
   app:bindIf("laravel.listeners", function()
     return app:makeByTag("listener")
   end)
-
-  -- I want some auto registration
 end
 
 function provider:boot(app)

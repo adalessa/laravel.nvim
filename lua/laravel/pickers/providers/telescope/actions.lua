@@ -8,9 +8,10 @@ local M = {}
 function M.run(prompt_bufnr)
   actions.close(prompt_bufnr)
   local entry = action_state.get_selected_entry()
-  local command = entry.value
-
-  common_actions.artisan_run(command)
+  if entry then
+    local command = entry.value
+    common_actions.artisan_run(command)
+  end
 end
 
 function M.composer_run(prompt_bufnr)

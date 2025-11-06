@@ -36,6 +36,13 @@ return {
       },
     },
     {
+      name = "valet",
+      map = {
+        php = { "valet", "php" },
+        composer = { "valet", "composer" },
+      },
+    },
+    {
       name = "symfony",
       condition = {
         executable = { "symfony" },

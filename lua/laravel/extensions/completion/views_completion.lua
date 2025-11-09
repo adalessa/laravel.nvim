@@ -13,11 +13,12 @@ function views_completion.complete(views_loader, templates, params, callback)
     items = vim
       .iter(views)
       :map(function(view)
+        local isVendor = view.isVendor and " (vendor)" or ""
         return {
-          label = templates:build("view_label", view.name),
-          insertText = view.name,
+          label = templates:build("view_label", view.key),
+          insertText = view.key,
           kind = vim.lsp.protocol.CompletionItemKind["Value"],
-          documentation = view.path,
+          documentation = view.path .. isVendor,
         }
       end)
       :totable(),

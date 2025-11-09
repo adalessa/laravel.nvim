@@ -8,6 +8,9 @@ local templates = {
   ["route_label"] = "%s (route)",
   ["config_label"] = "%s (config)",
   ["view_label"] = "%s (view)",
+  ["view_documentation"] = [[ # View: %s
+  - path: %s
+  ]],
   ["env_var"] = "%s (env)",
   ["relation"] = [[
 

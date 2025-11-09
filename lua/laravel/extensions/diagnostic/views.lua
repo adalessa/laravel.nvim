@@ -52,7 +52,7 @@ function views_diagnostic:handle(bufnr)
     views = vim
       .iter(views)
       :map(function(view)
-        return view.name
+        return view.key
       end)
       :totable()
 

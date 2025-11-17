@@ -19,6 +19,9 @@ function gf_command:handle()
     ---@type laravel.services.views
     local views = app:make("laravel.services.views")
 
+    ---@type laravel.services.inertia
+    local inertia = app:make("laravel.services.inertia")
+
     local node, resource_type = gf:cursorOnResource()
     if not node then
       return
@@ -28,6 +31,20 @@ function gf_command:handle()
       local path, err = views:pathFromName(vim.treesitter.get_node_text(node, 0, {}))
       if err then
         notify.error("Could not find view: " .. err:toString())
+        return
+      end
+
+      vim.schedule(function()
+        vim.cmd("e " .. path)
+      end)
+      return
+    end
+
+    if resource_type == "inertia" then
+      local inertia_name = vim.treesitter.get_node_text(node, 0, {})
+      local path, err = inertia:find(inertia_name)
+      if err then
+        notify.error("Could not find inertia view: " .. err:toString())
         return
       end
 

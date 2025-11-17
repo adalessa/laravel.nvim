@@ -8,6 +8,7 @@ local Class = require("laravel.utils.class")
 ---@field views_loader laravel.loaders.views_cache_loader
 ---@field routes_loader laravel.loaders.routes_cache_loader
 ---@field configs_loader laravel.loaders.configs_cache_loader
+---@field inertia_loader laravel.loaders.inertia_cache_loader
 local source = Class({
   env = "laravel.core.env",
   templates = "laravel.utils.templates",
@@ -15,6 +16,7 @@ local source = Class({
   views_loader = "laravel.loaders.views_cache_loader",
   routes_loader = "laravel.loaders.routes_cache_loader",
   configs_loader = "laravel.loaders.configs_cache_loader",
+  inertia_loader = "laravel.loaders.inertia_cache_loader",
 })
 
 ---Return whether this source is available in the current context or not (optional).
@@ -39,7 +41,7 @@ function source:get_trigger_characters()
 end
 
 function source:complete(params, callback)
-  if vim.tbl_contains({"php", "blade", "tinker"}, params.context.filetype, {}) then
+  if vim.tbl_contains({ "php", "blade", "tinker" }, params.context.filetype, {}) then
     callback({ items = {} })
   end
 
@@ -49,6 +51,11 @@ function source:complete(params, callback)
     local views_completion = require("laravel.extensions.completion.views_completion")
     if views_completion.shouldComplete(text) then
       return views_completion.complete(self.views_loader, self.templates, params, callback)
+    end
+
+    local inertia_completion = require("laravel.extensions.completion.inertia_completion")
+    if inertia_completion.shouldComplete(text) then
+      return inertia_completion.complete(self.inertia_loader, self.templates, params, callback)
     end
 
     local configs_completion = require("laravel.extensions.completion.configs_completion")

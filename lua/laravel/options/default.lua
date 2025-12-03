@@ -116,7 +116,6 @@ return {
         },
       },
     },
-    mcp = { enable = true },
     command_center = { enable = true },
   },
   providers = {

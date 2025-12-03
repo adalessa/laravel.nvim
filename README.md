@@ -157,11 +157,9 @@ Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
 {
   "adalessa/laravel.nvim",
   dependencies = {
-    "tpope/vim-dotenv",
     "MunifTanjim/nui.nvim",
     "nvim-lua/plenary.nvim",
     "nvim-neotest/nvim-nio",
-    "ravitemer/mcphub.nvim", -- optional
   },
   cmd = { "Laravel" },
   keys = {

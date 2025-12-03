@@ -92,18 +92,6 @@ M.check = function()
   report_info("Commands: ")
   report_info(vim.inspect(app("env").environment.commands))
 
-  -- check if the environment variable is set and if the environment matches
-  local get_env = require("laravel.utils.init").get_env
-  local environmentEnvVariable = get_env(app("laravel.services.config").get("environments.env_variable"))
-  if environmentEnvVariable then
-    report_info("Environment variable set to: " .. environmentEnvVariable)
-    if environmentEnvVariable ~= app("env").environment.name then
-      report_warn("Environment variable does not match the current environment", {})
-    else
-      report_ok("Environment variable matches the current environment")
-    end
-  end
-
   report_start("Composer")
 
   if not app("env"):getExecutable("composer") then

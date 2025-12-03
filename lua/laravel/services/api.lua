@@ -5,8 +5,10 @@ local Error = require("laravel.utils.error")
 
 ---@class laravel.services.api
 ---@field command_generator laravel.services.command_generator
+---@field log laravel.utils.log
 local api = Class({
   command_generator = "laravel.services.command_generator",
+  log = "laravel.utils.log",
 })
 
 ---@async
@@ -22,7 +24,10 @@ function api:run(program, args)
 
   local process = nio.process.run({ cmd = cmd, args = command })
   if not process then
-    error(string.format("Failed to run command %s", program), vim.log.levels.ERROR)
+    local err = Error:new(string.format("Failed to run command cmd: %s args: %s", cmd, table.concat(args or {}, " ")))
+    self.log:error(err)
+
+    return {}, err
   end
   local output = process.stdout.read()
   local errors = process.stderr.read()

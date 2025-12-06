@@ -6,13 +6,12 @@ local Class = require("laravel.utils.class")
 local event = require("nui.utils.autocmd").event
 
 ---@class laravel.extensions.tinker.ui
-local ui = Class({
-}, {
+local ui = Class({}, {
   instance = nil,
   editor = nil,
   result = nil,
   callback = nil,
-  config = {}
+  config = {},
 })
 
 function ui:setConfig(config)
@@ -79,9 +78,12 @@ function ui:_create_layout(bufnr, name, callback)
     vim.api.nvim_set_current_win(self.editor.winid)
   end)
 
-  self.editor:on({event.BufLeave}, function ()
-    self:close()
-  end)
+  -- self.editor:on({ event.BufLeave }, function()
+  --   -- needs to prevent when is the tab
+  --   if vim.api.nvim_get_current_win() ~= self.result.winid then
+  --     self:close()
+  --   end
+  -- end)
 
   self.instance = layout
 end

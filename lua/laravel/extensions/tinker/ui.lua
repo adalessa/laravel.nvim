@@ -3,6 +3,7 @@ local Layout = require("nui.layout")
 local NuiText = require("nui.text")
 local NuiLine = require("nui.line")
 local Class = require("laravel.utils.class")
+local event = require("nui.utils.autocmd").event
 
 ---@class laravel.extensions.tinker.ui
 local ui = Class({
@@ -78,6 +79,10 @@ function ui:_create_layout(bufnr, name, callback)
     vim.api.nvim_set_current_win(self.editor.winid)
   end)
 
+  self.editor:on({event.BufLeave}, function ()
+    self:close()
+  end)
+
   self.instance = layout
 end
 
@@ -91,15 +96,10 @@ function ui:close()
     return
   end
 
-  self.editor:unmap("n", "q")
-  self.editor:unmap("n", "<tab>")
-  self.editor:unmap("n", "<cr>")
-
-  self.result:unmap("n", "q")
-  self.result:unmap("n", "<tab>")
-
   self.instance:unmount()
   self.instance = nil
+  self.editor = nil
+  self.result = nil
 end
 
 function ui:createTerm()

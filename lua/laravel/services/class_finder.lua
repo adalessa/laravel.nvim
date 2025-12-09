@@ -13,6 +13,8 @@ function class_finder:find(text)
     return {}, Error:new("No class name provided")
   end
 
+  local escaped_text = text:gsub("\\", "\\\\")
+
   local result, err = self.tinker:json(string.format(
     [[
     $text = "%s";
@@ -31,7 +33,7 @@ function class_finder:find(text)
         ]);
     }
   ]],
-    text
+    escaped_text
   ))
 
   if err then

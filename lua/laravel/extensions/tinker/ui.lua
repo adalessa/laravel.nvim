@@ -3,7 +3,6 @@ local Layout = require("nui.layout")
 local NuiText = require("nui.text")
 local NuiLine = require("nui.line")
 local Class = require("laravel.utils.class")
-local event = require("nui.utils.autocmd").event
 
 ---@class laravel.extensions.tinker.ui
 local ui = Class({}, {
@@ -30,6 +29,9 @@ function ui:_create_layout(bufnr, name, callback)
         bottom = NuiText("Press <Tab> to switch between windows", "comment"),
       },
     },
+    win_options = {
+      winfixbuf = true,
+    },
     bufnr = bufnr,
   })
 
@@ -38,6 +40,9 @@ function ui:_create_layout(bufnr, name, callback)
       text = {
         top = NuiText("Result", "@string"),
       },
+    },
+    win_options = {
+      winfixbuf = true,
     },
   })
 
@@ -78,13 +83,6 @@ function ui:_create_layout(bufnr, name, callback)
     vim.api.nvim_set_current_win(self.editor.winid)
   end)
 
-  -- self.editor:on({ event.BufLeave }, function()
-  --   -- needs to prevent when is the tab
-  --   if vim.api.nvim_get_current_win() ~= self.result.winid then
-  --     self:close()
-  --   end
-  -- end)
-
   self.instance = layout
 end
 
@@ -105,6 +103,9 @@ function ui:close()
 end
 
 function ui:createTerm()
+  vim.bo[self.result.bufnr].modifiable = true
+  vim.api.nvim_buf_set_lines(self.result.bufnr, 0, -1, false, {})
+  vim.bo[self.result.bufnr].modifiable = false
   return vim.api.nvim_open_term(self.result.bufnr, {})
 end
 

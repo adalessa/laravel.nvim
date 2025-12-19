@@ -25,7 +25,8 @@ local function get_lines(bufnr)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
 
   if not php_parser then
-    error("parser not found")
+    notify.error("PHP parser not found")
+    return
   end
 
   local tree = php_parser:parse()[1]
@@ -77,7 +78,7 @@ function tinker:open(filename)
       return
     end
 
-    local lines = get_lines(bufnr)
+    local lines = get_lines(bufnr) or {}
 
     table.insert(lines, 1, "$_timer = microtime(true);")
     table.insert(lines, "$_total =  (microtime(true) - $_timer) * 1000;")

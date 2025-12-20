@@ -18,9 +18,7 @@ function routes_picker:run(picker, opts)
     return
   end
 
-  vim.schedule(function()
-    picker.run(opts, routes)
-  end)
+  picker(opts, routes)
 end
 
 return routes_picker

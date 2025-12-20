@@ -5,9 +5,7 @@ local history_picker = Class({
 })
 
 function history_picker:run(picker, opts)
-  vim.schedule(function()
-    picker.run(opts, self.history_service:get())
-  end)
+  picker.run(opts, self.history_service:get())
 end
 
 return history_picker

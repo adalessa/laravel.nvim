@@ -15,11 +15,12 @@ function make_picker:run(picker, opts)
     return
   end
 
-  vim.schedule(function()
-    picker.run(opts, vim.tbl_filter(function(command)
+  picker(
+    opts,
+    vim.tbl_filter(function(command)
       return is_make_command(command.name)
-    end, commands))
-  end)
+    end, commands)
+  )
 end
 
 return make_picker

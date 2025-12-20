@@ -47,9 +47,8 @@ function action:run()
       })
     end
     if selected then
-      vim.schedule(function()
-        vim.cmd("edit " .. selected)
-      end)
+      nio.scheduler()
+      vim.cmd("edit " .. selected)
     end
   end)
 end

@@ -21,9 +21,7 @@ function laravel_picker:run(picker, opts)
     end
   end)
 
-  vim.schedule(function()
-    picker.run(opts, items)
-  end)
+  picker(opts, items)
 end
 
 return laravel_picker

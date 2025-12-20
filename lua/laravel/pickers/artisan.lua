@@ -18,9 +18,7 @@ function artisan_picker:run(picker, opts)
     return
   end
 
-  vim.schedule(function()
-    picker.run(opts, commands)
-  end)
+  picker(opts, commands)
 end
 
 return artisan_picker

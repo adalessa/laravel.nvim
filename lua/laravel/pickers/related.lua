@@ -18,9 +18,7 @@ function related_picker:run(picker, opts)
     return
   end
 
-  vim.schedule(function()
-    picker.run(opts, relations)
-  end)
+  picker(opts, relations)
 end
 
 return related_picker

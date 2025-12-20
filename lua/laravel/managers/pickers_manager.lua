@@ -1,6 +1,7 @@
 local app = require("laravel.core.app")
 local notify = require("laravel.utils.notify")
 local Class = require("laravel.utils.class")
+local nio = require("nio")
 
 ---@class laravel.managers.pickers_manager
 ---@field _enable boolean
@@ -40,7 +41,10 @@ function pickers_manager:run(name, opts)
     return
   end
 
-  picker:run(app(picker_name), opts)
+  picker:run(function(...)
+    nio.scheduler()
+    app(picker_name).run(...)
+  end, opts)
 end
 
 ---@param name string

@@ -21,9 +21,7 @@ function resources_picker:run(picker, opts)
     return
   end
 
-  vim.schedule(function()
-    picker.run(opts, resources)
-  end)
+  picker(opts, resources)
 end
 
 return resources_picker

@@ -57,7 +57,7 @@ function code:run(name)
   -- need to parse to remove the  START_OUTPUT and  END_OUTPUT
   result = result:match("__NEOVIM_LARAVEL_START_OUTPUT__%s*(.-)%s*__NEOVIM_LARAVEL_END_OUTPUT__")
 
-  return vim.json.decode(result, { lua_table = true }), nil
+  return vim.json.decode(result, { luanil = { object = true } }), nil
   -- return result, nil
 end
 

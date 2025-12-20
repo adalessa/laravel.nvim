@@ -5,7 +5,7 @@ function provider:register(app)
 
   app:addCommand("laravel.commands.history", function()
     return {
-      signature = "pickers:history",
+      signature = "picker:history",
       description = "Show the command history",
       handle = function()
         app:make("pickers_manager"):run("history")

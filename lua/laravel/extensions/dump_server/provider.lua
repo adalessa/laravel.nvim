@@ -1,9 +1,9 @@
 local nio = require("nio")
 
----@class LaravelDumpServerProvider : laravel.providers.provider
+---@type laravel.extensions.provider
 local dump_server_provider = {}
 
-function dump_server_provider:register(app)
+function dump_server_provider.register(app)
   app:singletonIf("laravel.extensions.dump_server.lib")
   app:singletonIf("laravel.extensions.dump_server.ui")
   vim.tbl_map(function(command)
@@ -20,7 +20,7 @@ function dump_server_provider:register(app)
   end, { tags = { "listener" } })
 end
 
-function dump_server_provider:boot(app, opts)
+function dump_server_provider.boot(app, opts)
   ---@type laravel.extensions.dump_server.lib
   app("laravel.extensions.dump_server.ui"):setConfig(opts)
 

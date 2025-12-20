@@ -8,7 +8,7 @@ end
 
 local M = {}
 
-function M:create(app, moduleName)
+function M.create(app, moduleName)
   return function(arguments)
     local ok, module = pcall(require, moduleName)
     if not ok then
@@ -60,10 +60,10 @@ function M:create(app, moduleName)
   end
 end
 
-function M:createConcrete(app, concrete)
+function M.createConcrete(app, concrete)
   local concreteType = type(concrete)
   if concreteType == "string" then
-    return M:create(app, concrete)
+    return M.create(app, concrete)
   elseif concreteType == "table" then
     return function()
       return concrete

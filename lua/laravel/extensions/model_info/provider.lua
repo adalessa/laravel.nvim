@@ -1,7 +1,7 @@
+---@type laravel.extensions.provider
 local model_info_provider = {}
 
----@param app laravel.core.app
-function model_info_provider:register(app)
+function model_info_provider.register(app)
   app:singletonIf("laravel.extensions.model_info.lib")
 
   vim.tbl_map(function(command)
@@ -9,8 +9,7 @@ function model_info_provider:register(app)
   end, require("laravel.extensions.model_info.commands"))
 end
 
----@param app laravel.core.app
-function model_info_provider:boot(app)
+function model_info_provider.boot(app)
   local group = vim.api.nvim_create_augroup("laravel.extensions.model_info", {})
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = "*.php",

@@ -1,5 +1,6 @@
 local notify = require("laravel.utils.notify")
 
+---@type laravel.providers.provider
 local extension_provider = { name = "laravel.providers.extensions_provider" }
 
 local function loadExtensions(name)
@@ -30,12 +31,16 @@ local function iterateExtensions(extensions, callback)
   end)
 end
 
+---@class laravel.extensions.provider : laravel.providers.provider
+---@field register fun(app: laravel.core.app, opts: table): nil
+---@field boot fun(app: laravel.core.app, opts: table): nil
+
 ---@param app laravel.core.app
-function extension_provider:register(app)
+function extension_provider.register(app)
   iterateExtensions(app("laravel.services.config").get("extensions", {}), function(provider, opts)
     if provider.register then
       local ok, res = pcall(function()
-        provider:register(app, opts)
+        provider.register(app, opts)
       end)
 
       if not ok then
@@ -46,13 +51,13 @@ function extension_provider:register(app)
 end
 
 ---@param app laravel.core.app
-function extension_provider:boot(app)
+function extension_provider.boot(app)
   Laravel.extensions = {}
 
   iterateExtensions(app("laravel.services.config").get("extensions", {}), function(provider, opts)
     if provider.boot then
       local ok, res = pcall(function()
-        provider:boot(app, opts)
+        provider.boot(app, opts)
       end)
 
       if not ok then

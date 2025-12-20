@@ -1,16 +1,14 @@
 local nio = require("nio")
----@class ComposerDevProvider : laravel.providers.provider
+---@type laravel.extensions.provider
 local composer_dev = {}
 
----@param app laravel.core.app
-function composer_dev:register(app)
+function composer_dev.register(app)
   app:singleton("laravel.extensions.composer_dev.lib")
   app:addCommand("laravel.extensions.composer_dev.dev_start_command")
   app:addCommand("laravel.extensions.composer_dev.dev_stop_command")
 end
 
----@param app laravel.core.app
-function composer_dev:boot(app)
+function composer_dev.boot(app)
   ---@type laravel.extensions.composer_dev.lib
   local lib = app:make("laravel.extensions.composer_dev.lib")
   Laravel.extensions.composer_dev = {

@@ -1,6 +1,7 @@
+---@type laravel.providers.provider
 local status_provider = { name = "laravel.providers.status_provider" }
 
-function status_provider:register(app)
+function status_provider.register(app)
   app:singletonIf("laravel.services.status")
   app:alias("status", "laravel.services.status")
 
@@ -14,8 +15,7 @@ function status_provider:register(app)
   end, { tags = { "listener" } })
 end
 
----@param app laravel.core.app
-function status_provider:boot(app)
+function status_provider.boot(app)
   if not app:isActive() then
     return
   end

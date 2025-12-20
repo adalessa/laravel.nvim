@@ -16,7 +16,7 @@ function app:start(opts)
 end
 
 function app:bootstrap(opts)
-  require("laravel.core.bootstrap"):bootstrap(self, opts)
+  require("laravel.core.bootstrap").bootstrap(self, opts)
 end
 
 function app:validateInstalation()
@@ -43,12 +43,12 @@ end
 
 -- Binding
 function app:bind(abstract, concrete, opts)
-  self.container:set(abstract, require("laravel.core.factory"):createConcrete(self, concrete), opts)
+  self.container:set(abstract, require("laravel.core.factory").createConcrete(self, concrete), opts)
 end
 
 function app:singleton(abstract, concrete, opts)
   self.container:set(abstract, function(...)
-    local instance = require("laravel.core.factory"):createConcrete(self, concrete or abstract)(...)
+    local instance = require("laravel.core.factory").createConcrete(self, concrete or abstract)(...)
     self.container:set(abstract, function()
       return instance
     end, opts)
@@ -86,7 +86,7 @@ function app:make(abstract, argument)
     return instance(argument)
   end
 
-  return require("laravel.core.factory"):create(self, abstract)(argument)
+  return require("laravel.core.factory").create(self, abstract)(argument)
 end
 
 function app:makeByTag(tag)

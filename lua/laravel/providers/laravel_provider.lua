@@ -3,11 +3,10 @@
 ---@field register fun(app: laravel.core.app): nil
 ---@field boot fun(app: laravel.core.app): nil
 
----@class laravel.providers.laravel_provider: laravel.providers.provider
+---@type laravel.providers.provider
 local laravel_provider = { name = "laravel.providers.laravel_provider" }
 
----@param app laravel.core.app
-function laravel_provider:register(app)
+function laravel_provider.register(app)
   app:singletonIf("laravel.services.cache")
 
   app:singletonIf("laravel.core.env")
@@ -26,8 +25,7 @@ function laravel_provider:register(app)
   end)
 end
 
----@param app laravel.core.app
-function laravel_provider:boot(app)
+function laravel_provider.boot(app)
   local group = vim.api.nvim_create_augroup("laravel_provider", {})
 
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {

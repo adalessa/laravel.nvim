@@ -1,9 +1,9 @@
 local utils = require("laravel.utils")
 
----@class laravel.providers.actions: laravel.providers.provider
+---@type laravel.providers.provider
 local actions_provider = { name = "laravel.providers.actions" }
 
-function actions_provider:register(app)
+function actions_provider.register(app)
   vim
     .iter(utils.get_modules({
       "lua/laravel/actions/*_action.lua",

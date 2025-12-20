@@ -1,6 +1,7 @@
+---@type laravel.providers.provider
 local provider = { name = "laravel.providers.facades_provider" }
 
-function provider:register(app)
+function provider.register(app)
   app:alias("api", "laravel.services.api")
   app:alias("cache", "laravel.services.cache")
   app:alias("class", "laravel.services.class")

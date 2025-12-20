@@ -1,13 +1,11 @@
----@class LaravelOverrideProvider : laravel.providers.provider
+---@type laravel.extensions.provider
 local override_provider = {}
 
----@param app laravel.core.app
-function override_provider:register(app)
+function override_provider.register(app)
   app:bindIf("override", "laravel.extensions.override.lib")
 end
 
----@param app laravel.core.app
-function override_provider:boot(app)
+function override_provider.boot(app)
   local group = vim.api.nvim_create_augroup("laravel.override", {})
   vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
     pattern = "*.php",

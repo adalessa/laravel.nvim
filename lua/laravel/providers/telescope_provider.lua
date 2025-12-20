@@ -1,7 +1,7 @@
----@class laravel.providers.telescope_provider : laravel.providers.provider
+---@type laravel.providers.provider
 local telescope_provider = { name = "laravel.providers.telescope_provider" }
 
-function telescope_provider:register(app)
+function telescope_provider.register(app)
   app:singletonIf("pickers.telescope", function()
     return {
       check = function()

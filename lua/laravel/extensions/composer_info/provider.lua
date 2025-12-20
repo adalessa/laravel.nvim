@@ -1,9 +1,7 @@
----@class ComposerProvider : laravel.providers.provider
+---@type laravel.extensions.provider
 local composer_provider = {}
 
-function composer_provider:register(app) end
-
-function composer_provider:boot(app)
+function composer_provider.boot(app)
   local group = vim.api.nvim_create_augroup("laravel.composer_info", {})
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = "composer.json",

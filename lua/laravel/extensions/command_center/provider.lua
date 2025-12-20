@@ -1,7 +1,7 @@
+---@type laravel.extensions.provider
 local command_center_provider = {}
 
----@param app laravel.core.app
-function command_center_provider:register(app)
+function command_center_provider.register(app)
   app:addCommand("laravel.commands.command_center", function()
     return {
       signature = "command_center",
@@ -12,8 +12,5 @@ function command_center_provider:register(app)
     }
   end)
 end
-
----@param app laravel.core.app
-function command_center_provider:boot(app) end
 
 return command_center_provider

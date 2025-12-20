@@ -1,10 +1,9 @@
 local notify = require("laravel.utils.notify")
-local nio = require("nio")
 local app = require("laravel.core.app")
 
 local command = {
   signature = "dev:start",
-  description = "Start Developer Server",
+  description = "Start Developer Server with composer run dev",
 }
 
 function command:handle()
@@ -15,16 +14,12 @@ function command:handle()
     return
   end
 
-  nio.run(function()
-    local err = lib:start()
-    vim.schedule(function()
-      if not err then
-        notify.info("Server started at " .. lib:hostname())
-      else
-        notify.error("Failed to start server: " .. err:toString())
-      end
-    end)
-  end)
+  local err = lib:start()
+  if not err then
+    notify.info("Server started at " .. lib:hostname())
+  else
+    notify.error("Failed to start server: " .. err:toString())
+  end
 end
 
 return command

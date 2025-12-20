@@ -1,6 +1,7 @@
+---@type laravel.extensions.provider
 local provider = {}
 
-function provider:register(app)
+function provider.register(app)
   app:singletonIf("laravel.extensions.tinker.lib")
 
   vim.tbl_map(function(command)
@@ -8,8 +9,7 @@ function provider:register(app)
   end, require("laravel.extensions.tinker.commands"))
 end
 
----@param app laravel.core.app
-function provider:boot(app, opts)
+function provider.boot(app, opts)
   vim.filetype.add({ extension = { tinker = "php" } })
 
   app("laravel.extensions.tinker.lib").ui:setConfig(opts)

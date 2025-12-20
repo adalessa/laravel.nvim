@@ -1,6 +1,7 @@
+---@type laravel.providers.provider
 local provider = { name = "laravel.providers.history_provider" }
 
-function provider:register(app)
+function provider.register(app)
   app:singletonIf("history", "laravel.services.history")
 
   app:addCommand("laravel.commands.history", function()

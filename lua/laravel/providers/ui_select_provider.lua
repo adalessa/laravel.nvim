@@ -1,7 +1,7 @@
----@class laravel.providers.ui_select_provider: laravel.providers.provider
+---@type laravel.providers.provider
 local ui_select_provider = { name = "laravel.providers.ui_select_provider" }
 
-function ui_select_provider:register(app)
+function ui_select_provider.register(app)
   app:singletonIf("pickers.us.select", function()
     return {
       check = function()

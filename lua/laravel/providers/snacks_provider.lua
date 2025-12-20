@@ -1,7 +1,7 @@
----@class laravel.providers.snacks_provider : laravel.providers.provider
+---@type laravel.providers.provider
 local snacks_provider = { name = "laravel.providers.snacks_provider" }
 
-function snacks_provider:register(app)
+function snacks_provider.register(app)
   app:singletonIf("pickers.snacks", function()
     return {
       check = function()

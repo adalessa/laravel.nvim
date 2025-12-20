@@ -1,11 +1,10 @@
 local nio = require("nio")
 local utils = require("laravel.utils")
 
----@class laravel.providers.commands_provider : laravel.providers.provider
+---@type laravel.providers.provider
 local commands_provider = { name = "laravel.providers.user_command_provider" }
 
----@param app laravel.core.app
-function commands_provider:register(app)
+function commands_provider.register(app)
   vim
     .iter(utils.get_modules({
       "lua/laravel/commands/*.lua",
@@ -19,8 +18,7 @@ function commands_provider:register(app)
   end)
 end
 
----@param app laravel.core.app
-function commands_provider:boot(app)
+function commands_provider.boot(app)
   Laravel.commands = {
     run = nio.create(function(command, args)
       local cmd = vim.iter(app:make("laravel.commands")):find(function(cmd)

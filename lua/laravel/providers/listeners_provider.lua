@@ -1,7 +1,9 @@
 local utils = require("laravel.utils")
+
+---@type laravel.providers.provider
 local provider = { name = "laravel.providers.listeners_provider" }
 
-function provider:register(app)
+function provider.register(app)
   vim
     .iter(utils.get_modules({
       "lua/laravel/listeners/*.lua",
@@ -16,7 +18,7 @@ function provider:register(app)
   end)
 end
 
-function provider:boot(app)
+function provider.boot(app)
   local group = vim.api.nvim_create_augroup("laravel.listeners", {})
 
   local mapped = {}

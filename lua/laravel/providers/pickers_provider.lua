@@ -1,15 +1,14 @@
 local nio = require("nio")
 local notify = require("laravel.utils.notify")
 
+---@type laravel.providers.provider
 local pickers_provider = { name = "laravel.providers.pickers_provider" }
 
----@param app laravel.core.app
-function pickers_provider:register(app)
+function pickers_provider.register(app)
   app:alias("pickers_manager", "laravel.managers.pickers_manager")
 end
 
----@param app laravel.core.app
-function pickers_provider:boot(app)
+function pickers_provider.boot(app)
   Laravel.pickers = setmetatable({
     list = function()
       return vim.tbl_keys(app:make("pickers"):get_pickers())

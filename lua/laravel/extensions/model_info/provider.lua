@@ -1,5 +1,6 @@
 ---@type laravel.extensions.provider
 local model_info_provider = {}
+local buffer_utils = require("laravel.utils.buffer")
 
 function model_info_provider.register(app)
   app:singletonIf("laravel.extensions.model_info.lib")
@@ -15,6 +16,10 @@ function model_info_provider.boot(app)
     pattern = "*.php",
     group = group,
     callback = app:whenActive(function(ev)
+      if not buffer_utils.is_valid_buffer(ev.buf) then
+        return
+      end
+
       local cwd = vim.uv.cwd()
       if vim.startswith(ev.file, cwd .. "/vendor") then
         return

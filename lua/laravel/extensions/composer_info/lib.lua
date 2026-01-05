@@ -37,6 +37,10 @@ function composer_info:handle(bufnr)
     end
 
     vim.schedule(function()
+      if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
+      end
+
       vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       local dependencies, err = self.composer:dependencies(bufnr)
       if err then

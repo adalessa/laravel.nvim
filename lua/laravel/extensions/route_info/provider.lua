@@ -1,5 +1,6 @@
 ---@type laravel.extensions.provider
 local route_info = {}
+local buffer_utils = require("laravel.utils.buffer")
 
 function route_info.register(app, opts)
   app:singletonIf("laravel.extensions.route_info.lib")
@@ -22,6 +23,10 @@ function route_info.boot(app)
     pattern = { "*Controller.php" },
     group = group,
     callback = app:whenActive(function(ev)
+      if not buffer_utils.is_valid_buffer(ev.buf) then
+        return
+      end
+
       local cwd = vim.uv.cwd()
       if vim.startswith(ev.file, cwd .. "/vendor") then
         return

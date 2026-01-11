@@ -62,7 +62,20 @@ function ui:_create_layout(bufnr, name, callback)
   end)
 
   self.editor:map("n", "<cr>", function()
-    self:_cleanTerm()
+    local new_buf = vim.api.nvim_create_buf(false, true)
+    self.channelId = vim.api.nvim_open_term(new_buf, {})
+    vim.api.nvim_set_option_value("winfixbuf", false, { win = self.result.winid })
+    vim.api.nvim_win_set_buf(self.result.winid, new_buf)
+    vim.api.nvim_set_option_value("winfixbuf", true, { win = self.result.winid })
+    self.result.bufnr = new_buf
+    -- need to reset the keymaps
+    self.result:map("n", "q", function()
+      self:close()
+    end)
+    self.result:map("n", "<Tab>", function()
+      vim.api.nvim_set_current_win(self.editor.winid)
+    end)
+
     callback(self.editor.bufnr, self.channelId, function(time, memory)
       -- self.result.border.text.bottom = NuiText(string.format("Execution time: %s, Memory: %s", time, memory), "comment")
       self.result.border:set_text(
@@ -108,12 +121,6 @@ end
 
 function ui:getChannelId()
   return self.channelId
-end
-
-function ui:_cleanTerm()
-  vim.bo[self.result.bufnr].modifiable = true
-  vim.api.nvim_buf_set_lines(self.result.bufnr, 0, -1, false, {})
-  vim.bo[self.result.bufnr].modifiable = false
 end
 
 return ui

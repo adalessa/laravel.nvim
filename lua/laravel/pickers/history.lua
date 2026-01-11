@@ -5,7 +5,7 @@ local history_picker = Class({
 })
 
 function history_picker:run(picker, opts)
-  picker.run(opts, self.history_service:get())
+  picker(opts, self.history_service:get())
 end
 
 return history_picker

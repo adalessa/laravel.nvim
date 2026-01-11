@@ -66,7 +66,7 @@ function tinker:open(filename)
   local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(file))
   vim.fn.bufload(bufnr)
 
-  self.ui:open(bufnr, filename, function(_, info_callback)
+  self.ui:open(bufnr, filename, function(_, channelId, info_callback)
     pcall(function()
       vim.cmd("write")
     end)
@@ -93,7 +93,6 @@ function tinker:open(filename)
       return
     end
 
-    local channelId = self.ui:createTerm()
     vim.fn.jobstart(cmd, {
       stdeout_buffered = true,
       on_stdout = function(_, data)
@@ -128,7 +127,7 @@ function tinker:open(filename)
   end)
 
   if not vim.tbl_isempty(self.data[filename]) then
-    local channelId = self.ui:createTerm()
+    local channelId = self.ui:getChannelId()
     vim.fn.chansend(channelId, self.data[filename])
   end
 end

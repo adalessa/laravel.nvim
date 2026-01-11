@@ -11,6 +11,7 @@ local ui = Class({}, {
   result = nil,
   callback = nil,
   config = {},
+  channelId = nil,
 })
 
 function ui:setConfig(config)
@@ -61,7 +62,8 @@ function ui:_create_layout(bufnr, name, callback)
   end)
 
   self.editor:map("n", "<cr>", function()
-    callback(self.editor.bufnr, function(time, memory)
+    self:_cleanTerm()
+    callback(self.editor.bufnr, self.channelId, function(time, memory)
       -- self.result.border.text.bottom = NuiText(string.format("Execution time: %s, Memory: %s", time, memory), "comment")
       self.result.border:set_text(
         "bottom",
@@ -88,6 +90,7 @@ end
 
 function ui:open(bufnr, name, callback)
   self:_create_layout(bufnr, name, callback)
+  self.channelId = vim.api.nvim_open_term(self.result.bufnr, {})
   self.instance:mount()
 end
 
@@ -100,13 +103,17 @@ function ui:close()
   self.instance = nil
   self.editor = nil
   self.result = nil
+  self.channelId = nil
 end
 
-function ui:createTerm()
+function ui:getChannelId()
+  return self.channelId
+end
+
+function ui:_cleanTerm()
   vim.bo[self.result.bufnr].modifiable = true
   vim.api.nvim_buf_set_lines(self.result.bufnr, 0, -1, false, {})
   vim.bo[self.result.bufnr].modifiable = false
-  return vim.api.nvim_open_term(self.result.bufnr, {})
 end
 
 return ui

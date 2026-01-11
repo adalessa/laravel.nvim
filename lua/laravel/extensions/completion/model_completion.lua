@@ -69,6 +69,9 @@ function model_completion.complete(_, params, callback)
       uri = vim.uri_from_bufnr(params.context.bufnr),
     },
     position = position,
+    on_list = function(options)
+      return options[1]
+    end,
   }, params.context.bufnr, {})
 
   if err then

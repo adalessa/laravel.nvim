@@ -6,15 +6,15 @@ local clean = vim.schedule_wrap(function(bufnr, namespace)
 end)
 
 ---@class laravel.extensions.model_info.lib
----@field model laravel.services.model
+---@field loader laravel.loaders.models_loader
+---@field class_service laravel.services.class
 ---@field view LaravelModelInfoView
 ---@field namespace integer
 ---@field display_status table<string, boolean>
 local model_info = Class({
-  class = "laravel.services.class",
-  tinker = "laravel.services.tinker",
-  model = "laravel.services.model",
+  loader = "laravel.loaders.models_loader",
   view = "laravel.extensions.model_info.view",
+  class_service = "laravel.services.class",
 }, {
   namespace = vim.api.nvim_create_namespace("laravel.model"),
   display_status = {},
@@ -22,22 +22,34 @@ local model_info = Class({
 
 function model_info:handle(bufnr)
   nio.run(function()
-    local model, err = self.model:getByBuffer(bufnr)
+    local models, err = self.loader:load()
     if err then
-      vim.schedule(function()
-        vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-      end)
+      nio.scheduler()
+      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
       return
     end
+    local class, err = self.class_service:getByBuffer(bufnr)
+    if err then
+      nio.scheduler()
+      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
+      return
+    end
+
+    local model = models.models[class.fqn]
+    if not model then
+      nio.scheduler()
+      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
+      return
+    end
+
     if self.display_status[bufnr] == nil then
       self.display_status[bufnr] = true
     end
 
     if self.display_status[bufnr] then
-      vim.schedule(function()
-        vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-        vim.api.nvim_buf_set_extmark(bufnr, self.namespace, model.start - 1, 0, self.view:get(model))
-      end)
+      nio.scheduler()
+      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
+      vim.api.nvim_buf_set_extmark(bufnr, self.namespace, class.line, 0, self.view:get(model))
     end
   end)
 end

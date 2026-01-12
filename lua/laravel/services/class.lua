@@ -59,15 +59,19 @@ function class:get(bufnr)
     elseif query.captures[id] == "namespace" then
       response.namespace = get_node_text(node, bufnr)
     elseif query.captures[id] == "method_name" then
+      local s = node:start()
+      local e = node:parent():end_()
       table.insert(response.methods, {
-        pos = node:start(),
+        pos = { s, e },
         name = get_node_text(node, bufnr),
       })
     elseif query.captures[id] == "method_visibility" then
       table.insert(methods_visibility, get_node_text(node, bufnr))
     elseif query.captures[id] == "property_name" then
+      local s = node:start()
+      local e = node:parent():parent():parent():end_()
       table.insert(response.properties, {
-        pos = node:start(),
+        pos = { s, e },
         name = get_node_text(node, bufnr),
       })
     elseif query.captures[id] == "property_visibility" then

@@ -1,4 +1,5 @@
 local notify = require("laravel.utils.notify")
+local nio = require("nio")
 
 local Watcher = {}
 
@@ -42,7 +43,9 @@ Watcher.register = function(paths, pattern, callback)
     end
     table.insert(watchers[path], function(filename)
       if filename:match(pattern) then
-        callback(vim.fs.joinpath(path, filename))
+        nio.run(function()
+          callback(vim.fs.joinpath(path, filename))
+        end)
       end
     end)
   end

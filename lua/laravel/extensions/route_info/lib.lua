@@ -91,7 +91,7 @@ function route_info:handle(bufnr)
         vim.api.nvim_buf_set_extmark(
           bufnr,
           namespace,
-          route_method.method.pos,
+          route_method.method.pos[1],
           0,
           self.route_info_view:get(route_method.route, route_method.method)
         )

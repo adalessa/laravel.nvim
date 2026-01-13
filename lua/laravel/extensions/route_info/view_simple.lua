@@ -3,7 +3,7 @@ local get_line_indent = require("laravel.utils.init").get_line_indent
 local view = {}
 
 function view:get(route, method)
-  local indent = get_line_indent(method.pos + 1)
+  local indent = get_line_indent(method.pos[1] + 1)
 
   return {
     virt_lines = {

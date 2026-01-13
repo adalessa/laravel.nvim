@@ -36,23 +36,29 @@ function runner:run(program, args, opts)
   instance:mount()
 
   local job_id = vim.fn.jobstart(table.concat(command, " "), { term = true })
+  local is_make = is_make_command(args[1])
 
   instance:on("TermClose", function()
-    if is_make_command(args[1]) then
+    if is_make then
       local lines = vim.api.nvim_buf_get_lines(instance.bufnr, 0, -1, false)
       local class = find_class(table.concat(lines, ""))
       if class ~= nil and class ~= "" then
         instance:unmount()
+        local cwd = vim.fn.getcwd()
+        local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(cwd .. "/" .. class))
+        vim.fn.bufload(bufnr)
+        vim.api.nvim_win_set_buf(0, bufnr)
         vim.schedule(function()
-          vim.cmd("e " .. class)
+          vim.cmd("e")
         end)
         entity_created_event.dispatch(class)
       end
     end
     command_run_event.dispatch(program, args, opts, job_id)
   end)
-
-  vim.cmd("startinsert")
+  if not is_make then
+    vim.cmd("startinsert")
+  end
 end
 
 return runner

@@ -1,7 +1,7 @@
----@param bufnr number|nil
----@return boolean
 local M = {}
 
+---@param bufnr number|nil
+---@return boolean
 function M.is_valid_buffer(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
 

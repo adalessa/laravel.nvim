@@ -64,6 +64,14 @@ Integration with [laravel dump server](https://github.com/beyondcode/laravel-dum
 One of the ways to run your laravel environment is locally using `artisan serve`.
 For this type of user laravel now ships with a command in composer called `dev`
 If you are one of this users you can start the server directly from neovim.
+Maybe you would like the new Hub down below.
+
+## Hub
+Hub is my solution to run different commands easily.
+using `Laravel.commands.run("hub")` will open the new ui and will default with common commands to run
+in the predefined environment. If you want to customize them you can use the `Laravel.commands.run("env:configure:open")`
+There you will see configuration for all you defined projects and you can edit the commands as you need.
+in th future can be improved the ui but as right now is a good use case since you are not expected to edit every time.
 
 
 ## Lualine Integration
@@ -177,6 +185,7 @@ Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
     { "<leader>lc", function() Laravel.pickers.commands() end,             desc = "Laravel: Open Commands Picker" },
     { "<leader>lo", function() Laravel.pickers.resources() end,            desc = "Laravel: Open Resources Picker" },
     { "<leader>lp", function() Laravel.commands.run("command_center") end, desc = "Laravel: Open Command Center" },
+    { "<leader>lu", function() Laravel.commands.run("hub") end,            desc = "Laravel Artisan hub" },
     {
       "gf",
       function()

@@ -8,17 +8,17 @@ local livewire = Class({
 }, {})
 
 ---@param className string
----@return {name: string}, laravel.error
+---@return {name: string, version: number}, laravel.error
 function livewire:getName(className)
   local res, err = self.code:run(string.format(
     [[
     $c = "%s";
     if (class_exists("\Livewire\Mechanisms\ComponentRegistry") && app()->has("\Livewire\Mechanisms\ComponentRegistry")) {
-      echo json_encode(["name" => app("\Livewire\Mechanisms\ComponentRegistry")->getName($c)]);
+      echo json_encode(["name" => app("\Livewire\Mechanisms\ComponentRegistry")->getName($c), "version" => 3]);
     } else if (app()->has('livewire.finder')) {
-      echo json_encode(["name" => app('livewire.finder')->normalizeName($c)]);
+      echo json_encode(["name" => app('livewire.finder')->normalizeName($c), "version" => 4]);
     } else {
-      echo json_encode(["name" => ""]);
+      echo json_encode(["name" => "", "version" => 0]);
     }
   ]],
     className

@@ -19,7 +19,7 @@ function action:check(bufnr)
 
   local res, err = self.livewire:getName(cls.fqn)
 
-  if err then
+  if err or res.version ~= 3 then
     return false
   end
 

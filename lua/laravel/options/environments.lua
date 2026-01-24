@@ -41,6 +41,7 @@ return {
         composer = { "valet", "composer" },
       },
     },
+    -- not even sure about this anymore
     {
       name = "symfony",
       condition = {

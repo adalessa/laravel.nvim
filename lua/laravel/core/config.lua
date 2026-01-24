@@ -4,8 +4,14 @@ This will take care of storing configuration per project persistent
 ---@class laravel.dto.config
 ---@field path string
 ---@field name string
----@field commands table
----@field condition table|nil
+---@field map table<string, string[]>
+---@field hub laravel.dto.hub_command[]
+
+---@class laravel.dto.hub_command
+---@field name string
+---@field cmd string
+---@field key string
+---@field auto_start boolean
 
 ---@class laravel.core.config
 ---@field path string
@@ -75,11 +81,11 @@ function config:save()
   return true
 end
 
----@param path string
+---@param path string?
 ---@return laravel.dto.config|nil
 function config:get(path)
   if not path then
-    return nil
+    path = vim.uv.cwd()
   end
 
   return self.data[path]

@@ -28,6 +28,7 @@ return {
   user_commands = require("laravel.options.user_commands"),
   resources = require("laravel.options.resources"),
   extensions = {
+    artisan_hub = { enable = true },
     completion = { enable = true },
     composer_dev = { enable = true },
     composer_info = { enable = true },

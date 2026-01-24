@@ -1,31 +1,31 @@
 local nio = require("nio")
 local Class = require("laravel.utils.class")
 
+---@class laravel.actions.livewire_copy_action
+---@field class laravel.services.class
+---@field runner laravel.services.runner
+---@field livewire laravel.services.livewire
 local action = Class({
   class = "laravel.services.class",
   runner = "laravel.services.runner",
-  tinker = "laravel.services.tinker",
+  livewire = "laravel.services.livewire",
 }, { component = nil })
 
 function action:check(bufnr)
-  local cls = self.class:get(bufnr)
-  local res = self.tinker:text(string.format(
-    [[
-try {
-    echo app(Livewire\Mechanisms\ComponentRegistry::class)
-    ->getName("%s");
-} catch (Throwable){
-    echo "";
-}]],
-    cls.fqn
-  ))
-
-  if res ~= "" then
-    self.component = vim.trim(res)
-    return true
+  local cls, err = self.class:get(bufnr)
+  if err then
+    return false
   end
 
-  return false
+  local res, err = self.livewire:getName(cls.fqn)
+
+  if err then
+    return false
+  end
+
+  self.component = res.name
+
+  return true
 end
 
 function action:format()

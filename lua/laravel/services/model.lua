@@ -50,4 +50,31 @@ function model:get(bufnr)
   }, nil
 end
 
+---@async
+---@param uri string
+---@return laravel.dto.model, laravel.utils.error|nil
+function model:byUri(uri)
+  local response, err = self.loader:load()
+
+  if err then
+    return {}, Error:new("Failed to load models"):wrap(err)
+  end
+
+  nio.scheduler()
+
+  ---@type laravel.dto.model|nil
+  local _, m = vim.iter(response.models):find(
+    ---@param m laravel.dto.model
+    function(_, m)
+      return self.path:handle(m.uri) == uri
+    end
+  )
+
+  if not m then
+    return {}, Error:new("No model found for this uri")
+  end
+
+  return m, nil
+end
+
 return model

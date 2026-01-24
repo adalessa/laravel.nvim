@@ -47,6 +47,7 @@ function model_completion.complete(_, params, callback)
     bufnr = params.context.bufnr,
   })
 
+  -- INFO: does not work with intelephense free tier
   local client = vim.tbl_filter(function(client)
     return vim.tbl_contains({
       "intelephense",
@@ -82,13 +83,9 @@ function model_completion.complete(_, params, callback)
   end
 
   if response and response.uri then
-    local bufnr = vim.uri_to_bufnr(response.uri)
-    nio.fn.bufload(bufnr)
-    local model, err = Laravel.app("laravel.services.cache"):remember("completion_model_" .. bufnr, 60, function()
-      return Laravel.app("laravel.services.model"):getByBuffer(bufnr)
-    end)
-
-    if err then
+    -- should be able to get the model my uri
+    local model, err = Laravel.app("laravel.services.model"):byUri(response.uri)
+    if err or not model then
       return callback({
         items = {},
         isIncomplete = false,

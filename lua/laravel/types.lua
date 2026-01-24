@@ -77,3 +77,9 @@
 ---@field resources string
 ---@field storage string
 ---@field views string
+
+---@class laravel.dto.app_config
+---@field name string
+---@field value any
+---@field file string
+---@field line number

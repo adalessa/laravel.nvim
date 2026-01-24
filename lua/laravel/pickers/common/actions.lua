@@ -97,10 +97,15 @@ end
 
 function M.open_browser(route)
   nio.run(function()
-    local app_url, err = app("laravel.loaders.configs_loader"):get("app.url")
+    local config, err = app("laravel.loaders.configs_loader"):get("app.url")
     if err then
       return notify.error("Could not load app.url: " .. err:toString())
     end
+    if not config or config == "" then
+      return notify.warn("app.url is not configured")
+    end
+    local app_url = config.value
+
     local uri = route.uri
     for capturedString in uri:gmatch("{(.-)}") do
       local val = nio.fn.input({ prompt = capturedString .. ": " })

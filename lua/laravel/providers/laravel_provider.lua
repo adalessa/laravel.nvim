@@ -18,6 +18,7 @@ function laravel_provider.register(app)
 
   app:singleton("laravel.loaders.models_loader")
   app:singleton("laravel.loaders.paths_loader")
+  app:singleton("laravel.loaders.configs_loader")
 
   app:singletonIf("laravel.core.config", function()
     return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
@@ -63,6 +64,7 @@ function laravel_provider.boot(app)
   nio.run(function()
     Laravel.app("laravel.loaders.models_loader"):load()
     Laravel.app("laravel.loaders.views_loader"):load()
+    Laravel.app("laravel.loaders.configs_loader"):load()
   end)
 end
 

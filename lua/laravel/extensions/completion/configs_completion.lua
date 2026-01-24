@@ -14,10 +14,10 @@ function configs_completion.complete(configs_loader, templates, params, callback
       .iter(configs)
       :map(function(config)
         return {
-          label = templates:build("config_label", config),
-          insertText = config,
+          label = templates:build("config_label", config.name),
+          insertText = config.name,
           kind = vim.lsp.protocol.CompletionItemKind["Value"],
-          documentation = config,
+          documentation = config.name,
         }
       end)
       :totable(),

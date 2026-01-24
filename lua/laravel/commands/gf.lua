@@ -2,7 +2,7 @@ local app = require("laravel.core.app")
 local split = require("laravel.utils").split
 local actions = require("laravel.pickers.common.actions")
 local notify = require("laravel.utils.notify")
-local nio    = require("nio")
+local nio = require("nio")
 
 local gf_command = {
   signature = "gf",
@@ -56,12 +56,21 @@ function gf_command:handle()
 
     if resource_type == "config" then
       local config_name = vim.treesitter.get_node_text(node, 0, {})
-      local s = split(config_name, ".")
-
-      -- TODO: can be improve by parsing the file with treesitter.
-      -- find the return and with the the array elements with the next items
-      vim.cmd("e config/" .. s[1] .. ".php")
-      return
+      nio.run(function()
+        local config, err = app("laravel.loaders.configs_loader"):get(config_name)
+        if err or not config then
+          return
+        end
+        local actual_file, err = app("laravel.services.path"):handle(config.file)
+        if err then
+          return
+        end
+        nio.scheduler()
+        if pcall(vim.cmd.edit, actual_file) then
+          pcall(vim.api.nvim_win_set_cursor, 0, { config.line, 0 })
+          pcall(vim.cmd.normal, "zt")
+        end
+      end)
     end
 
     if resource_type == "env" then

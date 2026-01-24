@@ -1,26 +1,50 @@
 local Class = require("laravel.utils.class")
+local Error = require("laravel.utils.error")
 
 ---@class laravel.services.path
----@field tinker laravel.services.tinker
+---@field loader laravel.loaders.paths_loader
 local path_service = Class({
-  tinker = "laravel.services.tinker",
-}, { base_path = nil, cwd = nil })
+  loader = "laravel.loaders.paths_loader",
+}, {})
+
+---@param name string
+---@return string, laravel.utils.error|nil
+function path_service:get(name)
+  local paths, err = self.loader:load()
+
+  if err then
+    return "", Error:new("Failed to load paths"):wrap(err)
+  end
+
+  if not paths[name] then
+    return "", Error:new(("Path not found in loader: %s"):format(name))
+  end
+
+  return self:handle(paths[name])
+end
 
 ---@param path string
+---@return string, laravel.utils.error|nil
 function path_service:handle(path)
-  if not self.base_path then
-    self.base_path = self.tinker:text("echo base_path();")
-    self.base_path = vim.trim(self.base_path or "")
-    self.cwd = vim.uv.cwd()
+  local cwd = vim.uv.cwd()
+
+  if not cwd or cwd == "" then
+    return path, nil
   end
-  if self.base_path == self.cwd then
-    -- no modification necessary
+
+  local paths, err = self.loader:load()
+
+  if err then
+    return "", Error:new("Failed to load paths"):wrap(err)
+  end
+
+  if cwd == paths.base then
     return path
   end
 
-  path, _ = path:gsub(self.base_path:gsub("-", "%%-"), self.cwd)
+  local p = path:gsub(paths.base:gsub("-", "%%-"), cwd)
 
-  return path
+  return p, nil
 end
 
 return path_service

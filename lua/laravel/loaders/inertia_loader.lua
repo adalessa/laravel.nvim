@@ -15,7 +15,7 @@ local InertiaLoader = Class({
 
 ---@return laravel.dto.inertia, laravel.error
 function InertiaLoader:load()
-  local inertia, err = self.code:run("inertia")
+  local inertia, err = self.code:fromTemplate("inertia")
   if err then
     return {}, Error:new("Failed to load inertia"):wrap(err)
   end

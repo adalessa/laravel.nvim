@@ -88,12 +88,14 @@ function route_info:handle(bufnr)
     if self.display_status[bufnr] then
       clean(bufnr, namespace)
       vim.iter(route_methods):each(vim.schedule_wrap(function(route_method)
+        ---@type laravel.dto.method
+        local method = route_method.method
         vim.api.nvim_buf_set_extmark(
           bufnr,
           namespace,
-          route_method.method.pos[1],
+          method.position.start.row,
           0,
-          self.route_info_view:get(route_method.route, route_method.method)
+          self.route_info_view:get(route_method.route, method)
         )
       end))
     end
@@ -106,7 +108,7 @@ function route_info:handle(bufnr)
           .iter(missing_routes)
           :map(function(route)
             return {
-              lnum = class.line,
+              lnum = class.position.start.row,
               col = 0,
               message = string.format(
                 "missing method %s [Method: %s, URI: %s]",

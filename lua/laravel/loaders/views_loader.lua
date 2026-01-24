@@ -14,7 +14,7 @@ local ViewsLoader = Class({
 
 ---@return laravel.dto.artisan_views[], laravel.error
 function ViewsLoader:load()
-  local views, err = self.code:run("views")
+  local views, err = self.code:fromTemplate("views")
   if err then
     return {}, Error:new("Failed to load views"):wrap(err)
   end

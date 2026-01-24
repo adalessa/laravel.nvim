@@ -1,3 +1,5 @@
+local notify = require("laravel.utils.notify")
+
 ---@class laravel.providers.provider
 ---@field name string
 ---@field register fun(app: laravel.core.app): nil
@@ -12,6 +14,9 @@ function laravel_provider.register(app)
   app:singletonIf("laravel.core.env")
 
   app:singletonIf("laravel.services.path")
+
+  app:singleton("laravel.loaders.models_loader")
+  app:singleton("laravel.loaders.paths_loader")
 
   app:singletonIf("laravel.core.config", function()
     return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
@@ -46,6 +51,10 @@ function laravel_provider.boot(app)
 
   -- Add the runner to the global
   Laravel.run = function(...)
+    if not app:isActive() then
+      return notify.warn('Laravel is not active. use `lua Laravel.commands.run("env:configure")`')
+    end
+
     return app("runner"):run(...)
   end
 end

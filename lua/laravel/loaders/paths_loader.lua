@@ -3,26 +3,24 @@ local Error = require("laravel.utils.error")
 local watcher = require("laravel.core.watcher")
 
 local paths = {
-  "app",
-  "app/Models",
-  "database/migrations",
+  "app/Providers",
 }
 
----@class laravel.loaders.models_loader
+---@class laravel.loaders.paths_loader
 ---@field code laravel.services.code
-local ModelsLoader = Class({
+local PathsLoader = Class({
   code = "laravel.services.code",
 }, { items = {}, loaded = false })
 
 ---@async
----@return laravel.dto.models_response, laravel.utils.error|nil
-function ModelsLoader:load()
+---@return laravel.dto.paths_response, laravel.utils.error|nil
+function PathsLoader:load()
   if self.loaded then
     return self.items
   end
 
   local _load = function()
-    local models, err = self.code:fromTemplate("models")
+    local result, err = self.code:fromTemplate("paths")
     if err then
       self.loaded = false
       self.items = {}
@@ -30,9 +28,7 @@ function ModelsLoader:load()
     end
 
     self.loaded = true
-    self.items = models or {}
-
-    -- TODO: could write to the models here
+    self.items = result or {}
 
     return self.items
   end
@@ -43,4 +39,4 @@ function ModelsLoader:load()
 end
 
 -- should create a new entity that handle the cache
-return ModelsLoader
+return PathsLoader

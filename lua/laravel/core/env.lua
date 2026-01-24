@@ -21,7 +21,11 @@ function env:boot()
   local config = self.config:get(cwd)
 
   if not config then
-    self:configure()
+    if self.options.get("environments.ask_on_boot") then
+      self:configure()
+    else
+      notify.warn("Need to configure environment")
+    end
   else
     self.environment = Environment:new(config)
   end

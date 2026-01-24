@@ -7,8 +7,7 @@
 ---@field default string
 ---@field definitions LaravelEnvironmentConfig[]
 return {
-  env_variable = "NVIM_LARAVEL_ENV",
-  default = "local",
+  ask_on_boot = false,
   definitions = {
     {
       name = "sail",

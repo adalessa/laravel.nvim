@@ -3,11 +3,11 @@ local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
 ---@class laravel.extensions.override.lib
----@field tinker laravel.services.tinker
+---@field code laravel.services.code
 ---@field class laravel.services.class
 ---@field sign_name string
 local override = Class({
-  tinker = "laravel.services.tinker",
+  code = "laravel.services.code",
   class = "laravel.services.class",
 }, function(instance)
   instance.sign_name = "LaravelOverride"
@@ -20,14 +20,13 @@ end)
 function override:handle(bufnr)
   local group = "laravel_overwrite"
   vim.fn.sign_unplace(group, { buffer = bufnr })
+  local class, err = self.class:get(bufnr)
+  if err then
+    return
+  end
 
   nio.run(function()
-    local class, err = self.class:get(bufnr)
-    if err then
-      return
-    end
-
-    local methods, err = self.tinker:json(string.format(
+    local methods, err = self.code:run(string.format(
       [[
           $r = new ReflectionClass('%s');
           echo collect($r->getMethods())
@@ -47,19 +46,18 @@ function override:handle(bufnr)
       return notify.error("Error getting methods: " .. err:toString())
     end
 
-    vim.schedule(function()
-      vim.fn.sign_placelist(vim
-        .iter(methods)
-        :map(function(method)
-          return {
-            group = group,
-            lnum = method.line,
-            name = self.sign_name,
-            buffer = bufnr,
-          }
-        end)
-        :totable())
-    end)
+    nio.scheduler()
+    vim.fn.sign_placelist(vim
+      .iter(methods)
+      :map(function(method)
+        return {
+          group = group,
+          lnum = method.line,
+          name = self.sign_name,
+          buffer = bufnr,
+        }
+      end)
+      :totable())
   end)
 end
 

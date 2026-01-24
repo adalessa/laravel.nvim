@@ -1,8 +1,11 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 
+---@class laravel.services.class_finder
+---@field code laravel.services.code
+---@field path laravel.services.path
 local class_finder = Class({
-  tinker = "laravel.services.tinker",
+  code = "laravel.services.code",
   path = "laravel.services.path",
 })
 
@@ -15,7 +18,7 @@ function class_finder:find(text)
 
   local escaped_text = text:gsub("\\", "\\\\")
 
-  local result, err = self.tinker:json(string.format(
+  local result, err = self.code:run(string.format(
     [[
     $text = "%s";
     if (str_contains($text, '@')) {

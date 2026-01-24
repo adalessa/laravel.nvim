@@ -2,17 +2,17 @@ local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 
 ---@class laravel.services.views
----@field resources_loader laravel.loaders.resources_loader
+---@field path_service laravel.services.path
 ---@field runner laravel.services.runner
 local views = Class({
-  resources_loader = "laravel.loaders.resources_loader",
+  path_service = "laravel.services.path",
   runner = "laravel.services.runner",
 })
 
 ---@async
 ---@return string, laravel.error
 function views:pathFromName(name)
-  local views_directory, err = self.resources_loader:get("views")
+  local views_directory, err = self.path_service:get("views")
   if err then
     return "", Error:new("Failed to get views directory"):wrap(err)
   end
@@ -23,7 +23,7 @@ end
 ---@async
 ---@return string, laravel.error
 function views:nameFromPath(path)
-  local views_directory, err = self.resources_loader:get("views")
+  local views_directory, err = self.path_service:get("views")
   if err then
     return "", Error:new("Failed to get views directory"):wrap(err)
   end

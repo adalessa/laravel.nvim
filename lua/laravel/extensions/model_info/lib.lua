@@ -6,15 +6,13 @@ local clean = vim.schedule_wrap(function(bufnr, namespace)
 end)
 
 ---@class laravel.extensions.model_info.lib
----@field loader laravel.loaders.models_loader
----@field class_service laravel.services.class
+---@field model_service laravel.services.model
 ---@field view LaravelModelInfoView
 ---@field namespace integer
 ---@field display_status table<string, boolean>
 local model_info = Class({
-  loader = "laravel.loaders.models_loader",
+  model_service = "laravel.services.model",
   view = "laravel.extensions.model_info.view",
-  class_service = "laravel.services.class",
 }, {
   namespace = vim.api.nvim_create_namespace("laravel.model"),
   display_status = {},
@@ -22,22 +20,10 @@ local model_info = Class({
 
 function model_info:handle(bufnr)
   nio.run(function()
-    local models, err = self.loader:load()
-    if err then
-      nio.scheduler()
-      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-      return
-    end
-    local class, err = self.class_service:getByBuffer(bufnr)
-    if err then
-      nio.scheduler()
-      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-      return
-    end
+    local model, err = self.model_service:get(bufnr)
 
-    local model = models.models[class.fqn]
-    if not model then
-      nio.scheduler()
+    nio.scheduler()
+    if err then
       vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
       return
     end
@@ -47,9 +33,8 @@ function model_info:handle(bufnr)
     end
 
     if self.display_status[bufnr] then
-      nio.scheduler()
       vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-      vim.api.nvim_buf_set_extmark(bufnr, self.namespace, class.line, 0, self.view:get(model))
+      vim.api.nvim_buf_set_extmark(bufnr, self.namespace, model.class.position.start.row, 0, self.view:get(model.model))
     end
   end)
 end

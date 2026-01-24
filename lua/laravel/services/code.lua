@@ -7,18 +7,30 @@ local md5 = require("laravel.utils.md5")
 local dir = "vendor/nvim-laravel/"
 
 ---@class laravel.services.code
+---@field api laravel.services.api
 local code = Class({
   api = "laravel.services.api",
 })
 
+-- TODO: add take templates with variables
+
 ---@async
-function code:run(name)
+---@param name string
+---@return table|nil, laravel.error
+function code:fromTemplate(name)
   local ok, c = pcall(require, "laravel.php-templates." .. name)
   if not ok then
     return nil, Error:new("Could not find code template: " .. name)
   end
 
-  local f = boostrap:gsub("__NVIM_LARAVEL_OUTPUT__", c)
+  return self:run(c)
+end
+
+---@async
+---@param code string
+---@return table, laravel.error
+function code:run(code)
+  local f = boostrap:gsub("__NVIM_LARAVEL_OUTPUT__", code)
 
   local n = md5.sumhexa(f)
 
@@ -32,12 +44,13 @@ function code:run(name)
     if not dir_stats then
       local _, ok = nio.uv.fs_mkdir(dir, 493) -- 0755
       if not ok then
-        return nil, Error:new("Could not create directory for php files: " .. dir)
+        return {}, Error:new("Could not create directory for php files: " .. dir)
       end
     end
+    ---@diagnostic disable-next-line: param-type-mismatch
     local file = nio.file.open(full, "w+")
     if not file then
-      return nil, Error:new("Could not create php file for " .. name)
+      return {}, Error:new("Could not create php file for " .. fname)
     end
     file.write("<?php\n")
     file.write(f)
@@ -46,11 +59,11 @@ function code:run(name)
 
   local res, err = self.api:run("php", { full })
   if err then
-    return nil, Error:new("Error running the php file for " .. name):wrap(err)
+    return {}, Error:new("Error running the php file " .. fname):wrap(err)
   end
 
   if res:failed() then
-    return nil, Error:new("PHP code execution failed for " .. name .. ": " .. res:prettyErrors())
+    return {}, Error:new("PHP code execution failed: " .. res:prettyErrors())
   end
 
   local result = table.concat(res:raw(), "")
@@ -58,11 +71,15 @@ function code:run(name)
   result = result:match("__NEOVIM_LARAVEL_START_OUTPUT__%s*(.-)%s*__NEOVIM_LARAVEL_END_OUTPUT__")
 
   if not result or result == "" then
-    return nil, Error:new("Invalid or empty PHP output while running code template: " .. name)
+    return {}, Error:new("Invalid or empty PHP output while running code")
   end
 
-  return vim.json.decode(result, { luanil = { object = true } }), nil
-  -- return result, nil
+  local ok, decoded = pcall(vim.json.decode, result, { luanil = { object = true } })
+  if not ok then
+    return {}, Error:new("Could not parse PHP output: " .. decoded)
+  end
+
+  return decoded, nil
 end
 
 return code

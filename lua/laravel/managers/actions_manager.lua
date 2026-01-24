@@ -2,6 +2,11 @@ local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
+---@class laravel.actions.action
+---@field check fun(self: laravel.actions.action, bufnr: number): boolean async
+---@field format fun(self: laravel.actions.action, bufnr: number): string
+---@field run fun(self: laravel.actions.action, bufnr: number): nil async
+
 ---@class laravel.managers.actions_manager
 ---@field actions laravel.actions.action[]
 local service = Class({ actions = "laravel.actions" })
@@ -30,17 +35,17 @@ function service:run()
       return
     end
 
-    vim.schedule(function()
-      vim.ui.select(actions, {
-        prompt = "Select a Laravel action",
-        format_item = function(item)
-          return item:format(bufnr)
-        end,
-      }, function(action)
-        if action then
-          action:run(bufnr)
-        end
-      end)
+    nio.scheduler()
+    -- TODO: should replace with basic wrapper ?
+    vim.ui.select(actions, {
+      prompt = "Select a Laravel action",
+      format_item = function(item)
+        return item:format(bufnr)
+      end,
+    }, function(action)
+      if action then
+        action:run(bufnr)
+      end
     end)
   end)
 end

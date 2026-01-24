@@ -1,6 +1,9 @@
 local nio = require("nio")
 local Class = require("laravel.utils.class")
 
+---@class laravel.actions.create_listener_action : laravel.actions.action
+---@field class_service laravel.services.class
+---@field runner laravel.services.runner
 local action = Class({
   class_service = "laravel.services.class",
   runner = "laravel.services.runner",
@@ -8,7 +11,8 @@ local action = Class({
 
 ---@async
 function action:check(bufnr)
-  local class, err = self.class_service:getByBuffer(bufnr)
+  nio.scheduler()
+  local class, err = self.class_service:get(bufnr)
   if err then
     return false
   end

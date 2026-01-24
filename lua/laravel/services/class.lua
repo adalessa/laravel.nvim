@@ -1,28 +1,22 @@
-local nio = require("nio")
 local get_node_text = vim.treesitter.get_node_text
 local Error = require("laravel.utils.error")
-
----@class laravel.dto.class
----@field fqn string
----@field class string
----@field namespace string
----@field line number
----@field methods table[]
----@field properties table[]
 
 ---@class laravel.services.class
 local class = {}
 
-class.getByBuffer = nio.wrap(function(self, bufnr, cb)
-  vim.schedule(function()
-    local cls, err = self:get(bufnr)
-    cb(cls, err)
-  end)
-end, 3)
+local function posFromNode(node)
+  local start_row, start_col = node:start()
+  local end_row, end_col = node:end_()
 
----@async
+  return {
+    start = { row = start_row, col = start_col },
+    end_ = { row = end_row, col = end_col },
+  }
+end
+
+---[this needs to run in scheduler]
 ---@param bufnr number
----@return laravel.dto.class, laravel.error
+---@return laravel.dto.class, laravel.utils.error|nil
 function class:get(bufnr)
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if php_parser == nil then
@@ -39,11 +33,11 @@ function class:get(bufnr)
     return {}, Error:new("Could not get treesitter query")
   end
 
+  ---@type laravel.dto.class
   local response = {
     fqn = "",
     class = "",
     namespace = "",
-    line = 0,
     methods = {},
     properties = {},
   }
@@ -54,24 +48,19 @@ function class:get(bufnr)
   for id, node in query:iter_captures(tree:root(), bufnr) do
     if query.captures[id] == "class" then
       response.class = get_node_text(node, bufnr)
-      response.line = node:start()
-      response.end_ = node:parent():end_()
+      response.position = posFromNode(node:parent())
     elseif query.captures[id] == "namespace" then
       response.namespace = get_node_text(node, bufnr)
     elseif query.captures[id] == "method_name" then
-      local s = node:start()
-      local e = node:parent():end_()
       table.insert(response.methods, {
-        pos = { s, e },
+        position = posFromNode(node:parent()),
         name = get_node_text(node, bufnr),
       })
     elseif query.captures[id] == "method_visibility" then
       table.insert(methods_visibility, get_node_text(node, bufnr))
     elseif query.captures[id] == "property_name" then
-      local s = node:start()
-      local e = node:parent():parent():parent():end_()
       table.insert(response.properties, {
-        pos = { s, e },
+        position = posFromNode(node:parent():parent()),
         name = get_node_text(node, bufnr),
       })
     elseif query.captures[id] == "property_visibility" then

@@ -1,73 +1,53 @@
+local nio = require("nio")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 
----@class laravel.dto.model
----@field class_info laravel.dto.class
----@field start number
-
 ---@class laravel.services.model
 ---@field class laravel.services.class
----@field tinker laravel.services.tinker
----@field api laravel.services.api
+---@field loader laravel.loaders.models_loader
+---@field path laravel.services.path
 local model = Class({
   class = "laravel.services.class",
-  tinker = "laravel.services.tinker",
-  api = "laravel.services.api",
+  path = "laravel.services.path",
+  loader = "laravel.loaders.models_loader",
 })
 
 ---@async
----@return laravel.dto.model, laravel.error
-function model:getByBuffer(bufnr)
-  local class, err = self.class:getByBuffer(bufnr)
+---@param bufnr? number
+---@return laravel.dto.model_response, laravel.utils.error|nil
+function model:get(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+  local response, err = self.loader:load()
+
   if err then
-    return {}, Error:new("Error getting the class"):wrap(err)
+    return {}, Error:new("Failed to load models"):wrap(err)
   end
 
-  local res, tinkerError = self.tinker:json(string.format(
-    [[
-      $r = new ReflectionClass("%s");
-      $isModel = $r->isSubclassOf("Illuminate\Database\Eloquent\Model");
-      echo json_encode([
-        'is_model' => $isModel,
-        'class_start' => $r->getStartLine(),
-      ]);
-    ]],
-    class.fqn
-  ))
-  if tinkerError then
-    return {}, Error:new("Failed to reflect class"):wrap(tinkerError)
+  nio.scheduler()
+
+  local uri = vim.uri_from_bufnr(bufnr)
+  local fname = vim.uri_to_fname(uri)
+
+  ---@type laravel.dto.model|nil
+  local _, m = vim.iter(response.models):find(
+    ---@param m laravel.dto.model
+    function(_, m)
+      return self.path:handle(m.uri) == fname
+    end
+  )
+
+  if not m then
+    return {}, Error:new("No model found for this buffer")
   end
 
-  if not res.is_model then
-    return {}, Error:new("Class is not a model")
-  end
+  nio.scheduler()
+  local class, err = self.class:get(bufnr)
 
-  local info, infoError = self:info(class.fqn)
-  if infoError then
-    return {}, Error:new("Failed to get model info"):wrap(infoError)
-  end
-
-  info.start = res.class_start
-  info.class_info = class
-
-  return info
-end
-
----@async
----@param fqn string
----@return laravel.dto.model, laravel.error
-function model:info(fqn)
-  local res, err = self.api:run("artisan", { "model:show", "--json", string.format("\\%s", fqn) })
-  if err then
-    return {}, Error:new("Failed to run artisan model:show"):wrap(err)
-  end
-
-  local info = res:json()
-  if vim.tbl_isempty(info) then
-    return {}, Error:new(("No model info found for %s"):format(fqn))
-  end
-
-  return info
+  return {
+    model = m,
+    class = class,
+  }, nil
 end
 
 return model

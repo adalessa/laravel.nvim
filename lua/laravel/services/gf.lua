@@ -5,6 +5,10 @@ local gf = Class()
 
 ---@return false|TSNode, string|nil
 function gf:cursorOnResource()
+  if not Laravel.app:isActive() then
+    return false
+  end
+
   local node = vim.treesitter.get_node()
   if not node then
     return false

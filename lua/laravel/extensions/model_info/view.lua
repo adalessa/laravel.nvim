@@ -1,6 +1,7 @@
 ---@class LaravelModelInfoView
 local model_info_view = {}
 
+---@param model laravel.dto.model
 function model_info_view:get(model)
   local virt_lines = {
     { { "[", "comment" } },

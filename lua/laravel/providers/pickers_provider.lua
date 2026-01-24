@@ -24,7 +24,12 @@ function pickers_provider.boot(app)
         __call = function(_, opts)
           nio.run(function()
             if not app:isActive() then
-              return notify.warn(string.format("Picker %s can not run since Laravel is not active", key))
+              return notify.warn(
+                string.format(
+                  'Picker %s can not run since Laravel is not active. use `lua Laravel.commands.run("env:configure")`',
+                  key
+                )
+              )
             end
             return pickers_manager:run(key, opts)
           end)

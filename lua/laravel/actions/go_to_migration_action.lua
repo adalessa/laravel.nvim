@@ -3,18 +3,19 @@ local notify = require("laravel.utils.notify")
 local Class = require("laravel.utils.class")
 local nio = require("nio")
 
+---@class laravel.actions.go_to_migration_action
+---@field model laravel.services.model
 local action = Class({
   model = "laravel.services.model",
-  tinker = "laravel.services.tinker",
 }, { info = nil })
 
 ---@async
 function action:check(bufnr)
-  local info, err = self.model:getByBuffer(bufnr)
+  local model_resp, err = self.model:get(bufnr)
   if err then
     return false
   end
-  self.info = info
+  self.info = model_resp.model
 
   return true
 end
@@ -24,33 +25,30 @@ function action:format()
 end
 
 function action:run()
-  nio.run(function()
-    local table_name, err = self.tinker:text(string.format([[echo (new %s())->getTable();]], self.info.class))
-    if err then
-      notify.error("Could not get table name: " .. err:toString())
-      return
-    end
-    table_name = vim.trim(table_name)
-    local matches = utils.runRipgrep(string.format("Schema::(?:create|table)\\('%s'", table_name))
+  local table_name = self.info.table
+  table_name = vim.trim(table_name)
+  if not table_name or table_name == "" then
+    notify.error("Model has no table defined")
+    return
+  end
+  local matches = utils.runRipgrep(string.format("Schema::(?:create|table)\\('%s'", table_name))
 
-    local selected = nil
-    if #matches == 0 then
-      notify.error("No migration found for table: " .. table_name)
-    elseif #matches == 1 then
-      selected = matches[1].file
-    else
-      selected = nio.ui.select(matches, {
-        prompt = "File: ",
-        format_entry = function(item)
-          return item.file
-        end,
-      })
-    end
-    if selected then
-      nio.scheduler()
-      vim.cmd("edit " .. selected)
-    end
-  end)
+  local selected = nil
+  if #matches == 0 then
+    notify.error("No migration found for table: " .. table_name)
+  elseif #matches == 1 then
+    selected = matches[1].file
+  else
+    selected = nio.ui.select(matches, {
+      prompt = "File: ",
+      format_entry = function(item)
+        return item.file
+      end,
+    })
+  end
+  if selected then
+    vim.cmd("edit " .. selected)
+  end
 end
 
 return action

@@ -7,6 +7,7 @@ local related = Class({ model = "laravel.services.model" })
 
 local types = { "observers", "relations", "policy" }
 
+-- FIX: not sure about this rebuild
 local build_relation = function(info, relation_type)
   if next(info) == nil then
     return nil
@@ -35,10 +36,11 @@ end
 
 ---@async
 function related:get(bufnr)
-  local info, err = self.model:getByBuffer(bufnr)
+  local model_response, err = self.model:get(bufnr)
   if err then
     return {}, Error:new("Error getting model"):wrap(err)
   end
+  local info = model_response.model
 
   local relations = {}
   for _, relation_type in ipairs(types) do

@@ -2,8 +2,9 @@ local get_line_indent = require("laravel.utils.init").get_line_indent
 
 local view = {}
 
+---@param method laravel.dto.method
 function view:get(route, method)
-  local indent = get_line_indent(method.pos[1] + 1)
+  local indent = get_line_indent(method.position.start.row + 1)
 
   return {
     virt_lines = {

@@ -130,9 +130,19 @@ function M.make_run(command)
 end
 
 function M.open_relation(relation)
-  vim.schedule(function()
-    local action = vim.fn.split(relation.class, "@")
-    lsp.go_to(action[1], action[2])
+  nio.run(function()
+    -- TODO: fix with the proper type
+    -- TODO: have a proper method for this
+    local res, err = app("laravel.services.class_finder"):find(relation.class)
+    if not err then
+      local file, line = res.file, res.line
+      vim.schedule(function()
+        if pcall(vim.cmd.edit, file) then
+          pcall(vim.api.nvim_win_set_cursor, 0, { line, 0 })
+          pcall(vim.cmd.normal, "zt")
+        end
+      end)
+    end
   end)
 end
 

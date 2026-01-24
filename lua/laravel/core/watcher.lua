@@ -8,6 +8,7 @@ local timers = {}
 
 local debounce_time = 1 --second
 
+---@param path string
 local function create_watcher(path)
   local w = vim.uv.new_fs_event()
   assert(w, "Failed to create fs_event handle")
@@ -32,11 +33,16 @@ local function create_watcher(path)
   end)
 end
 
----@param paths string[]
 ---@param pattern string
 ---@param callback fun(filename: string)
 Watcher.register = function(paths, pattern, callback)
   for _, path in ipairs(paths) do
+    local isRecursive = false
+    if type(path) == "table" then
+      isRecursive = path.recursive or false
+      path = path[1]
+    end
+
     if not watchers[path] then
       watchers[path] = {}
       create_watcher(path)
@@ -44,11 +50,35 @@ Watcher.register = function(paths, pattern, callback)
     table.insert(watchers[path], function(filename)
       if filename:match(pattern) then
         nio.run(function()
-          callback(vim.fs.joinpath(path, filename))
+          callback()
         end)
       end
     end)
+
+    if isRecursive then
+      local _, handler = nio.uv.fs_opendir(path)
+      local directories = {}
+      while true do
+        local _, c = nio.uv.fs_readdir(handler)
+        if not c then
+          break
+        end
+        local dir = c[1]
+        if dir and dir.type == "directory" then
+          table.insert(directories, { path .. "/" .. dir.name, recursive = true })
+        end
+      end
+      if #directories > 0 then
+        Watcher.register(directories, pattern, callback)
+      end
+    end
   end
+end
+
+Watcher.info = function()
+  return {
+    active = vim.tbl_keys(watchers),
+  }
 end
 
 return Watcher

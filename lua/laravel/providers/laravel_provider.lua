@@ -62,6 +62,7 @@ function laravel_provider.boot(app)
   -- initial load for the app
   nio.run(function()
     Laravel.app("laravel.loaders.models_loader"):load()
+    Laravel.app("laravel.loaders.views_loader"):load()
   end)
 end
 

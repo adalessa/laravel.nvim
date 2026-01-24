@@ -2,6 +2,8 @@ local nio = require("nio")
 local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 
+---@class laravel.extensions.diagnostic.views_diagnostic
+---@field views_loader laravel.loaders.views_cache_loader
 local views_diagnostic = Class({
   views_loader = "laravel.loaders.views_cache_loader",
 })
@@ -51,9 +53,15 @@ function views_diagnostic:handle(bufnr)
 
     views = vim
       .iter(views)
-      :map(function(view)
-        return view.key
-      end)
+      :map(
+        ---@param view laravel.dto.artisan_views
+        function(view)
+          if view.isLivewire then
+            return "livewire." .. view.key
+          end
+          return view.key
+        end
+      )
       :totable()
 
     vim.schedule(function()

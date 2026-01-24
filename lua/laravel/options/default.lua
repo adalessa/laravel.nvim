@@ -21,6 +21,7 @@ return {
       provider = "telescope",
     },
   },
+  eloquent_generate_doc_blocks = true,
   ui = require("laravel.options.ui"),
   commands_options = require("laravel.options.command_options"),
   environments = require("laravel.options.environments"),

@@ -5,6 +5,7 @@ local Error = require("laravel.utils.error")
 ---@field key string
 ---@field path string
 ---@field isVendor boolean
+---@field isLivewire boolean
 
 ---@class laravel.loaders.views_loader
 ---@field code laravel.services.code
@@ -22,4 +23,15 @@ function ViewsLoader:load()
   return views or {}
 end
 
+
 return ViewsLoader
+
+-- Example output:
+-- [
+--   {
+--     "path": "resources/views/livewire/app.blade.php",
+--     "isVendor": false,
+--     "key": "app",
+--     "isLivewire": true
+--   },
+-- ]

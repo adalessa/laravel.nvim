@@ -1,4 +1,5 @@
 local notify = require("laravel.utils.notify")
+local nio = require("nio")
 
 ---@class laravel.providers.provider
 ---@field name string
@@ -57,6 +58,11 @@ function laravel_provider.boot(app)
 
     return app("runner"):run(...)
   end
+
+  -- initial load for the app
+  nio.run(function()
+    Laravel.app("laravel.loaders.models_loader"):load()
+  end)
 end
 
 return laravel_provider

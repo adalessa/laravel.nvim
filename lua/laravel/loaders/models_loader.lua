@@ -10,8 +10,11 @@ local paths = {
 
 ---@class laravel.loaders.models_loader
 ---@field code laravel.services.code
+---@field config laravel.services.config
 local ModelsLoader = Class({
   code = "laravel.services.code",
+  config = "laravel.services.config",
+  eloquent_helper = "laravel.services.eloquent_helper",
 }, { items = {}, loaded = false })
 
 ---@async
@@ -22,8 +25,9 @@ function ModelsLoader:load()
   end
 
   local _load = function()
+    ---@type laravel.dto.models_response|nil
     local models, err = self.code:fromTemplate("models")
-    if err then
+    if err or not models then
       self.loaded = false
       self.items = {}
       return {}, Error:new("Failed to load models"):wrap(err)
@@ -32,7 +36,9 @@ function ModelsLoader:load()
     self.loaded = true
     self.items = models or {}
 
-    -- TODO: could write to the models here
+    if self.config.get("eloquent_generate_doc_blocks") then
+      self.eloquent_helper.write_eloquent_docblocks(models.models, models.builderMethods)
+    end
 
     return self.items
   end

@@ -11,6 +11,7 @@ local paths = {
 ---@class laravel.loaders.models_loader
 ---@field code laravel.services.code
 ---@field config laravel.services.config
+---@field eloquent_helper laravel.services.eloquent_helper
 local ModelsLoader = Class({
   code = "laravel.services.code",
   config = "laravel.services.config",

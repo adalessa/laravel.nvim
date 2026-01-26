@@ -13,7 +13,7 @@ function M.is_valid_buffer(bufnr)
   if win ~= -1 then
     local win_type = vim.fn.win_gettype(win)
     if win_type ~= "" then
-      return false -- Exclude non-standard windows like popup, floating, preview windows
+      return false -- Exclude non-standard windows like popup or preview windows
     end
   end
 

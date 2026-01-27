@@ -38,6 +38,7 @@ function class:get(bufnr)
     fqn = "",
     class = "",
     namespace = "",
+    uses = {},
     methods = {},
     properties = {},
   }
@@ -51,6 +52,12 @@ function class:get(bufnr)
       response.position = posFromNode(node:parent())
     elseif query.captures[id] == "namespace" then
       response.namespace = get_node_text(node, bufnr)
+    elseif query.captures[id] == "use" then
+      local name = get_node_text(node, bufnr)
+      response.uses[name] = {
+        name = name,
+        position = posFromNode(node:parent()),
+      }
     elseif query.captures[id] == "method_name" then
       table.insert(response.methods, {
         position = posFromNode(node:parent()),

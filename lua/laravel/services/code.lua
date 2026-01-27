@@ -12,8 +12,6 @@ local code = Class({
   api = "laravel.services.api",
 })
 
--- TODO: add take templates with variables
-
 ---@async
 ---@param name string
 ---@return table|nil, laravel.error
@@ -48,7 +46,7 @@ function code:run(code)
       end
     end
     ---@diagnostic disable-next-line: param-type-mismatch
-    local file = nio.file.open(full, "w+")
+    local file = nio.file.open(full, "w")
     if not file then
       return {}, Error:new("Could not create php file for " .. fname)
     end

@@ -33,9 +33,7 @@ function action:format()
 end
 
 function action:run(bufnr)
-  nio.run(function()
-    self.runner:run("artisan", { "livewire:delete", self.component })
-  end)
+  self.runner:run("artisan", { "livewire:delete", self.component })
 end
 
 return action

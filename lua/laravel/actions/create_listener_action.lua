@@ -28,11 +28,9 @@ function action:format()
 end
 
 function action:run()
-  nio.run(function()
-    local event = self.class.class
-    local listener = nio.ui.input({ prompt = "Listener Name: " })
-    self.runner:run("artisan", { "make:listener", "-e", event, listener })
-  end)
+  local event = self.class.class
+  local listener = nio.ui.input({ prompt = "Listener Name: " })
+  self.runner:run("artisan", { "make:listener", "-e", event, listener })
 end
 
 return action

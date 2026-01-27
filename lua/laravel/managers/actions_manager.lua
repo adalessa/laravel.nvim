@@ -35,18 +35,17 @@ function service:run()
       return
     end
 
+    --- nead to leave this to work after the gather
     nio.scheduler()
-    -- TODO: should replace with basic wrapper ?
-    vim.ui.select(actions, {
+    local action = nio.ui.select(actions, {
       prompt = "Select a Laravel action",
       format_item = function(item)
         return item:format(bufnr)
       end,
-    }, function(action)
-      if action then
-        action:run(bufnr)
-      end
-    end)
+    })
+    if action then
+      action:run(bufnr)
+    end
   end)
 end
 

@@ -1,3 +1,5 @@
+local nio = require("nio")
+
 return {
   check = function()
     return true

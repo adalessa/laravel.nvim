@@ -2,6 +2,7 @@
 ---@field fqn string
 ---@field class string
 ---@field namespace string
+---@field uses table<string, laravel.dto.class_use>
 ---@field position laravel.dto.position
 ---@field methods table<string, laravel.dto.method>
 ---@field properties table<string, laravel.dto.property>
@@ -10,6 +11,10 @@
 ---@field fqn string
 ---@field name string
 ---@field visibility "public" | "protected" | "private"
+---@field position laravel.dto.position
+
+---@class laravel.dto.class_use
+---@field name string
 ---@field position laravel.dto.position
 
 ---@class laravel.dto.property

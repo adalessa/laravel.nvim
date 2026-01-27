@@ -27,6 +27,7 @@ vim.treesitter.query.set(
   "php_class",
   [[
       (namespace_definition (namespace_name) @namespace)
+      (namespace_use_clause) @use
       (class_declaration (name) @class)
       (method_declaration
           (visibility_modifier) @method_visibility

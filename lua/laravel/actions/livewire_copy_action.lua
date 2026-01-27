@@ -33,10 +33,8 @@ function action:format()
 end
 
 function action:run(bufnr)
-  nio.run(function()
-    local name = nio.ui.input({ prompt = "New Component Name" })
-    self.runner:run("artisan", { "livewire:copy", self.component, name })
-  end)
+  local name = nio.ui.input({ prompt = "New Component Name" })
+  self.runner:run("artisan", { "livewire:copy", self.component, name })
 end
 
 return action

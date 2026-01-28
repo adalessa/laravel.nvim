@@ -80,4 +80,46 @@ function code:run(code)
   return decoded, nil
 end
 
+---
+-- Generate a PHP file from a template and code snippet for PTY execution.
+-- @param code string: The snippet to inject
+-- @param template string?: The php-templates module to use (defaults to 'tinker')
+-- @return string Full path to generated PHP file (will not execute it)
+---
+-- Generate a PHP file from a template and code snippet for PTY execution.
+-- Can be easily extended to add more templates in the future (see template param).
+-- @param code string: The code snippet to inject
+-- @param template string?: The php-templates module to use (defaults to 'tinker')
+-- @return string Full path to generated PHP file (will not execute it)
+function code:make_php_file(code, template)
+  template = template or 'tinker'
+  -- Future extensibility: add/replace templates for custom behaviors
+  local ok, tpl = pcall(require, 'laravel.php-templates.' .. template)
+  if not ok or type(tpl) ~= 'string' then
+    error('Could not load PHP template: ' .. tostring(template))
+  end
+  local output = tpl:gsub('__NVIM_LARAVEL_OUTPUT__', code)
+  local hash = md5.sumhexa(output)
+  local fname = hash .. '.' .. template .. '.php'
+  local full = dir .. fname
+  local _, file_stats = nio.uv.fs_stat(full)
+  if not file_stats then
+    local _, dir_stats = nio.uv.fs_stat(dir)
+    if not dir_stats then
+      local _, ok = nio.uv.fs_mkdir(dir, 493) -- 0755
+      if not ok then
+        error('Could not create directory for php files: ' .. dir)
+      end
+    end
+    local file = nio.file.open(full, 'w')
+    if not file then
+      error('Could not create php file for ' .. fname)
+    end
+    file.write('<?php\n')
+    file.write(output)
+    file.close()
+  end
+  return full
+end
+
 return code

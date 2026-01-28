@@ -1,6 +1,7 @@
 local scan = require("plenary.scandir")
 local notify = require("laravel.utils.notify")
 local Class = require("laravel.utils.class")
+local nio = require("nio")
 
 ---@class laravel.extensions.tinker.lib
 ---@field command_generator laravel.services.command_generator
@@ -15,6 +16,10 @@ local function cleanResult(data)
   return vim.tbl_map(function(line)
     if line:find("vendor/psy/psysh/src") then
       local sub = line:gsub("vendor/psy/psysh/src.*$", "")
+      return sub:sub(1, -14)
+    end
+    if line:find("vendor/nvim%-laravel") then
+      local sub = line:gsub("vendor/nvim%-laravel.*$", "")
       return sub:sub(1, -14)
     end
     return line
@@ -39,11 +44,14 @@ local function get_lines(bufnr)
     end
   end
 
+  -- TODO: want to change that, could use the template with specific code added to handle this.
+  -- should execute and get the last value
+
   local last = nodes[#nodes]
 
   if not (last:match("dump") or last:match("echo") or last:match("print_r")) then
     local body = last:gsub("%s*;%s*$", "")
-    local output = "dump(" .. body .. ");"
+    local output = "nvim_dump(" .. body .. ");"
     nodes[#nodes] = output
   end
 
@@ -70,60 +78,61 @@ function tinker:open(filename)
     pcall(function()
       vim.cmd("write")
     end)
-    self.data[filename] = {}
+    nio.run(function()
+      self.data[filename] = {}
 
-    if Laravel.app("laravel.extensions.dump_server.lib"):isRunning() then
-      notify.warn("Dump server is running, please stop it before using tinker")
+      if Laravel.app("laravel.extensions.dump_server.lib"):isRunning() then
+        notify.warn("Dump server is running, please stop it before using tinker")
 
-      return
-    end
+        return
+      end
 
-    local lines = get_lines(bufnr) or {}
+      local lines = get_lines(bufnr) or {}
+      local code_block = table.concat(lines, "\n")
+      -- Use the new PHP template-based execution for extensibility
+      local code_service = require("laravel.services.code")
+      -- Future extensibility: uses template system so new output modes are trivial
+      local php_file
+      local ok, err = pcall(function()
+        php_file = code_service:make_php_file(code_block, "tinker")
+      end)
+      if not ok or not php_file then
+        notify.error("Could not generate tinker PHP file:" .. (err or "unknown error"))
+        return
+      end
 
-    table.insert(lines, 1, "$_timer = microtime(true);")
-    table.insert(lines, "$_total =  (microtime(true) - $_timer) * 1000;")
-    table.insert(
-      lines,
-      "echo PHP_EOL . '__tinker_info:' . json_encode(['time' => $_total, 'memory' => memory_get_peak_usage() / 1024 / 1024]);"
-    )
-
-    local cmd = self.command_generator:generate("artisan", { "tinker", "--execute", table.concat(lines, "\n") })
-    if not cmd then
-      notify.error("Tinker command not found")
-      return
-    end
-
-    vim.fn.jobstart(cmd, {
-      stdeout_buffered = true,
-      on_stdout = function(_, data)
-        data = cleanResult(data)
-
-        for i = #data, 1, -1 do
-          if data[i] == "" then
-            table.remove(data, i)
-          end
-        end
-
-        local last = data[#data] or ""
-        if last:match("^__tinker_info:") then
-          local info = last:gsub("^__tinker_info:", "")
-          local ok, decoded = pcall(vim.fn.json_decode, info)
-          if ok and decoded then
-            table.remove(data, #data)
-            if info_callback then
-              info_callback(decoded.time, decoded.memory)
+      -- Execute it in PTY mode as with tinker, preserving current UI/UX
+      -- TODO: To support more type-based outputs, only the PHP template is changed
+      nio.scheduler()
+      vim.fn.jobstart({ "php", php_file }, {
+        stdeout_buffered = true,
+        on_stdout = function(_, data)
+          data = cleanResult(data)
+          for i = #data, 1, -1 do
+            if data[i] == "" then
+              table.remove(data, i)
             end
           end
-        end
-
-        vim.fn.chansend(channelId, data)
-        for _, line in ipairs(data) do
-          table.insert(self.data[filename], line)
-        end
-      end,
-      on_exit = function() end,
-      pty = true,
-    })
+          local last = data[#data] or ""
+          if last:match("^__tinker_info:") then
+            local info = last:gsub("^__tinker_info:", "")
+            local ok, decoded = pcall(vim.fn.json_decode, info)
+            if ok and decoded then
+              table.remove(data, #data)
+              if info_callback then
+                info_callback(decoded.time, decoded.memory)
+              end
+            end
+          end
+          vim.fn.chansend(channelId, data)
+          for _, line in ipairs(data) do
+            table.insert(self.data[filename], line)
+          end
+        end,
+        on_exit = function() end,
+        pty = true,
+      })
+    end)
   end)
 
   if not vim.tbl_isempty(self.data[filename]) then

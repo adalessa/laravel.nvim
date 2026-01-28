@@ -24,7 +24,27 @@ catch (Throwable $e) {
 if (!function_exists('nvim_dump')) {
     function nvim_dump($val) {
         // All headers colorized with ANSI codes for Neovim/terminal
-        if ($val instanceof Illuminate\Database\Eloquent\Model) {
+        if ($val instanceof Illuminate\Database\Eloquent\Collection) {
+          if ($val->isEmpty()) {
+            Laravel\Prompts\warning('Collection is empty.');
+          } else {
+            $i = 1;
+            foreach ($val as $model) {
+              // Skip if not a Model instance
+              if (!($model instanceof Illuminate\Database\Eloquent\Model)) continue;
+              Laravel\Prompts\table(
+                headers: ['Attribute', 'Value'],
+                rows: collect($model->getAttributes())
+                  ->map(fn ($value, $key) => [$key, (string) $value])
+                  ->values()
+                  ->all()
+              );
+              $i++;
+            }
+            // Optionally, show summary for large collections
+            Laravel\Prompts\info('Total models in collection: '.count($val));
+          }
+        } else if ($val instanceof Illuminate\Database\Eloquent\Model) {
           Laravel\Prompts\info('Model: '.$val::class);
           Laravel\Prompts\table(
               headers: ['Attribute', 'Value'],

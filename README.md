@@ -73,6 +73,22 @@ in the predefined environment. If you want to customize them you can use the `La
 There you will see configuration for all you defined projects and you can edit the commands as you need.
 in th future can be improved the ui but as right now is a good use case since you are not expected to edit every time.
 
+## Eloquent Completion.
+In order to have the best experience with laravel eloquent now the plugin can generate a custom class in the vendor folder
+with all the fields for the model and methods.
+Since this do not modified your model is enable by default, if you don't want that you can disable the property `eloquent_generate_doc_blocks` from the root of the plugin config.
+In some projects the generation can be big so recommended is to expand the lsp maxSize to the current 1MB.
+```lua
+ vim.lsp.config('intelephense', {
+     ...
+      settings = {
+        intelephense = {
+          files = {
+            maxSize = 2000000,
+          },
+        },
+      }
+```
 
 ## Lualine Integration
 ![lualine](imgs/lualine.png)

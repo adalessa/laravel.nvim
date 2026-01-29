@@ -98,7 +98,7 @@ function code:make_php_file(code, template)
   if not ok or type(tpl) ~= 'string' then
     error('Could not load PHP template: ' .. tostring(template))
   end
-  local output = tpl:gsub('__NVIM_LARAVEL_OUTPUT__', code)
+  local output = tpl:gsub('__NVIM_LARAVEL_OUTPUT__', function() return code end)
   local hash = md5.sumhexa(output)
   local fname = hash .. '.' .. template .. '.php'
   local full = dir .. fname

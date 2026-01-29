@@ -40,7 +40,8 @@ local function get_lines(bufnr)
   for node in tree:root():iter_children() do
     -- remove the comment and others
     if not vim.tbl_contains({ "php_tag", "comment" }, node:type(), {}) then
-      table.insert(nodes, vim.treesitter.get_node_text(node, bufnr, {}))
+      local text = vim.treesitter.get_node_text(node, bufnr, {}):gsub("%%","%%%%")
+      table.insert(nodes, text)
     end
   end
 

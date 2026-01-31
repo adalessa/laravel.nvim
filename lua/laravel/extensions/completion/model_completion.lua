@@ -38,7 +38,6 @@ function model_completion.complete(_, params, callback)
   end)
 
   if not model then
-    dd("no model found for " .. result.model)
     return callback({
       items = {},
       isIncomplete = false,

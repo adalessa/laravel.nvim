@@ -28,7 +28,6 @@ describe("artisan loader test", function()
 
     assert.table(commands)
     assert.equals(0, #commands)
-    assert.is_string(err)
-    assert.equals("Failed to load artisan commands: API Error", err)
+    assert.equals("Failed to load artisan commands: API Error", err.message)
   end)
 end)

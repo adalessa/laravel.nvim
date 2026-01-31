@@ -4,9 +4,20 @@ local model_completion = {}
 
 ---@async
 function model_completion.complete(_, params, callback)
-  local model_name = model_resolver.resolve_model_at_cursor(params.context.bufnr)
+  local result = model_resolver.resolve_model_at_cursor(params.context.bufnr, params.context.cursor_before_line)
 
-  if not model_name then
+  local supported_methods = {
+    "where",
+    "order",
+  }
+  local function is_supported_methods(method)
+    return vim.iter(supported_methods):any(function(m)
+      -- check that has the prefix of m in method
+      return method:match("^" .. m)
+    end)
+  end
+
+  if not (result and result.param_position == 0 and is_supported_methods(result.method) )then
     return callback({
       items = {},
       isIncomplete = false,
@@ -23,10 +34,11 @@ function model_completion.complete(_, params, callback)
   end
 
   local _, model = vim.iter(resp.models):find(function(name)
-    return name:match("([^\\]+)$") == model_name
+    return name:match("([^\\]+)$") == result.model or name == result.model
   end)
 
   if not model then
+    dd("no model found for " .. result.model)
     return callback({
       items = {},
       isIncomplete = false,

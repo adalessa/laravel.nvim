@@ -197,7 +197,7 @@ local function resolve_by_text(bufnr, before, cursor_line)
           break
         end
       end
-      table.insert(pieces, 1, {type = "scoped", method = method})
+      table.insert(pieces, 1, { type = "scoped", method = method })
       -- Remove up to and including '->method('
       text = text:gsub("->" .. method .. "%s*%(", "", 1)
     elseif last_static then
@@ -210,7 +210,7 @@ local function resolve_by_text(bufnr, before, cursor_line)
           break
         end
       end
-      table.insert(pieces, 1, {type = "static", class = class, method = method})
+      table.insert(pieces, 1, { type = "static", class = class, method = method })
       -- Remove up to and including 'Class::method('
       text = text:gsub(class .. "::" .. method .. "%s*%(", "", 1)
       break -- leftmost static call found, stop
@@ -226,7 +226,7 @@ local function resolve_by_text(bufnr, before, cursor_line)
     if first_piece.type == "static" then
       model = first_piece.class
     end
-    for j=#pieces,1,-1 do
+    for j = #pieces, 1, -1 do
       if pieces[j].type == "static" then
         model = pieces[j].class
         break
@@ -244,20 +244,22 @@ local function resolve_by_text(bufnr, before, cursor_line)
       param_position = 0
     else
       local n = 0
-      for _ in params:gmatch(",") do n = n + 1 end
+      for _ in params:gmatch(",") do
+        n = n + 1
+      end
       param_position = n
     end
     -- If model is still nil and text is a $var->method( pattern, try to resolve from prior buffer lines
-    if not model and type(cursor_line) == 'number' then
+    if not model and type(cursor_line) == "number" then
       local var = nil
       local match_var = before:match("%$(%w+)%-%>%w+%s*%(")
       if match_var then
         var = match_var
         -- Look upwards for assignment
-        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, cursor_line-1, false)
-        for i = #lines,1,-1 do
+        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, cursor_line - 1, false)
+        for i = #lines, 1, -1 do
           local line = lines[i]
-          local class = line:match("%$"..var.."%s*=%s*([%w_\\]+)::[%w_]+%s*%(")
+          local class = line:match("%$" .. var .. "%s*=%s*([%w_\\]+)::[%w_]+%s*%(")
           if class then
             model = class
             break
@@ -268,13 +270,11 @@ local function resolve_by_text(bufnr, before, cursor_line)
     return {
       model = model,
       method = method,
-      param_position = param_position
+      param_position = param_position,
     }
   end
   return nil
 end
-
-
 
 ---@return {model: string, method: string, param_position: integer}|nil
 function M.resolve_model_at_cursor(bufnr, cursor_before_line)

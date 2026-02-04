@@ -105,7 +105,7 @@ function tinker:open(filename)
       -- Execute it in PTY mode as with tinker, preserving current UI/UX
       -- TODO: To support more type-based outputs, only the PHP template is changed
       nio.scheduler()
-      vim.fn.jobstart({ "php", php_file }, {
+      vim.fn.jobstart(self.command_generator:generate("php", { php_file }), {
         stdeout_buffered = true,
         on_stdout = function(_, data)
           data = cleanResult(data)

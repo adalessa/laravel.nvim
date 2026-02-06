@@ -15,6 +15,11 @@ local env = Class({
 })
 
 function env:boot()
+  if vim.fn.filereadable("artisan") == 0 then
+    -- not artisan should not do anything
+    return
+  end
+
   local cwd = vim.uv.cwd()
   assert(cwd, "cwd is nil")
 

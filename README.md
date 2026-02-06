@@ -189,7 +189,6 @@ Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
   event = {
     "BufEnter composer.json",
   },
-  cmd = { "Laravel" },
   keys = {
     { "<leader>ll", function() Laravel.pickers.laravel() end,              desc = "Laravel: Open Laravel Picker" },
     { "<c-g>",      function() Laravel.commands.run("view:finder") end,    desc = "Laravel: Open View Finder" },

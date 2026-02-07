@@ -6,8 +6,20 @@ local notify = require("laravel.utils.notify")
 
 local M = {}
 
+local methods_map = {
+  GET = "get",
+  POST = "post",
+  PUT = "put",
+  DELETE = "delete",
+  PATCH = "patch",
+}
+
 local function go(route)
-  if route.action == "Closure" or route.action == "Illuminate\\Routing\\ViewController" then
+  if
+    route.action == "Closure"
+    or route.action == "Illuminate\\Routing\\ViewController"
+    or route.action == "Livewire\\Features\\SupportRouting\\LivewirePageController"
+  then
     if vim.tbl_contains(route.middlewares, "api") then
       vim.cmd("edit routes/api.php")
       vim.fn.search(route.uri:gsub("api", "") .. "")
@@ -16,16 +28,10 @@ local function go(route)
       if route.action == "Illuminate\\Routing\\ViewController" then
         vim.fn.search(string.format("Rotue::view(['\"]%s['\"])", route.uri))
       else
-        if route.methods[1] == "GET" then
-          vim.fn.search(string.format("Route::get(['\"]%s['\"])", route.uri))
-        elseif route.methods[1] == "POST" then
-          vim.fn.search(string.format("Route::post(['\"]%s['\"])", route.uri))
-        elseif route.methods[1] == "PUT" then
-          vim.fn.search(string.format("Route::put(['\"]%s['\"])", route.uri))
-        elseif route.methods[1] == "DELETE" then
-          vim.fn.search(string.format("Route::delete(['\"]%s['\"])", route.uri))
-        elseif route.methods[1] == "PATCH" then
-          vim.fn.search(string.format("Route::patch(['\"]%s['\"])", route.uri))
+        local method = route.methods[1]
+
+        if vim.tbl_contains(methods_map, method) then
+          vim.fn.search(string.format("Route::%s(['\"]%s['\"])", methods_map[method], route.uri))
         else
           if route.uri == "/" then
             vim.fn.search("['\"]/['\"]")
@@ -47,12 +53,11 @@ local function go(route)
     local res, err = app("laravel.services.class_finder"):find(route.action)
     if not err then
       local file, line = res.file, res.line
-      vim.schedule(function()
-        if pcall(vim.cmd.edit, file) then
-          pcall(vim.api.nvim_win_set_cursor, 0, { line, 0 })
-          pcall(vim.cmd.normal, "zt")
-        end
-      end)
+      nio.scheduler()
+      if pcall(vim.cmd.edit, file) then
+        pcall(vim.api.nvim_win_set_cursor, 0, { line, 0 })
+        pcall(vim.cmd.normal, "zt")
+      end
     end
   end)
 end

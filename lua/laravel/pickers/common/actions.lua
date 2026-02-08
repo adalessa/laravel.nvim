@@ -6,6 +6,12 @@ local notify = require("laravel.utils.notify")
 
 local M = {}
 
+local abstract_routes = {
+  "Closure",
+  "Illuminate\\Routing\\ViewController",
+  "Livewire\\Features\\SupportRouting\\LivewirePageController",
+}
+
 local methods_map = {
   GET = "get",
   POST = "post",
@@ -15,11 +21,7 @@ local methods_map = {
 }
 
 local function go(route)
-  if
-    route.action == "Closure"
-    or route.action == "Illuminate\\Routing\\ViewController"
-    or route.action == "Livewire\\Features\\SupportRouting\\LivewirePageController"
-  then
+  if vim.tbl_contains(abstract_routes, route.action) then
     if vim.tbl_contains(route.middlewares, "api") then
       vim.cmd("edit routes/api.php")
       vim.fn.search(route.uri:gsub("api", "") .. "")
@@ -113,7 +115,7 @@ function M.open_browser(route)
 
     local uri = route.uri
     for capturedString in uri:gmatch("{(.-)}") do
-      local val = nio.fn.input({ prompt = capturedString .. ": " })
+      local val = nio.ui.input({ prompt = capturedString .. ": " })
       uri = uri:gsub("{" .. capturedString .. "}", val)
     end
 

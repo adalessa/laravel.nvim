@@ -28,6 +28,19 @@ function env:boot()
   if not config then
     if self.options.get("environments.ask_on_boot") then
       self:configure()
+    elseif self.options.get("environments.default") then
+      local default = self.options.get("environments.default")
+      local envs = self.options.get("environments.definitions")
+      local envConfig = vim.tbl_filter(function(env)
+        return env.name == default
+      end, envs)
+
+      if #envConfig == 0 then
+        notify.warn(string.format("Default environment '%s' not found in definitions", default))
+        return
+      end
+
+      self.environment = Environment:new(envConfig[1])
     else
       notify.warn("Need to configure environment")
     end

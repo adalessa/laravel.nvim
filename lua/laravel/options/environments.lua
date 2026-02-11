@@ -3,11 +3,12 @@
 ---@field map table<string, string[]>
 
 ---@class LaravelOptionsEnvironments
----@field env_variable string
 ---@field default string
+---@field ask_on_boot boolean
 ---@field definitions LaravelEnvironmentConfig[]
 return {
   ask_on_boot = false,
+  default = "local",
   definitions = {
     {
       name = "sail",
@@ -41,18 +42,11 @@ return {
         composer = { "valet", "composer" },
       },
     },
-    -- not even sure about this anymore
     {
       name = "symfony",
-      condition = {
-        executable = { "symfony" },
-      },
-      commands = {
-        symfony = { "symfony" },
-        {
-          commands = { "php", "composer" },
-          prefix = { "symfony" },
-        },
+      map = {
+        php = { "symfony", "php" },
+        composer = { "symfony", "composer" },
       },
     },
     {

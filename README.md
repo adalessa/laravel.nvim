@@ -5,7 +5,12 @@ Plugin for Neovim to enhance the development experience of Laravel projects
 # ✨ Features
 
 ## Environment
-The plugin supports different types of environment, like local, sail, docker compose and heard, and can be extended for your own need
+The plugin supports different types of environment, like local, sail, docker compose and heard, and can be extended for your own need.
+To get you all the power and some flexibility the plugin will store your preferences in your machine per projects.
+By default will use base on your configurations the `environments.default` which on the plugin is local, this is just for initial opening and can be easily modified. You can change de default during the setup, and in case you need a different in the project just use `:lua Laravel.commands.run("env:configure")` to launch the environment selector, and in case you have a more complex configuration from the defaults you can run `:lua Laravel.commands.run("env:configure:open")`  to open the json file and edit as you may need to map commands. An example could be change the name of the container in a particular project from the default app to what ever you may need. This gives you more control over the execution since the plugin relies on the real commands to gather information.
+
+#### Important
+Ensure that you vendor folder is writeable since the plugin will create files there in order to execute code and cache it properly for improved speed.
 
 ## Pickers
 - Artisan commands

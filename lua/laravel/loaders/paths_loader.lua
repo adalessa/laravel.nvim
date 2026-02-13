@@ -24,7 +24,7 @@ function PathsLoader:load()
     if err then
       self.loaded = false
       self.items = {}
-      return {}, Error:new("Failed to load models"):wrap(err)
+      return {}, Error:new("Failed to load paths"):wrap(err)
     end
 
     self.loaded = true

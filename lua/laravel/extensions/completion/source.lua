@@ -5,7 +5,7 @@ local Class = require("laravel.utils.class")
 ---@field env laravel.core.env
 ---@field templates laravel.utils.templates
 ---@field environment_vars_loader laravel.loaders.environment_variables_loader
----@field views_loader laravel.loaders.views_cache_loader
+---@field views_loader laravel.loaders.views_loader
 ---@field routes_loader laravel.loaders.routes_cache_loader
 ---@field configs_loader laravel.loaders.configs_loader
 ---@field inertia_loader laravel.loaders.inertia_cache_loader
@@ -13,7 +13,7 @@ local source = Class({
   env = "laravel.core.env",
   templates = "laravel.utils.templates",
   environment_vars_loader = "laravel.loaders.environment_variables_cache_loader",
-  views_loader = "laravel.loaders.views_cache_loader",
+  views_loader = "laravel.loaders.views_loader",
   routes_loader = "laravel.loaders.routes_cache_loader",
   configs_loader = "laravel.loaders.configs_loader",
   inertia_loader = "laravel.loaders.inertia_cache_loader",

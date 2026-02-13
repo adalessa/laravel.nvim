@@ -37,7 +37,7 @@ function code:run(code)
 
   -- check if the file exists
   local _, file_stats = nio.uv.fs_stat(full)
-  if not file_stats then
+  if not (file_stats and file_stats.size > 0) then
     local _, dir_stats = nio.uv.fs_stat(dir)
     if not dir_stats then
       local _, ok = nio.uv.fs_mkdir(dir, 493) -- 0755
@@ -69,7 +69,7 @@ function code:run(code)
   result = result:match("__NEOVIM_LARAVEL_START_OUTPUT__%s*(.-)%s*__NEOVIM_LARAVEL_END_OUTPUT__")
 
   if not result or result == "" then
-    return {}, Error:new("Invalid or empty PHP output while running code")
+    return {}, Error:new("Invalid or empty PHP output while running code file:" .. fname)
   end
 
   local ok, decoded = pcall(vim.json.decode, result, { luanil = { object = true } })

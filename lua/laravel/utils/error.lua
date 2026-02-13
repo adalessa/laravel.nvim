@@ -8,10 +8,8 @@
 local Error = {}
 
 --- Create a new Error instance
--- @param message string: The error message
--- @param file string?: The file where the error occurred (optional)
--- @param line number?: The line where the error occurred (optional)
--- @return Error: The new error instance
+--- @param message string The error message
+--- @return laravel.utils.error The new error instance
 function Error:new(message)
   local info = debug.getinfo(2, "Sl")
   local instance = {

@@ -34,9 +34,9 @@ function gf_command:handle()
         return
       end
 
-      vim.schedule(function()
-        vim.cmd("e " .. path)
-      end)
+      nio.scheduler()
+      vim.cmd("e " .. path)
+
       return
     end
 
@@ -48,9 +48,9 @@ function gf_command:handle()
         return
       end
 
-      vim.schedule(function()
-        vim.cmd("e " .. path)
-      end)
+      nio.scheduler()
+      vim.cmd("e " .. path)
+
       return
     end
 

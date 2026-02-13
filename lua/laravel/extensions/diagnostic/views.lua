@@ -64,36 +64,35 @@ function views_diagnostic:handle(bufnr)
       )
       :totable()
 
-    vim.schedule(function()
-      vim.diagnostic.set(
-        namespace,
-        bufnr,
-        vim
-          .iter(matches)
-          :filter(function(match)
-            if match.view == "" then
-              return true
-            end
-
-            if vim.tbl_contains(views, match.view) then
-              return false
-            end
-
+    nio.scheduler()
+    vim.diagnostic.set(
+      namespace,
+      bufnr,
+      vim
+        .iter(matches)
+        :filter(function(match)
+          if match.view == "" then
             return true
-          end)
-          :map(function(match)
-            return {
-              lnum = match.row,
-              col = match.start_col,
-              end_col = match.end_col,
-              source = "laravel.nvim",
-              message = "view does not exists",
-              severity = vim.diagnostic.severity.ERROR,
-            }
-          end)
-          :totable()
-      )
-    end)
+          end
+
+          if vim.tbl_contains(views, match.view) then
+            return false
+          end
+
+          return true
+        end)
+        :map(function(match)
+          return {
+            lnum = match.row,
+            col = match.start_col,
+            end_col = match.end_col,
+            source = "laravel.nvim",
+            message = "view does not exists",
+            severity = vim.diagnostic.severity.ERROR,
+          }
+        end)
+        :totable()
+    )
   end)
 end
 

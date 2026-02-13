@@ -100,27 +100,26 @@ function route_info:handle(bufnr)
       end))
     end
 
-    vim.schedule(function()
-      vim.diagnostic.set(
-        namespace,
-        bufnr,
-        vim
-          .iter(missing_routes)
-          :map(function(route)
-            return {
-              lnum = class.position.start.row,
-              col = 0,
-              message = string.format(
-                "missing method %s [Method: %s, URI: %s]",
-                route.method or "__invoke",
-                table.concat(route.methods, "|"),
-                route.uri
-              ),
-            }
-          end)
-          :totable()
-      )
-    end)
+    nio.scheduler()
+    vim.diagnostic.set(
+      namespace,
+      bufnr,
+      vim
+        .iter(missing_routes)
+        :map(function(route)
+          return {
+            lnum = class.position.start.row,
+            col = 0,
+            message = string.format(
+              "missing method %s [Method: %s, URI: %s]",
+              route.method or "__invoke",
+              table.concat(route.methods, "|"),
+              route.uri
+            ),
+          }
+        end)
+        :totable()
+    )
   end)
 end
 

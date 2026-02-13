@@ -36,40 +36,39 @@ function composer_info:handle(bufnr)
       return
     end
 
-    vim.schedule(function()
-      if not vim.api.nvim_buf_is_valid(bufnr) then
-        return
+    nio.scheduler()
+
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+      return
+    end
+    vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+    local dependencies, err = self.composer:dependencies(bufnr)
+    if err then
+      notify.error("Could not get composer dependencies: " .. err:toString())
+      return
+    end
+    for _, dep in ipairs(dependencies) do
+      local info = vim.iter(infos):find(function(inst)
+        return dep.name == inst.name
+      end)
+      local outdated = vim.iter(outdates):find(function(inst)
+        return dep.name == inst.name
+      end)
+
+      if info then
+        vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
+          virt_text = { { string.format("<- %s", info.version), "comment" } },
+          virt_text_pos = "eol",
+        })
       end
 
-      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-      local dependencies, err = self.composer:dependencies(bufnr)
-      if err then
-        notify.error("Could not get composer dependencies: " .. err:toString())
-        return
+      if outdated then
+        vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
+          virt_text = { { string.format("^ %s (new version)", outdated.latest), "error" } },
+          virt_text_pos = "eol",
+        })
       end
-      for _, dep in ipairs(dependencies) do
-        local info = vim.iter(infos):find(function(inst)
-          return dep.name == inst.name
-        end)
-        local outdated = vim.iter(outdates):find(function(inst)
-          return dep.name == inst.name
-        end)
-
-        if info then
-          vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
-            virt_text = { { string.format("<- %s", info.version), "comment" } },
-            virt_text_pos = "eol",
-          })
-        end
-
-        if outdated then
-          vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
-            virt_text = { { string.format("^ %s (new version)", outdated.latest), "error" } },
-            virt_text_pos = "eol",
-          })
-        end
-      end
-    end)
+    end
   end)
 end
 

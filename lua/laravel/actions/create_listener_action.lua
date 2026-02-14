@@ -11,7 +11,6 @@ local action = Class({
 
 ---@async
 function action:check(bufnr)
-  nio.scheduler()
   local class, err = self.class_service:get(bufnr)
   if err then
     return false

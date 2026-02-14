@@ -22,9 +22,8 @@ function model_info:handle(bufnr)
   nio.run(function()
     local model, err = self.model_service:get(bufnr)
 
-    nio.scheduler()
     if err then
-      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
+      nio.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
       return
     end
 
@@ -33,8 +32,8 @@ function model_info:handle(bufnr)
     end
 
     if self.display_status[bufnr] then
-      vim.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
-      vim.api.nvim_buf_set_extmark(bufnr, self.namespace, model.class.position.start.row, 0, self.view:get(model.model))
+      nio.api.nvim_buf_clear_namespace(bufnr, self.namespace, 0, -1)
+      nio.api.nvim_buf_set_extmark(bufnr, self.namespace, model.class.position.start.row, 0, self.view:get(model.model))
     end
   end)
 end

@@ -29,8 +29,7 @@ function command_center:open()
       completions = vim.iter(completions):flatten(1):totable()
 
       if details_popup.bufnr then
-        nio.scheduler()
-        vim.api.nvim_buf_set_lines(details_popup.bufnr, 0, -1, true, completions)
+        nio.api.nvim_buf_set_lines(details_popup.bufnr, 0, -1, true, completions)
       end
     end)
   end)

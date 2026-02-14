@@ -16,32 +16,26 @@ function composer_info:new(composer)
   return instance
 end
 
-local clean = vim.schedule_wrap(function(bufnr, ns)
-  vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-end)
-
 function composer_info:handle(bufnr)
   local ns = vim.api.nvim_create_namespace("composer-deps")
   nio.run(function()
     local infos, err = self.composer:info()
     if err then
-      clean(bufnr, ns)
+      nio.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       notify.error("Could not get composer info: " .. err:toString())
       return
     end
     local outdates, err = self.composer:outdated()
     if err then
-      clean(bufnr, ns)
+      nio.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       notify.error("Could not get composer outdated: " .. err:toString())
       return
     end
 
-    nio.scheduler()
-
-    if not vim.api.nvim_buf_is_valid(bufnr) then
+    if not nio.api.nvim_buf_is_valid(bufnr) then
       return
     end
-    vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+    nio.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
     local dependencies, err = self.composer:dependencies(bufnr)
     if err then
       notify.error("Could not get composer dependencies: " .. err:toString())
@@ -56,14 +50,14 @@ function composer_info:handle(bufnr)
       end)
 
       if info then
-        vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
+        nio.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
           virt_text = { { string.format("<- %s", info.version), "comment" } },
           virt_text_pos = "eol",
         })
       end
 
       if outdated then
-        vim.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
+        nio.api.nvim_buf_set_extmark(bufnr, ns, dep.line, 0, {
           virt_text = { { string.format("^ %s (new version)", outdated.latest), "error" } },
           virt_text_pos = "eol",
         })

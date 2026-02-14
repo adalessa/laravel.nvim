@@ -46,8 +46,7 @@ function override:handle(bufnr)
       return notify.error("Error getting methods: " .. err:toString())
     end
 
-    nio.scheduler()
-    vim.fn.sign_placelist(vim
+    nio.fn.sign_placelist(vim
       .iter(methods)
       :map(function(method)
         return {

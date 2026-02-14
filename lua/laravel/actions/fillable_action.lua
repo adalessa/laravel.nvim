@@ -57,8 +57,7 @@ function action:run(bufnr)
     table.insert(fields, "")
   end
 
-  nio.scheduler()
-  vim.api.nvim_buf_set_lines(bufnr, insertRowStart, insertRowEnd, false, fields)
+  nio.api.nvim_buf_set_lines(bufnr, insertRowStart, insertRowEnd, false, fields)
 end
 
 return action

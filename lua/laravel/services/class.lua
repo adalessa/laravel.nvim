@@ -1,5 +1,6 @@
 local get_node_text = vim.treesitter.get_node_text
 local Error = require("laravel.utils.error")
+local nio = require("nio")
 
 ---@class laravel.services.class
 local class = {}
@@ -18,6 +19,10 @@ end
 ---@param bufnr number
 ---@return laravel.dto.class, laravel.utils.error|nil
 function class:get(bufnr)
+  if nio.current_task() then
+    nio.scheduler()
+  end
+
   local php_parser = vim.treesitter.get_parser(bufnr, "php")
   if php_parser == nil then
     return {}, Error:new("Could not get the parser")

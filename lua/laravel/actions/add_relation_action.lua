@@ -126,9 +126,8 @@ function action:run(bufnr)
   local lines = vim.split(toInsert:gsub("\n$", ""), "\n")
   table.insert(lines, 1, "") -- add a new line before
 
-  nio.scheduler()
   local row = self.info.class.position.end_.row
-  vim.api.nvim_buf_set_lines(bufnr, row, row, false, lines)
+  nio.api.nvim_buf_set_lines(bufnr, row, row, false, lines)
 
   -- get the last use import
   local lastUse = 0
@@ -139,7 +138,7 @@ function action:run(bufnr)
   end)
 
   if not vim.tbl_contains(vim.tbl_keys(self.info.class.uses), relation.import) then
-    vim.api.nvim_buf_set_lines(bufnr, lastUse, lastUse, false, {
+    nio.api.nvim_buf_set_lines(bufnr, lastUse, lastUse, false, {
       "use " .. relation.import .. ";",
     })
 

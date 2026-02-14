@@ -16,7 +16,7 @@ local model = Class({
 ---@param bufnr? number
 ---@return laravel.dto.model_response, laravel.utils.error|nil
 function model:get(bufnr)
-  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  bufnr = bufnr or nio.api.nvim_get_current_buf()
 
   local response, err = self.loader:load()
 
@@ -41,40 +41,16 @@ function model:get(bufnr)
     return {}, Error:new("No model found for this buffer")
   end
 
-  nio.scheduler()
   local class, err = self.class:get(bufnr)
+
+  if err then
+    return {}, Error:new("Failed to get class for this buffer"):wrap(err)
+  end
 
   return {
     model = m,
     class = class,
   }, nil
-end
-
----@async
----@param uri string
----@return laravel.dto.model, laravel.utils.error|nil
-function model:byUri(uri)
-  local response, err = self.loader:load()
-
-  if err then
-    return {}, Error:new("Failed to load models"):wrap(err)
-  end
-
-  nio.scheduler()
-
-  ---@type laravel.dto.model|nil
-  local _, m = vim.iter(response.models):find(
-    ---@param m laravel.dto.model
-    function(_, m)
-      return self.path:handle(m.uri) == uri
-    end
-  )
-
-  if not m then
-    return {}, Error:new("No model found for this uri")
-  end
-
-  return m, nil
 end
 
 return model

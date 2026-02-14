@@ -17,7 +17,7 @@ end
 
 ---[this needs to run in scheduler]
 ---@param bufnr number
----@return laravel.dto.class, laravel.utils.error|nil
+---@return laravel.dto.class, laravel.error
 function class:get(bufnr)
   if nio.current_task() then
     nio.scheduler()

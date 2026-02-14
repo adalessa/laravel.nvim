@@ -19,7 +19,7 @@ local ModelsLoader = Class({
 }, { items = {}, loaded = false })
 
 ---@async
----@return laravel.dto.models_response, laravel.utils.error|nil
+---@return laravel.dto.models_response, laravel.error
 function ModelsLoader:load()
   if self.loaded then
     return self.items

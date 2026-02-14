@@ -14,7 +14,7 @@ local model = Class({
 
 ---@async
 ---@param bufnr? number
----@return laravel.dto.model_response, laravel.utils.error|nil
+---@return laravel.dto.model_response, laravel.error
 function model:get(bufnr)
   bufnr = bufnr or nio.api.nvim_get_current_buf()
 

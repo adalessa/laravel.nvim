@@ -13,7 +13,7 @@ local PathsLoader = Class({
 }, { items = {}, loaded = false })
 
 ---@async
----@return laravel.dto.paths_response, laravel.utils.error|nil
+---@return laravel.dto.paths_response, laravel.error
 function PathsLoader:load()
   if self.loaded then
     return self.items

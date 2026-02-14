@@ -8,7 +8,7 @@ local path_service = Class({
 }, {})
 
 ---@param name string
----@return string, laravel.utils.error|nil
+---@return string, laravel.error
 function path_service:get(name)
   local paths, err = self.loader:load()
 
@@ -24,7 +24,7 @@ function path_service:get(name)
 end
 
 ---@param path string
----@return string, laravel.utils.error|nil
+---@return string, laravel.error
 function path_service:handle(path)
   local cwd = vim.uv.cwd()
 

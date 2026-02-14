@@ -114,10 +114,19 @@ function M.open_browser(route)
     local app_url = config.value
 
     local uri = route.uri
-    for capturedString in uri:gmatch("{(.-)}") do
-      local val = nio.ui.input({ prompt = capturedString .. ": " })
-      uri = uri:gsub("{" .. capturedString .. "}", val)
+    local params = {}
+    for param in uri:gmatch("{(.-)}") do
+      table.insert(params, param)
     end
+
+    local answers = {}
+    for _, param in ipairs(params) do
+      answers[param] = nio.ui.input({ prompt = param .. ": " })
+    end
+
+    uri = uri:gsub("{(.-)}", function(param)
+      return answers[param] or ""
+    end)
 
     local url = string.format("%s/%s", app_url, uri)
     local command = nil

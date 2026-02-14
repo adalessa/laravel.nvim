@@ -40,7 +40,7 @@ local function get_lines(bufnr)
   for node in tree:root():iter_children() do
     -- remove the comment and others
     if not vim.tbl_contains({ "php_tag", "comment" }, node:type(), {}) then
-      local text = vim.treesitter.get_node_text(node, bufnr, {}):gsub("%%","%%%%")
+      local text = vim.treesitter.get_node_text(node, bufnr, {}):gsub("%%", "%%%%")
       table.insert(nodes, text)
     end
   end
@@ -102,10 +102,14 @@ function tinker:open(filename)
         return
       end
 
-      -- Execute it in PTY mode as with tinker, preserving current UI/UX
       -- TODO: To support more type-based outputs, only the PHP template is changed
       nio.scheduler()
-      vim.fn.jobstart(self.command_generator:generate("php", { php_file }), {
+      local cmd = self.command_generator:generate("php", { php_file })
+      if not cmd then
+        notify.error("Could not generate command for tinker execution")
+        return
+      end
+      vim.fn.jobstart(cmd, {
         stdeout_buffered = true,
         on_stdout = function(_, data)
           data = cleanResult(data)

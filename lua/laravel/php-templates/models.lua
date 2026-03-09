@@ -59,6 +59,12 @@ $models = new class($factory) {
                 ->each(fn($file) => include_once($file));
         }
 
+        if (\Illuminate\Support\Facades\File::isDirectory(base_path('app'))) {
+            collect(\Illuminate\Support\Facades\File::files(base_path('app')))
+                ->filter(fn(\Symfony\Component\Finder\SplFileInfo $file) => $file->getExtension() === 'php')
+                ->each(fn($file) => include_once($file));
+        }
+
         return collect(get_declared_classes())
             ->filter(fn($class) => is_subclass_of($class, \Illuminate\Database\Eloquent\Model::class))
             ->filter(fn($class) => !in_array($class, [\Illuminate\Database\Eloquent\Relations\Pivot::class, \Illuminate\Foundation\Auth\User::class]))

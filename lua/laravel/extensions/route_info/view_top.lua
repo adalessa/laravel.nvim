@@ -3,7 +3,7 @@ local get_line_indent = require("laravel.utils.init").get_line_indent
 local view_right = {}
 
 function view_right:get(route, method)
-  local indent = get_line_indent(method.pos + 1)
+  local indent = get_line_indent(method.position.start.row + 1)
   local middleware_lines = {}
 
   for _, mw in ipairs(route.middlewares or { "None" }) do

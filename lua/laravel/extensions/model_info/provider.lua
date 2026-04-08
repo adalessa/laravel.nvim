@@ -1,6 +1,7 @@
+local event_utils = require("laravel.utils.event")
+
 ---@type laravel.extensions.provider
 local model_info_provider = {}
-local buffer_utils = require("laravel.utils.buffer")
 
 function model_info_provider.register(app)
   app:singletonIf("laravel.extensions.model_info.lib")
@@ -15,20 +16,11 @@ function model_info_provider.boot(app)
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     pattern = "*.php",
     group = group,
-    callback = app:whenActive(function(ev)
-      if not buffer_utils.is_valid_buffer(ev.buf) then
-        return
-      end
-
-      local cwd = vim.uv.cwd()
-      if vim.startswith(ev.file, cwd .. "/vendor") then
-        return
-      end
-
+    callback = app:whenActive(event_utils.whenValid(function(ev)
       ---@type laravel.extensions.model_info.lib
       local lib = app("laravel.extensions.model_info.lib")
       lib:handle(ev.buf)
-    end),
+    end)),
   })
 end
 

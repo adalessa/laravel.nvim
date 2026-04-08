@@ -50,7 +50,7 @@ Watcher.register = function(paths, pattern, callback)
     table.insert(watchers[path], function(filename)
       if filename:match(pattern) then
         nio.run(function()
-          callback()
+          pcall(callback)
         end)
       end
     end)

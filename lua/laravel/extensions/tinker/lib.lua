@@ -82,12 +82,6 @@ function tinker:open(filename)
     nio.run(function()
       self.data[filename] = {}
 
-      if Laravel.app("laravel.extensions.dump_server.lib"):isRunning() then
-        notify.warn("Dump server is running, please stop it before using tinker")
-
-        return
-      end
-
       local lines = get_lines(bufnr) or {}
       local code_block = table.concat(lines, "\n")
       -- Use the new PHP template-based execution for extensibility

@@ -1,181 +1,162 @@
-local NuiLine = require("nui.line")
-local Popup = require("nui.popup")
 local app = require("laravel.core.app")
+local TermCommand = require("laravel.term_command")
+local PtyCommand = require("laravel.pty_command")
 
 local hub = {
   signature = "hub",
   description = "Artisan Hub",
 }
----@type NuiPopup?
-local instance = nil
-local open = false
 
----@return NuiPopup
-local function create()
-  -- should look for config
-  local cfg = app("laravel.core.config"):get()
+local win = 0
 
-  if not cfg.hub then
-    cfg.hub = {
-      {
-        name = "About",
-        key = "A",
-        cmd = "artisan about",
-        auto_start = true,
-      },
-      {
-        name = "HTTP",
-        key = "H",
-        cmd = "artisan serve",
-        auto_start = true,
-      },
-      {
-        name = "Vite",
-        key = "V",
-        cmd = "npm run dev",
-        auto_start = true,
-      },
-      {
-        name = "Pail",
-        key = "P",
-        cmd = "artisan pail --timeout=0",
-      },
-      {
-        name = "Queue",
-        key = "Q",
-        cmd = "artisan queue:listen --tries=1",
-      },
-      {
-        name = "Logs",
-        key = "L",
-        cmd = "tail -f -n 100 storage/logs/laravel.log",
-      },
-    }
-    app("laravel.core.config"):set(cfg)
-  end
+local commands = {}
 
-  local tabs = vim
-    .iter(cfg.hub)
-    :map(function(tab_cfg)
-      return require("laravel.extensions.artisan_hub.command_tab"):new(tab_cfg)
-    end)
-    :totable()
+local current_tab = ""
 
-  local title = NuiLine()
-  vim
-    .iter(tabs)
-    :map(function(tab)
-      local t = tab:getTitle()
-      local l = NuiLine()
-      l:append(t.text, "@function")
-      l:append("(", "@comment")
-      l:append(t.key, "@keyword")
-      l:append(") ", "@comment")
-
-      return l
-    end)
-    :each(function(tab_line)
-      title:append(tab_line)
-      title:append("  ")
-    end)
-
-  local help = NuiLine()
-
-  for _, action in ipairs(tabs[1]:getActions()) do
-    help:append(action.name, "@function")
-    help:append("(", "@comment")
-    help:append(action.key, "@keyword")
-    help:append(") ", "@comment")
-  end
-
-  local p = Popup({
-    enter = true,
-    focusable = true,
-    relative = "editor",
-    border = {
-      style = "rounded",
-      text = {
-        top = title,
-        bottom = help,
-      },
-    },
-
-    position = {
-      row = "50%",
-      col = "50%",
-    },
-
-    size = {
-      width = "80%",
-      height = "80%",
-    },
-    win_options = {
-      number = false,
-      relativenumber = false,
-      winfixbuf = true,
-    },
-    bufnr = tabs[1]:getBufnr(),
-  })
-
-  vim.iter(tabs):each(function(tab)
-    tab:map("n", "q", function()
-      p:hide()
-      open = false
-    end)
-
-    for _, action in ipairs(tab:getActions()) do
-      tab:map("n", action.key, function()
-        action.action()
-        vim.api.nvim_set_option_value("winfixbuf", false, { win = p.winid })
-        vim.api.nvim_win_set_buf(p.winid, tab:getBufnr())
-        vim.api.nvim_set_option_value("winfixbuf", true, { win = p.winid })
-      end)
+local function get_keys()
+  return vim.tbl_map(function(cmd)
+    return cmd.name
+  end, commands)
+end
+local function get_title()
+  return vim.tbl_map(function(key)
+    if key == current_tab then
+      return { (" [%s] "):format(key), "keyword" }
     end
-    for _, t in ipairs(tabs) do
-      if tab:getTitle().text ~= t:getTitle().text then
-        tab:map("n", t:getTitle().key, function()
-          vim.api.nvim_set_option_value("winfixbuf", false, { win = p.winid })
-          vim.api.nvim_win_set_buf(p.winid, t:getBufnr())
-          vim.api.nvim_set_option_value("winfixbuf", true, { win = p.winid })
-          p.bufnr = t:getBufnr()
+    return { (" %s "):format(key), "Comment" }
+  end, get_keys())
+end
 
-          help = NuiLine()
-
-          vim.iter(t:getActions()):each(function(action)
-            help:append(action.name, "@function")
-            help:append("(", "@comment")
-            help:append(action.key, "@keyword")
-            help:append(") ", "@comment")
-          end)
-
-          p.border:set_text("bottom", help, "center")
-        end)
-      end
-    end
-
-    tab:autostart()
+local function getByName(name)
+  return vim.iter(commands):find(function(cmd)
+    return cmd.name == name
   end)
+end
+local function add_keymaps()
+  local keys = get_keys()
+  for i, key in ipairs(keys) do
+    local item = getByName(key)
+    vim.keymap.set("n", "q", function()
+      vim.api.nvim_win_hide(win)
+    end, { buffer = item.command.bufnr })
 
-  p.bufnr = tabs[1]:getBufnr()
+    vim.keymap.set("n", "a", function()
+      vim.ui.input({ prompt = "Name: " }, function(name)
+        if not name or name == "" then
+          return
+        end
+        vim.ui.input({ prompt = "Enter command: " }, function(input)
+          if not input or input == "" then
+            return
+          end
 
-  return p
+          local new_cmd = app("laravel.services.command_generator"):generate(input)
+          if not new_cmd then
+            vim.notify("Command not found: " .. input, vim.log.levels.ERROR)
+            return
+          end
+
+          local new_command = TermCommand:new(new_cmd)
+          table.insert(commands, {
+            name = name,
+            cmd = input,
+            command = new_command,
+          })
+          new_command:execute()
+
+          vim.api.nvim_win_set_buf(win, new_command.bufnr)
+          current_tab = name
+          vim.api.nvim_win_set_config(win, { title = get_title() })
+          vim.api.nvim_set_current_win(win)
+
+          add_keymaps()
+        end)
+      end)
+    end, { buffer = item.command.bufnr })
+
+    vim.keymap.set("n", "d", function()
+      for i, cmd in ipairs(commands) do
+        if cmd.name == current_tab then
+          table.remove(commands, i)
+          cmd.command:stop()
+
+          current_tab = get_keys()[1]
+          vim.api.nvim_win_set_buf(win, getByName(current_tab).command.bufnr)
+          vim.api.nvim_win_set_config(win, { title = get_title() })
+          add_keymaps()
+        end
+      end
+    end, { buffer = item.command.bufnr })
+
+    local next_key = keys[i + 1] or keys[1]
+    local prev_key = keys[i - 1] or keys[#keys]
+
+    vim.keymap.set("n", "<Tab>", function()
+      vim.api.nvim_win_set_buf(win, getByName(next_key).command.bufnr)
+      current_tab = next_key
+      vim.api.nvim_win_set_config(win, { title = get_title() })
+    end, { buffer = item.command.bufnr })
+
+    vim.keymap.set("n", "<S-Tab>", function()
+      vim.api.nvim_win_set_buf(win, getByName(prev_key).command.bufnr)
+      current_tab = prev_key
+      vim.api.nvim_win_set_config(win, { title = get_title() })
+    end, { buffer = item.command.bufnr })
+  end
 end
 
 function hub:handle()
-  if not instance then
-    instance = create()
-    instance:mount()
-    open = true
-    return
-  end
-  if open then
-    instance:hide()
-    open = false
-    return
+  if vim.tbl_isempty(commands) then
+    commands = app("laravel.extensions.artisan_hub.commands")
   end
 
-  instance:show()
-  open = true
+  for _, command in ipairs(commands) do
+    if not command.command then
+      local cmd = app("laravel.services.command_generator"):generate(command.cmd)
+
+      if command.callback then
+        command.command = PtyCommand:new(cmd):addCallback(command.callback)
+      else
+        command.command = TermCommand:new(cmd)
+      end
+    end
+  end
+
+  vim.tbl_map(function(cmd)
+    if not cmd.command:isRunning() then
+      cmd.command:execute()
+    end
+  end, commands)
+
+  if current_tab == "" then
+    current_tab = get_keys()[1]
+  end
+
+  local current = getByName(current_tab)
+
+  local ui = vim.api.nvim_list_uis()[1]
+  local width = math.floor(ui.width * 0.8)
+  local height = math.floor(ui.height * 0.8)
+
+  local row = math.floor((ui.height - height) / 2)
+  local col = math.floor((ui.width - width) / 2)
+
+  win = vim.api.nvim_open_win(current.command.bufnr, true, {
+    title = get_title(),
+    title_pos = "center",
+    border = "rounded",
+    height = height,
+    width = width,
+    footer = "q: Close | a: Add | d: Delete | <Tab>: Next Tab | <S-Tab>: Previous Tab",
+    footer_pos = "center",
+    relative = "editor",
+    row = row,
+    col = col,
+  })
+
+  vim.api.nvim_set_option_value("number", false, { win = win })
+  vim.api.nvim_set_option_value("relativenumber", false, { win = win })
+  add_keymaps()
 end
 
 return hub

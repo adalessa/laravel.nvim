@@ -1,35 +1,24 @@
 local notify = require("laravel.utils.notify")
+local function getExtensions()
+  return vim
+    .iter(vim.api.nvim_get_runtime_file("lua/laravel/extensions/*/provider.lua", true))
+    :map(function(ext)
+      local m = ext:match("lua/(.*)%.lua$"):gsub("/", ".")
+      local name = m:match("laravel%.extensions%.(.*)%.provider")
+
+      return {
+        module = m,
+        name = name,
+      }
+    end)
+    :totable()
+end
 
 ---@type laravel.providers.provider
-local extension_provider = { name = "laravel.providers.extensions_provider" }
-
-local function loadExtensions(name)
-  local ok, ext_provider = pcall(require, string.format("laravel.extensions.%s.provider", name))
-  if ok then
-    return ext_provider
-  end
-
-  ok, ext_provider = pcall(require, string.format("laravel.extensions.%s", name))
-
-  if ok then
-    return ext_provider
-  end
-
-  return nil
-end
-
-local function iterateExtensions(extensions, callback)
-  vim.iter(extensions):each(function(k, v)
-    local provider = loadExtensions(k)
-    if not provider then
-      return notify.error(string.format("Error loading extension %s: %s", k, v))
-    end
-    if v.enable then
-      provider.name = k
-      callback(provider, v)
-    end
-  end)
-end
+local extension_provider = {
+  name = "laravel.providers.extensions_provider",
+  extensions = getExtensions(),
+}
 
 ---@class laravel.extensions.provider : laravel.providers.provider
 ---@field register fun(app: laravel.core.app, opts: table): nil
@@ -37,10 +26,16 @@ end
 
 ---@param app laravel.core.app
 function extension_provider.register(app)
-  iterateExtensions(app("laravel.services.config").get("extensions", {}), function(provider, opts)
+  vim.iter(extension_provider.extensions):each(function(ext)
+    local ok, provider = pcall(require, ext.module)
+    if not ok then
+      return
+    end
+    local opts = app("laravel.services.config").get("extensions." .. ext.name, {})
     if provider.register then
       local ok, res = pcall(function()
         provider.register(app, opts)
+        ext.registered = true;
       end)
 
       if not ok then
@@ -54,10 +49,16 @@ end
 function extension_provider.boot(app)
   Laravel.extensions = {}
 
-  iterateExtensions(app("laravel.services.config").get("extensions", {}), function(provider, opts)
+  vim.iter(extension_provider.extensions):each(function(ext)
+    local ok, provider = pcall(require, ext.module)
+    if not ok then
+      return
+    end
+    local opts = app("laravel.services.config").get("extensions." .. ext.name, {})
     if provider.boot then
       local ok, res = pcall(function()
         provider.boot(app, opts)
+        ext.booted = true;
       end)
 
       if not ok then
@@ -65,7 +66,6 @@ function extension_provider.boot(app)
       end
     end
   end)
-
 end
 
 return extension_provider

@@ -99,6 +99,14 @@ M.check = function()
   else
     report_ok("Composer executable found")
   end
+
+  report_start("Extensions")
+  vim.iter(app("laravel.providers.extensions_provider").extensions or {}):each(function(ext)
+    report_info("Name: " .. ext.name)
+    report_info("Module: " .. ext.module)
+    report_info("Registered: " .. (ext.registered and "Yes" or "No"))
+    report_info("Booted: " .. (ext.booted and "Yes" or "No"))
+  end)
 end
 
 return M

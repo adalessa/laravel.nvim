@@ -3,6 +3,28 @@ local provider = {}
 
 function provider.register(app, opts)
   app:addCommand("laravel.extensions.artisan_hub.hub_command")
+  app:addCommand("laravel.extensions.artisan_hub.add_command", function()
+    return {
+      signature = "hub:add",
+      description = "Add Command to the hub",
+      handle = function()
+        vim.ui.input({ prompt = "Name: " }, function(name)
+          if not name or name == "" then
+            return
+          end
+          -- being able from a command to add to hub
+
+          vim.ui.input({ prompt = "Enter command: " }, function(input)
+            if not input or input == "" then
+              return
+            end
+
+            app("laravel.extensions.artisan_hub.hub_command"):add(name, input)
+          end)
+        end)
+      end,
+    }
+  end)
   app:singleton("laravel.extensions.artisan_hub.commands", opts.commands or {
     {
       name = "Serve",

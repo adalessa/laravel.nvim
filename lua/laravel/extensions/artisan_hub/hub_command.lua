@@ -7,7 +7,7 @@ local hub = {
   description = "Artisan Hub",
 }
 
-local win = 0
+local win = nil
 
 local commands = {}
 
@@ -37,7 +37,9 @@ local function add_keymaps()
   for i, key in ipairs(keys) do
     local item = getByName(key)
     vim.keymap.set("n", "q", function()
-      vim.api.nvim_win_hide(win)
+      if win then
+        vim.api.nvim_win_hide(win)
+      end
     end, { buffer = item.command.bufnr })
 
     vim.keymap.set("n", "a", function()
@@ -45,31 +47,14 @@ local function add_keymaps()
         if not name or name == "" then
           return
         end
+        -- being able from a command to add to hub
+
         vim.ui.input({ prompt = "Enter command: " }, function(input)
           if not input or input == "" then
             return
           end
 
-          local new_cmd = app("laravel.services.command_generator"):generate(input)
-          if not new_cmd then
-            vim.notify("Command not found: " .. input, vim.log.levels.ERROR)
-            return
-          end
-
-          local new_command = TermCommand:new(new_cmd)
-          table.insert(commands, {
-            name = name,
-            cmd = input,
-            command = new_command,
-          })
-          new_command:execute()
-
-          vim.api.nvim_win_set_buf(win, new_command.bufnr)
-          current_tab = name
-          vim.api.nvim_win_set_config(win, { title = get_title() })
-          vim.api.nvim_set_current_win(win)
-
-          add_keymaps()
+          hub:add(name, input)
         end)
       end)
     end, { buffer = item.command.bufnr })
@@ -81,8 +66,10 @@ local function add_keymaps()
           cmd.command:stop()
 
           current_tab = get_keys()[1]
-          vim.api.nvim_win_set_buf(win, getByName(current_tab).command.bufnr)
-          vim.api.nvim_win_set_config(win, { title = get_title() })
+          if win then
+            vim.api.nvim_win_set_buf(win, getByName(current_tab).command.bufnr)
+            vim.api.nvim_win_set_config(win, { title = get_title() })
+          end
           add_keymaps()
         end
       end
@@ -92,20 +79,24 @@ local function add_keymaps()
     local prev_key = keys[i - 1] or keys[#keys]
 
     vim.keymap.set("n", "<Tab>", function()
-      vim.api.nvim_win_set_buf(win, getByName(next_key).command.bufnr)
-      current_tab = next_key
-      vim.api.nvim_win_set_config(win, { title = get_title() })
+      if win then
+        vim.api.nvim_win_set_buf(win, getByName(next_key).command.bufnr)
+        current_tab = next_key
+        vim.api.nvim_win_set_config(win, { title = get_title() })
+      end
     end, { buffer = item.command.bufnr })
 
     vim.keymap.set("n", "<S-Tab>", function()
-      vim.api.nvim_win_set_buf(win, getByName(prev_key).command.bufnr)
-      current_tab = prev_key
-      vim.api.nvim_win_set_config(win, { title = get_title() })
+      if win then
+        vim.api.nvim_win_set_buf(win, getByName(prev_key).command.bufnr)
+        current_tab = prev_key
+        vim.api.nvim_win_set_config(win, { title = get_title() })
+      end
     end, { buffer = item.command.bufnr })
   end
 end
 
-function hub:handle()
+function hub:_init()
   if vim.tbl_isempty(commands) then
     commands = app("laravel.extensions.artisan_hub.commands")
   end
@@ -131,7 +122,10 @@ function hub:handle()
   if current_tab == "" then
     current_tab = get_keys()[1]
   end
+end
 
+function hub:handle()
+  self:_init()
   local current = getByName(current_tab)
 
   local ui = vim.api.nvim_list_uis()[1]
@@ -156,6 +150,32 @@ function hub:handle()
 
   vim.api.nvim_set_option_value("number", false, { win = win })
   vim.api.nvim_set_option_value("relativenumber", false, { win = win })
+  add_keymaps()
+end
+
+function hub:add(name, cmd)
+  self:_init()
+  local new_cmd = app("laravel.services.command_generator"):generate(cmd)
+  if not new_cmd then
+    vim.notify("Command not found: " .. cmd, vim.log.levels.ERROR)
+    return
+  end
+
+  local new_command = TermCommand:new(new_cmd)
+  table.insert(commands, {
+    name = name,
+    cmd = cmd,
+    command = new_command,
+  })
+  new_command:execute()
+
+  if win and vim.api.nvim_win_is_valid(win) then
+    vim.api.nvim_win_set_buf(win, new_command.bufnr)
+    current_tab = name
+    vim.api.nvim_win_set_config(win, { title = get_title() })
+    vim.api.nvim_set_current_win(win)
+  end
+
   add_keymaps()
 end
 

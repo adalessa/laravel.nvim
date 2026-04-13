@@ -1,6 +1,5 @@
 local app = require("laravel.core.app")
 local TermCommand = require("laravel.term_command")
-local PtyCommand = require("laravel.pty_command")
 
 local hub = {
   signature = "hub",
@@ -105,8 +104,11 @@ function hub:_init()
     if not command.command then
       local cmd = app("laravel.services.command_generator"):generate(command.cmd)
 
-      if command.callback then
-        command.command = PtyCommand:new(cmd):addCallback(command.callback)
+      if command.class then
+        local ok, cls = pcall(require, command.class)
+        if ok then
+          command.command = cls:new(cmd)
+        end
       else
         command.command = TermCommand:new(cmd)
       end

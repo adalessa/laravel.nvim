@@ -181,7 +181,7 @@ In some projects the generation can be big so recommended is to expand the lsp m
 
 # 📦 Installation
 
-Using [Lazy.nvim](https://github.com/foke/lazy.nvim)
+Using [Lazy.nvim](https://github.com/folke/lazy.nvim)
 ```lua
 {
   "adalessa/laravel.nvim",

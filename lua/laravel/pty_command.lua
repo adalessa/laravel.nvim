@@ -25,7 +25,8 @@ function PtyCommand:execute()
         end
       end
     end,
-    on_exit = function()
+    on_exit = function(_, exit_code)
+      self.exit_code = exit_code
       self.exited = true
     end,
   })

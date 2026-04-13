@@ -1,13 +1,14 @@
 local nio = require("nio")
 local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
-local log = require("laravel.utils.log")
 local Error = require("laravel.utils.error")
 
 ---@class laravel.extensions.diagnostic.views_diagnostic
 ---@field views_loader laravel.loaders.views_loader
+---@field log laravel.utils.log
 local views_diagnostic = Class({
   views_loader = "laravel.loaders.views_loader",
+  log = "laravel.utils.log",
 })
 
 function views_diagnostic:handle(bufnr)
@@ -54,7 +55,7 @@ function views_diagnostic:handle(bufnr)
     local views, err = self.views_loader:load()
 
     if err then
-      log.error(Error:new("Could not load views"):wrap(err))
+      self.log:error(Error:new("Could not load views"):wrap(err))
       return
     end
 

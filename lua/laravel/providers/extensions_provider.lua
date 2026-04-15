@@ -32,10 +32,10 @@ function extension_provider.register(app)
       return
     end
     local opts = app("laravel.services.config").get("extensions." .. ext.name, {})
-    if provider.register then
+    if opts.enable and provider.register then
       local ok, res = pcall(function()
         provider.register(app, opts)
-        ext.registered = true;
+        ext.registered = true
       end)
 
       if not ok then
@@ -55,10 +55,10 @@ function extension_provider.boot(app)
       return
     end
     local opts = app("laravel.services.config").get("extensions." .. ext.name, {})
-    if provider.boot then
+    if opts.enable and provider.boot then
       local ok, res = pcall(function()
         provider.boot(app, opts)
-        ext.booted = true;
+        ext.booted = true
       end)
 
       if not ok then

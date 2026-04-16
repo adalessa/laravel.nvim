@@ -125,44 +125,6 @@ In some projects the generation can be big so recommended is to expand the lsp m
       return ok and has_php_version
     end,
   },
-  {
-    function()
-      local ok, hostname = pcall(function()
-        return Laravel.extensions.composer_dev.hostname()
-      end)
-      if ok then
-        return hostname
-      end
-      return nil
-    end,
-    icon = { " ", color = { fg = "#8FBC8F" } },
-    cond = function()
-      local ok, is_running = pcall(function()
-        return Laravel.extensions.composer_dev.isRunning()
-      end)
-      return ok and is_running
-    end,
-  },
-  {
-    function()
-      local ok, unseen_records = pcall(function()
-        return #(Laravel.extensions.dump_server.unseenRecords())
-      end)
-
-      if ok then
-        return unseen_records
-      end
-      return 0
-    end,
-    icon = { "󰱧 ", color = { fg = "#FFCC66" } },
-    cond = function()
-      local ok, is_running = pcall(function()
-        return Laravel.extensions.dump_server.isRunning()
-      end)
-
-      return ok and is_running
-    end,
-  },
 }
 ```
 </details>

@@ -61,22 +61,10 @@ Using files .tinker on your project and a dedicated UI makes interact with Tinke
 a lot easier and fun.
 ![tinker-ui](imgs/tinker-ui.png)
 
-## Dump Server
-Integration with [laravel dump server](https://github.com/beyondcode/laravel-dump-server)
-![dump-server](imgs/dump-server.png)
-
-## Dev Server
-One of the ways to run your laravel environment is locally using `artisan serve`.
-For this type of user laravel now ships with a command in composer called `dev`
-If you are one of this users you can start the server directly from neovim.
-Maybe you would like the new Hub down below.
-
 ## Hub
 Hub is my solution to run different commands easily.
 using `Laravel.commands.run("hub")` will open the new ui and will default with common commands to run
-in the predefined environment. If you want to customize them you can use the `Laravel.commands.run("env:configure:open")`
-There you will see configuration for all you defined projects and you can edit the commands as you need.
-in th future can be improved the ui but as right now is a good use case since you are not expected to edit every time.
+in the predefined environment.
 
 ## Eloquent Completion.
 In order to have the best experience with laravel eloquent now the plugin can generate a custom class in the vendor folder

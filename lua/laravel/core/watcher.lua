@@ -12,24 +12,26 @@ local debounce_time = 1 --second
 local function create_watcher(path)
   local w = vim.uv.new_fs_event()
   assert(w, "Failed to create fs_event handle")
-  w:start(path, { recursive = false }, function(err, filename, status)
-    if err then
-      notify.error("Watcher error: " .. err)
-      return
-    end
-    if os.time() - (timers[filename] or 0) < debounce_time then
-      return
-    end
-
-    timers[filename] = os.time()
-
-    -- Notify all registered callbacks for this path
-    if watchers[path] then
-      for _, watcher in ipairs(watchers[path]) do
-        assert(type(watcher) == "function", "Watcher callback must be a function")
-        watcher(filename, status)
+  nio.run(function()
+    w:start(path, { recursive = false }, function(err, filename, status)
+      if err then
+        notify.error("Watcher error: " .. err)
+        return
       end
-    end
+      if os.time() - (timers[filename] or 0) < debounce_time then
+        return
+      end
+
+      timers[filename] = os.time()
+
+      -- Notify all registered callbacks for this path
+      if watchers[path] then
+        for _, watcher in ipairs(watchers[path]) do
+          assert(type(watcher) == "function", "Watcher callback must be a function")
+          watcher(filename, status)
+        end
+      end
+    end)
   end)
 end
 

@@ -30,6 +30,17 @@ local function create_watcher(path)
 
     local entries = watchers[path]
 
+    local full_path = path .. "/" .. filename
+
+    local stat = vim.uv.fs_stat(full_path)
+    if stat and stat.type == "directory" then
+      for _, entry in ipairs(entries) do
+        if filename and filename:match(entry.pattern) then
+          Watcher.register({ { full_path, recursive = true } }, entry.pattern, entry.callback)
+        end
+      end
+    end
+
     local timer = timers[path]
     if not timer then
       timer = vim.uv.new_timer()
@@ -128,36 +139,6 @@ Watcher.register = function(paths, pattern, callback)
     if is_recursive then
       scan_directories_async(path, pattern, callback)
     end
-  end
-end
-
-Watcher.close = function(path)
-  if path then
-    if watchers[path] then
-      for _, entry in ipairs(watchers[path]) do
-        local reg_key = path .. entry.pattern .. tostring(entry.callback)
-        registrations[reg_key] = nil
-      end
-      watchers[path] = nil
-    end
-    if timers[path] then
-      timers[path]:stop()
-      timers[path]:close()
-      timers[path] = nil
-    end
-  else
-    for p, entries in pairs(watchers) do
-      for _, entry in ipairs(entries) do
-        local reg_key = p .. entry.pattern .. tostring(entry.callback)
-        registrations[reg_key] = nil
-      end
-    end
-    watchers = {}
-    for _, timer in pairs(timers) do
-      timer:stop()
-      timer:close()
-    end
-    timers = {}
   end
 end
 

@@ -56,7 +56,7 @@ function runner:run(program, args, opts)
     end
     command_run_event.dispatch(program, args, opts, job_id)
   end)
-  if not is_make then
+  if is_make then
     vim.cmd("startinsert")
   end
 end

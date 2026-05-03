@@ -48,7 +48,9 @@ local function create_watcher(path)
       vim.schedule_wrap(function()
         for _, entry in ipairs(entries) do
           if filename and filename:match(entry.pattern) then
-            entry.callback(filename)
+            nio.run(function()
+              entry.callback(filename)
+            end)
           end
         end
       end)

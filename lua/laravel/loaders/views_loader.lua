@@ -1,6 +1,5 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
-local watcher = require("laravel.core.watcher")
 
 ---@class laravel.dto.artisan_views
 ---@field key string
@@ -11,11 +10,13 @@ local watcher = require("laravel.core.watcher")
 ---@class laravel.loaders.views_loader
 ---@field code laravel.services.code
 ---@field path laravel.services.path
+---@field watcher laravel.core.watcher
 ---@field loaded boolean
 ---@field items laravel.dto.artisan_views[]
 local ViewsLoader = Class({
   code = "laravel.services.code",
   path = "laravel.services.path",
+  watcher = "laravel.core.watcher",
 }, { items = {}, loaded = false })
 
 ---@return laravel.dto.artisan_views[], laravel.error
@@ -43,7 +44,7 @@ function ViewsLoader:load()
     return {}, Error:new("Failed to get views path"):wrap(err)
   end
 
-  watcher.register({ { views_directory, recursive = true } }, ".*.blade.php$", _load)
+  self.watcher.register({ { views_directory, recursive = true } }, ".*.blade.php$", _load)
 
   return _load()
 end

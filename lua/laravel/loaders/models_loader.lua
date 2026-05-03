@@ -1,6 +1,5 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
-local watcher = require("laravel.core.watcher")
 
 local paths = {
   "app",
@@ -12,10 +11,12 @@ local paths = {
 ---@field code laravel.services.code
 ---@field config laravel.services.config
 ---@field eloquent_helper laravel.services.eloquent_helper
+---@field watcher laravel.core.watcher
 local ModelsLoader = Class({
   code = "laravel.services.code",
   config = "laravel.services.config",
   eloquent_helper = "laravel.services.eloquent_helper",
+  watcher = "laravel.core.watcher",
 }, { items = {}, loaded = false })
 
 ---@async
@@ -44,7 +45,7 @@ function ModelsLoader:load()
     return self.items
   end
 
-  watcher.register(paths, ".*.php$", _load)
+  self.watcher.register(paths, ".*.php$", _load)
 
   return _load()
 end

@@ -1,15 +1,16 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
-local watcher = require("laravel.core.watcher")
 
 ---@class laravel.loaders.configs_loader
 ---@field code laravel.services.code
 ---@field path laravel.services.path
+---@field watcher laravel.core.watcher
 ---@field loaded boolean
 ---@field items laravel.dto.artisan_views[]
 local ConfigsLoader = Class({
   code = "laravel.services.code",
   path = "laravel.services.path",
+  watcher = "laravel.core.watcher",
 }, { items = {}, loaded = false })
 
 ---@return laravel.dto.app_config[], laravel.error
@@ -37,7 +38,7 @@ function ConfigsLoader:load()
     return {}, Error:new("Failed to get config path"):wrap(err)
   end
 
-  watcher.register({ { config_directory, recursive = true } }, ".*.php$", _load)
+  self.watcher.register({ { config_directory, recursive = true } }, ".*.php$", _load)
 
   return _load()
 end

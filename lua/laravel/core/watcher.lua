@@ -1,6 +1,7 @@
 local notify = require("laravel.utils.notify")
 local nio = require("nio")
 
+---@class laravel.core.watcher
 local Watcher = {}
 
 local watchers = {}

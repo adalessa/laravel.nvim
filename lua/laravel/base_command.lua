@@ -37,10 +37,14 @@ end
 function BaseCommand:execute()
   error("execute method not implemented")
 end
-function BaseCommand:restart()
+
+function BaseCommand:restart(callback)
   self:stop()
   vim.defer_fn(function()
     self:execute()
+    if callback then
+      callback()
+    end
   end, 100)
 end
 

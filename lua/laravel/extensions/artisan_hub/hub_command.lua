@@ -1,5 +1,6 @@
 local app = require("laravel.core.app")
 local TermCommand = require("laravel.term_command")
+local notify      = require("laravel.utils.notify")
 
 local hub = {
   signature = "hub",
@@ -31,11 +32,13 @@ local function getByName(name)
     return cmd.name == name
   end)
 end
+
 local function add_keymaps()
   local keys = get_keys()
   for i, key in ipairs(keys) do
     local item = getByName(key)
-    vim.keymap.set("n", "q", function()
+
+    vim.keymap.set({ "n", "t" }, "q", function()
       if win then
         vim.api.nvim_win_hide(win)
       end
@@ -56,6 +59,48 @@ local function add_keymaps()
           hub:add(name, input)
         end)
       end)
+    end, { buffer = item.command.bufnr })
+
+    vim.keymap.set("n", "s", function()
+      for i, cmd in ipairs(commands) do
+        if cmd.name == current_tab then
+          if cmd.command:isRunning() then
+            cmd.command:stop()
+          end
+        end
+      end
+    end, { buffer = item.command.bufnr })
+
+    vim.keymap.set("n", "r", function()
+      for i, cmd in ipairs(commands) do
+        if cmd.name == current_tab then
+          if cmd.command:isRunning() then
+            cmd.command:restart(function()
+              if win then
+                vim.api.nvim_win_set_buf(win, getByName(current_tab).command.bufnr)
+                vim.api.nvim_set_current_win(win)
+              end
+              add_keymaps()
+            end)
+            return
+          end
+        end
+      end
+    end, { buffer = item.command.bufnr })
+
+    vim.keymap.set("n", "e", function()
+      for i, cmd in ipairs(commands) do
+        if cmd.name == current_tab then
+          if not cmd.command:isRunning() then
+            cmd.command:execute()
+            if win then
+              vim.api.nvim_win_set_buf(win, getByName(current_tab).command.bufnr)
+            end
+            add_keymaps()
+            return
+          end
+        end
+      end
     end, { buffer = item.command.bufnr })
 
     vim.keymap.set("n", "d", function()
@@ -98,28 +143,31 @@ end
 function hub:_init()
   if vim.tbl_isempty(commands) then
     commands = app("laravel.extensions.artisan_hub.commands")
-  end
 
-  for _, command in ipairs(commands) do
-    if not command.command then
-      local cmd = app("laravel.services.command_generator"):generate(command.cmd)
-
-      if command.class then
-        local ok, cls = pcall(require, command.class)
-        if ok then
-          command.command = cls:new(cmd)
+    for _, command in ipairs(commands) do
+      if not command.command then
+        local args = {}
+        if command.cmd then
+          table.insert(args, app("laravel.services.command_generator"):generate(command.cmd))
         end
-      else
-        command.command = TermCommand:new(cmd)
+
+        if command.class then
+          local ok, cls = pcall(require, command.class)
+          if ok then
+            command.command = cls:new(unpack(args))
+          end
+        else
+          command.command = TermCommand:new(unpack(args))
+        end
       end
     end
-  end
 
-  vim.tbl_map(function(cmd)
-    if not cmd.command:isRunning() then
-      cmd.command:execute()
-    end
-  end, commands)
+    vim.tbl_map(function(cmd)
+      if not cmd.command:isRunning() then
+        cmd.command:execute()
+      end
+    end, commands)
+  end
 
   if current_tab == "" then
     current_tab = get_keys()[1]
@@ -137,13 +185,18 @@ function hub:handle()
   local row = math.floor((ui.height - height) / 2)
   local col = math.floor((ui.width - width) / 2)
 
+  if not vim.api.nvim_buf_is_valid(current.command.bufnr) then
+    notify.error("buffer not valid for command: " .. current.name)
+    return
+  end
+
   win = vim.api.nvim_open_win(current.command.bufnr, true, {
     title = get_title(),
     title_pos = "center",
     border = "rounded",
     height = height,
     width = width,
-    footer = "q: Close | a: Add | d: Delete | <Tab>: Next Tab | <S-Tab>: Previous Tab",
+    footer = "q: Close | a: Add | d: Delete | r: Restart | s: stop | e: execute | <Tab>: Next Tab | <S-Tab>: Previous Tab",
     footer_pos = "center",
     relative = "editor",
     row = row,

@@ -20,8 +20,7 @@ function provider.register(app, opts)
     },
     {
       name = "Logs",
-      cmd = "tail -f -n 0 storage/logs/laravel.log",
-      class = "laravel.extensions.artisan_hub.log_pty_command",
+      class = "laravel.extensions.artisan_hub.daily_log_command",
     },
   })
 end

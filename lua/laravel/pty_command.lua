@@ -12,6 +12,7 @@ function PtyCommand:onStdout(data)
 end
 
 function PtyCommand:execute()
+  self.exited = false
   self.bufnr = vim.api.nvim_create_buf(false, true)
   self.channel_id = vim.api.nvim_open_term(self.bufnr, {})
 

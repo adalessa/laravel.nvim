@@ -6,12 +6,12 @@ local nio = require("nio")
 ---@class laravel.managers.pickers_manager
 ---@field _enable boolean
 ---@field provider {}
-local pickers_manager = Class({ config = "laravel.services.config" })
+local pickers_manager = Class({ options = "laravel.core.options_manager" })
 
-function pickers_manager:new(config)
-  local providerName = config("features.pickers.provider")
+function pickers_manager:new(options)
+  local providerName = options.get("features.pickers.provider")
   local instance = {
-    _enable = config("features.pickers.enable"),
+    _enable = options.get("features.pickers.enable"),
     name = providerName,
     provider = app("pickers." .. providerName),
   }

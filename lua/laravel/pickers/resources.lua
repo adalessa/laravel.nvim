@@ -2,12 +2,12 @@ local Class = require("laravel.utils.class")
 local notify = require("laravel.utils.notify")
 
 local resources_picker = Class({
-  config = "laravel.services.config",
+  options = "laravel.core.options_manager",
 })
 
 function resources_picker:run(picker, opts)
   local resources = {}
-  for name, path in pairs(self.config.get("resources", {})) do
+  for name, path in pairs(self.options.get("resources", {})) do
     if vim.fn.isdirectory(path) == 1 then
       table.insert(resources, {
         name = name,

@@ -5,11 +5,9 @@ local Error = require("laravel.utils.error")
 local notify = require("laravel.utils.notify")
 
 ---@class laravel.core.env
----@field config laravel.core.config
----@field options laravel.services.config
+---@field options laravel.core.options_manager
 local env = Class({
-  config = "laravel.core.config",
-  options = "laravel.services.config",
+  options = "laravel.core.options_manager",
 }, {
   environment = nil,
 })
@@ -20,12 +18,7 @@ function env:boot()
     return
   end
 
-  local cwd = vim.uv.cwd()
-  assert(cwd, "cwd is nil")
-
-  local config = self.config:get(cwd)
-
-  if not config then
+  if not self.options.get("path") then
     if self.options.get("environments.ask_on_boot") then
       self:configure()
     elseif self.options.get("environments.default") then
@@ -45,7 +38,7 @@ function env:boot()
       notify.warn("Need to configure environment")
     end
   else
-    self.environment = Environment:new(config)
+    self.environment = Environment:new(self.options.get())
   end
 end
 
@@ -70,7 +63,7 @@ function env:configure()
 
     local cwd = vim.uv.cwd()
     value.path = cwd
-    local res = self.config:set(value)
+    local res = self.options.set(value)
     if not res then
       notify.error("Error saving config")
     end

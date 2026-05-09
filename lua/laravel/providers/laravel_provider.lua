@@ -20,14 +20,10 @@ function laravel_provider.register(app)
   app:singleton("laravel.loaders.paths_loader")
   app:singleton("laravel.loaders.configs_loader")
 
-  app:singletonIf("laravel.core.config", function()
-    return require("laravel.core.config"):new(vim.fn.stdpath("data") .. "/laravel/config.json")
-  end)
-
   app:singletonIf("laravel.utils.log", function()
     return require("laravel.utils.log"):new(
       vim.fn.stdpath("data") .. "/laravel/logs",
-      app("laravel.services.config")("debug_level")
+      app("options").get("debug_level")
     )
   end)
 end

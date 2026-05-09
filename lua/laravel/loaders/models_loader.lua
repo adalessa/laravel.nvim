@@ -9,12 +9,12 @@ local paths = {
 
 ---@class laravel.loaders.models_loader
 ---@field code laravel.services.code
----@field config laravel.services.config
+---@field options laravel.core.options_manager
 ---@field eloquent_helper laravel.services.eloquent_helper
 ---@field watcher laravel.core.watcher
 local ModelsLoader = Class({
   code = "laravel.services.code",
-  config = "laravel.services.config",
+  options = "laravel.core.options_manager",
   eloquent_helper = "laravel.services.eloquent_helper",
   watcher = "laravel.core.watcher",
 }, { items = {}, loaded = false })
@@ -38,7 +38,7 @@ function ModelsLoader:load()
     self.loaded = true
     self.items = models or {}
 
-    if self.config.get("eloquent_generate_doc_blocks") then
+    if self.options.get("eloquent_generate_doc_blocks") then
       self.eloquent_helper.write_eloquent_docblocks(models.models, models.builderMethods)
     end
 

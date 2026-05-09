@@ -5,11 +5,11 @@ local command_run_event = require("laravel.events.command_run_event")
 local entity_created_event = require("laravel.events.entity_created_event")
 
 ---@class laravel.services.runner
----@field config laravel.services.config
+---@field options laravel.core.options_manager
 ---@field ui_handler LaravelUIHandler
 ---@field command_generator laravel.services.command_generator
 local runner = Class({
-  config = "laravel.services.config",
+  options = "laravel.core.options_manager",
   ui_handler = "laravel.services.ui_handler",
   command_generator = "laravel.services.command_generator",
 })
@@ -28,7 +28,7 @@ function runner:run(program, args, opts)
   local subCommand = args[1] or vim.split(program, " ")[2] or nil
 
   if subCommand then
-    opts = vim.tbl_extend("force", self.config("commands_options")[subCommand] or {}, opts)
+    opts = vim.tbl_extend("force", self.options.get("commands_options")[subCommand] or {}, opts)
   end
 
   local instance = self.ui_handler:handle(opts)

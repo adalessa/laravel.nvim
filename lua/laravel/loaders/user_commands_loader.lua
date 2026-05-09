@@ -9,17 +9,17 @@ local Class = require("laravel.utils.class")
 ---@field opts table<string, any>
 
 ---@class laravel.loaders.user_commands_loader
----@field config laravel.services.config
----@field new fun(self: laravel.loaders.user_commands_loader, config: laravel.services.config): laravel.loaders.user_commands_loader
+---@field options laravel.core.options_manager
+---@field new fun(self: laravel.loaders.user_commands_loader, options: laravel.config.options_manager): laravel.loaders.user_commands_loader
 local user_commands_loader = Class({
-  config = "laravel.services.config",
+  options = "laravel.core.options_manager",
 })
 
 ---@return laravel.dto.user_command[]
 function user_commands_loader:load()
   local commands = {}
 
-  for command_name, group_commands in pairs(self.config.get("user_commands", {})) do
+  for command_name, group_commands in pairs(self.options.get("user_commands", {})) do
     for name, details in pairs(group_commands) do
       table.insert(commands, {
         executable = command_name,

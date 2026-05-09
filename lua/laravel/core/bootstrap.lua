@@ -1,4 +1,4 @@
-local config = require("laravel.services.config")
+local options = require("laravel.core.options_manager")
 local notify = require("laravel.utils.notify")
 
 local function initGlobal(app)
@@ -54,32 +54,33 @@ end
 local function registerProviders(app)
   vim.tbl_map(function(provider)
     return register(provider, app)
-  end, config.get("providers", {}))
+  end, options.get("providers", {}))
 end
 
 local function bootProviders(app)
   vim.tbl_map(function(provider)
     return boot(provider, app)
-  end, config.get("providers", {}))
+  end, options.get("providers", {}))
 end
 
 local function registerUserProviders(app)
   vim.tbl_map(function(provider)
     return register(provider, app)
-  end, config.get("user_providers", {}))
+  end, options.get("user_providers", {}))
 end
 
 local function bootUserProviders(app)
   vim.tbl_map(function(provider)
     return boot(provider, app)
-  end, config.get("user_providers", {}))
+  end, options.get("user_providers", {}))
 end
 
 return {
   ---@param app laravel.core.app
   ---@param opts table?
   bootstrap = function(app, opts)
-    config.set(vim.tbl_deep_extend("force", require("laravel.options.default"), opts or {}))
+    local cwd = vim.uv.cwd()
+    options.init(opts, require("laravel.options.default"), cwd, vim.fn.stdpath("data") .. "/laravel/config.json")
 
     registerProviders(app)
     registerUserProviders(app)

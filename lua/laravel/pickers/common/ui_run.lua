@@ -28,7 +28,7 @@ return function(command, opts)
   else
     prompt = opts.prompt
   end
-  local entry_opts = app("config").get("ui.runner.entry")
+  local entry_opts = app("options").get("ui.runner.entry")
   entry_opts.border.text.top = opts.title or entry_opts.border.text.top
 
   local entry_popup = Input(entry_opts, {
@@ -36,7 +36,7 @@ return function(command, opts)
     on_submit = opts.on_submit,
   })
 
-  local help_popup = Popup(app("config").get("ui.runner.help"))
+  local help_popup = Popup(app("options").get("ui.runner.help"))
 
   local command_preview = {
     lines = {},
@@ -65,7 +65,7 @@ return function(command, opts)
     Layout.Box(help_popup, { grow = 1 }),
   }
 
-  local layout = Layout(app("config").get("ui.runner.layout"), Layout.Box(boxes, { dir = "col" }))
+  local layout = Layout(app("options").get("ui.runner.layout"), Layout.Box(boxes, { dir = "col" }))
 
   entry_popup:map("i", "<c-c>", function()
     layout:unmount()

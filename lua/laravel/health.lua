@@ -58,10 +58,10 @@ M.check = function()
   end
 
   report_start("Pickers")
-  local enable = app("laravel.services.config").get("features.pickers.enable")
+  local enable = app("laravel.core.options_manager").get("features.pickers.enable")
   report_info("Enabled: " .. (enable and "Yes" or "No"))
   if enable then
-    local picker = app("laravel.services.config").get("features.pickers.provider")
+    local picker = app("laravel.core.options_manager").get("features.pickers.provider")
     report_info("Selected Picker: " .. picker)
     local provider = app("pickers." .. picker)
     if provider.check() then

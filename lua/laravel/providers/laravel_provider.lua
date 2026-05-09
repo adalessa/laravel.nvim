@@ -61,11 +61,13 @@ function laravel_provider.boot(app)
   end
 
   -- initial load for the app
-  nio.run(function()
-    Laravel.app("laravel.loaders.models_loader"):load()
-    Laravel.app("laravel.loaders.views_loader"):load()
-    Laravel.app("laravel.loaders.configs_loader"):load()
-  end)
+  if app:isActive() then
+    nio.run(function()
+      Laravel.app("laravel.loaders.models_loader"):load()
+      Laravel.app("laravel.loaders.views_loader"):load()
+      Laravel.app("laravel.loaders.configs_loader"):load()
+    end)
+  end
 end
 
 return laravel_provider

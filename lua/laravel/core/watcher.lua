@@ -13,6 +13,13 @@ local debounce_ms = 200
 ---@param path string
 ---@return table|nil
 local function create_watcher(path)
+  -- verify that the path exists
+  -- us fs_stat and check directory before trying to create it
+  local stat, err = vim.uv.fs_stat(path)
+  if err or not stat or stat.type ~= "directory" then
+    return
+  end
+
   local w = vim.uv.new_fs_event()
   if not w then
     notify.error("Failed to create fs_event handle")

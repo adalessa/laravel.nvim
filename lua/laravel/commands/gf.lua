@@ -12,8 +12,8 @@ local gf_command = {
 ---@async
 function gf_command:handle()
   nio.run(function()
-    ---@type laravel.loaders.routes_cache_loader
-    local routes_loader = app:make("laravel.loaders.routes_cache_loader")
+    ---@type laravel.loaders.routes_loader
+    local routes_loader = app:make("laravel.loaders.routes_loader")
     ---@type laravel.services.gf
     local gf = app:make("laravel.services.gf")
     ---@type laravel.services.views

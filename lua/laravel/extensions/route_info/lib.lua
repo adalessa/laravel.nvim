@@ -9,12 +9,12 @@ end)
 
 ---@class laravel.extensions.route_info.lib
 ---@field class laravel.services.class
----@field routes_loader laravel.loaders.routes_cache_loader
+---@field routes_loader laravel.loaders.routes_loader
 ---@field route_info_view table
 ---@field display_status table
 local route_info = Class({
   class = "laravel.services.class",
-  routes_loader = "laravel.loaders.routes_cache_loader",
+  routes_loader = "laravel.loaders.routes_loader",
   route_info_view = "laravel.extensions.route_info.view_factory",
 }, {
   display_status = {},

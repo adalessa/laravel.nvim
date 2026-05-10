@@ -1,9 +1,6 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 
----@class laravel.dto.composer_command
----@field name string
-
 ---@class laravel.loaders.composer_commands_loader
 ---@field api laravel.services.api
 local ComposerCommandsLoader = Class({ api = "laravel.services.api" })

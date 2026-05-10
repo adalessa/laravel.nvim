@@ -1,16 +1,7 @@
 local Class = require("laravel.utils.class")
 
----@class laravel.dto.user_command
----@field executable string
----@field name string
----@field display string
----@field cmd string
----@field desc string
----@field opts table<string, any>
-
 ---@class laravel.loaders.user_commands_loader
 ---@field options laravel.core.options_manager
----@field new fun(self: laravel.loaders.user_commands_loader, options: laravel.config.options_manager): laravel.loaders.user_commands_loader
 local user_commands_loader = Class({
   options = "laravel.core.options_manager",
 })

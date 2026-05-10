@@ -4,9 +4,9 @@ local nio = require("nio")
 local notify = require("laravel.utils.notify")
 
 ---@class laravel.pickers.ui_select.pickers.routes
----@field routes_loader laravel.loaders.routes_cache_loader
+---@field routes_loader laravel.loaders.routes_loader
 local routes_picker = Class({
-  routes_loader = "laravel.loaders.routes_cache_loader",
+  routes_loader = "laravel.loaders.routes_loader",
 })
 
 function routes_picker:run()

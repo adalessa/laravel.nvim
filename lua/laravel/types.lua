@@ -88,3 +88,30 @@
 ---@field value any
 ---@field file string
 ---@field line number
+
+---@class laravel.dto.artisan_routes
+---@field uri string
+---@field action string
+---@field controller string
+---@field method string
+---@field domain string
+---@field methods string[]
+---@field middlewares string[]
+---@field name string
+
+---@class laravel.dto.user_command
+---@field executable string
+---@field name string
+---@field display string
+---@field cmd string
+---@field desc string
+---@field opts table<string, any>
+
+---@class laravel.dto.artisan_views
+---@field key string
+---@field path string
+---@field isVendor boolean
+---@field isLivewire boolean
+
+---@class laravel.dto.composer_command
+---@field name string

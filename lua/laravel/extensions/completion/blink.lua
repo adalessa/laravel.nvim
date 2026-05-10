@@ -59,7 +59,7 @@ function source:get_completions(ctx, callback)
     local routes_completion = require("laravel.extensions.completion.routes_completion")
     if routes_completion.shouldComplete(text) then
       return routes_completion.complete(
-        app("laravel.loaders.routes_cache_loader"),
+        app("laravel.loaders.routes_loader"),
         app("laravel.utils.templates"),
         {},
         callback

@@ -64,12 +64,3 @@ function ConfigsLoader:get(name)
 end
 
 return ConfigsLoader
-
--- [
---   {
---     "name": "cors.paths",
---     "value": "array(...)",
---     "file": "vendor/laravel/framework/config/cors.php",
---     "line": 18
---   },
--- ]

@@ -1,12 +1,6 @@
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 
----@class laravel.dto.artisan_views
----@field key string
----@field path string
----@field isVendor boolean
----@field isLivewire boolean
-
 ---@class laravel.loaders.views_loader
 ---@field code laravel.services.code
 ---@field path laravel.services.path
@@ -50,13 +44,3 @@ function ViewsLoader:load()
 end
 
 return ViewsLoader
-
--- Example output:
--- [
---   {
---     "path": "resources/views/livewire/app.blade.php",
---     "isVendor": false,
---     "key": "app",
---     "isLivewire": true
---   },
--- ]

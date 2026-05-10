@@ -8,7 +8,7 @@ local Error = require("laravel.utils.error")
 local RoutesLoader = Class({
   api = "laravel.services.api",
   options = "laravel.core.options_manager",
-  mapper = "laravel.mappers.rotue_mapper",
+  mapper = "laravel.mappers.route_mapper",
 })
 
 ---@return laravel.dto.artisan_routes[], laravel.error

@@ -1,29 +1,18 @@
 local Popup = require("nui.popup")
 local Split = require("nui.split")
+local Class = require("laravel.utils.class")
 
 ---@class LaravelUIHandler
 ---@field builders table<string, function>
 ---@field options laravel.core.options_manager
-local ui_handler = {
-  _inject = {
-    options = "laravel.core.options_manager",
+local ui_handler = Class({
+  options = "laravel.core.options_manager",
+}, {
+  builders = {
+    split = Split,
+    popup = Popup,
   },
-}
-
-function ui_handler:new(options)
-  local instance = {
-    builders = {
-      split = Split,
-      popup = Popup,
-    },
-    options = options,
-  }
-
-  setmetatable(instance, self)
-  self.__index = self
-
-  return instance
-end
+})
 
 ---@param opts table
 function ui_handler:handle(opts)

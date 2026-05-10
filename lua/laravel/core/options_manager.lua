@@ -50,6 +50,9 @@ manager.init = function(plugin_options, default, cwd, file_path)
   _options = vim.tbl_deep_extend("force", _default, _plugin_options, _project_options)
 end
 
+---@param key string
+---@param default any
+---@return any
 manager.get = function(key, default)
   if not key then
     return _options
@@ -58,7 +61,7 @@ manager.get = function(key, default)
   local value = _options
   for _, seg in ipairs(vim.split(key, "%.")) do
     if type(value) ~= "table" then
-      return nil
+      return default
     end
     value = value[seg]
   end

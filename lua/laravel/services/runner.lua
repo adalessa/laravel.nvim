@@ -45,12 +45,18 @@ function runner:run(program, args, opts)
       if class ~= nil and class ~= "" then
         instance:unmount()
         local cwd = vim.fn.getcwd()
-        local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(cwd .. "/" .. class))
+        local filepath = cwd .. "/" .. class
+        local bufnr = vim.uri_to_bufnr(vim.uri_from_fname(filepath))
         vim.fn.bufload(bufnr)
-        vim.api.nvim_win_set_buf(0, bufnr)
-        vim.schedule(function()
-          vim.cmd("e")
-        end)
+        if vim.fn.filereadable(filepath) == 1 then
+          vim.api.nvim_win_set_buf(0, bufnr)
+          vim.schedule(function()
+            local ft = vim.filetype.match({ filename = class, buf = bufnr })
+            if ft then
+              vim.cmd(("silent! set filetype=%s"):format(ft))
+            end
+          end)
+        end
         entity_created_event.dispatch(class)
       end
     end

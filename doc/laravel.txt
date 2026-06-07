@@ -1,9 +1,708 @@
-*laravel.txt* Plugin to work with Laravel Framework
+*laravel.txt*   Plugin to enhance the Laravel Framework experience in Neovim
 
-Author: Ariel D'Alessandro
-Repo: https://github.com/adalessa/laravel.nvim
-License: Same terms as Vim itself (see |license|)
+Author:  Ariel D'Alessandro <https://github.com/adalessa>
+Repo:    https://github.com/adalessa/laravel.nvim
+License: MIT (see |license|)
 
-Usage                               *laravel* *:Laravel*
+==============================================================================
+CONTENTS                                                  *laravel-contents*
 
- vim:tw=78:et:ft=help:norl:
+  1. Highlights ............................. |laravel-highlights|
+  2. Requirements ........................... |laravel-requirements|
+  3. Installation ........................... |laravel-installation|
+  4. Default keymaps ........................ |laravel-keymaps|
+  5. Configuration .......................... |laravel-configuration|
+  6. Command reference ...................... |laravel-commands|
+  7. Pickers ................................ |laravel-pickers|
+  8. Virtual information .................... |laravel-virtual-info|
+  9. Completion ............................. |laravel-completion|
+ 10. Actions ................................ |laravel-actions|
+ 11. gf override ............................ |laravel-gf|
+ 12. view:finder ............................ |laravel-view-finder|
+ 13. Tinker ................................. |laravel-tinker|
+ 14. Artisan Hub ............................ |laravel-hub|
+ 15. Command Center ......................... |laravel-command-center|
+ 16. Diagnostics ............................ |laravel-diagnostics|
+ 17. Override signs ......................... |laravel-override-signs|
+ 18. Lualine integration .................... |laravel-lualine|
+ 19. Eloquent completion & doc-blocks ....... |laravel-eloquent|
+ 20. Extending .............................. |laravel-extending|
+ 21. Health & troubleshooting ............... |laravel-troubleshooting|
+
+==============================================================================
+1. HIGHLIGHTS                                            *laravel-highlights*
+
+- Multi-environment: local, sail, docker-compose, herd, valet, symfony, or
+  your own custom one. Per-project overrides are persisted on disk.
+- Pickers: Artisan, routes, make:*, resources, related, composer, custom
+  commands, history. Any of telescope, fzf-lua, snacks, or built-in
+  |vim.ui.select|.
+- Virtual information on models (database, table, columns), on controller
+  methods (HTTP method, URI, middleware), and on composer.json (current
+  version, outdated marker).
+- Smart |gf| that follows route(), view(), config(), env(), and
+  Inertia::render() strings to their definitions.
+- Completion for views, routes, config keys, env vars, Inertia pages and
+  Eloquent model columns (both |cmp| and |blink-cmp|).
+- Code actions (Laravel-aware, LSP-style): generate $fillable, add Eloquent
+  relations, jump to migration, create listener, copy/move/delete Livewire
+  components.
+- Tinker with .tinker files, side-by-side REPL, formatted output for
+  Eloquent models, collections and query builders.
+- Artisan Hub: tabbed terminal UI for long-running commands (serve, pail,
+  vite, logs) with restart/stop/add/delete keybindings.
+
+==============================================================================
+2. REQUIREMENTS                                        *laravel-requirements*
+
+- Neovim >= 0.10
+- ripgrep (rg): required for |laravel-view-finder| and go-to-migration
+- jq: optional, used for pretty-printed config file
+- Tree-sitter parsers for "php" and "json"
+- |nui.nvim|, |plenary.nvim|, |nio|
+
+Optional:
+
+- |telescope.nvim|, |fzf-lua|, or snacks.picker (depending on your picker
+  provider)
+- |nvim-cmp| or |blink-cmp| for completion
+
+The vendor/ directory of the project must be writable; the plugin generates
+small helper PHP files there for introspection.
+
+==============================================================================
+3. INSTALLATION                                        *laravel-installation*
+
+                                                          *laravel-lazy*
+With lazy.nvim: >
+
+    {
+      "adalessa/laravel.nvim",
+      dependencies = {
+        "MunifTanjim/nui.nvim",
+        "nvim-lua/plenary.nvim",
+        "nvim-neotest/nvim-nio",
+      },
+      ft = { "php", "blade" },
+      event = { "BufEnter composer.json" },
+      keys = {
+        { "<leader>ll", function() Laravel.pickers.laravel() end,            desc = "Laravel: Picker" },
+        { "<leader>la", function() Laravel.pickers.artisan() end,            desc = "Laravel: Artisan Picker" },
+        { "<leader>lr", function() Laravel.pickers.routes() end,             desc = "Laravel: Routes Picker" },
+        { "<leader>lm", function() Laravel.pickers.make() end,               desc = "Laravel: Make Picker" },
+        { "<leader>lc", function() Laravel.pickers.commands() end,           desc = "Laravel: Custom Commands Picker" },
+        { "<leader>lo", function() Laravel.pickers.resources() end,          desc = "Laravel: Resources Picker" },
+        { "<leader>lh", function() Laravel.run("artisan docs") end,          desc = "Laravel: Documentation" },
+        { "<leader>lt", function() Laravel.commands.run("actions") end,      desc = "Laravel: Code Actions" },
+        { "<leader>lu", function() Laravel.commands.run("hub") end,          desc = "Laravel: Artisan Hub" },
+        { "<leader>lp", function() Laravel.commands.run("command_center") end, desc = "Laravel: Command Center" },
+        { "<c-g>",      function() Laravel.commands.run("view:finder") end,  desc = "Laravel: View Finder" },
+        {
+          "gf",
+          function()
+            if Laravel.app("gf").cursorOnResource() then
+              return "<cmd>lua Laravel.commands.run('gf')<cr>"
+            end
+            return "gf"
+          end,
+          expr = true, noremap = true, desc = "Laravel: Go to resource",
+        },
+      },
+      opts = {
+        features = { pickers = { provider = "telescope" } },
+      },
+    }
+<
+
+                                                      *laravel-vim-pack*
+With vim.pack (Neovim >= 0.11): >
+
+    -- lua/plugins/specs.lua
+    local gh = function(repo) return "https://github.com/" .. repo end
+    return {
+      { src = gh("MunifTanjim/nui.nvim") },
+      { src = gh("nvim-lua/plenary.nvim") },
+      { src = gh("nvim-neotest/nvim-nio") },
+      { src = gh("adalessa/laravel.nvim") },
+    }
+
+    -- init.lua
+    vim.pack.add(require("plugins.specs"))
+
+    -- lua/plugins/laravel.lua
+    local laravel = require("laravel")
+    laravel.setup({ features = { pickers = { provider = "telescope" } } })
+    vim.g.Laravel = laravel
+<
+
+==============================================================================
+4. DEFAULT KEYMAPS                                          *laravel-keymaps*
+
+The keymaps below ship in the lazy snippet. They can be rebound to taste.
+
+  Key             Action
+  <leader>ll      Open the master Laravel picker
+  <leader>la      Open the Artisan command picker
+  <leader>lr      Open the routes picker
+  <leader>lm      Open the make:* picker
+  <leader>lc      Open the custom-commands picker
+  <leader>lo      Open the resources picker
+  <leader>lt      Open the code-actions picker
+  <leader>lu      Open the Artisan Hub
+  <leader>lp      Open the Command Center
+  <leader>lh      Run "artisan docs" in a popup
+  <c-g>           View finder (jump to definition / usage)
+  gf              Laravel-aware gf (route/view/config/env/Inertia)
+
+==============================================================================
+5. CONFIGURATION                                      *laravel-configuration*
+
+                                                                  *laravel-setup*
+The setup function is the only public entry point: >
+
+    require("laravel").setup({ ... })
+<
+
+The shape of the options table mirrors
+|lua/laravel/options/default.lua|.
+
+                                                            *laravel-options*
+Top-level options:
+
+  features.pickers.enable        (boolean) toggle every picker (default true)
+  features.pickers.provider      ('telescope' | 'fzf-lua' | 'snacks'
+                                  | 'ui-select') picker backend
+  eloquent_generate_doc_blocks   (boolean) generate typed doc-block file in
+                                  vendor/ for Eloquent (default true)
+  debug_level                    (vim.log.levels) log floor (default DEBUG)
+  commands_options.<name>        (table) per-subcommand runner options
+  ui                             (table) runner / prompt / help layouts
+  environments                   (table) multi-environment config
+  resources                      (table) directory map for resources picker
+  user_commands                  (table) custom quick actions
+  extensions                     (table) per-extension toggles/options
+  providers                      (table) internal DI providers
+  user_providers                 (table) your own providers (advanced)
+
+                                                          *laravel-environments*
+The plugin uses an "environment" to decide how to actually run php,
+composer, npm, yarn, and (by extension) artisan. Pick one per project with
+`Laravel.commands.run("env:configure")`.
+
+Built-in definitions (see lua/laravel/options/environments.lua):
+
+  local            php (whatever is on $PATH, the default)
+  sail             vendor/bin/sail php
+  docker-compose   docker compose exec -it app php
+  herd             herd php
+  valet            valet php
+  symfony          symfony php
+
+Add your own: >
+
+    require("laravel").setup({
+      environments = {
+        default = "lando",
+        ask_on_boot = false,
+        definitions = {
+          {
+            name = "lando",
+            map = {
+              php      = { "lando", "php" },
+              composer = { "lando", "composer" },
+              npm      = { "lando", "npm" },
+            },
+          },
+        },
+      },
+    })
+<
+
+                                                            *laravel-resources*
+`resources` is the directory map used by the resources picker. Defaults live
+in lua/laravel/options/resources.lua. Override to fit non-standard layouts: >
+
+    require("laravel").setup({
+      resources = {
+        DTOs      = "app/Dto",
+        Enums     = "app/Enums",
+        Filament  = "app/Filament/Resources",
+      },
+    })
+<
+
+                                                          *laravel-user-commands*
+`user_commands` lets you define quick actions. They appear in the
+custom-commands picker and are invokable with
+`Laravel.run("<executable>", { ... })`. >
+
+    require("laravel").setup({
+      user_commands = {
+        artisan = {
+          ["db:fresh --seed"] = {
+            cmd = { "migrate:fresh", "--seed" },
+            desc = "Drop, re-migrate and seed",
+          },
+        },
+        npm = {
+          build = { cmd = { "run", "build" }, desc = "Production build" },
+          dev   = { cmd = { "run", "dev"   }, desc = "Vite dev server" },
+        },
+        composer = {
+          autoload = { cmd = { "dump-autoload" }, desc = "Regenerate autoloader" },
+        },
+      },
+    })
+<
+
+                                                              *laravel-extensions*
+Every extension can be disabled or have its own options overridden:
+
+  Extension         Default  Effect when disabled
+  artisan_hub       enabled  Removes the Artisan Hub
+  command_center    enabled  Removes the Command Center
+  completion        enabled  Stops registering the cmp/blink source
+  composer_info     enabled  Stops annotating composer.json
+  diagnostic        enabled  Stops flagging missing views / Inertia pages
+  model_info        enabled  Stops showing DB / table / columns above models
+  override          enabled  Stops placing the override sign on methods
+  route_info        enabled  Stops showing method/URI/middleware on ctrlrs
+  tinker            enabled  Removes tinker commands and the .tinker UI
+
+Example: pick a different route-info style >
+
+    require("laravel").setup({
+      extensions = {
+        route_info = { enable = true, view = "top" }, -- simple | top | right
+      },
+    })
+<
+
+                                                  *laravel-project-overrides*
+Per-project overrides are stored at: >
+
+    stdpath('data') .. '/laravel/config.json'
+<
+
+The most common override is the environment itself. When you run
+`Laravel.commands.run("env:configure")`, your choice is saved there keyed by
+cwd, so each project gets its own environment on next open. Open the file
+directly with `Laravel.commands.run("env:configure:open")`.
+
+==============================================================================
+6. COMMAND REFERENCE                                       *laravel-commands*
+
+All public commands are accessible through `Laravel.commands.run("<sig>")`,
+where `<sig>` is any signature below. The match is prefix-based, so
+`run("artisan")` and `run("artisan:anything")` would both dispatch the
+artisan command if it existed; use the exact signature when in doubt.
+
+  Signature                What it does
+  env:configure            Pick the environment for this project.
+  env:configure:open       Open the per-project config JSON.
+  picker:artisan           Open the Artisan picker.
+  picker:routes            Open the routes picker.
+  picker:make              Open the make:* picker.
+  picker:related           Open the related picker for the current buffer.
+  picker:resources         Open the resources picker.
+  picker:commands          Open the custom-commands picker.
+  picker:composer          Open the composer picker.
+  picker:history           Open the command history.
+  picker:laravel           Open the master Laravel picker.
+  actions                  Open the code-actions picker.
+  view:finder              View finder (definition/usage).
+  gf                       Laravel-aware go-to on a recognised resource.
+  hub                      Open the Artisan Hub.
+  hub:add                  Add a new tab to the Hub.
+  command_center           Open the Command Center.
+  tinker:open              Open a .tinker file in the Tinker UI.
+  tinker:create            Create a new .tinker file.
+  tinker:select            Pick an existing .tinker file.
+  route_info:show          Show route info on the current controller.
+  route_info:hide          Hide it.
+  route_info:toggle        Toggle.
+  model_info:show          Show model info on the current model.
+  model_info:hide          Hide it.
+  model_info:toggle        Toggle.
+  cache:flush              Flush the in-memory cache.
+  plugin-logs:open         Open the rotating plugin log.
+
+==============================================================================
+7. PICKERS                                                    *laravel-pickers*
+
+Pickers are accessed as `Laravel.pickers.<name>()`. The set of names
+available depends on the configured provider.
+
+  Picker                       Call                          Content
+  artisan                      Laravel.pickers.artisan()     Every php artisan command
+  routes                       Laravel.pickers.routes()      Routes from `artisan route:list`
+  make                         Laravel.pickers.make()        Subset of artisan make:*
+  resources                    Laravel.pickers.resources()   Categorized project directories
+  related                      Laravel.pickers.related()     Observers / relations / policy of
+                                                             the current model
+  composer                     Laravel.pickers.composer()    composer commands
+  commands                     Laravel.pickers.commands()    Your user_commands
+  history                      Laravel.pickers.history()     Previously run commands
+  laravel (master; telescope,  Laravel.pickers.laravel()     All built-in signatures
+            snacks only)                                     (master picker)
+
+`Laravel.pickers.list()` returns the available picker names for the current
+provider.
+
+==============================================================================
+8. VIRTUAL INFORMATION                                *laravel-virtual-info*
+
+Three virtual-text overlays render on |BufEnter| / |BufWritePost|:
+
+  *laravel-model-info*
+      Shows `[ Database: pgsql Table: users Attributes: id, email, … ]`
+      above the class declaration of an Eloquent model.
+
+  *laravel-route-info*
+      Shows method / URI / middleware above each controller method that
+      backs a route. Missing methods become |vim.diagnostic| errors on the
+      class. Three styles ship: `simple` (default, single line), `top`
+      (multi-line above), `right` (inline virt text). Switch with
+      `extensions.route_info.view`.
+
+  *laravel-composer-info*
+      Shows current version after each dependency in composer.json and
+      an `^ new-version` marker when the package is outdated.
+
+==============================================================================
+9. COMPLETION                                             *laravel-completion*
+
+The completion source is registered automatically for both |nvim-cmp| and
+|blink-cmp| (under the name "laravel").
+
+  Trigger                              Source
+  view('…') / View::make('…')         views_loader
+  inertia('…') / Inertia::render('…')  inertia_loader
+  config('…')                          configs_loader
+  route('…')                           routes_loader (named only)
+  env('…')                             environment_variables_loader
+  Model::where(…) / $q->orderBy(…) …   model_completion (columns)
+
+For |nvim-cmp| it is enabled by default. For |blink-cmp| it is also
+automatic. For other engines, blink.compat works: >
+
+    {
+      name = "laravel",
+      module = "blink.compat.source",
+      score_offset = 95, -- show above lsp
+    }
+<
+
+The source only fires inside `php`, `blade`, and `tinker` buffers and only
+when the plugin is active (a Laravel project is open with an environment
+configured).
+
+==============================================================================
+10. ACTIONS                                                  *laravel-actions*
+
+A code-action system inspired by LSP, but Laravel-aware. Each action
+declares a `check(bufnr)` predicate and a `format()` label; only the
+actions that match the current buffer appear in the picker. Run with
+`Laravel.commands.run("actions")`.
+
+  Action                       Applies to             Effect
+  Fillable Fields              Eloquent models        Generate $fillable from
+                                                      real columns
+  Add relation                 Eloquent models        Insert BelongsTo / HasMany
+                                                      / HasOne method + imports
+  Go To Migration of <Model>   Eloquent models        Jump to Schema::create
+                                                      /Schema::table for the
+                                                      model's table
+  Create new Listener          Classes in Events ns   Runs `artisan make:listener
+                                                      -e <EventClass>`
+  Copy Component               Livewire v3            Runs livewire:copy
+  Move Component               Livewire v3            Runs livewire:move
+  Delete Component             Livewire v3            Runs livewire:delete
+  Open env file                Any PHP                Opens .env
+
+==============================================================================
+11. GF OVERRIDE                                                  *laravel-gf*
+
+Inside PHP files, |gf| is replaced with a Laravel-aware variant. The smart
+override detects the resource the cursor is on:
+
+  Cursor on                       Opens
+  route('users.index')            Controller method that backs the route
+  view('auth.login')              resources/views/auth/login.blade.php
+  Inertia::render('Dashboard')    The Inertia page file
+  config('app.timezone')          config/* file at the matching line
+  env('APP_URL')                  .env with the cursor on the key
+
+The default |gf| is used as a fallback when the cursor is not on a
+recognised resource.
+
+==============================================================================
+12. VIEW FINDER                                            *laravel-view-finder*
+
+Tied to <c-g> by default; behaviour depends on the current filetype:
+
+  *.blade.php   Finds every PHP file that references this view and opens
+                the first match, or prompts if there are several.
+  *.php         Extracts every view('…') call and opens the first one,
+                or lets you pick.
+
+==============================================================================
+13. TINKER                                                      *laravel-tinker*
+
+Laravel Tinker reimagined for Neovim. Drop a `main.tinker` (or any
+`*.tinker`) file in your project root; the plugin opens a side-by-side
+layout with the file on the left and the live result on the right.
+
+  - Result is formatted for Eloquent models and collections (key/value
+    tables) and for query builders (raw SQL, bindings, EXPLAIN).
+  - Footer shows execution time and peak memory in MB.
+
+Keymaps inside the Tinker window:
+
+  Key      Action
+  <CR>     Run the file, switch the result buffer to a terminal.
+  <Tab>    Jump to the other window.
+  q        Close the Tinker window.
+
+Commands: >
+
+    Laravel.extensions.tinker()         -- :open
+    Laravel.extensions.tinker.open()
+    Laravel.extensions.tinker.create()  -- prompt for a new .tinker filename
+    Laravel.extensions.tinker.select()  -- pick from existing .tinker files
+
+    :Laravel tinker:open
+    :Laravel tinker:create
+    :Laravel tinker:select
+<
+
+==============================================================================
+14. ARTISAN HUB                                                *laravel-hub*
+
+A tabbed terminal UI for long-running commands. The first time you open
+the Hub with `Laravel.commands.run("hub")` it starts four tabs: Serve,
+Assets (vite), Pail, and Logs. Keymaps:
+
+  Key          Action
+  q            Close the Hub
+  a            Add a new tab (prompts for name + command)
+  d            Delete the current tab
+  r            Restart the current tab
+  s            Stop the current tab
+  e            Re-execute the current tab
+  <Tab>        Next tab
+  <S-Tab>      Previous tab
+
+Add an extra tab on the fly with `Laravel.commands.run("hub:add")`. The
+default tab set is configured in
+lua/laravel/extensions/artisan_hub/provider.lua; override it via
+`setup({ extensions = { artisan_hub = { commands = { ... } } } })`.
+
+==============================================================================
+15. COMMAND CENTER                                     *laravel-command-center*
+
+A REPL-with-autocomplete. `Laravel.commands.run("command_center")` opens
+a small popup with an input box and a live preview pane. As you type
+`artisan …` or `composer …`, the preview lists the matching commands and
+their `usage`. `<CR>` runs the line through the same runner as the Hub.
+
+==============================================================================
+16. DIAGNOSTICS                                            *laravel-diagnostics*
+
+Two diagnostic streams run on |BufEnter| / |BufWritePost| for *.php files
+(the second is only active for *Controller.php):
+
+  View existence
+      view('…'), View::make('…'), and Inertia::render('…') calls whose
+      argument does not resolve to a real file on disk are surfaced as
+      |vim.diagnostic| errors with source `laravel.nvim`.
+
+  Route existence
+      If a route points at a controller method that does not exist, an
+      error is raised on the controller class declaration.
+
+Both are part of the `diagnostic` extension; disable with
+`extensions.diagnostic.enable = false`.
+
+==============================================================================
+17. OVERRIDE SIGNS                                    *laravel-override-signs*
+
+A passive extension: on every |BufEnter| / |BufWritePost| for *.php, the
+plugin runs a ReflectionClass introspection and places the
+`LaravelOverride` sign on any method that overrides a parent or
+implements an interface (PHP `ReflectionMethod::hasPrototype()`). No
+file is modified; nothing happens unless you're looking at the sign
+column. Disable with `extensions.override.enable = false`.
+
+==============================================================================
+18. LUALINE INTEGRATION                                     *laravel-lualine*
+
+A status service polls `php artisan about --json` every two minutes and
+exposes `Laravel.app("status"):get("laravel")` and
+`Laravel.app("status"):get("php")`. Use them in your lualine config: >
+
+    {
+      {
+        function()
+          local ok, v = pcall(function() return Laravel.app("status"):get("laravel") end)
+          return ok and v or nil
+        end,
+        icon = { " ", color = { fg = "#F55247" } },
+        cond = function()
+          local ok, has = pcall(function() return Laravel.app("status"):has("laravel") end)
+          return ok and has
+        end,
+      },
+      {
+        function()
+          local ok, v = pcall(function() return Laravel.app("status"):get("php") end)
+          return ok and v or nil
+        end,
+        icon = { " ", color = { fg = "#AEB2D5" } },
+        cond = function()
+          local ok, has = pcall(function() return Laravel.app("status"):has("php") end)
+          return ok and has
+        end,
+      },
+    }
+<
+
+==============================================================================
+19. ELOQUENT COMPLETION & DOC-BLOCKS                          *laravel-eloquent*
+
+The model completion source uses a tree-sitter-based type resolver to
+figure out which Eloquent model is on the receiving end of a chain. It
+only fires on the first parameter of `where`/`order`/`orderBy` and similar
+methods, and the documentation block shows the column's type, cast,
+fillable/hidden, nullable, and unique flags.
+
+To make those methods resolve correctly the plugin generates a small PHP
+file in vendor/ with @method and @property doc-blocks for every model
+and its query-builder returns. This is on by default
+(`eloquent_generate_doc_blocks = true`). For large models the generated
+file can exceed the LSP server's default `maxSize`; raise it: >
+
+    vim.lsp.config('intelephense', {
+      settings = {
+        intelephense = { files = { maxSize = 2000000 } },
+      },
+    })
+<
+
+To turn doc-block generation off: >
+
+    require("laravel").setup({ eloquent_generate_doc_blocks = false })
+<
+
+==============================================================================
+20. EXTENDING                                                 *laravel-extending*
+
+The plugin is a small DI container. You can add actions, providers,
+listeners, and completion sources without forking it.
+
+                                                       *laravel-extending-action*
+Actions live in `lua/laravel/actions/*_action.lua` and follow this shape: >
+
+    -- lua/laravel/actions/say_hello_action.lua
+    local Class = require("laravel.utils.class")
+
+    ---@class laravel.actions.say_hello_action
+    local action = Class({}, { info = nil })
+
+    function action:check(_)
+      return vim.bo.filetype == "php"
+    end
+
+    function action:format()
+      return "Say Hello"
+    end
+
+    function action:run()
+      vim.notify("Hello from laravel.nvim", vim.log.levels.INFO)
+    end
+
+    return action
+<
+
+The filename must end in `_action.lua`; the actions_provider picks it up
+automatically.
+
+                                                       *laravel-extending-provider*
+Anything in `user_providers` is registered and booted using the same
+register(app) / boot(app) lifecycle as built-in providers: >
+
+    require("laravel").setup({
+      user_providers = {
+        {
+          name = "my.extension",
+          register = function(app)
+            app:bind("my.service", function() return { greeting = "hi" } end)
+          end,
+          boot = function(app)
+            vim.api.nvim_create_user_command("SayHi", function()
+              vim.notify(app("my.service").greeting)
+            end, {})
+          end,
+        },
+      },
+    })
+<
+
+                                                       *laravel-extending-listener*
+The plugin dispatches a small in-process event bus. Built-in events:
+`command_run`, `cache_flushed`, `entity_created`. Listeners export
+`event` + `handle`: >
+
+    -- lua/my-listeners/audit_log.lua
+    return {
+      event = require("laravel.events.command_run_event"),
+      handle = function(data, app)
+        app("log"):info(string.format("ran %s %s", data.cmd, table.concat(data.args, " ")))
+      end,
+    }
+<
+
+Register the listener module through a user provider with
+`app:bindIf("my.listener", "my-listeners.audit_log")`, then call it on
+boot.
+
+                                                  *laravel-extending-completion*
+For a new completion source, mirror one of the modules under
+lua/laravel/extensions/completion/: a module with
+`complete(loader, templates, params, callback)` and
+`shouldComplete(text)`, then dispatch to it from the appropriate
+source.lua / blink.lua trigger check.
+
+==============================================================================
+21. HEALTH & TROUBLESHOOTING                            *laravel-troubleshooting*
+
+Run |:checkhealth| laravel first. It reports the picker provider, the
+current environment, the composer executable, and every registered
+extension.
+
+Useful built-in commands:
+
+  Laravel.commands.run("env:configure")        Pick the environment.
+  Laravel.commands.run("env:configure:open")   Open the per-project config.
+  Laravel.commands.run("cache:flush")          Drop the in-memory cache.
+  Laravel.commands.run("plugin-logs:open")     Open the log file.
+  Laravel.commands.run("picker:history")       Re-run a previous command.
+
+Common issues:
+
+- "Picker provider not found" - install the provider you selected in
+  features.pickers.provider (or switch providers).
+- Completion items missing - the source is registered as "laravel"; make
+  sure it is enabled in your completion config. The source only fires
+  inside php, blade, and tinker buffers, and only when the plugin is
+  active.
+- No model info / route info - watchers only fire on files inside the
+  project; vendor/ is excluded. If you've moved things around, run
+  `Laravel.commands.run("cache:flush")`.
+- Tinker "Tinker Initialization Error" - usually an autoload issue;
+  ensure `composer dump-autoload` is healthy and that the project's
+  bootstrap/app.php is reachable.
+- "Environment is not configured" - run
+  `Laravel.commands.run("env:configure")` and pick the environment.
+
+vim:tw=78:et:ft=help:norl:

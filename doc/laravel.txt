@@ -171,7 +171,7 @@ Top-level options:
 
   features.pickers.enable        (boolean) toggle every picker (default true)
   features.pickers.provider      ('telescope' | 'fzf-lua' | 'snacks'
-                                  | 'ui-select') picker backend
+                                  | 'ui.select') picker backend
   eloquent_generate_doc_blocks   (boolean) generate typed doc-block file in
                                   vendor/ for Eloquent (default true)
   debug_level                    (vim.log.levels) log floor (default DEBUG)

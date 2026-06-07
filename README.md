@@ -122,7 +122,7 @@
   opts = {
     features = {
       pickers = {
-        provider = "telescope", -- telescope | fzf-lua | snacks | ui-select
+        provider = "telescope", -- telescope | fzf-lua | snacks | ui.select
       },
     },
   },
@@ -185,7 +185,7 @@ The keymaps below ship in the lazy snippet above. `Laravel.commands.run("…")` 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `features.pickers.enable` | `boolean` | `true` | Toggle every picker. |
-| `features.pickers.provider` | `'telescope' \| 'fzf-lua' \| 'snacks' \| 'ui-select'` | `'telescope'` | Picker backend. |
+| `features.pickers.provider` | `'telescope' \| 'fzf-lua' \| 'snacks' \| 'ui.select'` | `'telescope'` | Picker backend. |
 | `eloquent_generate_doc_blocks` | `boolean` | `true` | Generate the typed doc-block file in `vendor/` that makes Eloquent chains LSP-discoverable. |
 | `debug_level` | `vim.log.levels` | `DEBUG` | Floor for the file-based logger. |
 | `commands_options.<name>` | `table` | `{}` | Per-subcommand runner options (e.g. `commands_options.docs = { ui = "popup" }`). |
@@ -352,7 +352,7 @@ The plugin is gated on a Laravel environment: if you open a non-Laravel project,
 
 Every picker accepts the same `Laravel.pickers.<name>()` call style. The set of names available depends on your configured provider.
 
-| Picker | telescope | fzf-lua | snacks | ui-select |
+| Picker | telescope | fzf-lua | snacks | ui.select |
 | --- | :---: | :---: | :---: | :---: |
 | `artisan` | ✓ | ✓ | ✓ | ✓ |
 | `routes` | ✓ | ✓ | ✓ | ✓ |

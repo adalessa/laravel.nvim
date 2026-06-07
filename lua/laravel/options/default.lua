@@ -6,7 +6,6 @@
 ---@field pickers PickersFeature
 
 ---@class LaravelOptions
----@field lsp_server string
 ---@field features LaravelFeatures
 ---@field ui LaravelOptionsUI
 ---@field commands_options table

@@ -23,7 +23,7 @@ end
 
 ---@return laravel.dto.history[]
 function history:get()
-  return self.list
+  return vim.iter(self.list):rev():totable()
 end
 
 return history

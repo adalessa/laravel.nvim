@@ -54,6 +54,7 @@ $app->register(new class($app) extends \Illuminate\Support\ServiceProvider
 });
 
 try {
+    __NVIM_LARAL_PRE_BOOTSTRAP__
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
     $kernel->bootstrap();
 } catch (\Throwable $e) {

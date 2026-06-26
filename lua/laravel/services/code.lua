@@ -2,6 +2,7 @@ local nio = require("nio")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 local md5 = require("laravel.utils.md5")
+local app = require("laravel.core.app")
 
 local dir = "vendor/nvim-laravel/"
 
@@ -67,6 +68,19 @@ function codeService:make_php_file(code, template)
     error("Could not load PHP template: " .. tostring(template))
   end
   local output = tpl:gsub("__NVIM_LARAVEL_OUTPUT__", code)
+
+  local pre_script = app:make("laravel.services.code.pre_script")
+
+  if type(pre_script) == "function" then
+    pre_script = pre_script()
+  end
+
+  if type(pre_script) ~= "string" then
+    pre_script = ""
+  end
+
+  output = output:gsub("__NVIM_LARAL_PRE_BOOTSTRAP__", pre_script)
+
   local hash = md5.sumhexa(output)
   local fname = hash .. "." .. template .. ".php"
   local full = dir .. fname

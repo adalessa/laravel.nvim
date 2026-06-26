@@ -13,6 +13,7 @@ require_once __DIR__ . '/../autoload.php';
 
 try {
     $app = require_once __DIR__ . '/../../bootstrap/app.php';
+    __NVIM_LARAL_PRE_BOOTSTRAP__
     $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 }
 catch (Throwable $e) {
@@ -53,7 +54,7 @@ if (!function_exists('nvim_dump')) {
                   ->values()
                   ->all()
           );
-        } else if ($val instanceof Illuminate\Database\Eloquent\Builder) {
+        } else if ($val instanceof Illuminate\Database\Eloquent\Builder || $val instanceof Illuminate\Database\Query\Builder) {
           $driver = $val->getConnection()->getDriverName();
           $bindings = $val->getBindings();
 

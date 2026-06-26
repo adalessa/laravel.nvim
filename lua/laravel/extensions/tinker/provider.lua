@@ -7,7 +7,6 @@ function provider.register(app)
   vim.tbl_map(function(command)
     app:addCommand("laravel.extensions.tinker." .. command.signature, command)
   end, require("laravel.extensions.tinker.commands"))
-  app:bindIf("laravel.extensions.tinker.pre_script", function() return "" end)
 end
 
 function provider.boot(app, opts)

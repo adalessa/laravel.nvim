@@ -1,4 +1,5 @@
 local app = require("laravel.core.app")
+local nio = require("nio")
 
 return {
   {
@@ -26,6 +27,20 @@ return {
       ---@type laravel.extensions.model_info.lib
       local lib = app:make("laravel.extensions.model_info.lib")
       lib:toggle(vim.api.nvim_get_current_buf())
+    end,
+  },
+  {
+    signature = "model_info:current",
+    description = "Run the model show to the current class",
+    handle = function()
+      nio.run(function()
+        ---@type laravel.services.class
+        local class = app:make("laravel.services.class")
+        local cls, err = class:get(vim.api.nvim_get_current_buf())
+        app
+          :make("laravel.services.runner")
+          :run("artisan", { "model:show", cls.fqn:gsub("\\", "\\\\"), "--env", app("laravel.extensions.tenant").getTenant() })
+      end)
     end,
   },
 }

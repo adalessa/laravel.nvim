@@ -33,11 +33,29 @@ $docblocks = new class($factory) {
                     ->values()
                     ->map(fn($t) => $t->getName());
 
-                return trim($types->join("|") . " $" . $param->getName());
+                $default = "";
+                if ($param->isDefaultValueAvailable()) {
+                    $value = $param->getDefaultValue();
+                    $default = " = " . match (true) {
+                        is_array($value) => "[]",
+                        $value === null => "null",
+                        is_scalar($value) => var_export($value, true),
+                        default => "null",
+                    };
+                }
+
+                $name = ($param->isVariadic() ? "..." : "") . "$" . $param->getName();
+
+                return trim($types->join("|") . " " . $name . $default);
             })
             ->all();
 
         $return = $method->getReturnType()?->getName();
+
+        // fall back to the docblock, most builder methods only declare the return type there
+        if ($return === null && preg_match('/@return\s+(\S+)/', (string) $method->getDocComment(), $matches)) {
+            $return = $matches[1];
+        }
 
         return [$params, $return];
     }

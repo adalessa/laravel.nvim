@@ -39,11 +39,13 @@ end
 -- ------------------------
 
 local function get_builder_return_type(method, class_name)
-  if method.return_type == nil then
+  local return_type = method["return"]
+
+  if return_type == nil then
     return "mixed"
   end
 
-  if method.return_type == "never" then
+  if return_type == "never" then
     return "void"
   end
 
@@ -51,7 +53,7 @@ local function get_builder_return_type(method, class_name)
     return "mixed"
   end
 
-  if method.return_type == "static" or method.return_type == "self" then
+  if return_type == "static" or return_type == "self" then
     return model_builder_type(class_name)
   end
 
@@ -62,7 +64,7 @@ local function get_builder_return_type(method, class_name)
     or method.name == "firstOrFail"
   )
 
-  local rt = method.return_type
+  local rt = return_type
   rt = rt:gsub("%$this", model_builder_type(class_name))
   rt = rt:gsub("\\TReturn", "mixed")
   rt = rt:gsub("TReturn", "mixed")

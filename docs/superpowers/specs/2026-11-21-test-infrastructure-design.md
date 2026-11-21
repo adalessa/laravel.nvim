@@ -282,7 +282,11 @@ default branch, and manual dispatch:
 - **coverage** — `make coverage-check`.
 - **lint** — `make lint` (required once the baseline is clean).
 - **compat (non-blocking)** — Neovim 0.10.x and nightly fast suite, using the
-  `NVIM` override so the flake still provides test dependencies.
+  `NVIM` override so the flake still provides test dependencies. Flake-built
+  tree-sitter parsers target the devShell ABI, so this job unsets
+  `LARAVEL_TS_PARSERS` and sets `LARAVEL_SKIP_PARSER_SPECS=1`; parser-dependent
+  specs skip rather than failing on an ABI mismatch. Version-specific parser
+  coverage on 0.10 would require a separate grammar build.
 - **e2e (non-blocking, optional/nightly)** — added by the Phase 8 plan; it is
   not part of the foundation workflow because the real Laravel fixture does not
   exist yet.

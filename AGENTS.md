@@ -44,7 +44,8 @@ holds immutable JSON stubs and temporary project skeletons.
 ## Existing Helpers
 
 - `A(...)` prints `vim.inspect`.
-- `LoadStub(path)` reads a fixture through `nio`.
+- `LoadStub(path)` reads a fixture through `nio`; use `nio.tests` (`a.it`) for
+  any spec that calls it.
 - `CreateApiMock(check, response)` fakes the API service and records commands.
 
 `fake_api`, `fake_process`, `fake_watcher`, `temp_project`, and `with_test_app`

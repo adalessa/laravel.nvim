@@ -19,6 +19,7 @@ test-file:
 
 test-scripts:
 	bash tests/support/runner_test.sh
+	bash tests/support/coverage_check_test.sh
 
 deps:
 	scripts/deps.sh
@@ -28,7 +29,7 @@ lint:
 	luacheck lua tests
 	# Warnings are reported but not blocking while the baseline is cleaned up.
 	# minimal_init is a bootstrap shim that assigns test globals; it is excluded.
-	selene --allow-warnings lua tests/unit tests/support
+	selene --allow-warnings $$(find lua tests -type f -name '*.lua' ! -path 'tests/minimal_init.lua')
 
 format:
 	stylua lua tests

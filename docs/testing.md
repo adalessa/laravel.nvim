@@ -46,10 +46,12 @@ The runner honors `NVIM` (for example `NVIM=/path/to/nvim make test`) and
 A loader/component test with the existing helpers:
 
 ```lua
+local nio = require("nio")
+local a = nio.tests
 local ApiResponse = require("laravel.dto.api_response")
 
 describe("example loader", function()
-  it("loads from the json stub", function()
+  a.it("loads from the json stub", function()
     local api = CreateApiMock(function(command)
       assert.equals("artisan route:list --json", command)
     end, ApiResponse:new({ LoadStub("./tests/stubs/routes_list.json") }, 0, {}))
@@ -67,10 +69,11 @@ describe("example loader", function()
 end)
 ```
 
-Prefer `CreateApiMock`/`LoadStub` over calling a real binary. New fakes
-(`fake_api`, `fake_process`, `fake_watcher`, `temp_project`, `with_test_app`)
-land with the coverage phases; use the existing specs as the pattern until
-then.
+`LoadStub` reads through `nio`, so use `nio.tests` (`a.it`) for any spec that
+calls it; a plain `it` hangs instead of failing. Prefer
+`CreateApiMock`/`LoadStub` over calling a real binary. New fakes (`fake_api`,
+`fake_process`, `fake_watcher`, `temp_project`, `with_test_app`) land with the
+coverage phases; use the existing specs as the pattern until then.
 
 ## Async Tests
 
@@ -173,3 +176,7 @@ globals.
   `tests/minimal_init.lua`; keep new runner code on that path.
 - CI is red but local `make test` is green — check the failing job command,
   then run the same command locally inside `nix develop`.
+- Reproducing the 0.10 compatibility job — the flake parsers target the
+  devShell ABI, so that job unsets `LARAVEL_TS_PARSERS` and sets
+  `LARAVEL_SKIP_PARSER_SPECS=1`; parser-dependent specs skip while the rest of
+  the fast suite runs.

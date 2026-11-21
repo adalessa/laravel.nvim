@@ -83,6 +83,9 @@ jobs:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
           restore-prefixes-first-match: nix-${{ runner.os }}-
       - name: Run fast suite with the matrix Neovim
+        # The flake's parsers target the devShell ABI, so skip parser-dependent
+        # specs on the compatibility matrix and keep the cross-version signal.
         run: |
           NVIM_BIN="$(command -v nvim)"
-          nix develop --command env NVIM="$NVIM_BIN" make test
+          nix develop --command env -u LARAVEL_TS_PARSERS \
+            NVIM="$NVIM_BIN" LARAVEL_SKIP_PARSER_SPECS=1 make test

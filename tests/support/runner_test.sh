@@ -16,7 +16,9 @@ if scripts/test.sh --filter does-not-exist >/dev/null 2>&1; then
   fail "--filter with no matches should exit non-zero"
 fi
 
-scripts/test.sh --component | grep -q 'no component specs' \
-  || fail "--component should report that no component specs exist yet"
+if [ ! -d tests/component ]; then
+  scripts/test.sh --component | grep -q 'no component specs' \
+    || fail "--component should report that no component specs exist yet"
+fi
 
 echo "runner tests OK"

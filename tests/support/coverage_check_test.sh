@@ -35,6 +35,26 @@ if nvim -l scripts/coverage-check.lua \
   exit 1
 fi
 
+mkdir -p "$tmp/real-tests"
+cat >"$tmp/real-tests/unlisted_spec.lua" <<'LUA'
+return {}
+LUA
+
+cat >"$tmp/only-pending.lua" <<'LUA'
+return {
+  { name = "later", status = "pending", specs = {} },
+}
+LUA
+
+if output="$(nvim -l scripts/coverage-check.lua \
+  --manifest "$tmp/only-pending.lua" --tests-root "$tmp/real-tests" 2>&1)"; then
+  echo "FAIL: unlisted spec should fail" >&2
+  exit 1
+fi
+
+printf '%s' "$output" | grep -q 'unlisted_spec.lua' \
+  || { echo "FAIL: unlisted spec path missing from output" >&2; exit 1; }
+
 nvim -l scripts/coverage-check.lua >/dev/null \
   || { echo "FAIL: real manifest should pass" >&2; exit 1; }
 

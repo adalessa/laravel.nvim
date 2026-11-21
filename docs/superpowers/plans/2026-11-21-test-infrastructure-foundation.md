@@ -432,8 +432,10 @@ if scripts/test.sh --filter does-not-exist >/dev/null 2>&1; then
   fail "--filter with no matches should exit non-zero"
 fi
 
-scripts/test.sh --component | grep -q 'no component specs' \
-  || fail "--component should report that no component specs exist yet"
+if [ ! -d tests/component ]; then
+  scripts/test.sh --component | grep -q 'no component specs' \
+    || fail "--component should report that no component specs exist yet"
+fi
 
 echo "runner tests OK"
 ```
@@ -611,12 +613,12 @@ Run:
 nix develop --command make test-file FILE=tests/unit/completion/parser_guard_spec.lua
 nix develop --command make test-file FILE=tests/unit/completion/model_completion_identification_spec.lua
 ```
-Expected: 1 success and 12 successes respectively, 0 failures.
+Expected: 3 successes and 12 successes respectively, 0 failures.
 
 - [ ] **Step 5: Run the full baseline**
 
 Run: `nix develop --command make test-all`
-Expected: 47 successes, 0 failures (the previous 29 + 12 completion + 5 dependency-resolution + 1 guard).
+Expected: 49 successes, 0 failures (the previous 29 + 12 completion + 5 dependency-resolution + 3 guard).
 
 - [ ] **Step 6: Commit**
 
@@ -872,7 +874,7 @@ Run: `nix develop --command make ci`
 Expected: lint, runner tests, fast suite, and coverage check all pass.
 
 Run: `nix develop --command make test-all`
-Expected: 47 successes, 0 failures.
+Expected: 49 successes, 0 failures.
 
 - [ ] **Step 5: Sanity-check the workflow**
 
@@ -902,7 +904,7 @@ nix develop --command bash scripts/check-env.sh
 nix develop --command make ci
 nix develop --command make test-all
 ```
-Expected: environment OK; all commands exit 0; 47 successes.
+Expected: environment OK; all commands exit 0; 49 successes.
 
 - [ ] **Step 2: Verify the missing-dependency failure**
 

@@ -121,8 +121,8 @@ end
 
 ---@return {model: string, method: string, param_position: integer}|nil
 local function resolve_by_ts(bufnr, before)
-  local parser = vim.treesitter.get_parser(bufnr, "php")
-  if not parser then
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "php")
+  if not ok or not parser then
     return nil
   end
   parser:parse()
@@ -282,8 +282,8 @@ end
 
 ---@return {model: string, method: string, param_position: integer}|nil
 function M.resolve_model_at_cursor(bufnr, cursor_before_line)
-  local parser = vim.treesitter.get_parser(bufnr, "php")
-  if not parser then
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "php")
+  if not ok or not parser then
     return nil
   end
   parser:parse()

@@ -1,3 +1,8 @@
+if vim.env.LARAVEL_SKIP_PARSER_SPECS == "1" then
+  print("skipping model completion identification: LARAVEL_SKIP_PARSER_SPECS=1")
+  return
+end
+
 local nio = require("nio")
 local a = nio.tests
 

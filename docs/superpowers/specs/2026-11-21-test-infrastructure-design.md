@@ -262,9 +262,10 @@ and one `devShells.default` providing:
   loading and optional smoke tests
 
 The shell hook links test dependencies into `.tests/deps/`, sets
-`LARAVEL_TEST_DEPS`, and exposes the parser path so headless tests can attach
-PHP/JSON tree-sitter parsers without downloading anything. `direnv` support is
-optional, not required.
+`LARAVEL_TEST_DEPS`, and exports `LARAVEL_TS_PARSERS` as a colon-separated list
+of grammar/query store paths so headless tests can attach PHP/JSON tree-sitter
+parsers without downloading anything. `direnv` support is optional, not
+required.
 
 A `checks` output (or `make ci`) runs lint and the fast suite so
 `nix flake check` is meaningful, but the primary interface remains

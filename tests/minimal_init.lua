@@ -1,13 +1,25 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy"
-vim.notify = print
-vim.opt.rtp:append(".")
-vim.opt.rtp:append(lazypath .. "/plenary.nvim")
-vim.opt.rtp:append(lazypath .. "/nui.nvim")
-vim.opt.rtp:append(lazypath .. "/nvim-treesitter")
-vim.opt.rtp:append(lazypath .. "/nvim-nio")
+local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
 
+vim.notify = print
+vim.opt.rtp:append(root)
 vim.opt.swapfile = false
-vim.cmd("runtime! plugin/plenary.vim")
+
+local deps = dofile(root .. "/tests/support/deps.lua")
+local resolved, missing = deps.resolve({
+  env = vim.env,
+  repo_root = root,
+  data_dir = vim.fn.stdpath("data") .. "/lazy",
+})
+
+if #missing > 0 then
+  io.stderr:write(table.concat({
+    "Missing test dependencies: " .. table.concat(missing, ", "),
+    "Run `nix develop` from the repository root (or `make deps` for a non-Nix setup).",
+  }, "\n") .. "\n")
+  vim.cmd("cquit 1")
+end
+
+deps.setup(resolved)
 
 A = function(...)
   print(vim.inspect(...))
@@ -28,7 +40,7 @@ end
 
 CreateApiMock = function(check, response)
   return {
-    run = function (_, ...)
+    run = function(_, ...)
       check(...)
 
       if type(response) == "function" then

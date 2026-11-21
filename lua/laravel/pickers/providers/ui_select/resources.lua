@@ -1,5 +1,5 @@
 local actions = require("laravel.pickers.common.actions")
-local notify  = require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
 
 local resources_picker = {}
 function resources_picker:new(options)

@@ -5,6 +5,35 @@ name = "vim"
 [vim]
 any = true
 
+[assert]
+any = true
+
+[Laravel]
+any = true
+
+[Snacks]
+any = true
+
+[io.stderr]
+any = true
+
+[A]
+writable = "full"
+[[A.args]]
+type = "any"
+
+[LoadStub]
+writable = "full"
+[[LoadStub.args]]
+type = "string"
+
+[CreateApiMock]
+writable = "full"
+[[CreateApiMock.args]]
+type = "any"
+[[CreateApiMock.args]]
+type = "any"
+
 [[describe.args]]
 type = "string"
 [[describe.args]]

@@ -163,7 +163,7 @@ describe("model completion identification", function()
   end)
 
   a.it("resolves in the middle of writting in anonymous_function", function()
-     with_buffer({
+    with_buffer({
       "<?php",
       "use App\\Models\\User;",
       "use Illuminate\\Support\\Facades\\Route;",

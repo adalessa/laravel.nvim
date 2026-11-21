@@ -8,7 +8,7 @@ local Class = require("laravel.utils.class")
 local ComposerCommandsCacheLoader = Class({
   cache = "laravel.services.cache",
   commands_loader = "laravel.loaders.composer_commands_loader",
-}, {key = "laravel-composer-commands", timeout = 60})
+}, { key = "laravel-composer-commands", timeout = 60 })
 
 ---@async
 ---@return laravel.dto.composer_command[], laravel.error

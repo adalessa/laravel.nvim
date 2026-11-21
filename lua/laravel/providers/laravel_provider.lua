@@ -29,7 +29,9 @@ function laravel_provider.register(app)
     )
   end)
 
-  app:bindIf("laravel.services.code.pre_script", function() return "" end)
+  app:bindIf("laravel.services.code.pre_script", function()
+    return ""
+  end)
 end
 
 function laravel_provider.boot(app)

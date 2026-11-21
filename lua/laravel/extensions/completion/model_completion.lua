@@ -17,7 +17,7 @@ function model_completion.complete(_, params, callback)
     end)
   end
 
-  if not (result and result.param_position == 0 and is_supported_methods(result.method) )then
+  if not (result and result.param_position == 0 and is_supported_methods(result.method)) then
     return callback({
       items = {},
       isIncomplete = false,

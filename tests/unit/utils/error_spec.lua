@@ -1,7 +1,6 @@
 local Error = require("laravel.utils.error")
 
 describe("Error", function()
-
   it("creates a new error instance with correct properties", function()
     local errorMessage = "An error occurred"
     local err = Error:new(errorMessage)
@@ -45,6 +44,4 @@ describe("Error", function()
     assert.is_true(details:find(innerMessage) ~= nil)
     assert.is_true(details:find("Caused by") ~= nil)
   end)
-
 end)
-

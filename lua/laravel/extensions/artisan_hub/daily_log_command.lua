@@ -17,4 +17,3 @@ function AppDailyLogCommand:new()
 end
 
 return AppDailyLogCommand
-

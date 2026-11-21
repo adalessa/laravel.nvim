@@ -99,16 +99,25 @@ local type_mapping = {
   int = { "^serial", "^int", "^integer", "^bigint", "^smallint" },
   resource = { "bytea" },
   string = {
-    "uuid", "json", "text", "varchar", "char", "timestamp", "date", "time"
+    "uuid",
+    "json",
+    "text",
+    "varchar",
+    "char",
+    "timestamp",
+    "date",
+    "time",
   },
 }
 
 local function find_in_mapping(mapping, value)
-  if not value then return nil end
+  if not value then
+    return nil
+  end
 
   for new_type, matches in pairs(mapping) do
     for _, match in ipairs(matches) do
-      if match:sub(1,1) == "^" then
+      if match:sub(1, 1) == "^" then
         if value:match(match) then
           return new_type
         end
@@ -122,8 +131,7 @@ local function find_in_mapping(mapping, value)
 end
 
 local function get_actual_type(cast, db_type)
-  local final =
-    find_in_mapping(cast_mapping, cast)
+  local final = find_in_mapping(cast_mapping, cast)
     or (cast and cast:match("([^:]+)"))
     or find_in_mapping(type_mapping, db_type)
     or "mixed"
@@ -142,10 +150,7 @@ end
 local function get_attribute_blocks(attr, class_name)
   local blocks = {}
 
-  local prop_type =
-    (attr.cast == "accessor" or attr.cast == "attribute")
-    and "@property-read"
-    or "@property"
+  local prop_type = (attr.cast == "accessor" or attr.cast == "attribute") and "@property-read" or "@property"
 
   if not attr.documented then
     local t = get_actual_type(attr.cast, attr.type)
@@ -158,11 +163,7 @@ local function get_attribute_blocks(attr, class_name)
   if attr.cast ~= "accessor" and attr.cast ~= "attribute" then
     table.insert(
       blocks,
-      "@method static "
-        .. model_builder_type(class_name)
-        .. " where"
-        .. attr.title_case
-        .. "($value)"
+      "@method static " .. model_builder_type(class_name) .. " where" .. attr.title_case .. "($value)"
     )
   end
 
@@ -184,10 +185,7 @@ local function get_relation_blocks(rel)
 
   if many[rel.type] then
     return {
-      "@property-read \\Illuminate\\Database\\Eloquent\\Collection<int, \\"
-        .. rel.related
-        .. "> $"
-        .. rel.name,
+      "@property-read \\Illuminate\\Database\\Eloquent\\Collection<int, \\" .. rel.related .. "> $" .. rel.name,
       "@property-read int|null $" .. rel.name .. "_count",
     }
   end
@@ -206,11 +204,11 @@ local function get_scope_block(model, scope, class_name)
 
   for i = 2, #scope.parameters do
     local p = scope.parameters[i]
-    local part =
-      (p.type or "")
+    local part = (p.type or "")
       .. (p.is_variadic and " ..." or " ")
       .. (p.is_by_ref and "&" or "")
-      .. "$" .. p.name
+      .. "$"
+      .. p.name
       .. (p.default and (" = " .. p.default) or "")
     table.insert(params, part)
   end
@@ -219,8 +217,14 @@ local function get_scope_block(model, scope, class_name)
     .. model_builder_type(class_name)
     .. " "
     .. scope.name
-    .. "(" .. table.concat(params, ", ") .. ")"
-    .. " {@see " .. model.class .. "::" .. scope.method .. "()}"
+    .. "("
+    .. table.concat(params, ", ")
+    .. ")"
+    .. " {@see "
+    .. model.class
+    .. "::"
+    .. scope.method
+    .. "()}"
 end
 
 -- ------------------------
@@ -237,12 +241,7 @@ local function get_blocks(model, class_name, builder_methods)
   end
 
   for _, method in ipairs({ "newModelQuery", "newQuery", "query" }) do
-    table.insert(
-      blocks,
-      " * @method static "
-        .. model_builder_type(class_name)
-        .. " " .. method .. "()"
-    )
+    table.insert(blocks, " * @method static " .. model_builder_type(class_name) .. " " .. method .. "()")
   end
 
   for _, scope in ipairs(model.scopes or {}) do
@@ -262,7 +261,9 @@ local function get_blocks(model, class_name, builder_methods)
         .. get_builder_return_type(method, class_name)
         .. " "
         .. method.name
-        .. "(" .. table.concat(method.parameters or {}, ", ") .. ")"
+        .. "("
+        .. table.concat(method.parameters or {}, ", ")
+        .. ")"
     )
   end
 
@@ -288,10 +289,7 @@ local function class_to_docblock(block)
   table.insert(lines, " */")
   table.insert(
     lines,
-    "class "
-      .. block.class_name
-      .. " extends "
-      .. (block.extends or "\\Illuminate\\Database\\Eloquent\\Model")
+    "class " .. block.class_name .. " extends " .. (block.extends or "\\Illuminate\\Database\\Eloquent\\Model")
   )
   table.insert(lines, "{")
   table.insert(lines, indent("//"))
@@ -340,10 +338,7 @@ function M.write_eloquent_docblocks(models, builder_methods)
     table.insert(output, "}")
   end
 
-  write_file(
-    internal_vendor_path("_model_helpers.php"),
-    output
-  )
+  write_file(internal_vendor_path("_model_helpers.php"), output)
 end
 
 return M

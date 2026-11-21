@@ -6,10 +6,16 @@ describe("routes loader test", function()
 
   local function new_loader(api)
     local watcher = {}
-    watcher.register = function(_, _, callback) watcher.callback = callback end
+    watcher.register = function(_, _, callback)
+      watcher.callback = callback
+    end
     local loader = require("laravel.loaders.routes_loader"):new(api)
     loader.api = api
-    loader.options = { get = function(_, default) return default end }
+    loader.options = {
+      get = function(_, default)
+        return default
+      end,
+    }
     loader.mapper = require("laravel.mappers.route_mapper")
     loader.watcher = watcher
     return loader, watcher

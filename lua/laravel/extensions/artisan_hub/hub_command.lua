@@ -1,6 +1,6 @@
 local app = require("laravel.core.app")
 local TermCommand = require("laravel.term_command")
-local notify      = require("laravel.utils.notify")
+local notify = require("laravel.utils.notify")
 
 local hub = {
   signature = "hub",

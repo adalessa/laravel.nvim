@@ -50,4 +50,3 @@ function Error:toString()
 end
 
 return Error
-

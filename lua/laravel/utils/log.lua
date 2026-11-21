@@ -34,7 +34,7 @@ Log.write = nio.create(function(self, level, message)
   end
 
   if type(message) == "table" and message.toString then
-    message =  message:toString()
+    message = message:toString()
   else
     message = vim.inspect(message)
   end
@@ -79,7 +79,7 @@ end
 --- Log an error message
 ---@param message any
 function Log:error(message)
-    self:write(vim.log.levels.ERROR, message)
+  self:write(vim.log.levels.ERROR, message)
 end
 
 return Log

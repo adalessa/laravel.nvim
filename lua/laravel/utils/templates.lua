@@ -18,7 +18,7 @@ local templates = {
     {
         return $this->%s;
     }
-  ]]
+  ]],
 }
 
 function templates:build(name, ...)

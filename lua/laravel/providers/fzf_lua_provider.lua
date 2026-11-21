@@ -1,5 +1,5 @@
 ---@type laravel.providers.provider
-local fzf_lua_provider = {name = "laravel.providers.fzf_lua_provider"}
+local fzf_lua_provider = { name = "laravel.providers.fzf_lua_provider" }
 
 function fzf_lua_provider.register(app)
   app:singletonIf("pickers.fzf-lua", function()

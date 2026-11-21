@@ -69,7 +69,8 @@ manager.get = function(key, default)
   return value or default
 end
 
-manager.set = function(key, value) if type(key) == "table" then
+manager.set = function(key, value)
+  if type(key) == "table" then
     for k, v in pairs(key) do
       _project_options[k] = v
     end

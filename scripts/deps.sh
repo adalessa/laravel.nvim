@@ -46,4 +46,4 @@ valid "$TARGET" || {
 }
 
 echo "export LARAVEL_TEST_DEPS=\"$TARGET\""
-echo "note: PHP/JSON parsers require nix develop for the full integration suite."
+echo "note: PHP/JSON parsers require nix develop for parser-dependent specs."

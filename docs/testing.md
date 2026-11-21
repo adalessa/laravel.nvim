@@ -10,7 +10,8 @@ layer that can prove it, and every layer has a clear boundary.
 | Integration | `tests/integration` | Real headless Neovim buffers, windows, extmarks, tree-sitter, and provider boot |
 
 `tests/support` contains setup, shared shell checks, and the dependency
-resolver. `tests/fixtures` contains immutable JSON stubs and project skeletons.
+resolver. `tests/stubs` contains immutable JSON fixtures; planned project
+skeletons will live under `tests/fixtures`.
 
 ## Commands
 
@@ -31,7 +32,8 @@ Run everything from the repository root inside `nix develop`.
 
 The runner honors `NVIM` (for example `NVIM=/path/to/nvim make test`) and
 `LARAVEL_TEST_DEPS`. `make deps` cannot build PHP/JSON tree-sitter parsers; use
-`nix develop` for parser-dependent integration tests.
+`nix develop` for parser-dependent specs, which currently live in
+`tests/unit/completion`.
 
 ## Adding a Unit or Component Test
 
@@ -41,7 +43,8 @@ The runner honors `NVIM` (for example `NVIM=/path/to/nvim make test`) and
 3. Run `make test-file FILE=<path>` and watch it fail for the expected reason.
 4. Implement the minimal behavior change.
 5. Run the targeted spec, then `make test`.
-6. Add the spec to `tests/coverage_manifest.lua` if it opens a new area.
+6. Add the spec path to `tests/coverage_manifest.lua`; every spec file must be
+   listed in the matching entry (create a new entry for a new area).
 
 A loader/component test with the existing helpers:
 

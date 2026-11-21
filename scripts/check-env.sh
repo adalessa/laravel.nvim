@@ -15,6 +15,23 @@ else
   done
 fi
 
+parser_probe() {
+  local language="$1"
+  nvim --headless -u NONE \
+    --cmd "lua for path in (vim.env.LARAVEL_TS_PARSERS or ''):gmatch('[^:]+') do vim.opt.rtp:append(path) end" \
+    -c "lua local ok, parser = pcall(vim.treesitter.get_parser, 0, '$language'); if not ok or not parser then vim.cmd('cquit 1') end" \
+    -c q >/dev/null 2>&1
+}
+
+parsers="${LARAVEL_TS_PARSERS:-}"
+if [ -z "$parsers" ]; then
+  missing+=("LARAVEL_TS_PARSERS")
+else
+  for language in php json; do
+    parser_probe "$language" || missing+=("parser:$language")
+  done
+fi
+
 if [ "${#missing[@]}" -gt 0 ]; then
   printf 'Missing test environment requirements:\n' >&2
   printf '  - %s\n' "${missing[@]}" >&2

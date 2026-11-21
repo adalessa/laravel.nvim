@@ -24,8 +24,9 @@ targeted spec first, then the full suite before committing.
 | `tests/component` | Services, loaders, commands with fakes | Fake API/process/watcher/env; no real subprocesses |
 | `tests/integration` | Headless Neovim buffers, extmarks, tree-sitter, provider boot | Temp files and flake-provided `rg`/`jq`; still no network |
 
-`tests/support` holds shared setup and shell-level checks. `tests/fixtures`
-holds immutable JSON stubs and temporary project skeletons.
+`tests/support` holds shared setup and shell-level checks. `tests/stubs`
+holds immutable JSON fixtures; planned project skeletons will live under
+`tests/fixtures`.
 
 ## Rules
 

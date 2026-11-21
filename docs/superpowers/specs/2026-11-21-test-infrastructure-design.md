@@ -296,9 +296,11 @@ default branch, and manual dispatch:
 updates for test globals. The job is blocking once the baseline is clean; this
 is not deferred to a later branch-protection change.
 
-Rules: each job has a timeout, prints the exact command and spec set, uploads
-failure artifacts/logs, and does not share mutable state with other jobs. CI
-uses the same `make` targets as humans; no logic lives only in workflow YAML.
+Rules: each job has a timeout, prints the exact command and spec set, and does
+not share mutable state with other jobs. GitHub's per-step logs are the failure
+record for the foundation; a separate artifact upload is deferred until logs
+need retention beyond GitHub's defaults. CI uses the same `make` targets as
+humans; no logic lives only in workflow YAML.
 
 ### Agent Workflow
 

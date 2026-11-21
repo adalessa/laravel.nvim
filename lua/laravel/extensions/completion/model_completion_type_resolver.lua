@@ -121,7 +121,11 @@ end
 
 ---@return {model: string, method: string, param_position: integer}|nil
 local function resolve_by_ts(bufnr, before)
-  vim.treesitter.get_parser(bufnr, "php"):parse()
+  local parser = vim.treesitter.get_parser(bufnr, "php")
+  if not parser then
+    return nil
+  end
+  parser:parse()
   local node = vim.treesitter.get_node()
 
   while node do
@@ -278,7 +282,11 @@ end
 
 ---@return {model: string, method: string, param_position: integer}|nil
 function M.resolve_model_at_cursor(bufnr, cursor_before_line)
-  vim.treesitter.get_parser(bufnr, "php"):parse()
+  local parser = vim.treesitter.get_parser(bufnr, "php")
+  if not parser then
+    return nil
+  end
+  parser:parse()
   local node = vim.treesitter.get_node()
 
   if not node then

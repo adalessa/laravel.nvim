@@ -111,17 +111,23 @@ for suite in "${explicit[@]:-}"; do
   fi
 done
 
-if [ -n "$file" ]; then
+run_file() {
+  local spec="$1"
+  local absolute
+  absolute="$(cd "$(dirname "$spec")" && pwd)/$(basename "$spec")"
   "$NVIM" --headless --noplugin -u tests/minimal_init.lua \
-    -c "PlenaryBustedFile $file"
+    -c "lua require('plenary.busted').run('$absolute')"
+}
+
+if [ -n "$file" ]; then
+  run_file "$file"
   exit $?
 fi
 
 if [ -n "$filter" ]; then
   while IFS= read -r spec; do
     [ -n "$spec" ] || continue
-    "$NVIM" --headless --noplugin -u tests/minimal_init.lua \
-      -c "PlenaryBustedFile $spec"
+    run_file "$spec"
   done <<<"$specs"
   exit 0
 fi

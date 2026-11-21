@@ -616,7 +616,7 @@ Expected: 1 success and 12 successes respectively, 0 failures.
 - [ ] **Step 5: Run the full baseline**
 
 Run: `nix develop --command make test-all`
-Expected: 42 successes, 0 failures (the previous 29 + 12 completion + 1 guard).
+Expected: 47 successes, 0 failures (the previous 29 + 12 completion + 5 dependency-resolution + 1 guard).
 
 - [ ] **Step 6: Commit**
 
@@ -872,7 +872,7 @@ Run: `nix develop --command make ci`
 Expected: lint, runner tests, fast suite, and coverage check all pass.
 
 Run: `nix develop --command make test-all`
-Expected: 42 successes, 0 failures.
+Expected: 47 successes, 0 failures.
 
 - [ ] **Step 5: Sanity-check the workflow**
 
@@ -902,7 +902,7 @@ nix develop --command bash scripts/check-env.sh
 nix develop --command make ci
 nix develop --command make test-all
 ```
-Expected: environment OK; all commands exit 0; 42 successes.
+Expected: environment OK; all commands exit 0; 47 successes.
 
 - [ ] **Step 2: Verify the missing-dependency failure**
 

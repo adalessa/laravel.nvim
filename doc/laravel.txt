@@ -373,7 +373,7 @@ Three virtual-text overlays render on |BufEnter| / |BufWritePost|:
 ==============================================================================
 9. COMPLETION                                             *laravel-completion*
 
-The completion source is registered automatically for both |nvim-cmp| and
+The completion source is registered automatically for |nvim-cmp| and
 |blink-cmp| (under the name "laravel").
 
   Trigger                              Source
@@ -384,15 +384,25 @@ The completion source is registered automatically for both |nvim-cmp| and
   env('…')                             environment_variables_loader
   Model::where(…) / $q->orderBy(…) …   model_completion (columns)
 
-For |nvim-cmp| it is enabled by default. For |blink-cmp| it is also
-automatic. For other engines, blink.compat works: >
+For |nvim-cmp| the source is registered as soon as nvim-cmp is loaded.
 
-    {
-      name = "laravel",
-      module = "blink.compat.source",
-      score_offset = 95, -- show above lsp
+For |blink-cmp| the provider is registered for php, blade and tinker
+buffers when blink.cmp is loaded before laravel.nvim boots. If blink.cmp
+is lazy-loaded later, register the provider in your blink config: >
+
+    sources = {
+      default = { "lsp", "path", "snippets", "buffer", "laravel" },
+      providers = {
+        laravel = {
+          name = "Laravel",
+          module = "laravel.extensions.completion.blink",
+          score_offset = 95, -- show above lsp
+        },
+      },
     }
 <
+
+An existing blink.compat provider named "laravel" is left untouched.
 
 The source only fires inside `php`, `blade`, and `tinker` buffers and only
 when the plugin is active (a Laravel project is open with an environment
@@ -668,11 +678,11 @@ Register the listener module through a user provider with
 boot.
 
                                                   *laravel-extending-completion*
-For a new completion source, mirror one of the modules under
-lua/laravel/extensions/completion/: a module with
-`complete(loader, templates, params, callback)` and
-`shouldComplete(text)`, then dispatch to it from the appropriate
-source.lua / blink.lua trigger check.
+For a new completion provider, declare `name`, optional
+`trigger_characters` and `dependencies`, implement `matches(ctx)` and
+`complete(ctx, deps)`, and register the module in
+lua/laravel/extensions/completion/init.lua. Both nvim-cmp and blink.cmp
+use the same dispatcher.
 
 ==============================================================================
 21. HEALTH & TROUBLESHOOTING                            *laravel-troubleshooting*

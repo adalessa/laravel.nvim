@@ -47,14 +47,21 @@ M.check = function()
     )
   end
 
-  local ok_cmp, _ = pcall(require, "cmp")
+  local ok_cmp = pcall(require, "cmp")
+  local ok_blink = pcall(require, "blink.cmp")
+
   if ok_cmp then
-    report_ok("CMP is installed")
-  else
-    report_warn(
-      "CMP is not installed, completion source is available for it",
-      { "Install it from `https://github.com/hrsh7th/nvim-cmp`" }
-    )
+    report_ok("nvim-cmp is installed")
+  end
+
+  if ok_blink then
+    report_ok("blink.cmp is installed")
+  end
+
+  if not ok_cmp and not ok_blink then
+    report_warn("No completion engine installed, completion source is available for nvim-cmp and blink.cmp", {
+      "Install one of `https://github.com/hrsh7th/nvim-cmp` or `https://github.com/Saghen/blink.cmp`",
+    })
   end
 
   report_start("Pickers")

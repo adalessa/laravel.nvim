@@ -1,41 +1,43 @@
-local routes_completion = {}
+---@type laravel.extensions.completion.Provider
+local routes_completion = {
+  name = "routes",
+  trigger_characters = { "'", '"' },
+  dependencies = {
+    routes_loader = "laravel.loaders.routes_loader",
+    templates = "laravel.utils.templates",
+  },
+}
 
-function routes_completion.complete(routes_loader, templates, params, callback)
-  local routes, err = routes_loader:load()
-  if err then
-    return callback({
-      items = {},
-      isIncomplete = false,
-    })
-  end
-
-  return callback({
-    items = vim
-      .iter(routes)
-      :filter(function(route)
-        return route.name ~= nil
-      end)
-      :map(function(route)
-        return {
-          label = templates:build("route_label", route.name),
-          insertText = route.name,
-          kind = vim.lsp.protocol.CompletionItemKind["Value"],
-          documentation = templates:build(
-            "route_documentation",
-            route.name,
-            table.concat(route.methods, " | "),
-            route.uri,
-            table.concat(route.middlewares or { "None" }, " | ")
-          ),
-        }
-      end)
-      :totable(),
-    isIncomplete = false,
-  })
+function routes_completion.matches(ctx)
+  return ctx.before:match("%f[%a]route%s*%(%s*[\"']") ~= nil
 end
 
-function routes_completion.shouldComplete(text)
-  return text:match("route%([%'|%\"]")
+function routes_completion.complete(_, deps)
+  local routes, err = deps.routes_loader:load()
+  if err then
+    return {}, err
+  end
+
+  return vim
+    .iter(routes)
+    :filter(function(route)
+      return route.name ~= nil
+    end)
+    :map(function(route)
+      return {
+        label = deps.templates:build("route_label", route.name),
+        insertText = route.name,
+        kind = vim.lsp.protocol.CompletionItemKind["Value"],
+        documentation = deps.templates:build(
+          "route_documentation",
+          route.name,
+          table.concat(route.methods, " | "),
+          route.uri,
+          table.concat(route.middlewares or { "None" }, " | ")
+        ),
+      }
+    end)
+    :totable()
 end
 
 return routes_completion

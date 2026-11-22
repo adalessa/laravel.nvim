@@ -15,6 +15,27 @@ local scan_dir_async = nio.wrap(function(paths, opts, callback)
   scan.scan_dir_async(paths, opts)
 end, 3)
 
+local function relative_path(base, target)
+  if vim.fs.relpath then
+    return vim.fs.relpath(base, target)
+  end
+
+  -- vim.fs.relpath is only available on Neovim >= 0.11.
+  base = vim.fs.normalize(vim.fn.fnamemodify(base, ":p"))
+  target = vim.fs.normalize(vim.fn.fnamemodify(target, ":p"))
+
+  if base == target then
+    return "."
+  end
+
+  local prefix = base .. "/"
+  if vim.startswith(target, prefix) then
+    return target:sub(#prefix + 1)
+  end
+
+  return nil
+end
+
 function inertia_completion.matches(ctx)
   return ctx.before:match("%f[%a]inertia%s*%(%s*[\"']") ~= nil
     or ctx.before:match("%f[%a]Inertia::render%s*%(%s*[\"']") ~= nil
@@ -76,7 +97,7 @@ function inertia_completion.complete(_, deps)
       local view_name = vim
         .iter(paths)
         :map(function(path)
-          return vim.fs.relpath(path, view)
+          return relative_path(path, view)
         end)
         :filter(function(path)
           return path ~= nil

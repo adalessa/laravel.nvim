@@ -8,15 +8,15 @@ local generator = Class({ env = "laravel.core.env" })
 
 ---@param name string
 ---@param args string[]|nil
----@return string[]|false
+---@return string[]|false, laravel.error
 function generator:generate(name, args)
   local parts = vim.split(name, " ")
   name = table.remove(parts, 1)
   args = combine_tables(parts, args or {})
 
-  local executable = self.env:getExecutable(name)
-  if not executable then
-    return false
+  local executable, err = self.env:getExecutable(name)
+  if err or not executable then
+    return false, err
   end
 
   return combine_tables(executable, args)

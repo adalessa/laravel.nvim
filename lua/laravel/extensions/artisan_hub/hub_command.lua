@@ -142,25 +142,41 @@ end
 
 function hub:_init()
   if vim.tbl_isempty(commands) then
-    commands = app("laravel.extensions.artisan_hub.commands")
+    local available = {}
 
-    for _, command in ipairs(commands) do
+    for _, command in ipairs(app("laravel.extensions.artisan_hub.commands")) do
       if not command.command then
         local args = {}
+        local generated = true
+
         if command.cmd then
-          table.insert(args, app("laravel.services.command_generator"):generate(command.cmd))
+          generated = app("laravel.services.command_generator"):generate(command.cmd)
+          if generated then
+            table.insert(args, generated)
+          end
         end
 
-        if command.class then
-          local ok, cls = pcall(require, command.class)
-          if ok then
-            command.command = cls:new(unpack(args))
+        -- Keep the hub usable when the configured environment is not
+        -- available: skip commands that can not build an executable instead
+        -- of creating a terminal command without a program.
+        if generated then
+          if command.class then
+            local ok, cls = pcall(require, command.class)
+            if ok then
+              command.command = cls:new(unpack(args))
+            end
+          else
+            command.command = TermCommand:new(unpack(args))
           end
-        else
-          command.command = TermCommand:new(unpack(args))
         end
       end
+
+      if command.command then
+        table.insert(available, command)
+      end
     end
+
+    commands = available
 
     vim.tbl_map(function(cmd)
       if not cmd.command:isRunning() then
@@ -169,13 +185,19 @@ function hub:_init()
     end, commands)
   end
 
-  if current_tab == "" then
+  if current_tab == "" and #commands > 0 then
     current_tab = get_keys()[1]
   end
 end
 
 function hub:handle()
   self:_init()
+
+  if #commands == 0 or current_tab == "" then
+    notify.warn("No commands available, check the Laravel environment")
+    return
+  end
+
   local current = getByName(current_tab)
 
   local ui = vim.api.nvim_list_uis()[1]

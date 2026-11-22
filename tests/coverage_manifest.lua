@@ -49,6 +49,11 @@ return {
     specs = { "tests/unit/support/deps_spec.lua" },
   },
   {
+    name = "extensions-provider",
+    status = "covered",
+    specs = { "tests/unit/providers/extensions_provider_spec.lua" },
+  },
+  {
     name = "model-docblocks",
     status = "covered",
     specs = {

@@ -1,15 +1,28 @@
 local notify = require("laravel.utils.notify")
+
+---@param path string
+---@return table|nil
+local function parseExtension(path)
+  -- nvim_get_runtime_file returns platform-specific separators, so normalize
+  -- before splitting the path into a module and extension name.
+  local normalized = path:gsub("\\", "/")
+  local name = normalized:match("lua/laravel/extensions/([^/]+)/provider%.lua$")
+  if not name then
+    return nil
+  end
+
+  return {
+    module = string.format("laravel.extensions.%s.provider", name),
+    name = name,
+  }
+end
+
 local function getExtensions()
   return vim
     .iter(vim.api.nvim_get_runtime_file("lua/laravel/extensions/*/provider.lua", true))
-    :map(function(ext)
-      local m = ext:match("lua/(.*)%.lua$"):gsub("/", ".")
-      local name = m:match("laravel%.extensions%.(.*)%.provider")
-
-      return {
-        module = m,
-        name = name,
-      }
+    :map(parseExtension)
+    :filter(function(ext)
+      return ext ~= nil
     end)
     :totable()
 end

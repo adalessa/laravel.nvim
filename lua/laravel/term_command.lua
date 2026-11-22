@@ -4,7 +4,7 @@ local TermCommand = setmetatable({}, { __index = BaseCommand })
 TermCommand.__index = TermCommand
 
 function TermCommand:execute()
-  self.exited = false;
+  self.exited = false
   -- create buffer
   self.bufnr = vim.api.nvim_create_buf(false, true)
 

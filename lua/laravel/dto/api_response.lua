@@ -71,8 +71,8 @@ function ApiResponse:errors()
   end
 
   if not vim.tbl_isempty(vim.tbl_filter(function(line)
-        return line ~= ""
-      end, self.stderror)) then
+    return line ~= ""
+  end, self.stderror)) then
     return self.stderror
   end
 

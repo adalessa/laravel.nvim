@@ -58,4 +58,3 @@ describe("Cache Service", function()
     assert.is_true(test_cache:has("other_key"))
   end)
 end)
-

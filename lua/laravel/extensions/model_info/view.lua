@@ -19,7 +19,7 @@ function model_info_view:get(model)
 
   for _, attribute in ipairs(model.attributes) do
     table.insert(virt_lines, {
-      { "   " .. attribute.name,                                                     "@enum" },
+      { "   " .. attribute.name, "@enum" },
       { " " .. (attribute.type or "null") .. (attribute.nullable and "|null" or ""), "comment" },
       attribute.cast and { " -> " .. attribute.cast, "@enum" } or nil,
     })

@@ -1,3 +1,8 @@
+if vim.env.LARAVEL_SKIP_PARSER_SPECS == "1" then
+  print("skipping model completion identification: LARAVEL_SKIP_PARSER_SPECS=1")
+  return
+end
+
 local nio = require("nio")
 local a = nio.tests
 
@@ -163,7 +168,7 @@ describe("model completion identification", function()
   end)
 
   a.it("resolves in the middle of writting in anonymous_function", function()
-     with_buffer({
+    with_buffer({
       "<?php",
       "use App\\Models\\User;",
       "use Illuminate\\Support\\Facades\\Route;",

@@ -6,7 +6,9 @@ describe("artisan loader test", function()
 
   local function new_loader(api)
     local watcher = {}
-    watcher.register = function(_, _, callback) watcher.callback = callback end
+    watcher.register = function(_, _, callback)
+      watcher.callback = callback
+    end
     local loader = require("laravel.loaders.artisan_loader"):new(api)
     loader.api = api
     loader.watcher = watcher

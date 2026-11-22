@@ -9,7 +9,7 @@ local Class = require("laravel.utils.class")
 ---@class laravel.service.history
 ---@field list laravel.dto.history[]
 local history = Class({}, {
-  list = {}
+  list = {},
 })
 
 function history:add(jobId, name, args, opts)

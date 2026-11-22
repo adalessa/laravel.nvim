@@ -11,12 +11,12 @@ function override_provider.boot(app)
     pattern = "*.php",
     group = group,
     callback = app:whenActive(function(ev)
-        local cwd = vim.uv.cwd()
-        if vim.startswith(ev.file, cwd .. "/vendor") then
-          return
-        end
+      local cwd = vim.uv.cwd()
+      if vim.startswith(ev.file, cwd .. "/vendor") then
+        return
+      end
 
-        app("override"):handle(ev.buf)
+      app("override"):handle(ev.buf)
     end),
   })
 end

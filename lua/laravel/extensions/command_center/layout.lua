@@ -27,7 +27,7 @@ return function(on_submit, on_change)
       },
     },
     win_options = {
-      winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder"
+      winhighlight = "Normal:LaravelPrompt,FloatBorder:LaravelPromptBorder",
     },
   }, {
     prompt = "> ",

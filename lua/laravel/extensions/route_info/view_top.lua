@@ -12,8 +12,8 @@ function view_right:get(route, method)
 
   local virt_lines = {
     { { indent .. "[", "comment" } },
-    { { indent .. " Method: ", "comment" },    { table.concat(route.methods, "|"), "@enum" } },
-    { { indent .. " Uri: ", "comment" },       { route.uri, "@enum" } },
+    { { indent .. " Method: ", "comment" }, { table.concat(route.methods, "|"), "@enum" } },
+    { { indent .. " Uri: ", "comment" }, { route.uri, "@enum" } },
     { { indent .. " Middleware: ", "comment" } },
   }
 

@@ -1,5 +1,5 @@
 local nio = require("nio")
-local Class  = require("laravel.utils.class")
+local Class = require("laravel.utils.class")
 
 ---@class laravel.extensions.composer_info.lib
 ---@field composer laravel.services.composer

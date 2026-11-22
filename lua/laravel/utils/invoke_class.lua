@@ -5,7 +5,8 @@ local nio = require("nio")
 invoke class are design to be use as actions.
 these actions set up the async environment
 Should not return since is not expected
-]]--
+]]
+--
 
 return function(...)
   local class = Class(...)

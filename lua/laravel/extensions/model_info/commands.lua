@@ -37,9 +37,10 @@ return {
         ---@type laravel.services.class
         local class = app:make("laravel.services.class")
         local cls, err = class:get(vim.api.nvim_get_current_buf())
-        app
-          :make("laravel.services.runner")
-          :run("artisan", { "model:show", cls.fqn:gsub("\\", "\\\\"), "--env", app("laravel.extensions.tenant").getTenant() })
+        app:make("laravel.services.runner"):run(
+          "artisan",
+          { "model:show", cls.fqn:gsub("\\", "\\\\"), "--env", app("laravel.extensions.tenant").getTenant() }
+        )
       end)
     end,
   },

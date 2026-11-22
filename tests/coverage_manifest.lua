@@ -21,6 +21,7 @@ return {
     name = "services",
     status = "covered",
     specs = {
+      "tests/unit/services/api_spec.lua",
       "tests/unit/services/command_generator_spec.lua",
       "tests/unit/services/code_spec.lua",
       "tests/unit/services/class_spec.lua",
@@ -84,7 +85,11 @@ return {
   { name = "composer-info", status = "pending", specs = {} },
   { name = "tinker", status = "pending", specs = {} },
   { name = "command-center", status = "pending", specs = {} },
-  { name = "artisan-hub", status = "pending", specs = {} },
+  {
+    name = "artisan-hub",
+    status = "covered",
+    specs = { "tests/unit/extensions/artisan_hub/hub_command_spec.lua" },
+  },
   { name = "pickers", status = "pending", specs = {} },
   { name = "health", status = "covered", specs = { "tests/unit/core/health_spec.lua" } },
   { name = "e2e", status = "pending", specs = {} },

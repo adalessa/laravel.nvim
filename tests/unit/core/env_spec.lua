@@ -64,3 +64,24 @@ describe("environment prompt", function()
     end)
   end)
 end)
+
+describe("environment executables", function()
+  it("does not reuse an executable cached by another environment", function()
+    local original_executable = vim.fn.executable
+    vim.fn.executable = function()
+      return 1
+    end
+
+    local ok, err = pcall(function()
+      local Environment = require("laravel.dto.environment")
+      local sail = Environment:new({ name = "sail", map = { php = { "vendor/bin/sail", "php" } } })
+      local local_env = Environment:new({ name = "local" })
+
+      assert.same({ "vendor/bin/sail", "php" }, sail:executable("php"))
+      assert.same({ "php" }, local_env:executable("php"))
+    end)
+
+    vim.fn.executable = original_executable
+    assert.is_true(ok, err)
+  end)
+end)

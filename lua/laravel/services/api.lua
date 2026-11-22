@@ -30,15 +30,29 @@ local api = Class({
 ---@param args string[]|nil
 ---@return laravel.dto.apiResponse, laravel.error
 function api:run(program, args)
-  local command = self.command_generator:generate(program, args)
+  local command, command_err = self.command_generator:generate(program, args)
   if not command then
-    return {}, Error:new(string.format("Command %s not found", program))
+    local err = Error:new(string.format("Command %s not found", program))
+    if command_err then
+      err:wrap(command_err)
+    end
+
+    if is_app_program(program) then
+      health.markUnavailable(err:toString())
+    end
+
+    return {}, err
   end
   local cmd = table.remove(command, 1)
 
-  local process = nio.process.run({ cmd = cmd, args = command })
+  local process, process_err = nio.process.run({ cmd = cmd, args = command })
   if not process then
-    local err = Error:new(string.format("Failed to run command cmd: %s args: %s", cmd, table.concat(args or {}, " ")))
+    local message = string.format("Failed to run command cmd: %s args: %s", cmd, table.concat(args or {}, " "))
+    if process_err and process_err ~= "" then
+      message = message .. ": " .. process_err
+    end
+
+    local err = Error:new(message)
     self.log:error(err)
 
     if is_app_program(program) then

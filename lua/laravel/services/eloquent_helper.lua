@@ -64,19 +64,18 @@ local function get_builder_return_type(method, class_name)
     or method.name == "firstOrFail"
   )
 
-  local rt = return_type
-  rt = rt:gsub("%$this", model_builder_type(class_name))
-  rt = rt:gsub("\\TReturn", "mixed")
-  rt = rt:gsub("TReturn", "mixed")
-  rt = rt:gsub("\\TValue", returns_single_model and class_name or "mixed")
-  rt = rt:gsub("TValue", returns_single_model and class_name or "mixed")
-  rt = rt:gsub("object", returns_single_model and class_name or "mixed")
+  return_type = return_type:gsub("%$this", model_builder_type(class_name))
+  return_type = return_type:gsub("\\TReturn", "mixed")
+  return_type = return_type:gsub("TReturn", "mixed")
+  return_type = return_type:gsub("\\TValue", returns_single_model and class_name or "mixed")
+  return_type = return_type:gsub("TValue", returns_single_model and class_name or "mixed")
+  return_type = return_type:gsub("object", returns_single_model and class_name or "mixed")
 
-  if rt:find("mixed") then
+  if return_type:find("mixed") then
     return "mixed"
   end
 
-  return rt
+  return return_type
 end
 
 -- ------------------------
@@ -308,7 +307,7 @@ end
 -- Entry point
 -- ------------------------
 
-function M.write_eloquent_docblocks(models, builder_methods)
+function M.build_eloquent_docblocks(models, builder_methods)
   local namespaces = {}
 
   for _, model in pairs(models) do
@@ -340,7 +339,11 @@ function M.write_eloquent_docblocks(models, builder_methods)
     table.insert(output, "}")
   end
 
-  write_file(internal_vendor_path("_model_helpers.php"), output)
+  return output
+end
+
+function M.write_eloquent_docblocks(models, builder_methods)
+  write_file(internal_vendor_path("_model_helpers.php"), M.build_eloquent_docblocks(models, builder_methods))
 end
 
 return M

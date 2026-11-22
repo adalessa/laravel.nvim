@@ -44,6 +44,15 @@ return {
     status = "covered",
     specs = { "tests/unit/support/deps_spec.lua" },
   },
+  {
+    name = "model-docblocks",
+    status = "covered",
+    specs = {
+      "tests/unit/services/eloquent_helper_spec.lua",
+      "tests/integration/php-templates/models_signatures_spec.lua",
+      "tests/integration/php-templates/models_spec.lua",
+    },
+  },
   { name = "bootstrap", status = "pending", specs = {} },
   { name = "container-factory", status = "pending", specs = {} },
   { name = "options-env", status = "pending", specs = {} },

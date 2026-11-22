@@ -1,4 +1,8 @@
-return [[
+local signatures = require("laravel.php-templates.models_signatures")
+
+local template = [[
+__LARAVEL_NVIM_MODEL_SIGNATURES__
+
 if (class_exists('\phpDocumentor\Reflection\DocBlockFactory')) {
     $factory = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
 } else {
@@ -13,31 +17,18 @@ $docblocks = new class($factory) {
         if ($this->factory !== null) {
             $docblock = $this->factory->create($method->getDocComment());
             $params = collect($docblock->getTagsByName("param"))->map(fn($p) => (string) $p)->all();
-            $return = (string) $docblock->getTagsByName("return")[0] ?? null;
+            $returns = $docblock->getTagsByName("return");
+            $return = laravel_nvim_docblock_tag_return($returns);
 
             return [$params, $return];
         }
 
 
         $params = collect($method->getParameters())
-            ->map(function (\ReflectionParameter $param) {
-                $types = match ($param?->getType()) {
-                    null => [],
-                    default => method_exists($param->getType(), "getTypes")
-                        ? $param->getType()->getTypes()
-                        : [$param->getType()]
-                };
-
-                $types = collect($types)
-                    ->filter()
-                    ->values()
-                    ->map(fn($t) => $t->getName());
-
-                return trim($types->join("|") . " $" . $param->getName());
-            })
+            ->map(fn(\ReflectionParameter $param) => laravel_nvim_builder_parameter($param))
             ->all();
 
-        $return = $method->getReturnType()?->getName();
+        $return = laravel_nvim_builder_return_type($method);
 
         return [$params, $return];
     }
@@ -242,20 +233,7 @@ $models = new class($factory) {
 
     protected function defaultValueToString(\ReflectionParameter $param): string
     {
-        if ($param->isDefaultValueConstant()) {
-            return '\\'.$param->getDefaultValueConstantName();
-        }
-
-        $value = $param->getDefaultValue();
-
-        return match (true) {
-            is_null($value) => 'null',
-            is_numeric($value) => $value,
-            is_bool($value) => $value ? 'true' : 'false',
-            is_array($value) => '[]',
-            is_object($value) => 'new \\'.get_class($value),
-            default => "'{$value}'",
-        };
+        return laravel_nvim_parameter_default($param);
     }
 };
 
@@ -290,3 +268,7 @@ echo json_encode([
     'models' => $models->all(),
 ]);
 ]]
+
+return (template:gsub("__LARAVEL_NVIM_MODEL_SIGNATURES__", function()
+  return signatures
+end))

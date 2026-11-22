@@ -1,4 +1,6 @@
 local nio = require("nio")
+local health = require("laravel.core.health")
+
 ---@class laravel.services.status
 ---@field api laravel.services.api
 ---@field values table
@@ -20,6 +22,7 @@ function status:new(api)
     values = {
       php = nil,
       laravel = nil,
+      health = nil,
     },
     refresh = nil,
   }
@@ -39,8 +42,11 @@ end
 ---@async
 function status:start()
   local refresh = nio.create(function()
-    local response = self.api:run("artisan about --json")
-    if response:failed() then
+    self.values.health = health.getStatus()
+
+    local response, err = self.api:run("artisan about --json")
+    if err or not response or type(response.failed) ~= "function" or response:failed() then
+      self.values.health = health.getStatus()
       return
     end
     local info = response:json()
@@ -48,6 +54,7 @@ function status:start()
       self.values.laravel = info.environment.laravel_version
       self.values.php = info.environment.php_version
     end
+    self.values.health = health.getStatus()
   end, 0)
 
   self.refresh = refresh

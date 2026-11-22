@@ -2,6 +2,20 @@ local nio = require("nio")
 local ApiResponse = require("laravel.dto.api_response")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
+local health = require("laravel.core.health")
+
+-- Programs that run against the Laravel application. Their exit code is a
+-- useful signal to know whether the environment (php/container) is available.
+local APP_PROGRAMS = {
+  artisan = true,
+  php = true,
+  composer = true,
+}
+
+local function is_app_program(program)
+  local name = vim.split(program or "", " ")[1]
+  return APP_PROGRAMS[name] == true
+end
 
 ---@class laravel.services.api
 ---@field command_generator laravel.services.command_generator
@@ -27,6 +41,10 @@ function api:run(program, args)
     local err = Error:new(string.format("Failed to run command cmd: %s args: %s", cmd, table.concat(args or {}, " ")))
     self.log:error(err)
 
+    if is_app_program(program) then
+      health.markUnavailable(err:toString())
+    end
+
     return {}, err
   end
   local output = process.stdout.read()
@@ -37,6 +55,14 @@ function api:run(program, args)
   end
 
   local exit_code = process.result(true)
+
+  if is_app_program(program) then
+    if exit_code == 0 then
+      health.markHealthy()
+    else
+      health.recordFailure(errors)
+    end
+  end
 
   return ApiResponse:new(vim.split(output or "", "\n"), exit_code, errs)
 end

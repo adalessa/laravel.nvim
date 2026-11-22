@@ -3,6 +3,7 @@ local Environment = require("laravel.dto.environment")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 local notify = require("laravel.utils.notify")
+local health = require("laravel.core.health")
 
 ---@class laravel.core.env
 ---@field options laravel.core.options_manager
@@ -13,6 +14,8 @@ local env = Class({
 })
 
 function env:boot()
+  health.reset()
+
   if vim.fn.filereadable("artisan") == 0 then
     -- not artisan should not do anything
     return
@@ -60,6 +63,7 @@ function env:configure()
     end
 
     self.environment = Environment:new(value)
+    health.reset()
 
     local cwd = vim.uv.cwd()
     value.path = cwd

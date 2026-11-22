@@ -326,6 +326,7 @@ artisan command if it existed; use the exact signature when in doubt.
   model_info:toggle        Toggle.
   cache:flush              Flush the in-memory cache.
   plugin-logs:open         Open the rotating plugin log.
+  health:status            Show the environment health and last error.
 
 ==============================================================================
 7. PICKERS                                                    *laravel-pickers*
@@ -686,7 +687,16 @@ Useful built-in commands:
   Laravel.commands.run("env:configure:open")   Open the per-project config.
   Laravel.commands.run("cache:flush")          Drop the in-memory cache.
   Laravel.commands.run("plugin-logs:open")     Open the log file.
+  Laravel.commands.run("health:status")        Show environment health.
   Laravel.commands.run("picker:history")       Re-run a previous command.
+
+If the configured environment is unavailable (for example a stopped Docker
+container), passive features such as view diagnostics, model / route /
+composer info, and override signs pause instead of running a failing
+command on every buffer. The plugin probes again in the background and
+resumes automatically once the environment is back. Run
+`Laravel.commands.run("health:status")` to inspect the current state and
+the last error.
 
 Common issues:
 

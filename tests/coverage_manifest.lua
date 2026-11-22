@@ -20,7 +20,11 @@ return {
   {
     name = "services",
     status = "covered",
-    specs = { "tests/unit/services/command_generator_spec.lua" },
+    specs = {
+      "tests/unit/services/command_generator_spec.lua",
+      "tests/unit/services/code_spec.lua",
+      "tests/unit/services/status_spec.lua",
+    },
   },
   {
     name = "loaders",
@@ -68,6 +72,6 @@ return {
   { name = "command-center", status = "pending", specs = {} },
   { name = "artisan-hub", status = "pending", specs = {} },
   { name = "pickers", status = "pending", specs = {} },
-  { name = "health", status = "pending", specs = {} },
+  { name = "health", status = "covered", specs = { "tests/unit/core/health_spec.lua" } },
   { name = "e2e", status = "pending", specs = {} },
 }

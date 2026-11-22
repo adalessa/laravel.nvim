@@ -28,9 +28,13 @@ function app:isActive()
   return self:make("laravel.core.env"):isActive()
 end
 
+function app:isBroken()
+  return require("laravel.core.health").isBroken()
+end
+
 function app:whenActive(callback)
   return function(...)
-    if self:isActive() then
+    if self:isActive() and not require("laravel.core.health").shouldSkip() then
       return callback(...)
     end
   end

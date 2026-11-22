@@ -1,4 +1,3 @@
-local nio = require("nio")
 local Class = require("laravel.utils.class")
 local Error = require("laravel.utils.error")
 local md5 = require("laravel.utils.md5")
@@ -85,29 +84,27 @@ function codeService:make_php_file(code, template)
   local hash = md5.sumhexa(output)
   local fname = hash .. "." .. template .. ".php"
   local full = dir .. fname
-  local _, file_stats = nio.uv.fs_stat(full)
+  local file_stats = vim.uv.fs_stat(full)
   if not (file_stats and file_stats.size > 0) then
-    local _, vendor_dir_stats = nio.uv.fs_stat(vendor_dir)
-    if not vendor_dir_stats then
-      local _, ok = nio.uv.fs_mkdir(vendor_dir, 493) -- 0755
-      if not ok then
-        error("Could not create directory " .. vendor_dir)
+    -- Keep this synchronous: several passive features can request a file for
+    -- different buffers at the same time and concurrent async file/descriptor
+    -- handling can crash Neovim's event loop.
+    for _, path in ipairs({ vendor_dir, dir }) do
+      if not vim.uv.fs_stat(path) then
+        local ok, err = vim.uv.fs_mkdir(path, 493) -- 0755
+        if not ok and not (err and vim.startswith(err, "EEXIST")) then
+          error("Could not create directory " .. path .. ": " .. tostring(err))
+        end
       end
     end
-    local _, dir_stats = nio.uv.fs_stat(dir)
-    if not dir_stats then
-      local _, ok = nio.uv.fs_mkdir(dir, 493) -- 0755
-      if not ok then
-        error("Could not create directory for php files: " .. dir)
-      end
-    end
-    local file = nio.file.open(full, "w")
+
+    local file, err = io.open(full, "w")
     if not file then
-      error("Could not create php file for " .. fname)
+      error("Could not create php file for " .. fname .. ": " .. tostring(err))
     end
-    file.write("<?php\n")
-    file.write(output)
-    file.close()
+    file:write("<?php\n")
+    file:write(output)
+    file:close()
   end
 
   return full

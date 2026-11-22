@@ -672,7 +672,10 @@ Useful built-in commands:
 | `Laravel.commands.run("env:configure:open")` | Open the per-project config JSON in your `stdpath('data')`. |
 | `Laravel.commands.run("cache:flush")` | Drop the in-memory cache. Cache is also flushed automatically on `composer` and `artisan` runs (the `cache_invalidation_listener`). |
 | `Laravel.commands.run("plugin-logs:open")` | Open the rotating log file at `stdpath('data')/laravel/logs/`. |
+| `Laravel.commands.run("health:status")` | Show the current environment health and the last command error. |
 | `Laravel.commands.run("picker:history")` | Re-run a previous command. |
+
+If the configured environment is unavailable (for example a stopped Docker container), passive features such as view diagnostics, model / route / composer info, and override signs pause instead of running a failing command on every buffer. The plugin probes again in the background and resumes automatically once the environment is back. Use `Laravel.commands.run("health:status")` to see the current state and the last error.
 
 Common issues:
 

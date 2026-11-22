@@ -21,6 +21,16 @@ function status_provider.boot(app)
   end
 
   app("status"):start()
+
+  local group = vim.api.nvim_create_augroup("laravel.status", {})
+  vim.api.nvim_create_autocmd({ "FocusGained", "VimResume" }, {
+    group = group,
+    callback = function()
+      if require("laravel.core.health").isUnavailable() then
+        app("status"):update()
+      end
+    end,
+  })
 end
 
 return status_provider

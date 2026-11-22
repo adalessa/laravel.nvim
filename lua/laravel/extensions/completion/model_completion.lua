@@ -1,10 +1,17 @@
 local model_resolver = require("laravel.extensions.completion.model_completion_type_resolver")
 
-local model_completion = {}
+---@type laravel.extensions.completion.Provider
+local model_completion = {
+  name = "model",
+  trigger_characters = { "(" },
+  dependencies = {
+    models_loader = "laravel.loaders.models_loader",
+  },
+}
 
 ---@async
-function model_completion.complete(_, params, callback)
-  local result = model_resolver.resolve_model_at_cursor(params.context.bufnr, params.context.cursor_before_line)
+function model_completion.complete(ctx, deps)
+  local result = model_resolver.resolve_model_at_cursor(ctx.bufnr, ctx.before)
 
   local supported_methods = {
     "where",
@@ -18,19 +25,13 @@ function model_completion.complete(_, params, callback)
   end
 
   if not (result and result.param_position == 0 and is_supported_methods(result.method)) then
-    return callback({
-      items = {},
-      isIncomplete = false,
-    })
+    return {}
   end
 
   ---@type laravel.dto.models_response, laravel.error
-  local resp, err = Laravel.app("laravel.loaders.models_loader"):load()
+  local resp, err = deps.models_loader:load()
   if err then
-    return callback({
-      items = {},
-      isIncomplete = false,
-    })
+    return {}, err
   end
 
   local _, model = vim.iter(resp.models):find(function(name)
@@ -38,13 +39,10 @@ function model_completion.complete(_, params, callback)
   end)
 
   if not model then
-    return callback({
-      items = {},
-      isIncomplete = false,
-    })
+    return {}
   end
 
-  local items = vim
+  return vim
     .iter(model.attributes or {})
     :map(function(attribute)
       return {
@@ -74,14 +72,9 @@ function model_completion.complete(_, params, callback)
       }
     end)
     :totable()
-
-  return callback({
-    items = items,
-    isIncomplete = false,
-  })
 end
 
-function model_completion.shouldComplete(_)
+function model_completion.matches(_)
   return true
 end
 

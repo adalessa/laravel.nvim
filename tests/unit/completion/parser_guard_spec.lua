@@ -36,15 +36,10 @@ describe("model completion parser guard", function()
   end)
 
   it("returns no completion items when the php parser is unavailable", function()
-    local items
-    with_missing_parser(function()
-      model_completion.complete({}, {
-        context = { bufnr = 0, cursor_before_line = "" },
-      }, function(result)
-        items = result
-      end)
+    local items = with_missing_parser(function()
+      return model_completion.complete({ bufnr = 0, before = "" }, {})
     end)
 
-    assert.same({ items = {}, isIncomplete = false }, items)
+    assert.same({}, items)
   end)
 end)

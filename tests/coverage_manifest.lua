@@ -74,7 +74,18 @@ return {
   { name = "events", status = "pending", specs = {} },
   { name = "core-services", status = "pending", specs = {} },
   { name = "commands", status = "pending", specs = {} },
-  { name = "extensions-completion", status = "pending", specs = {} },
+  {
+    name = "extensions-completion",
+    status = "covered",
+    specs = {
+      "tests/unit/completion/dispatcher_spec.lua",
+      "tests/unit/completion/providers_spec.lua",
+      "tests/unit/completion/cmp_source_spec.lua",
+      "tests/unit/completion/blink_source_spec.lua",
+      "tests/unit/completion/provider_spec.lua",
+      "tests/component/completion/inertia_provider_spec.lua",
+    },
+  },
   { name = "model-info", status = "pending", specs = {} },
   { name = "route-info", status = "pending", specs = {} },
   {

@@ -4,6 +4,47 @@ local a = nio.tests
 describe("code service", function()
   local app = require("laravel.core.app")
 
+  local ApiResponse = require("laravel.dto.api_response")
+
+  local function new_service(response)
+    local service = require("laravel.services.code"):new()
+    service.make_php_file = function()
+      return "/tmp/laravel-nvim-code.php"
+    end
+    service.api = {
+      run = function()
+        return response
+      end,
+    }
+
+    return service
+  end
+
+  it("returns an error when php stops before producing output", function()
+    -- A parse error in a model aborts php before the output markers are printed.
+    local service = new_service(ApiResponse:new({ "PHP Parse error: syntax error" }, 0, {}))
+
+    local ok, result, err = pcall(service.run, service, "echo 'unreachable';")
+
+    assert.is_true(ok)
+    assert.same({}, result)
+    assert.is_not_nil(err)
+    assert.matches("Invalid or empty PHP output", err.message)
+  end)
+
+  it("returns an error when php output is not valid json", function()
+    local service = new_service(
+      ApiResponse:new({ "__NEOVIM_LARAVEL_START_OUTPUT__", "not json", "__NEOVIM_LARAVEL_END_OUTPUT__" }, 0, {})
+    )
+
+    local ok, result, err = pcall(service.run, service, "echo 'not json';")
+
+    assert.is_true(ok)
+    assert.same({}, result)
+    assert.is_not_nil(err)
+    assert.matches("Could not parse PHP output", err.message)
+  end)
+
   a.it("generates the php file from a fast event context", function()
     local cwd = vim.uv.cwd()
     local tmp = vim.fn.tempname()

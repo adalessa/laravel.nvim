@@ -16,6 +16,37 @@ make test-all
 Run `make test-file FILE=tests/unit/path/to/spec.lua` while iterating. Run the
 targeted spec first, then the full suite before committing.
 
+## How the Infrastructure Fits Together
+
+```text
+flake.nix
+  -> nix develop exports LARAVEL_TEST_DEPS and LARAVEL_TS_PARSERS
+tests/minimal_init.lua
+  -> tests/support/deps.lua resolves plugins and appends runtimepath
+scripts/test.sh
+  -> plenary runner used by the Makefile and GitHub Actions
+tests/coverage_manifest.lua
+  -> feature-area coverage gate run by make coverage-check
+```
+
+`make test` is the fast hermetic loop. `make test-integration` is for real
+headless Neovim behavior. `make test-all` runs both. CI calls the same targets,
+so local and CI behavior do not drift.
+
+`make deps` is the non-Nix fallback for plugins only; it cannot build the
+PHP/JSON tree-sitter parsers. Use `nix develop` for parser-dependent specs.
+The 0.10 compatibility job skips parser-dependent specs because the flake
+parsers target the devShell ABI.
+
+## Design Intent
+
+- Optimize for agent velocity: a fast, deterministic unit/component loop with
+  integration checks close behind.
+- Keep the fast suite free of network, PHP, external binaries, `$HOME`, and real
+  filesystem watchers.
+- Track coverage by curated feature area, not one test per module.
+- Treat bug fixes as regression tests and new behavior as test-first work.
+
 ## Layers
 
 | Directory | Purpose | Allowed to touch |
@@ -53,10 +84,22 @@ holds immutable JSON fixtures; planned project skeletons will live under
 arrive with the coverage phases. Until then, follow the patterns in
 `docs/testing.md` and the existing specs.
 
+## Coverage Roadmap
+
+The manifest is the source of truth. Areas currently pending:
+
+`bootstrap`, `container-factory`, `options-env`, `events`, `core-services`,
+`commands`, `extensions-completion`, `model-info`, `route-info`, `diagnostics`,
+`composer-info`, `tinker`, `command-center`, `artisan-hub`, `pickers`, `health`,
+`e2e`.
+
+When an area gets its first spec, change its status to `covered` and list every
+new spec path in that entry. Every spec file must appear in the manifest.
+
 ## References
 
-- Design: `docs/superpowers/specs/2026-11-21-test-infrastructure-design.md`
-- Foundation plan: `docs/superpowers/plans/2026-11-21-test-infrastructure-foundation.md`
 - Test guide: `docs/testing.md`
 - Coverage map: `tests/coverage_manifest.lua`
 - CI: `.github/workflows/test.yml`
+- Environment: `flake.nix`, `flake.lock`
+- Commands: `Makefile`, `scripts/test.sh`

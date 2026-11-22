@@ -15,6 +15,36 @@ local function posFromNode(node)
   }
 end
 
+---@param bufnr number|nil
+---@return number
+local function resolve_buffer(bufnr)
+  if not bufnr or bufnr == 0 then
+    return vim.api.nvim_get_current_buf()
+  end
+
+  return bufnr
+end
+
+---@param bufnr number|nil
+---@return boolean
+local function is_valid_buffer(bufnr)
+  bufnr = resolve_buffer(bufnr)
+
+  return vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_is_loaded(bufnr)
+end
+
+---@param bufnr number|nil
+---@param language string
+---@return vim.treesitter.LanguageTree|nil
+local function get_parser(bufnr, language)
+  local ok, parser = pcall(vim.treesitter.get_parser, resolve_buffer(bufnr), language)
+  if not ok then
+    return nil
+  end
+
+  return parser
+end
+
 ---[this needs to run in scheduler]
 ---@param bufnr number
 ---@return laravel.dto.class, laravel.error
@@ -23,7 +53,11 @@ function class:get(bufnr)
     nio.scheduler()
   end
 
-  local php_parser = vim.treesitter.get_parser(bufnr, "php")
+  if not is_valid_buffer(bufnr) then
+    return {}, Error:new("Invalid buffer")
+  end
+
+  local php_parser = get_parser(bufnr, "php")
   if php_parser == nil then
     return {}, Error:new("Could not get the parser")
   end
@@ -99,7 +133,11 @@ end
 
 ---@return string[], laravel.error
 function class:views(bufnr)
-  local php_parser = vim.treesitter.get_parser(bufnr, "php")
+  if not is_valid_buffer(bufnr) then
+    return {}, Error:new("Invalid buffer")
+  end
+
+  local php_parser = get_parser(bufnr, "php")
   if php_parser == nil then
     return {}, Error:new("Could not get the parser")
   end

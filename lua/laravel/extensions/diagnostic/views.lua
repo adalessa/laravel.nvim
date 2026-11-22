@@ -11,12 +11,20 @@ local views_diagnostic = Class({
 })
 
 function views_diagnostic:handle(bufnr)
+  if not bufnr or bufnr == 0 then
+    bufnr = vim.api.nvim_get_current_buf()
+  end
+
+  if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+    return
+  end
+
   local namespace = vim.api.nvim_create_namespace("laravel.views")
   vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
   vim.diagnostic.reset(namespace, bufnr)
 
-  local php_parser = vim.treesitter.get_parser(bufnr, "php")
-  if not php_parser then
+  local parser_ok, php_parser = pcall(vim.treesitter.get_parser, bufnr, "php")
+  if not parser_ok or not php_parser then
     self.log:error("Could not get treesitter parser for PHP. Make sure you have the PHP parser installed.")
     return
   end
@@ -72,6 +80,10 @@ function views_diagnostic:handle(bufnr)
       :totable()
 
     nio.scheduler()
+    if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+      return
+    end
+
     vim.diagnostic.set(
       namespace,
       bufnr,

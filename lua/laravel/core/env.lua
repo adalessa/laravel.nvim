@@ -11,6 +11,7 @@ local env = Class({
   options = "laravel.core.options_manager",
 }, {
   environment = nil,
+  configuring = false,
 })
 
 function env:boot()
@@ -52,12 +53,22 @@ function env:configure()
     return
   end
 
-  vim.ui.select(self.options.get("environments.definitions"), {
+  -- Several boot events (for example a session restoring buffers) can fire in
+  -- quick succession. Only keep one prompt open at a time so it does not get
+  -- replaced and closed immediately.
+  if self.configuring then
+    return
+  end
+  self.configuring = true
+
+  local ok, err = pcall(vim.ui.select, self.options.get("environments.definitions"), {
     prompt = "[Laravel.nvim] Select the type of environment to use",
     format_item = function(item)
       return item.name
     end,
   }, function(value)
+    self.configuring = false
+
     if not value then
       return
     end
@@ -72,6 +83,11 @@ function env:configure()
       notify.error("Error saving config")
     end
   end)
+
+  if not ok then
+    self.configuring = false
+    error(err)
+  end
 end
 
 ---@param name string

@@ -7,6 +7,13 @@ local source = {}
 ---@param completion laravel.extensions.completion|nil
 ---@return laravel.extensions.completion.cmp_source
 function source.new(completion)
+  -- The container factory always calls constructors as methods. For a
+  -- dot-style constructor that means the module itself arrives as the first
+  -- argument; treat it as "no dependency supplied" and use the dispatcher.
+  if completion == source then
+    completion = nil
+  end
+
   return setmetatable({
     completion = completion or require("laravel.extensions.completion"),
   }, { __index = source })

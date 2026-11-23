@@ -35,6 +35,14 @@ local function params()
 end
 
 describe("nvim-cmp completion source", function()
+  it("receives the dispatcher when the container factory constructs it", function()
+    local factory = require("laravel.core.factory")
+    local source = factory.create({}, "laravel.extensions.completion.source")(nil)
+
+    assert.is_true(source.completion ~= source)
+    assert.is_function(source.completion.is_enabled)
+  end)
+
   it("uses the shared trigger characters", function()
     local source = require("laravel.extensions.completion.source").new(fake_completion({
       trigger_characters = function()
